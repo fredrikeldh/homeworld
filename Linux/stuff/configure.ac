@@ -66,7 +66,7 @@ if test "x$enable_demo" = "xyes" ; then
 	HWGAME_CFLAGS="-DHW_GAME_DEMO"
 fi
 
-dnl Configure options for building Raiders version.
+dnl Configure options for building original version.
 if test "x$HWGAME_CFLAGS" = "x" ; then
 	echo "* Building Release binary for Homeworld (HW_GAME_HOMEWORLD) *"
 	HWGAME_CFLAGS="-DHW_GAME_HOMEWORLD"
