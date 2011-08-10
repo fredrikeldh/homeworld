@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+
+env = Environment()
+c_extension = '.c'
+
+target = 'lexer'
+lexer_c = target + c_extension
+env.CFile(target = lexer_c, source = target + '.l')
+
+target = 'parser'
+parser_c = target + c_extension
+env.CFile(target = parser_c, source = target + '.y')
+
+env.Program('kas2c', [lexer_c, parser_c]);
+
+
