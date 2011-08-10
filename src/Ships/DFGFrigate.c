@@ -49,10 +49,6 @@ void DFGFrigateStaticInit(char *directory,char *filename,struct ShipStaticInfo *
     dfgstat->DFGFrigateFieldRadiusSqr = dfgstat->DFGFrigateFieldRadius*dfgstat->DFGFrigateFieldRadius;
 }
 
-void DFGFInit(Ship *ship)
-{
-}
-
 void univDFGFieldEffect(Ship *ship, Bullet *bullet,real32 totaltimeelapsed)
 {
     vector  dir1,shiptobullet;
@@ -127,10 +123,6 @@ void univDFGFieldEffect(Ship *ship, Bullet *bullet,real32 totaltimeelapsed)
         {                                                   //if there is a deflection effect
 //            matCreateCoordSysFromHeading(&newCoordsys,&shiptobullet);
             floatDamage = (real32)bullet->damage;
-            if (RGLtype == SWtype)
-            {                                               //smaller deflection effects in software
-                floatDamage *= etgSoftwareScalarHit;
-            }
             floatDamage *= ship->magnitudeSquared;
             intDamage = TreatAsUdword(floatDamage);
             etgEffectCreate(stat, ship, &bullet->posinfo.position, NULL, &tmpmatrix, ship->magnitudeSquared, EAF_Velocity | EAF_NLips, 1, intDamage);

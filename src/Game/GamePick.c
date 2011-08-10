@@ -54,7 +54,6 @@
 bool gpQuickSave(void);
 bool gpQuickLoad(void);
 
-void gpRecGameWindowInit(char *name, featom *atom);
 void gpGameWindowInit(char *name, featom *atom);
 void gpTextEntryWindowInit(char *name, featom *atom);
 void gpGameNameDraw(featom *atom, regionhandle region);
@@ -313,8 +312,8 @@ void gpTitleListLoad(void)
     struct dirent* dir_entry;
 #endif
     sdword index;
-    char fileName[PATH_MAX];
-    char fileSearch[100];
+    char fileName[PATH_MAX]   = "";
+    char fileSearch[PATH_MAX] = "";
 //    char *pString;
 //    char *title;
 
@@ -753,7 +752,7 @@ void gpDonePicking(char *name, featom *atom)
     }
 }
 
-static char overwritefilename[200] = "";
+static char overwritefilename[PATH_MAX] = "";
 static bool overwriteRecGame = FALSE;
 
 void gpOverwriteYes(char *name, featom *atom)
@@ -1030,7 +1029,7 @@ void spRestartLevel(char *name, featom *atom)
 
 void gpLoadGame(char *name, featom *atom)
 {
-    char filename[100];
+    char filename[PATH_MAX] = "";
     sdword verifysavename;
 
     if (gpNumberGames > 0)
@@ -1090,7 +1089,7 @@ void gpLoadGame(char *name, featom *atom)
 
 void gpDeleteGame(char *name, featom *atom)
 {
-    char filename[100];
+    char filename[PATH_MAX] = "";
     sdword i;
     sdword index;
     fonthandle  oldfont;
@@ -1104,10 +1103,13 @@ void gpDeleteGame(char *name, featom *atom)
 
     feScreenDisappear(NULL, NULL);
 
+    char *tmpFilePath = filePathPrepend(filename, FF_UserSettingsPath);
+    strcpy(filename, tmpFilePath);
     fileDelete(filename);
+
     if (SavedGamesPath == RecordedGamesPath)
     {
-        char tmpfile[100];
+        char tmpfile[PATH_MAX] = "";
         strcpy(tmpfile,filename);
         strcat(tmpfile,PKTS_EXTENSION);
         fileDelete(tmpfile);

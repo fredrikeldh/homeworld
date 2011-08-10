@@ -42,7 +42,11 @@
 #include "utility.h"
 
 #ifdef GENERIC_ETGCALLFUNCTION
+#ifdef _MACOSX_FIX_MISC
+#include "functions.h"
+#else
 #include "wrapped_functions.h"
+#endif
 #include "wrapped_unlisted_functions.h"
 #endif
 
@@ -1415,13 +1419,6 @@ udword etgEffectTest(regionhandle reg, sdword ID, udword event, udword data)
 #endif
         return(0);
     }
-    if (RGLtype == SWtype)
-    {
-        if (stat->softwareVersion != NULL)
-        {
-            stat = stat->softwareVersion;
-        }
-    }
 #if ETG_VERBOSE_LEVEL >= 1
     dbgMessagef("Testing effect '%s' with light '%s'", etgTestKey[ID].effectName, etgTestKey[ID].lightName);
 #endif
@@ -1450,7 +1447,7 @@ udword etgEffectTest(regionhandle reg, sdword ID, udword event, udword data)
     {                                                       //make it sort forward, if applicable
         bitSet(newEffect->flags, SOF_AlwaysSortFront);
     }
-    newEffect->posinfo.isMoving = FALSE;
+    SET_MOVING_IMMOBILE(newEffect->posinfo.isMoving);
     newEffect->posinfo.haventCalculatedDist = TRUE;
     newEffect->rotinfo.coordsys = coordSystem;
     univUpdateObjRotInfo((SpaceObjRot *)newEffect);
@@ -1580,7 +1577,7 @@ void etgEffectTestKey(char *directory,char *field,void *dataToFillIn)
     etgTestKey[etgTestKeyIndex].type = memStringDupeNV(type);
     etgTestKey[etgTestKeyIndex].lightName = memStringDupeNV(lightName);
     etgTestKey[etgTestKeyIndex].effectName = memStringDupeNV(effectName);
-    etgTestKey[etgTestKeyIndex].region = regKeyChildAlloc(ghMainRegion, etgTestKeyIndex, RPE_KeyDown, etgEffectTest, 1, key);
+    etgTestKey[etgTestKeyIndex].region = regKeyChildAlloc(ghMainRegion, etgTestKeyIndex, RPE_KeyDown, (regionfunction) etgEffectTest, 1, key);
     etgTestKey[etgTestKeyIndex].nTimes = 1;
     etgTestKey[etgTestKeyIndex].iTime = 0;
     etgTestKey[etgTestKeyIndex].duration = 1.0f;
@@ -1632,7 +1629,7 @@ void etgEffectProfileKey(char *directory,char *field,void *dataToFillIn)
 #if ETG_VERBOSE_LEVEL >= 1
     dbgMessagef(" %d times in %.2f seconds.", etgTestKey[etgTestKeyIndex - 1].nTimes, etgTestKey[etgTestKeyIndex - 1].duration);
 #endif
-    regFunctionSet(etgTestKey[etgTestKeyIndex - 1].region, etgEffectProfile);
+    regFunctionSet(etgTestKey[etgTestKeyIndex - 1].region, (regionfunction) etgEffectProfile);
 }
 #endif //ETG_TESTING
 
@@ -2389,7 +2386,7 @@ void etgEffectDraw(Effect *effect)
             timeElapsed = universe.totaltimeelapsed - part->lastUpdated;
             if (timeElapsed >= 0)
             {
-                partUpdateSystem((psysPtr)effect->particleBlock[index], timeElapsed, &velInverse);
+				partUpdateSystem((psysPtr)effect->particleBlock[index], timeElapsed, &velInverse); //update the particle
                 part->lastUpdated = universe.totaltimeelapsed;
             }
 
@@ -2421,7 +2418,7 @@ void etgEffectDraw(Effect *effect)
                 glMultMatrixf((GLfloat*)&ownerCoordMatrix);
                 glMultMatrixf((GLfloat*)&coordMatrixX);
 
-                partRenderSystem((psysPtr)effect->particleBlock[index]);
+                partRenderSystem((psysPtr)effect->particleBlock[index]);  //render the particle
 
                 glPopMatrix();
             }
@@ -4719,7 +4716,7 @@ sdword etgReturn(struct etgeffectstatic *stat, ubyte *dest, char *opcodeString, 
 {
     etgbranch *opcode = (etgbranch *)dest;
     opcode->opcode = EOP_Return;
-    opcode->codeBlock = MINUS1;
+    opcode->codeBlock = (sdword) MINUS1;
     opcode->branchTo = MINUS1;
     return(sizeof(etgbranch));
 }
@@ -5807,7 +5804,46 @@ sdword etgVarAssign(Effect *effect, struct etgeffectstatic *stat, ubyte *opcode)
     return(sizeof(etgvariablecopy));
 }
 
-#ifdef __ppc__
+#if defined GENERIC_ETGCALLFUNCTION
+
+sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opcode)
+{
+    udword param, nParams, returnType;
+    etgfunctioncall *opptr = (etgfunctioncall *)opcode;
+
+    nParams = opptr->nParameters;
+    returnType = opptr->returnValue;
+
+    opfunctionentry *entry = NULL;
+    udword currEntry=0;
+        
+    while ((entry = &etgFunctionTable[currEntry++])->name != NULL)
+    {
+        if (entry->function == ((etgfunctioncall *)opcode)->function)
+        {
+            break;
+        }
+    }
+
+	if (entry->name == NULL)
+	{
+		entry = NULL;
+	}
+
+    if (entry)
+        param = entry->wrap_function(effect, stat, opptr);		//call the function
+    else
+        param = opptr->wrap_function(effect, stat, opptr);
+
+    if (returnType != 0xffffffff)                           //if a return value is desired
+    {
+        *((udword *)(effect->variable + returnType)) = param;//set the return parameter
+    }
+
+    return(etgFunctionSize(nParams));
+}
+
+#elif defined __ppc__
 /* handle function calls
 
  This function causes error during compilation of ETG.c with optimization on, and still
@@ -5970,7 +6006,6 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
 
    memsize param       = 0;
    memsize intParam[8] = {0,0,0,0,0,0,0,0};
-   memsize floatParam[8] = {0,0,0,0,0,0,0,0};
    memsize returnValue = ((etgfunctioncall *)opcode)->returnValue;
            
 	opfunctionentry *entry;
@@ -6081,7 +6116,7 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
 //                break;
             case EVT_VarLabel:
 //                param = (udword)effect->variable + param;
-                param = effect->variable + param;
+                param = (memsize) effect->variable + param;
                 isLabel = 1;
                 break;
             default:
@@ -6129,24 +6164,24 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
         }
 	}
 
-    if (((etgfunctioncall *)opcode)->function == etgSpawnNewEffect){
+    if ((memsize)((etgfunctioncall *)opcode)->function == (memsize) etgSpawnNewEffect){
 
 //        dbgMessagef("Function: %lx:%d   -> %s",((etgfunctioncall *)opcode)->function, nParams+((etgfunctioncall *)opcode)->passThis ,  stat->name);
 
         switch  (nParams+((etgfunctioncall *)opcode)->passThis){
             case 4: 
 //                dbgMessagef("etgSpawnNewEffect %lx,%lx,%lx,%lx", effect,intParam[1],1,intParam[3]);
-                etgSpawnNewEffect(effect, intParam[1],1,intParam[3]);
+                etgSpawnNewEffect(effect, (etgeffectstatic *) intParam[1],1,intParam[3]);
                 return (etgFunctionSize(nParams));
                 break;
             case 5: 
 //                dbgMessagef("etgSpawnNewEffect %lx,%lx,%lx,%lx,%lx", effect,intParam[1],2,intParam[3],intParam[4]);
-                etgSpawnNewEffect(effect, intParam[1],2,intParam[3],intParam[4]);
+                etgSpawnNewEffect(effect, (etgeffectstatic *) intParam[1],2,intParam[3],intParam[4]);
                 return (etgFunctionSize(nParams));
                 break;
             case 6: 
 //                dbgMessagef("etgSpawnNewEffect %lx,%lx,%lx,%lx,%lx,%lx", effect,intParam[1],3,intParam[3],intParam[4],intParam[5]);
-                etgSpawnNewEffect(effect, intParam[1],3,intParam[3],intParam[4],intParam[5]);
+                etgSpawnNewEffect(effect, (etgeffectstatic *) intParam[1],3,intParam[3],intParam[4],intParam[5]);
                 return (etgFunctionSize(nParams));
                 break;
 
@@ -6161,21 +6196,21 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
                 break;
         }
     } 
-    if (((etgfunctioncall *)opcode)->function == etgCreateEffects){
+    if ((memsize)((etgfunctioncall *)opcode)->function == (memsize) etgCreateEffects){
         switch  (nParams+((etgfunctioncall *)opcode)->passThis){
             case 6: 
 //                dbgMessagef("etgCreateEffects %lx,%lx,%lx,%lx,%lx,%lx", effect,intParam[1],intParam[2],intParam[3],1,intParam[5]);
-                etgCreateEffects(effect, intParam[1],intParam[2],intParam[3],1, intParam[5]);
+                etgCreateEffects(effect, (etgeffectstatic *) intParam[1],intParam[2],intParam[3],1, intParam[5]);
                 return (etgFunctionSize(nParams));
                 break;
             case 7: 
 //                dbgMessagef("etgCreateEffects %lx,%lx,%lx,%lx,%lx,%lx,%lx", effect,intParam[1],intParam[2],intParam[3],2,intParam[5],intParam[6]);
-                etgCreateEffects(effect, intParam[1],intParam[2],intParam[3],2, intParam[5], intParam[6]);
+                etgCreateEffects(effect, (etgeffectstatic *) intParam[1],intParam[2],intParam[3],2, intParam[5], intParam[6]);
                 return (etgFunctionSize(nParams));
                 break;
             case 8: 
 //                dbgMessagef("etgCreateEffects %lx,%lx,%lx,%lx,%lx,%lx,%lx,%lx", effect,intParam[1],intParam[2],intParam[3],3,intParam[5],intParam[6],intParam[7]);
-                etgCreateEffects(effect, intParam[1],intParam[2],intParam[3],3, intParam[5], intParam[6],intParam[7]);
+                etgCreateEffects(effect, (etgeffectstatic *) intParam[1],intParam[2],intParam[3],3, intParam[5], intParam[6],intParam[7]);
                 return (etgFunctionSize(nParams));
                 break;
 
@@ -6229,45 +6264,6 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
     return (etgFunctionSize(nParams));
 }
 
-#elif defined GENERIC_ETGCALLFUNCTION
-
-sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opcode)
-{
-    udword param, nParams, returnType;
-    etgfunctioncall *opptr = (etgfunctioncall *)opcode;
-
-    nParams = opptr->nParameters;
-    returnType = opptr->returnValue;
-
-    opfunctionentry *entry = NULL;
-    udword currEntry=0;
-        
-    while ((entry = &etgFunctionTable[currEntry++])->name != NULL)
-    {
-        if (entry->function == ((etgfunctioncall *)opcode)->function)
-        {
-            break;
-        }
-    }
-
-	if (entry->name == NULL)
-	{
-		entry = NULL;
-	}
-
-    if (entry)
-        param = entry->wrap_function(effect, stat, opptr);		//call the function
-    else
-        param = opptr->wrap_function(effect, stat, opptr);
-
-    if (returnType != 0xffffffff)                           //if a return value is desired
-    {
-        *((udword *)(effect->variable + returnType)) = param;//set the return parameter
-    }
-
-    return(etgFunctionSize(nParams));
-}
-
 #else // for lucky so and so's with x86 processors...
 
 //handle function calls
@@ -6275,10 +6271,6 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
 {
     udword param, nParams, returnType;
     sdword index;
-#ifdef _MACOSX_86
-	udword count = 0; // the number of times the for loop below is run.
-	udword offset; // the offset used when the parameter is placed above the stack pointer.
-#endif
 	etgfunctioncall *opptr = (etgfunctioncall *)opcode; //opcode pointer
 
 	
@@ -6286,12 +6278,11 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
     returnType = opptr->returnValue;
     for (index = (sdword)nParams - 1; index >= 0; index--) {		//for each parameter
 #ifdef _MACOSX_86
-		count++;								// add one to count each time the for loop runs
 		if (opptr->passThis) {					// check to see if more offset is needed becasue a 'this' pointer will also be passed.
-			offset = nParams*4 - count*4 + 4;	// compute the offset for parameter plus extra offset for a 'this' pointer.
+			offset = index*4 + 4; // compute the offset for parameter plus extra offset for a 'this' pointer.
 		}
 		else {
-			offset = nParams*4 - count*4;		// compute the offset for paramenter.
+			offset = index*4; // compute the offset for paramenter.
 		}
 #endif
 		param = opptr->parameter[index].param;
@@ -6328,10 +6319,18 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
             :
             : "a" (param) );
 #elif defined (_MACOSX_86)
-		__asm__ __volatile__ (								/* store parameters above the stack pointer */
-			"movl %0, (%%esp,%1)\n\t"						
-			:
-			: "a" (param), "r" (offset) );
+		
+//		__asm__ __volatile__ (								/* store parameters above the stack pointer */
+//			"movl %0, (%%esp,%1)\n\t"						
+//			:
+//			: "a" (param), "r" (offset) );
+		void *stackPointer;
+		__asm__ __volatile__ (
+			"movl %%esp, %0\n\t"
+			: "=r"(stackPointer)
+			:);
+		stackPointer += offset;
+		*stackPointer = param;
 #endif
     }// end of above for loop
 	
@@ -6349,10 +6348,16 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
             :
             : "a" (effect) );
 #elif defined (_MACOSX_86)
-		__asm__ __volatile__ (								/* pass a 'this' pointer */
-			"movl %0, (%%esp)\n\t"
-			:
-			: "a" (effect) );
+//		__asm__ __volatile__ (								/* pass a 'this' pointer */
+//			"movl %0, (%%esp)\n\t"
+//			:
+//			: "a" (effect) );
+		void *stackPointer;
+		__asm__ __volatile__ (
+			"movl %%esp, %0\n\t"
+			: "=r"(stackPointer)
+			:);
+		*stackPointer = effect;
 #endif
     }
     param = opptr->function();								//call the function
@@ -7687,13 +7692,6 @@ void etgCreateEffects(Effect *effect, etgeffectstatic *stat, sdword number, sdwo
     smemsize arg[ETG_NumberParameters];
     va_list argList;
 
-    if (RGLtype == SWtype)
-    {
-        if (stat->softwareVersion != NULL)
-        {
-            stat = stat->softwareVersion;
-        }
-    }
     matGetVectFromMatrixCol1(up, effect->rotinfo.coordsys);
 
 #if ETG_VERBOSE_LEVEL >= 2
@@ -7724,7 +7722,7 @@ void etgCreateEffects(Effect *effect, etgeffectstatic *stat, sdword number, sdwo
         newEffect->cameraDistanceSquared = effect->cameraDistanceSquared;
         newEffect->timeElapsed = -part->waitspan;           //use delay from the particle
 
-        newEffect->posinfo.isMoving = FALSE;
+        SET_MOVING_IMMOBILE(newEffect->posinfo.isMoving);
         newEffect->posinfo.haventCalculatedDist = TRUE;
         newEffect->drag = ((pointSystem*)system)->drag;
         //compute new velocity vector
@@ -7823,13 +7821,6 @@ void *etgEffectCreate(etgeffectstatic *stat, void *owner, vector *pos, vector *v
     smemsize arg[ETG_NumberParameters];
     Effect *newEffect;
 
-    if (RGLtype == SWtype)
-    {
-        if (stat->softwareVersion != NULL)
-        {
-            stat = stat->softwareVersion;
-        }
-    }
     newEffect = memAlloc(stat->effectSize, "GE(GenEffect)", Pyrophoric);//allocate the new effect
 
     newEffect->objtype = OBJ_EffectType;                    //type of spaceobj
@@ -8033,13 +8024,6 @@ memsize etgSpawnNewEffect(Effect *effect, etgeffectstatic *stat, sdword nParams,
     memsize arg[ETG_NumberParameters];
 
 
-    if (RGLtype == SWtype)
-    {
-        if (stat->softwareVersion != NULL)
-        {
-            stat = stat->softwareVersion;
-        }
-    }
     if (etgFrequencyExceeded(stat))
     {
         return(0);
@@ -8103,7 +8087,7 @@ memsize etgSpawnNewEffect(Effect *effect, etgeffectstatic *stat, sdword nParams,
     {
         newEffect->rotinfo.coordsys = effect->rotinfo.coordsys;
     }
-    newEffect->posinfo.isMoving = FALSE;
+    SET_MOVING_IMMOBILE(newEffect->posinfo.isMoving);
     newEffect->posinfo.haventCalculatedDist = TRUE;
     newEffect->drag = effect->drag;
 //    newEffect->rotinfo.coordsys = coordSystem;

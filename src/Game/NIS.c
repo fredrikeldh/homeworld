@@ -25,7 +25,6 @@
 #include "FEFlow.h"
 #include "File.h"
 #include "FontReg.h"
-#include "glcaps.h"
 #include "glinc.h"
 #include "KAS.h"
 #include "Light.h"
@@ -97,11 +96,6 @@ void nisSoundEvent(nisplaying *NIS, nisevent *event);
 void nisSpeechEvent(nisplaying *NIS, nisevent *event);
 void nisFleetSpeechEvent(nisplaying *NIS, nisevent *event);
 void nisAnimaticSpeechEvent(nisplaying *NIS, nisevent *event);
-void nisDisableDefaultSpeech(nisplaying *NIS, nisevent *event);
-void nisEnableDefaultSpeech(nisplaying *NIS, nisevent *event);
-void nisCustomEffect(nisplaying *NIS, nisevent *event);
-void nisCustomGunEffect(nisplaying *NIS, nisevent *event);
-void nisGunShoot(nisplaying *NIS, nisevent *event);
 void nisRemainAtEnd(nisplaying *NIS, nisevent *event);
 void nisCameraFOV(nisplaying *NIS, nisevent *event);
 void nisCameraCut(nisplaying *NIS, nisevent *event);
@@ -996,11 +990,6 @@ nisplaying *nisStart(nisheader *header, vector *position, matrix *coordSystem)
     universe.dontUpdateRenderList = TRUE;                   //don't let automatic NIS updating go on
 #endif
 
-    if (RGL)
-    {
-        rglSuperClear();
-    }
-
     nisTextCardIndex = 0;
 
     //initialize the NIS camera
@@ -1216,7 +1205,7 @@ void nisStop(nisplaying *NIS)
                         vecZeroVector(ship->posinfo.force);
                         vecZeroVector(ship->rotinfo.torque);
                         vecZeroVector(ship->rotinfo.rotspeed);
-                        ship->posinfo.isMoving = FALSE;
+                        SET_MOVING_IMMOBILE(ship->posinfo.isMoving);
                     }
                     ship->health = ship->staticinfo->maxhealth; //make it 'vincible'
 
@@ -1231,7 +1220,7 @@ void nisStop(nisplaying *NIS)
 
                     ship->flags &= ~(SOF_DontApplyPhysics | SOF_NISShip);
                     vecZeroVector(ship->posinfo.velocity);
-                    ship->posinfo.isMoving = FALSE;
+                    SET_MOVING_IMMOBILE(ship->posinfo.isMoving);
                     ship = NULL;
                     break;
                 case NSR_Derelict:
@@ -1239,7 +1228,7 @@ void nisStop(nisplaying *NIS)
                     derelict->health = derelict->staticinfo->maxhealth;//make it 'vincible'
                     derelict->flags &= ~(SOF_DontApplyPhysics | SOF_NISShip);
                     vecZeroVector(derelict->posinfo.velocity);
-                    derelict->posinfo.isMoving = FALSE;
+                    SET_MOVING_IMMOBILE(derelict->posinfo.isMoving);
                     ship = NULL;
                     break;
                 case NSR_Effect:
@@ -1247,7 +1236,7 @@ void nisStop(nisplaying *NIS)
 
                     ship->flags &= ~(SOF_DontApplyPhysics | SOF_NISShip);
                     vecZeroVector(ship->posinfo.velocity);
-                    ship->posinfo.isMoving = FALSE;
+                    SET_MOVING_IMMOBILE(ship->posinfo.isMoving);
                     ship = NULL;
                     break;
 #if NIS_ERROR_CHECKING
@@ -1804,14 +1793,14 @@ real32 nisUpdate(nisplaying *NIS, real32 timeElapsed)
         }
         if (path->curve[0] == NULL)
         {                                                   //if NULL motion path or NULL object
-            path->spaceobj->posinfo.isMoving = FALSE;
+            SET_MOVING_IMMOBILE(path->spaceobj->posinfo.isMoving);
             continue;                                       //leave this object where it was
         }
         xyz.x = bsCurveUpdate(path->curve[0], timeElapsed); //update the first curve
         //this chunk of code checks if the NIS loops
         if (xyz.x == REALlyBig)                             //if curve ends
         {                                                   //(all curves should end at same time)
-            path->spaceobj->posinfo.isMoving = FALSE;
+            SET_MOVING_IMMOBILE(path->spaceobj->posinfo.isMoving);
             continue;                                       //don't update this one anymore
         }
         //get rest of motion path
@@ -1858,11 +1847,11 @@ real32 nisUpdate(nisplaying *NIS, real32 timeElapsed)
             {
                 vecCapVector(&tempVect, ((Ship *)path->spaceobj)->staticinfo->staticheader.maxvelocity);
             }
-            path->spaceobj->posinfo.isMoving = TRUE;
+            SET_MOVING_LINEARLY(path->spaceobj->posinfo.isMoving);
         }
         else
         {
-            path->spaceobj->posinfo.isMoving = FALSE;
+            SET_MOVING_IMMOBILE(path->spaceobj->posinfo.isMoving);
         }
         path->spaceobj->posinfo.velocity = tempVect;
         if (path->spaceobj->flags & SOF_Rotatable)

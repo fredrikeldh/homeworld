@@ -119,8 +119,6 @@ bool univSpaceObjInRenderList(SpaceObj *spaceobj);
 #define univRemoveObjFromMinorRenderList univRemoveObjFromRenderList
 #define univSpaceObjInMinorRenderList univSpaceObjInRenderList
 
-bool univResourceMovingTooFast(Resource *resource);
-
 real32 univGetChecksum(sdword *numShipsInChecksum);
 udword univCalcShipChecksum();
 
@@ -135,8 +133,6 @@ Ship *ShipIDtoShip(ShipID shipID,bool considerInsideShips);
 ResourcePtr ResourceIDtoResourcePtr(ResourceID resourceID);
 MissilePtr MissileIDtoMissilePtr(MissileID missileID);
 DerelictPtr DerelictIDToDerelictPtr(DerelictID derelictID);
-
-void univSortObjects(void);
 
 void univInitSpaceObjPosRot(SpaceObj *obj,vector *position,bool randomOrientation);
 void univUpdateObjRotInfo(SpaceObjRot *robj);
@@ -163,8 +159,6 @@ void univBulletCollidedWithTarget(SpaceObjRotImpTarg *target,StaticHeader *targe
 void univMissileCollidedWithTarget(SpaceObjRotImpTarg *target,StaticHeader *targetstaticheader,Missile *missile,real32 collideLineDist,sdword collSide);
 
 SelectCommand *getEnemiesWithinProximity(Ship *thisship,real32 retaliateZone);
-
-void univDeleteBullet(Bullet *bullet);
 
 #define PLAYERKILLED_DROPPEDOUT         -1
 #define PLAYERKILLED_STANDARDDEATH      0

@@ -18,7 +18,6 @@
 #include "FEReg.h"
 #include "font.h"
 #include "FontReg.h"
-#include "glcaps.h"
 #include "glinc.h"
 #include "Globals.h"
 #include "InfoOverlay.h"
@@ -354,17 +353,6 @@ void tmDirtyTechInfo(void)
         tmTechListRegion->status |= RSF_DrawThisFrame;
     }
 }
-
-
-void tmCloseIfOpen(void)
-{
-    if (tmBaseRegion != NULL)
-    {
-        tmLeave(NULL,NULL);
-    }
-}
-
-
 
 /*=============================================================================
     Functions:
@@ -949,11 +937,6 @@ void tmTechInfoDraw(featom *atom, regionhandle region)
     }
 
     fontMakeCurrent(currentFont);
-}
-
-bool tmCanBuildTechType(void)
-{
-    return TRUE;
 }
 
 void tmReset(void)

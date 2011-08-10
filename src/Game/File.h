@@ -106,10 +106,10 @@ extern char filePathTempBuffer    [];
 char *filePathPrepend(char *fileName, udword flags);
 void fileNameReplaceSlashesInPlace(char *fileName);
 
-void fileCDROMPathSet(char *path);
+bool fileCDROMPathSet(char *path);
 void fileHomeworldDataPathSet(char *path);
-void fileOverrideBigPathSet(char *path);
-void fileUserSettingsPathSet(char *path);
+bool fileOverrideBigPathSet(char *path);
+bool fileUserSettingsPathSet(char *path);
 
 
 //load files directly into memory
@@ -141,9 +141,6 @@ bool8 fileMakeDestinationDirectory(const char *fileName);
 bool fileExistsInBigFile(char *fileName);
 bool fileExists(char *fileName, udword flags);
 sdword fileSizeGet(char *fileName, udword flags);
-sdword fileSizeRemaining(filehandle handle);
-sdword fileLocation(filehandle handle);
-sdword fileEndoOfFile(filehandle handle);
 
 void logfileClear(char *logfile);
 void logfileLog(char *logfile,char *str);

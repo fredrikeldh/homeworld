@@ -338,7 +338,7 @@ void AddRandomVelocityTowards(SpaceObj *obj,vector *from,vector *towards,real32 
     vecMultiplyByScalar(diff,avgVel);
 
     obj->posinfo.velocity = diff;
-    obj->posinfo.isMoving = TRUE;
+    SET_MOVING_LINEARLY(obj->posinfo.isMoving);
 }
 
 void AddRandomVelocityDirection(SpaceObj *obj,vector *direction,real32 avgVel,real32 deviation)
@@ -356,7 +356,7 @@ void AddRandomVelocityDirection(SpaceObj *obj,vector *direction,real32 avgVel,re
     vecMultiplyByScalar(*direction,avgVel);
 
     obj->posinfo.velocity = *direction;
-    obj->posinfo.isMoving = TRUE;
+    SET_MOVING_LINEARLY(obj->posinfo.isMoving);
 }
 
 bool AddResourceToVolumeAtPosition(struct ResourceVolume *volume,bool regrowing,vector *position)
@@ -955,7 +955,6 @@ static void scriptSetShipsCB(char *directory,char *field,void *dataToFillIn)
     real32 rot;
     char racestr[50];
     char shiptypestr[50];
-//    char formationstr[50];
     char miscstr[256];
     char *miscPointer;
     char label[KAS_TEAM_NAME_MAX_LENGTH+1];
@@ -978,7 +977,7 @@ static void scriptSetShipsCB(char *directory,char *field,void *dataToFillIn)
 
     udword sizeofselect;
     SelectCommand *selectcom;
-    TypeOfFormation formation = 0xffffffff;
+    TypeOfFormation formation = NO_FORMATION;
 
     matrix rotaboutz;
     vector rotatedposition;
@@ -1095,12 +1094,7 @@ static void scriptSetShipsCB(char *directory,char *field,void *dataToFillIn)
             shiptype = GetAppropriateShipTypeForRace(shiptype,shiprace);
         }
     }
-/*
-    if (strcmp(formationstr,"PARADE_FORMATION") == 0)
-    {
-        paradeFormation = TRUE;
-    }
-*/
+
     //parse everything else to the end of the line including formations
     miscPointer = strtok(miscstr, llMiscDelimiters);
     if (miscPointer != NULL)
@@ -2082,7 +2076,7 @@ static void scriptSetShipsToBeNeeded(char *directory,char *field,void *dataToFil
     char *miscPointer;
     udword numShips, nScanned;
     sdword colorScheme = -1;
-    bool8 teamCol[TE_NumberPlayers];
+    bool8 teamCol[MAX_MULTIPLAYER_PLAYERS];
 
     if (field[0] == '?') field++;
 

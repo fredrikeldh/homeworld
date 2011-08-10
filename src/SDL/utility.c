@@ -32,7 +32,6 @@
 #include "ConsMgr.h"
 #include "Damage.h"
 #include "Debug.h"
-#include "debugwnd.h"
 #include "Demo.h"
 #include "ETG.h"
 #include "FastMath.h"
@@ -42,7 +41,6 @@
 #include "FontReg.h"
 #include "GameChat.h"
 #include "GamePick.h"
-#include "glcaps.h"
 #include "glinc.h"
 #include "Globals.h"
 #include "Gun.h"
@@ -141,9 +139,9 @@
     #include <strings.h>
 #endif
 
-
-extern char mainDeviceToSelect[];
-extern char mainGLToSelect[];
+#ifdef _WIN32
+    #include "debugwnd.h"
+#endif
 
 // #define REG_MAGIC_STR  "D657E436967616D4"   // used for CD-checking code
 
@@ -480,7 +478,7 @@ fecallback utyCallbacks[] =
     {mrClawFormation,           "CSM_ClawFormation"},
     {mrWallFormation,           "CSM_WallFormation"},
     {mrSphereFormation,         "CSM_SphereFormation"},
-    {mrPicketFormation,         "CSM_PicketFormation"},
+    {mrCustomFormation,         "CSM_PicketFormation"},
     {mrHarvestResources,        "CSM_Harvest"},
     {mrBuildShips,              "CSM_Build"},
     {mrTradeStuff,              "CSM_Trade"},
@@ -669,8 +667,8 @@ scriptEntry utyOptionsList[] =
     {"deviceCaps",      scriptSetUdwordCB, &loadedDevcaps},
     {"deviceCaps2",     scriptSetUdwordCB, &loadedDevcaps2},
     {"deviceIndex",     scriptSetUdwordCB, &opDeviceIndex},
-    {"deviceToSelect",  scriptSetStringCB, &mainDeviceToSelect},
-    {"glToSelect",      scriptSetStringCB, &mainGLToSelect},
+//    {"deviceToSelect",  scriptSetStringCB, &mainDeviceToSelect},
+//    {"glToSelect",      scriptSetStringCB, &mainGLToSelect},
 
 
   {"\n[graphics options]\n", scriptSetStringCB, &filecfgblankspace},
@@ -796,9 +794,12 @@ scriptEntry utyOptionsList[] =
   {"\n[New HWSDL Options]\n", scriptSetStringCB, &filecfgblankspace},
 
 
-    {"ShipRecoil",                     scriptSetUdwordCB, &opShipRecoil},
+    {"CollectResourcesAtEndOfMission", scriptSetBool,     &spCollectResourcesAtEndOfMission},
     {"PauseOrders",                    scriptSetUdwordCB, &opPauseOrders},
     {"PlayIntros",                     scriptSetUdwordCB, &aviPlayIntros},
+    {"ShipRecoil",                     scriptSetUdwordCB, &opShipRecoil},
+    {"ShipsAlwaysUseOwnerColors",      scriptSetBool,     &utyShipsAlwaysUseOwnerColors},
+    {"TimeCompressionFactor",          scriptSetUbyteCB,  &turboTimeCompressionFactor},
 
     END_SCRIPT_ENTRY
 };
@@ -864,7 +865,7 @@ void versionNumDraw(featom *atom, regionhandle region)
 
     fontPrint(pos.x0, pos.y0, versionColor, versionstr);
 
-#ifdef HW_BUILD_FOR_DEBUGGING
+#if 0
     pos.y0 += fontheight;
     fontPrint(pos.x0, pos.y0, versionColor, (char*)GLC_VENDOR);
     pos.y0 += fontheight;
@@ -956,6 +957,10 @@ void utyOptionsFileWrite(void)
             fprintf(f, "%s    %s\n", utyOptionsList[index].name,
                 (char*)utyOptionsList[index].dataPtr);
         }
+        else if (utyOptionsList[index].setVarCB == scriptSetBool) {
+            fprintf(f, "%s    %s\n", utyOptionsList[index].name,
+                *((bool *)utyOptionsList[index].dataPtr) ? "TRUE" : "FALSE");
+        }
     }
     
     fclose(f);
@@ -971,6 +976,7 @@ void utyOptionsFileWrite(void)
 ----------------------------------------------------------------------------*/
 color utyBaseColor;
 color utyStripeColor;
+bool  utyShipsAlwaysUseOwnerColors = FALSE;
 //bool utyColorsPicked = FALSE;
 
 void utyPickColors(char *name, featom *atom)
@@ -1164,18 +1170,6 @@ void utyStippleToggle(char* name, featom* atom)
         else
             enableStipple = FALSE;
         feToggleButtonSet("VO_BitmapStipple",enableStipple);
-
-        if (RGL)
-        {
-            if (enableStipple)
-            {
-                glEnable(GL_POLYGON_STIPPLE);
-            }
-            else
-            {
-                glDisable(GL_POLYGON_STIPPLE);
-            }
-        }
     }
 
     utySetCustomEffects();
@@ -1193,18 +1187,6 @@ void utyStippleBitmapToggle(char* name, featom* atom)
         else
             enableStipple = FALSE;
         feToggleButtonSet("VO_Stipple",enableStipple);
-
-        if (RGL)
-        {
-            if (enableStipple)
-            {
-                glEnable(GL_POLYGON_STIPPLE);
-            }
-            else
-            {
-                glDisable(GL_POLYGON_STIPPLE);
-            }
-        }
     }
 }
 void utyTrailsToggle(char* name, featom* atom)
@@ -1482,8 +1464,6 @@ void utyFatalErrorWaitLoop(int exitCode)
 {
     SDL_Event e;
 
-    //OutputDebugString(dbgFatalErrorString);                 //print error string to the debugger
-
     while (SDL_PollEvent(&e)) { }                           //remove all messages from Queue
 
     e.user.type = SDL_USEREVENT;                            //tell app to exit
@@ -1492,7 +1472,6 @@ void utyFatalErrorWaitLoop(int exitCode)
     e.user.data2 = 0;
     SDL_PushEvent(&e);
 
-    fprintf(stderr, "%s\n", dbgFatalErrorString);
     //e.quit.type = SDL_QUIT;
     //SDL_PushMessage(&e);                                    //???
 
@@ -1501,7 +1480,7 @@ void utyFatalErrorWaitLoop(int exitCode)
 
 /*-----------------------------------------------------------------------------
     Name        : utyNonFatalErrorWaitLoop
-    Description : Handles messages in case of fatal errors.  Also sends message
+    Description : Handles messages in case of non-fatal errors.  Also sends message
                     to create a message box.
     Outputs     : ..
     Return      : TRUE if the CANCEL button (debug) was selected
@@ -1509,9 +1488,6 @@ void utyFatalErrorWaitLoop(int exitCode)
 sdword utyNonFatalErrorWaitLoop(void)
 {
     //int returnValue;
-
-    //OutputDebugString(dbgFatalErrorString);                 //print error string to the debugger
-    fprintf(stderr, "%s\n", dbgFatalErrorString);
 
 #ifdef HW_BUILD_FOR_DEBUGGING
     return TRUE;
@@ -3369,48 +3345,6 @@ void scriptSetHomeworldCRC(char *directory,char *field,void *dataToFillIn)
     onlygetfirstcrc = TRUE;
 }
 
-char *strBetweenWords(char *buffer,char *word1,char *word2)
-{
-    char *word1loc;
-    char *word2loc;
-
-    if ((!buffer) || (buffer[0] == 0)) return NULL;
-
-    word1loc = strstr(buffer,word1);
-    if (!word1loc) return NULL;
-
-    for(;;)
-    {
-        if (*word1loc == 0)
-            return NULL;
-
-        if (*word1loc == ' ')
-            break;
-
-        word1loc++;
-    }
-
-    word1loc++;
-    if (*word1loc == 0)
-        return NULL;
-
-    word2loc = strstr(buffer,word2);
-    if (!word2loc)
-    {
-        return NULL;
-    }
-
-    word2loc--;
-
-    if (word2loc < word1loc)
-    {
-        return NULL;
-    }
-
-    *word2loc = 0;
-    return word1loc;
-}
-
 /*-----------------------------------------------------------------------------
     Name        : utyGetFirstCDPath
     Description : Gets path to first CD-ROM drive containing the HW CD ("D:\",
@@ -3561,6 +3495,9 @@ void utyGrowthHeapFree(void *heap)
     BOOL result;
     result = VirtualFree(heap, 0, MEM_RELEASE);
     dbgAssertOrIgnore(result);
+#elif _MACOSX
+	//not sure if this is an equivalent statement, but it fixes a crash on exit
+	free(heap);
 #else
     int result;
     result = munmap(heap, 0);
@@ -4094,7 +4031,9 @@ char *utyGameSystemsInit(void)
 #endif
 
 #ifndef _MACOSX_FIX_ANIM
+#if 0
 DONE_INTROS:
+#endif
 #endif
 
     utilPlayingIntro = FALSE;
@@ -4289,9 +4228,7 @@ DONE_INTROS:
 
     opUpdateSettings();
 
-#ifndef _MACOSX_FIX_SOUND
     soundEventPlayMusic(SOUND_FRONTEND_TRACK);
-#endif
 
 //    if (!nisEnabled)
 //    {
@@ -4647,10 +4584,6 @@ char *utyGameSystemsShutdown(void)
 
     if (utyTest(SSA_Render))
     {
-        if (!RGL)
-        {
-            /*hwDeleteWindow();*/
-        }
         rndClose();
         //the GL has now SHUTDOWN
         utyClear(SSA_Render);
@@ -4732,6 +4665,9 @@ char *utyGameSystemsShutdown(void)
         bool result;
         result = VirtualFree(utyMemoryHeap, 0, MEM_RELEASE);
         dbgAssertOrIgnore(result);
+#elif _MACOSX
+		//not sure if this is an equivalent statement, but it fixes a crash on exit
+		free(utyMemoryHeap);
 #else
         int result;
         result = munmap(utyMemoryHeap, 0);

@@ -21,7 +21,6 @@
 #define MESH_MATERIAL_STATS     1               //display material statistics
 #define MESH_HACK_TEAM_COLORS   0               //hack team colors
 #define MESH_TEAM_COLORS        0               //enable auto-team coloring of certain surfaces
-#define MESH_SPECULAR           0               //enable specification of specular material attributes
 #define MESH_PRE_CALLBACK       0
 #define MESH_SURFACE_NAME_DEBUG 0
 
@@ -115,7 +114,7 @@ typedef struct tagGeoFileHeader
     char    identifier[MESH_FileIDLength];  // File identifier.
     udword  version;                        // File version.
     char   *pName;                          // Offset to a file name.
-    udword  fileSize;                       // File size (in bytes), not counting this header.
+    udword  __obsolete;                     // was: fileSize => File size (in bytes), not counting this header.
     udword  localSize;                      // Object size (in bytes).
     udword  nPublicMaterials;               // Number of public materials.
     udword  nLocalMaterials;                // Number of local materials.
@@ -298,7 +297,6 @@ void meshMorphedObjectRenderTex(polygonobject* object1, polygonobject* object2,
                                 polyentry *uvPolys, materialentry* material,
                                 real32 frac, sdword iColorScheme);
 void meshRenderShipHierarchy(shipbindings *bindings, sdword currentLOD, meshdata *mesh, sdword iColorScheme);
-void meshObjectRenderRGL(polygonobject* object, materialentry* materials, sdword iColorScheme);
 void meshObjectRender(polygonobject *object, materialentry *materials, sdword iColorScheme);
 void meshObjectRenderTex(polygonobject *object, materialentry *material);
 

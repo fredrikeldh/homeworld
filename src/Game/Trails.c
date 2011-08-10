@@ -19,7 +19,6 @@
 #include "Debug.h"
 #include "devstats.h"
 #include "FastMath.h"
-#include "glcaps.h"
 #include "glinc.h"
 #include "main.h"
 #include "Memory.h"
@@ -202,7 +201,6 @@ meshdata* trailMeshes[TM_NUMDEFS];
 
 sdword trailInsertCount = 0;
 
-bool8 _fastBlends;
 bool8 _afterburning;
 
 static void trailSegmentsRead(char *directory,char *field,void *dataToFillIn);
@@ -851,44 +849,24 @@ void trailDrawCapitalGlow(shiptrail* trail, sdword LOD)
     rndTextureEnable(FALSE);
     glEnable(GL_CULL_FACE);
     glDepthMask(GL_FALSE);
-    if (!usingShader && RGL)
-    {
-        rglFeature(RGL_SPECULAR3_RENDER);
-    }
     glEnable(GL_BLEND);
     rndAdditiveBlends(TRUE);
 
     if (trail->style == 4 || trail->style == 5)
     {
-        if (usingShader)
-        {
-            meshSetSpecular(2,
-                            (ubyte)TRAIL_GLOW_1_RED,
-                            (ubyte)TRAIL_GLOW_1_GREEN,
-                            (ubyte)TRAIL_GLOW_1_BLUE,
-                            160);
-        }
-        else
-        {
-            glColor4ub((GLubyte)TRAIL_GLOW_1_RED, (GLubyte)TRAIL_GLOW_1_GREEN,
-                       (GLubyte)TRAIL_GLOW_1_BLUE, 160);
-        }
+        meshSetSpecular(2,
+                        (ubyte)TRAIL_GLOW_1_RED,
+                        (ubyte)TRAIL_GLOW_1_GREEN,
+                        (ubyte)TRAIL_GLOW_1_BLUE,
+                        160);
     }
     else
     {
-        if (usingShader)
-        {
-            meshSetSpecular(2,
-                            (ubyte)TRAIL_GLOW_2_RED,
-                            (ubyte)TRAIL_GLOW_2_GREEN,
-                            (ubyte)TRAIL_GLOW_2_BLUE,
-                            160);
-        }
-        else
-        {
-            glColor4ub((GLubyte)TRAIL_GLOW_2_RED, (GLubyte)TRAIL_GLOW_2_GREEN,
-                       (GLubyte)TRAIL_GLOW_2_BLUE, 160);
-        }
+        meshSetSpecular(2,
+                        (ubyte)TRAIL_GLOW_2_RED,
+                        (ubyte)TRAIL_GLOW_2_GREEN,
+                        (ubyte)TRAIL_GLOW_2_BLUE,
+                        160);
     }
 
     glPushMatrix();
@@ -968,14 +946,7 @@ void trailDrawCapitalGlow(shiptrail* trail, sdword LOD)
 
     g_NoMatSwitch = TRUE;
     glEnable(GL_NORMALIZE);
-    if (usingShader)
-    {
-        shSetExponent(2, trail->exponent);
-    }
-    else if (RGL)
-    {
-        rglSpecExp(2, trail->exponent);
-    }
+    shSetExponent(2, trail->exponent);
 
     if (bitTest(gDevcaps2, DEVSTAT2_NO_IALPHA))
     {
@@ -1088,18 +1059,12 @@ void trailDrawCapitalGlow(shiptrail* trail, sdword LOD)
     glDisable(GL_NORMALIZE);
     g_NoMatSwitch = FALSE;
 
-    if (!usingShader && RGL)
-    {
-        rglFeature(RGL_NORMAL_RENDER);
-    }
-
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
     rndAdditiveBlends(FALSE);
     glPopMatrix();
 
-    if (usingShader)
-        meshSetSpecular(-1, 0, 0, 0, 0);
+    meshSetSpecular(-1, 0, 0, 0, 0);
 }
 
 /*-----------------------------------------------------------------------------
@@ -1615,15 +1580,11 @@ void trailLineBillboard(
 
     //render
 
-    if (_fastBlends)
-    {
-        glEnable(GL_BLEND);
-    }
-
+    glEnable(GL_BLEND);
     glDisable(GL_CULL_FACE);
     glDepthMask(GL_FALSE);
 
-    alpha = usingShader ? (ubyte)(127.0f * meshFadeAlpha) : 127;
+    alpha = (ubyte)(127.0f * meshFadeAlpha);
 
     glBegin(GL_QUADS);
     if (i == 0)
@@ -1644,10 +1605,7 @@ void trailLineBillboard(
     glEnd();
 
     glEnable(GL_CULL_FACE);
-    if (_fastBlends)
-    {
-        glDisable(GL_BLEND);
-    }
+    glDisable(GL_BLEND);
     glDepthMask(GL_TRUE);
 
     VECCOPY(&lastTo, &to);
@@ -1718,20 +1676,8 @@ void trailLineSequence(sdword LOD, sdword n, vector vectors[], color* segmentArr
     color c;
     ubyte alpha;
 
-    if (_fastBlends)
-    {
-        alpha = 163;
-        glEnable(GL_BLEND);
-    }
-    else
-    {
-        alpha = 255;
-    }
-
-    if (usingShader)
-    {
-        alpha = (ubyte)((real32)alpha * meshFadeAlpha);
-    }
+    alpha = (ubyte)((real32)alpha * meshFadeAlpha);
+    glEnable(GL_BLEND);
 
     if (LOD == 3)
     {
@@ -1750,10 +1696,7 @@ void trailLineSequence(sdword LOD, sdword n, vector vectors[], color* segmentArr
         glLineWidth(1.0f);
     }
 
-    if (_fastBlends)
-    {
-        glDisable(GL_BLEND);
-    }
+    glDisable(GL_BLEND);
 }
 
 /*-----------------------------------------------------------------------------
@@ -1769,10 +1712,7 @@ void trailLine(sdword LOD, sdword i, vector vectors[], color c,
     if (bitTest(gDevcaps2, DEVSTAT2_NO_IALPHA))
     {
         trailLineBillboard(LOD, i, vectors + i, vectors + i + 1, c);
-        if (_fastBlends)
-        {
-            trailLineFuzzySheath(LOD, i, vectors + i, vectors + i + 1, c, horiz);
-        }
+        trailLineFuzzySheath(LOD, i, vectors + i, vectors + i + 1, c, horiz);
         return;
     }
     switch (LOD)
@@ -1780,20 +1720,14 @@ void trailLine(sdword LOD, sdword i, vector vectors[], color c,
     case 0:
     case 1:
         trailLineBillboard(LOD, i, vectors + i, vectors + i + 1, c);
-        if (_fastBlends)
+        if (activeTrail->style == 1)
         {
-            if (activeTrail->style == 1)
-            {
-                trailLinePyramid(LOD, i, vectors + i, vectors + i + 1, c, horiz, vert, wides[i]);
-            }
+            trailLinePyramid(LOD, i, vectors + i, vectors + i + 1, c, horiz, vert, wides[i]);
         }
         break;
     case 2:
         trailLineBillboard(LOD, i, vectors + i, vectors + i + 1, c);
-        if (_fastBlends)
-        {
-            trailLineFuzzySheath(LOD, i, vectors + i, vectors + i + 1, c, horiz);
-        }
+        trailLineFuzzySheath(LOD, i, vectors + i, vectors + i + 1, c, horiz);
         break;
     }
 }
@@ -1811,28 +1745,16 @@ void trailLine(sdword LOD, sdword i, vector vectors[], color c,
 ----------------------------------------------------------------------------*/
 void mistrailDrawLine(vector* a, vector* b, sdword segment, sdword nSegments, color c0, color c1)
 {
-    if (_fastBlends)
-    {
-        sdword alpha;
+    sdword alpha;
 
-        alpha = (sdword)(255.0f * (1.0f - ((real32)segment / (real32)nSegments)));
+    alpha = (sdword)(255.0f * (1.0f - ((real32)segment / (real32)nSegments)));
 
-        glBegin(GL_LINES);
-        glColor4ub(colRed(c0), colGreen(c0), colBlue(c0), (GLubyte)alpha);
-        glVertex3fv((GLfloat*)a);
-        glColor4ub(colRed(c1), colGreen(c1), colBlue(c1), (GLubyte)alpha);
-        glVertex3fv((GLfloat*)b);
-        glEnd();
-    }
-    else
-    {
-        glBegin(GL_LINES);
-        glColor3ub(colRed(c0), colGreen(c0), colBlue(c0));
-        glVertex3fv((GLfloat*)a);
-        glColor3ub(colRed(c1), colGreen(c1), colBlue(c1));
-        glVertex3fv((GLfloat*)b);
-        glEnd();
-    }
+    glBegin(GL_LINES);
+    glColor4ub(colRed(c0), colGreen(c0), colBlue(c0), (GLubyte)alpha);
+    glVertex3fv((GLfloat*)a);
+    glColor4ub(colRed(c1), colGreen(c1), colBlue(c1), (GLubyte)alpha);
+    glVertex3fv((GLfloat*)b);
+    glEnd();
 }
 
 /*-----------------------------------------------------------------------------
@@ -1857,8 +1779,6 @@ void mistrailDraw(vector* current, missiletrail* trail, sdword LOD, sdword teamI
 
     dbgAssertOrIgnore(teamIndex >= 0 && teamIndex < MAX_MULTIPLAYER_PLAYERS);
 
-    _fastBlends = glCapFastFeature(GL_BLEND);
-
     rndLightingEnable(FALSE);
     rndTextureEnable(FALSE);
     glShadeModel(GL_SMOOTH);
@@ -1867,11 +1787,8 @@ void mistrailDraw(vector* current, missiletrail* trail, sdword LOD, sdword teamI
     lastVector = current;
     segmentArray = trail->staticInfo->segmentColor[teamIndex];
 
-    if (_fastBlends)
-    {
-        rndAdditiveBlends(TRUE);
-        glEnable(GL_BLEND);
-    }
+    rndAdditiveBlends(TRUE);
+    glEnable(GL_BLEND);
 
     for (count = 1; count < trail->nLength; count++)
     {
@@ -1894,11 +1811,8 @@ void mistrailDraw(vector* current, missiletrail* trail, sdword LOD, sdword teamI
     }
 
     rndLightingEnable(TRUE);
-    if (_fastBlends)
-    {
-        glDisable(GL_BLEND);
-        rndAdditiveBlends(FALSE);
-    }
+    glDisable(GL_BLEND);
+    rndAdditiveBlends(FALSE);
 }
 
 /*-----------------------------------------------------------------------------
@@ -1934,7 +1848,7 @@ void trailDraw(vector *current, shiptrail *trail, sdword LOD, sdword teamIndex)
         return;
     }
 
-    if (((ship->posinfo.isMoving & ISMOVING_MOVING) == 0) || (ship->flags & (SOF_DontDrawTrails|SOF_Clamped|SOF_Disabled)))  // clamped objs dont draw trails either
+    if (!IS_MOVING_LINEARLY(ship->posinfo.isMoving) || (ship->flags & (SOF_DontDrawTrails|SOF_Clamped|SOF_Disabled)))  // clamped objs dont draw trails either
     {
         dontdrawtrail = TRUE;
     }
@@ -2010,8 +1924,6 @@ void trailDraw(vector *current, shiptrail *trail, sdword LOD, sdword teamIndex)
         trailZeroLength(trail);
         return;
     }
-
-    _fastBlends = glCapFastFeature(GL_BLEND);
 
     trailGetNozzleOffset(lastSegment.position, trail);
     trailGetCoordsys(lastSegment.rotation, trail);

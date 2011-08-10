@@ -99,9 +99,6 @@ scriptStructEntry SalCapCorvetteStaticTable[] =
 };
 
 
-udword salvageNumNeeded(Ship *ship, SpaceObjRotImpTarg *target);
-void salvageSetDockVector(Ship *ship, Ship *dockwith,vector *trackHeading, vector *trackUp,vector *coneheadingInWorldCoordSys);
-bool salvageTargetTrackVector(Ship *ship, vector *trackvector);
 bool handOffTargetToDockWith(Ship *ship);
 void SalCapRemoveShipReferences(Ship *ship, Ship *shiptoremove);
 
@@ -117,7 +114,7 @@ void SalCapCorvetteStaticInit(char *directory,char *filename,struct ShipStaticIn
     {
         corvstat = (statinfo->shiprace == R1) ? &SalCapCorvetteStaticRace1 : &SalCapCorvetteStaticRace2;
     }
-    memset(corvstat,sizeof(*corvstat),0);
+    memset(corvstat, 0, sizeof(SalCapCorvetteStatics));
     scriptSetStruct(directory,filename,AttackSideStepParametersScriptTable,(ubyte *)&corvstat->sidestepParameters);
     scriptSetStruct(directory,filename,SalCapCorvetteStaticTable,(ubyte *)corvstat);
     statinfo->custstatinfo = corvstat;
@@ -1614,45 +1611,6 @@ sdword salCapFlyToDockingPoint3(Ship *dockwith,SpaceObjRotImpTargGuidanceShipDer
     return FALSE;
 }
 
-void salCapPointAtTarget(Ship *ship,SpaceObjRotImpTargGuidanceShipDerelict *target)
-{
-    SalCapCorvetteSpec *spec = (SalCapCorvetteSpec *)ship->ShipSpecifics;
-    vector conepositionInWorldCoordSys,heading;
-
-    SalvageStaticPoint *salvagestaticpoint;
-    if(target->salvageInfo != NULL)
-    {
-        salvagestaticpoint = target->salvageInfo->salvagePoints[spec->salvageIndex].salvageStaticPoint;
-        matMultiplyMatByVec(&conepositionInWorldCoordSys,&target->rotinfo.coordsys,&salvagestaticpoint->position);
-        vecAddTo(conepositionInWorldCoordSys,target->posinfo.position);
-
-        vecSub(heading,conepositionInWorldCoordSys,ship->posinfo.position);
-        vecNormalize(&heading);
-    }
-    else
-    {
-        conepositionInWorldCoordSys = target->posinfo.position;
-        vecSub(heading,conepositionInWorldCoordSys,ship->posinfo.position);
-        vecNormalize(&heading);
-    }
-    aitrackHeading(ship,&heading,0.999f);
-}
-
-void removeTargetFromSelection(SpaceObjRotImpTarg *target,SelectAnyCommand *targets)
-{
-    sdword i=0;
-    for(i=0;i<targets->numTargets;)
-    {
-        if(target == targets->TargetPtr[i])
-        {
-            targets->numTargets--;
-            targets->TargetPtr[i] = targets->TargetPtr[targets->numTargets];
-            continue;
-        }
-        i++;
-    }
-}
-
 /*-----------------------------------------------------------------------------
     Name        :   SalCapCorvetteSpecialTarget
     Description :   Performs salvageing!  Hopefully
@@ -1807,7 +1765,7 @@ reachedit:
                 //so force to zero...these functions can be called twice..unfortunatly
                 spec->target->salvageNumTagged[ship->playerowner->playerIndex] = 0;
             }
-            removeTargetFromSelection((SpaceObjRotImpTarg *)spec->target,targets);
+            clRemoveTargetFromSelection(targets, (SpaceObjRotImpTarg *)spec->target);
             CleanSalCapSpec(ship);
             return FALSE;
         }
@@ -1843,7 +1801,7 @@ reachedit:
                 //so force to zero...these functions can be called twice..unfortunatly
                 spec->target->salvageNumTagged[ship->playerowner->playerIndex] = 0;
             }
-            removeTargetFromSelection((SpaceObjRotImpTarg *)spec->target,targets);
+            clRemoveTargetFromSelection(targets, (SpaceObjRotImpTarg *)spec->target);
             CleanSalCapSpec(ship);
             return FALSE;
         }
@@ -1871,7 +1829,7 @@ reachedit:
                     //so force to zero...these functions can be called twice..unfortunatly
                     spec->target->salvageNumTagged[ship->playerowner->playerIndex] = 0;
             }
-            removeTargetFromSelection((SpaceObjRotImpTarg *)spec->target,targets);
+            clRemoveTargetFromSelection(targets, (SpaceObjRotImpTarg *)spec->target);
             CleanSalCapSpec(ship);
             return FALSE;
         }
@@ -1919,7 +1877,7 @@ reachedit:
                     //so force to zero...these functions can be called twice..unfortunatly
                     spec->target->salvageNumTagged[ship->playerowner->playerIndex] = 0;
             }
-            removeTargetFromSelection((SpaceObjRotImpTarg *)spec->target,targets);
+            clRemoveTargetFromSelection(targets, (SpaceObjRotImpTarg *)spec->target);
             CleanSalCapSpec(ship);
             return FALSE;
         }
@@ -1932,7 +1890,7 @@ reachedit:
                     //so force to zero...these functions can be called twice..unfortunatly
                     spec->target->salvageNumTagged[ship->playerowner->playerIndex] = 0;
             }
-            removeTargetFromSelection((SpaceObjRotImpTarg *)spec->target,targets);
+            clRemoveTargetFromSelection(targets, (SpaceObjRotImpTarg *)spec->target);
             CleanSalCapSpec(ship);
             return FALSE;
         }
@@ -1946,7 +1904,7 @@ reachedit:
                     //so force to zero...these functions can be called twice..unfortunatly
                     spec->target->salvageNumTagged[ship->playerowner->playerIndex] = 0;
             }
-            removeTargetFromSelection((SpaceObjRotImpTarg *)spec->target,targets);
+            clRemoveTargetFromSelection(targets, (SpaceObjRotImpTarg *)spec->target);
             CleanSalCapSpec(ship);
             return FALSE;
         }
@@ -1962,7 +1920,7 @@ reachedit:
                     //so force to zero...these functions can be called twice..unfortunatly
                     spec->target->salvageNumTagged[ship->playerowner->playerIndex] = 0;
             }
-            removeTargetFromSelection((SpaceObjRotImpTarg *)spec->target,targets);
+            clRemoveTargetFromSelection(targets, (SpaceObjRotImpTarg *)spec->target);
             CleanSalCapSpec(ship);
             return FALSE;
         }
@@ -1989,7 +1947,7 @@ reachedit:
                     //so force to zero...these functions can be called twice..unfortunatly
                     spec->target->salvageNumTagged[ship->playerowner->playerIndex] = 0;
             }
-            removeTargetFromSelection((SpaceObjRotImpTarg *)spec->target,targets);
+            clRemoveTargetFromSelection(targets, (SpaceObjRotImpTarg *)spec->target);
             CleanSalCapSpec(ship);
             return FALSE;
         }
@@ -2781,11 +2739,6 @@ void SalCapCorvetteHouseKeep(Ship *ship)
 */
 }
 
-//Don't forget to clear tractorbeaminfo in ship and derelict structures!
-void SalCapClose(Ship *ship)
-{
-}
-
 void salCapClearTechBool()
 {
     universe.DerelictTech = FALSE;
@@ -3139,10 +3092,6 @@ void SalCapDropTarget(Ship *ship)
     #pragma warning( 4 : 4047)      // turns off "different levels of indirection warning"
 #endif
 
-void SalCapCorvette_RegisterExtraSpaceObjs(Ship *ship)
-{
-}
-
 void SalCapCorvette_PreFix(Ship *ship)
 {
     SalCapCorvetteSpec *spec = (SalCapCorvetteSpec *)ship->ShipSpecifics;
@@ -3172,7 +3121,7 @@ CustShipHeader SalCapCorvetteHeader =
     SalCapCorvetteStaticInit,
     NULL,
     SalCapCorvetteInit,
-    SalCapClose,
+    NULL,
     NULL, // SalCapCorvetteAttack,
     NULL, // DefaultShipFire,
     NULL, // SalCapCorvetteAttackPassive,
@@ -3194,7 +3143,7 @@ CustShipHeader JunkYardDawgHeader =
     SalCapCorvetteStaticInit,
     NULL,
     SalCapCorvetteInit,
-    SalCapClose,
+    NULL,
     NULL, // SalCapCorvetteAttack,
     NULL, // DefaultShipFire,
     NULL, // SalCapCorvetteAttackPassive,

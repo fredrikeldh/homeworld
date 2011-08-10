@@ -220,7 +220,7 @@ void univInitSpaceObjPosRot(SpaceObj *obj,vector *position,bool randomOrientatio
 {
     memset(&(obj->posinfo),0,sizeof(obj->posinfo));
     obj->posinfo.position = *position;
-    obj->posinfo.isMoving = FALSE;
+    SET_MOVING_IMMOBILE(obj->posinfo.isMoving);
     obj->posinfo.haventCalculatedDist = TRUE;
 
     if (bitTest(obj->flags,SOF_Rotatable))
@@ -725,7 +725,7 @@ Missile *univAddMissile(ShipRace race)
     universe.missileNumber++;
 
     //position, velocity and coordsys left blank
-    missile->posinfo.isMoving = TRUE;
+    SET_MOVING_LINEARLY(missile->posinfo.isMoving);
     missile->posinfo.haventCalculatedDist = TRUE;
 
     collAddSpaceObjToCollBlobs((SpaceObj *)missile);
@@ -959,7 +959,7 @@ DustCloud *univAddDustCloud(DustCloudType dustcloudtype,vector *cloudpos)
     newCloud->scaling = 1.0f;
     newCloud->health = newCloud->staticinfo->maxhealth;
     newCloud->collInfo.precise = NULL;
-    newCloud->stub = (void*)cloudCreateSystem(newCloud->staticinfo->staticheader.staticCollInfo.collspheresize, 0.1f);
+    newCloud->stub = (void*)cloudCreateSystem(newCloud->staticinfo->staticheader.staticCollInfo.collspheresize);
     {
         cloudSystem* csys = (cloudSystem*)newCloud->stub;
         csys->position = &newCloud->posinfo.position;
@@ -3261,10 +3261,6 @@ nobulletmasstransfer:
             vecCopyAndNegate(LOF,bullet->bulletheading);
             matCreateCoordSysFromHeading(&hitCoordsys,&LOF);
             floatDamage = (real32)damagetaken;
-            if (RGLtype == SWtype)
-            {                                               //smaller hit effects in software
-                floatDamage *= etgSoftwareScalarHit;
-            }
             floatDamage *= damageMult;
             intDamage = Real32ToUdword(floatDamage);
             etgEffectCreate(stat, NULL, &hitLocation, &target->posinfo.velocity, &hitCoordsys, targetScale, 0, 2, SCALECAST(intDamage), SCALECAST(fatalHit));
@@ -3428,10 +3424,6 @@ void univMissileCollidedWithTarget(SpaceObjRotImpTarg *target,StaticHeader *targ
             }
 
             floatDamage = (real32)damagetaken;
-            if (RGLtype == SWtype)
-            {                                               //smaller hit effects in software
-                floatDamage *= etgSoftwareScalarHit;
-            }
             floatDamage *= damageMult;
             intDamage = Real32ToUdword(floatDamage);
             etgEffectCreate(stat, NULL, &hitLocation, &target->posinfo.velocity, &missile->rotinfo.coordsys, targetScale, 0, 2, SCALECAST(intDamage), SCALECAST(fatalHit));
@@ -4074,7 +4066,7 @@ void univDeleteDeadShip(Ship *ship, sdword deathBy)
 
     IDToPtrTableObjDied(&ShipIDToPtr,ship->shipID.shipNumber);
 
-    growSelectRemoveShipBySettingNULL(&universe.HousekeepShipList,ship);
+    growSelectRemoveShip(&universe.HousekeepShipList,ship);
 
     // Remove ships that are destroyed from any current selection
     clRemoveShipFromSelection((SelectCommand *)&selSelected,ship);
@@ -4801,10 +4793,6 @@ void DeleteDeadMissile(Missile *missile, sdword deathBy)
                 hitLocation = missile->posinfo.position;
 
                 floatDamage = missile->damage;
-                if (RGLtype == SWtype)
-                {                                               //smaller hit effects in software
-                    floatDamage *= etgSoftwareScalarHit;
-                }
                 intDamage = Real32ToUdword(floatDamage);
                 fatalHit = FALSE;
                 etgEffectCreate(stat, NULL, &hitLocation, &missile->posinfo.velocity, &missile->rotinfo.coordsys, 1.0, 0, 2, SCALECAST(intDamage), SCALECAST(fatalHit));
@@ -5751,11 +5739,6 @@ void univSetupShipsForControl()
     growSelectReset(&universe.HousekeepShipList);       // don't need to keep track of them anymore
 }
 
-//same as above but for derelicts
-void univSetupDerelictsForControl()
-{
-
-}
 SelectCommand *getEnemiesWithinProximity(Ship *thisship,real32 retaliateZone)
 {
     Player *playerowner = thisship->playerowner;
@@ -6523,7 +6506,7 @@ void univRemoveShipReferences(Ship *ship)
 
     IDToPtrTableObjDied(&ShipIDToPtr,ship->shipID.shipNumber);
 
-    growSelectRemoveShipBySettingNULL(&universe.HousekeepShipList,ship);
+    growSelectRemoveShip(&universe.HousekeepShipList,ship);
 
     // Remove ships that are destroyed from any hot key groups
     univRemoveShipFromHotkeyGroup(ship,FALSE);
@@ -7271,11 +7254,6 @@ void univCheckRegrowResources(void)
     }
 }
 
-
-
-
-void wkSmoothShips(void);
-
 /*-----------------------------------------------------------------------------
     Name        : univUpdate
     Description : Updates the mission sphere ships and objects
@@ -7498,8 +7476,6 @@ bool univUpdate(real32 phystimeelapsed)
         univSetupShipsForControl();     // only do it first time, since its done at end of univUpdateAllPosVel
         gameStatsCalcShipCostTotals();      // calculate the total ship cost at game start for the game stats
     }
-    //univSetupDerelictsForControl();
-
 
     if (wkTradeStuffActive)
     {

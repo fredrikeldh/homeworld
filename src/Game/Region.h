@@ -245,7 +245,6 @@ bool regRegionInside(regionhandle needle, regionhandle haystack);
 void regChildInsert(regionhandle regionToInsert, regionhandle parent);
 void regSiblingInsert(regionhandle regionToInsert, regionhandle sibling);
 void regMoveLinkChild(regionhandle regionToMove, regionhandle newParent);
-void regMoveLinkSibling(regionhandle regionToMove, regionhandle newSibling);
 void regLinkRemove(regionhandle region);
 regionhandle regSiblingMoveToFront(regionhandle region);
 
@@ -269,8 +268,6 @@ void regDirtyScreensAboveRegion(regionhandle region);
 
 //get attributes of regions
 #define regFilterGet(r)    ((r)->flags)
-regiondrawfunction regDrawFunctionGet(regionhandle region);
-regionfunction regFunctionGet(regionhandle region);
 
 //add render events and render them all
 void regDrawFunctionAdd(regiondrawfunction function, regionhandle reg);

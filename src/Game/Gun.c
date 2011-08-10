@@ -635,7 +635,7 @@ void missileShoot(Ship *ship,Gun *gun,SpaceObjRotImpTarg *target)
     missile->posinfo.position.y += gunheadingInWorldCoordSys.y * gunstatic->barrelLength;
     missile->posinfo.position.z += gunheadingInWorldCoordSys.z * gunstatic->barrelLength;
 
-    missile->posinfo.isMoving = TRUE;
+    SET_MOVING_LINEARLY(missile->posinfo.isMoving);
     missile->posinfo.haventCalculatedDist = TRUE;
 
     vecScalarMultiply(missile->posinfo.velocity,gunheadingInWorldCoordSys,gunstatic->bulletspeed);
@@ -736,10 +736,6 @@ void missileShoot(Ship *ship,Gun *gun,SpaceObjRotImpTarg *target)
         {                                                       //if there is a gun fire effect
             matCreateCoordSysFromHeading(&newCoordsys,&gunheadingInWorldCoordSys);
             floatDamage = (real32)missile->damage;
-            if (RGLtype == SWtype)
-            {                                                   //smaller muzzle flashes in software
-                floatDamage *= etgSoftwareScalarFire;
-            }
             floatDamage *= ship->magnitudeSquared;
             intDamage = Real32ToUdword(floatDamage);
             etgEffectCreate(stat, ship, &missile->posinfo.position, NULL, &newCoordsys, 1.0f, EAF_Velocity | EAF_NLips, 1, SCALECAST(intDamage));
@@ -1088,7 +1084,7 @@ void gunShoot(Ship *ship, Gun *gun, SpaceObjRotImpTarg *target)
     bullet->posinfo.position.y += gunheadingInWorldCoordSys.y * gunstatic->barrelLength;
     bullet->posinfo.position.z += gunheadingInWorldCoordSys.z * gunstatic->barrelLength;
 
-    bullet->posinfo.isMoving = TRUE;
+    SET_MOVING_LINEARLY(bullet->posinfo.isMoving);
     bullet->posinfo.haventCalculatedDist = TRUE;
 
     if ((target != NULL) && (target->collMyBlob != NULL))
@@ -1205,10 +1201,6 @@ void gunShoot(Ship *ship, Gun *gun, SpaceObjRotImpTarg *target)
         if (stat != NULL && etgFireEffectsEnabled && !etgFrequencyExceeded(stat))
 #endif
         {                                                       //if there is a gun fire effect
-            if (RGLtype == SWtype)
-            {                                                   //smaller muzzle flashes in software
-                floatDamage *= etgSoftwareScalarFire;
-            }
             etgEffectCreate(stat, ship, &bullet->posinfo.position, &ship->posinfo.velocity, &bullet->rotinfo.coordsys, 1.0f, EAF_Velocity, 1, SCALECAST(intDamage));
         }
     }

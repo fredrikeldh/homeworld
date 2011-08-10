@@ -15,7 +15,6 @@
 #include "AutoLOD.h"
 #include "Debug.h"
 #include "FastMath.h"
-#include "glcaps.h"
 #include "glinc.h"
 #include "Globals.h"
 #include "mainrgn.h"
@@ -36,8 +35,6 @@
 #endif
 
 ubyte nebColor[4];
-
-#define NEB_RENDER RGL_SPECULAR2_RENDER
 
 #define TENDRILBRIGHTEN 60
 
@@ -261,7 +258,7 @@ void nebStartup()
 
     nebColorInit();
 
-    _bright = glCapFastFeature(GL_BLEND);
+    _bright = TRUE;
 }
 
 /*-----------------------------------------------------------------------------
@@ -1202,17 +1199,14 @@ void nebGetTendrilVert(nebTendril* tendril, sdword whichVert, sdword lod, vector
 ----------------------------------------------------------------------------*/
 void nebColourAdjust(vector* vert, vector* norm, real32* m, real32* minv)
 {
-    if (usingShader)
-    {
-        ubyte color[4];
+    ubyte color[4];
 
-        color[0] = nebColor[0];
-        color[1] = nebColor[1];
-        color[2] = nebColor[2];
-        color[3] = nebColor[3];
-        shSpecularColour(1, 0, vert, norm, color, m, minv);
-        glColor4ub(color[0], color[1], color[2], color[3]);
-    }
+    color[0] = nebColor[0];
+    color[1] = nebColor[1];
+    color[2] = nebColor[2];
+    color[3] = nebColor[3];
+    shSpecularColour(1, 0, vert, norm, color, m, minv);
+    glColor4ub(color[0], color[1], color[2], color[3]);
 }
 
 /*-----------------------------------------------------------------------------
@@ -1249,11 +1243,8 @@ void nebDrawChunk2(nebChunk* chunk, sdword lod)
 
     real32 m[16], minv[16];
 
-    if (usingShader)
-    {
-        glGetFloatv(GL_MODELVIEW_MATRIX, m);
-        shInvertMatrix(minv, m);
-    }
+    glGetFloatv(GL_MODELVIEW_MATRIX, m);
+    shInvertMatrix(minv, m);
 
     dbgAssertOrIgnore(chunk != NULL);
 
@@ -1357,8 +1348,6 @@ void nebRenderChunk(nebChunk* chunk, sdword lod)
 
     dbgAssertOrIgnore(chunk != NULL);
 
-    if (RGL && !usingShader) rglFeature(NEB_RENDER);
-
     TENDRILCOLOR0(TENDRILALPHA);
 
     if (chunk->counter < neb_frame_counter)
@@ -1387,8 +1376,6 @@ void nebRenderChunk(nebChunk* chunk, sdword lod)
         }
     }
 
-    if (RGL && !usingShader) rglFeature(RGL_NORMAL_RENDER);
-
     TENDRILCOLOR0(TENDRILALPHA);
 }
 
@@ -1408,16 +1395,11 @@ void nebDrawTendril(nebTendril* tendril, sdword lod)
 
     real32 m[16], minv[16];
 
-    if (usingShader)
-    {
-        glGetFloatv(GL_MODELVIEW_MATRIX, m);
-        shInvertMatrix(minv, m);
-    }
+    glGetFloatv(GL_MODELVIEW_MATRIX, m);
+    shInvertMatrix(minv, m);
 
     dPosA = tendril->a->dPos;
     dPosB = tendril->b->dPos;
-
-    if (RGL && !usingShader) rglFeature(NEB_RENDER);
 
     glBegin(GL_QUADS);
     for (j = 1; j <= tendril->lod[lod].stacks; j++)
@@ -1489,8 +1471,6 @@ void nebDrawTendril(nebTendril* tendril, sdword lod)
     }
     glEnd();
     alodIncPolys(tendril->lod[lod].stacks * tendril->lod[lod].slices);
-
-    if (RGL && !usingShader) rglFeature(RGL_NORMAL_RENDER);
 }
 
 /*-----------------------------------------------------------------------------
@@ -2030,24 +2010,16 @@ void nebRenderNebula(nebulae_t* neb)
         return;
     }
 
-    _bright = glCapFastFeature(GL_BLEND);
+    _bright = TRUE;
 
     fogOn = glIsEnabled(GL_FOG);
     atOn = glIsEnabled(GL_ALPHA_TEST);
     cullOff = !glIsEnabled(GL_CULL_FACE);
 
-    glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
+    glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
     if (fogOn) glDisable(GL_FOG);
 
-    if (RGL && !usingShader)
-    {
-        rndLightingEnable(TRUE);
-    }
-    else
-    {
-        rndLightingEnable(FALSE);
-    }
-
+    rndLightingEnable(FALSE);
     rndTextureEnable(FALSE);
     glEnable(GL_BLEND);
     rndAdditiveBlends(FALSE);
@@ -2120,17 +2092,7 @@ void nebRenderNebula(nebulae_t* neb)
     if (atOn) glEnable(GL_ALPHA_TEST);
     if (cullOff) glDisable(GL_CULL_FACE);
 
-    if (usingShader)
-    {
-        rndLightingEnable(TRUE);
-    }
-}
-
-//MUST also remove itself from the resource list, &c
-void nebDeleteChunkSimply(nebChunk* chunk)
-{
-    dbgAssertOrIgnore(chunk != NULL);
-    bitSet(chunk->flags, NEB_CHUNK_DEAD);
+    rndLightingEnable(TRUE);
 }
 
 /*-----------------------------------------------------------------------------

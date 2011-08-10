@@ -2515,7 +2515,7 @@ sdword kasfShipsSelectMoving(GrowSelection *newShips, GrowSelection *originalShi
     for (i = 0; i < originalShips->selection->numShips; ++i)
     {
         ship = originalShips->selection->ShipPtr[i];
-        selected = ship->posinfo.isMoving & ISMOVING_MOVING;  // moving
+        selected = IS_MOVING_LINEARLY(ship->posinfo.isMoving);
         if (!selected && sourceIsDest)
             // remove from source (dest)
             clRemoveShipFromSelection(originalShips->selection, ship);
@@ -3398,9 +3398,8 @@ void kasfForceFISensors(void)
 
 void kasfOpenSensors(sdword flag)
 {
-#if UNIVERSE_TURBOPAUSE_DEBUG
     universeTurbo = FALSE;
-#endif
+
     //if flag isn't a TRUE/FALSE value
     //note: opening the sensors manager at a given distance only
     //      requires the "flag" variable to be larger than 1000 or
@@ -3589,6 +3588,8 @@ void kasfSoundEventShips(GrowSelection *ships, sdword event)
 void kasfSpeechEvent(sdword event, sdword variable)
 {
     subMessageEnded = 0;
+    universeTurbo = FALSE;
+
 #ifndef _MACOSX_FIX_SOUND
     speechEventFleet(event, variable, universe.curPlayerIndex);
 #endif
@@ -3890,9 +3891,8 @@ void kasfClearScreen(void)
 //starts the NIS widescreen thing under KAS control
 void kasfWideScreenIn(sdword frames)
 {
-#if UNIVERSE_TURBOPAUSE_DEBUG
     universeTurbo = FALSE;
-#endif
+
     dbgAssertOrIgnore(frames > 1 && frames < 10000);
     if (nisScissorFadeOut != 0)
     {
@@ -3934,16 +3934,6 @@ void kasfLocationCard(sdword milliseconds, char *location)
     dbgAssertOrIgnore(milliseconds > 10);
     snprintf(buffer, SUB_SubtitleLength - 1, "#r%x#t%x%s", STR_LocationCard, STT_LocationCard, location);
     subTitleAdd(STA_LocationCard, kasfDummyEventNumber, buffer, strlen(buffer), (real32)milliseconds / 1000.0f);
-    kasfDummyEventNumber++;
-}
-
-//display easter egg location card
-void kasfLocationCardSpecial(sdword milliseconds, char *string)
-{
-//    char buffer[SUB_SubtitleLength];
-
-    dbgAssertOrIgnore(milliseconds > 10);
-    subTitleAdd(STA_LocationCard, kasfDummyEventNumber, string, strlen(string), (real32)milliseconds / 1000.0f);
     kasfDummyEventNumber++;
 }
 

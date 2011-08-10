@@ -17,6 +17,7 @@
 #include "SaveGame.h"
 #include "Tweak.h"
 #include "Universe.h"
+#include "utility.h"
 
 
 extern sdword R1MOTHERSHIP_Big;
@@ -338,9 +339,9 @@ void Mothership_PreFix(Ship *ship)
     sdword i;
     for(i=0;i<MAX_NUM_DROP;i++)
     {
-        spec->droptarget[i] = SpaceObjRegistryGetID((SpaceObj *)spec->droptarget[i]);
+        spec->droptarget[i] = (SpaceObjRotImpTargGuidanceShipDerelict *) SpaceObjRegistryGetID((SpaceObj *)spec->droptarget[i]);
     }
-    spec->doorCargo = SpaceObjRegistryGetID((SpaceObj *)spec->doorCargo);
+    spec->doorCargo = (SpaceObjRotImpTargGuidanceShipDerelict *) SpaceObjRegistryGetID((SpaceObj *)spec->doorCargo);
 
 }
 
@@ -449,7 +450,7 @@ void MothershipHouseKeep(Ship *ship)
                         spec->CAPshiprace[i],
                         ship->playerowner->playerIndex,
                         ship);
-                newship->colorScheme = spec->CAPcolorScheme[i];
+                newship->colorScheme = utyShipsAlwaysUseOwnerColors ? ship->playerowner->playerIndex : spec->CAPcolorScheme[i];
             }
 
             spec->CAP_NumInBuildCue--;
