@@ -44,7 +44,7 @@ LinkedList CircleList;
 =============================================================================*/
 /*-----------------------------------------------------------------------------
     Name        : primLine3
-    Description : Draw a line in 3D using having a thickness of 1 pixel
+    Description : Draw a line in 3D having a thickness of 1 pixel
     Inputs      : p1, p2 - end points of line segment to draw
                   c - color to draw it in.
     Outputs     :
