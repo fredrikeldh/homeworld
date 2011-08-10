@@ -32,7 +32,6 @@
 #include "FontReg.h"
 #include "GameChat.h"
 #include "GamePick.h"
-#include "glcaps.h"
 #include "glinc.h"
 #include "Globals.h"
 #include "Gun.h"
@@ -195,9 +194,7 @@ mrKeyFunction[] =
     {{HOMEKEY,   0,      0,      0}, 1, RPE_KeyDown},
     {{PAGEDOWNKEY,0,     0,      0}, 1, RPE_KeyDown},
     {{PAGEUPKEY, 0,      0,      0}, 1, RPE_KeyDown},
-#if UNIVERSE_TURBOPAUSE_DEBUG
     {{BACKSLASHKEY,      0,      0,      0}, 1, RPE_KeyDown},
-#endif
     {{PKEY,              0,      0,      0}, 1, RPE_KeyDown},
 #if MR_TEST_GUNS
     {{TKEY,      0,      0,      0}, 1, RPE_KeyDown},
@@ -268,8 +265,7 @@ mrKeyFunction[] =
 };
 
 //stuff for changing formations
-#define PARADE_FORMATION_FLAG   ((udword)-1)
-TypeOfFormation mrNewFormation = 0;                 //index of current formation we're selecting
+TypeOfFormation mrNewFormation = NO_FORMATION;  //index of current formation we're selecting
 char *mrFormationName = NULL;                   //if non-NULL, we're in the changing formations state
 real32 mrFormationTime;                         //time a particular formation was set
 bool   mrDrawFormation=FALSE;
@@ -500,12 +496,12 @@ void mrStartup(void)
                    RPE_RightClickButton | RPE_HoldRight |
                    RPE_WheelUp | RPE_WheelDown | RPE_DoubleLeft | RPE_DoubleCentre);
     regDrawFunctionSet(ghMainRegion, mrRegionDraw);         //set it's functions
-    regFunctionSet(ghMainRegion, mrRegionProcess);
+    regFunctionSet(ghMainRegion, (regionfunction) mrRegionProcess);
 
     for (index = 0; mrKeyFunction[index].nKeys != 0; index++)
     {                                                       //now set all the keys
         regKeyChildAlloc(ghMainRegion, mrKeyFunction[index].key[0], mrKeyFunction[index].filter,
-                         mrRegionProcess, mrKeyFunction[index].nKeys,
+                         (regionfunction) mrRegionProcess, mrKeyFunction[index].nKeys,
                          mrKeyFunction[index].key[0], mrKeyFunction[index].key[1],
                          mrKeyFunction[index].key[2], mrKeyFunction[index].key[3]);
     }
@@ -650,7 +646,7 @@ void mrSphereFormation(char *string, featom *atom)
 }
 
 
-void mrPicketFormation(char *string, featom *atom)
+void mrCustomFormation(char *string, featom *atom)
 {
     if ((playPackets) || (universePause && !opPauseOrders) || (mrDisabled))
     {
@@ -1430,9 +1426,9 @@ void mrSetTheFormation(TypeOfFormation formationtype)
         if (MothershipOrCarrierIndexInSelection((SelectCommand *)&selSelected) >= 0)
         {
             soundEvent(NULL, UI_Click);
-            mrNewFormation = PARADE_FORMATION_FLAG;
+            mrNewFormation = PARADE_FORMATION;
             mrFormationName = strGetString(strPARADE_FORMATION);
-            speechEvent(selSelected.ShipPtr[0], COMM_SetFormation, PICKET_FORMATION);
+            speechEvent(selSelected.ShipPtr[0], COMM_SetFormation, SPEECH_PARADE_FORMATION);
             clWrapSetMilitaryParade(&universe.mainCommandLayer,(SelectCommand *)&selSelected);
 
             strcat(msgName, strGetString(strPARADE_FORMATION));
@@ -1960,7 +1956,7 @@ processEscapeKey:
             {
                 if (MothershipOrCarrierIndexInSelection((SelectCommand *)&selSelected) >= 0)
                 {
-                    mrNewFormation = PARADE_FORMATION_FLAG;
+                    mrNewFormation = PARADE_FORMATION;
                     mrFormationName = strGetString(strPARADE_FORMATION);
                     mrFormationTime = universe.totaltimeelapsed;
                     mrDrawFormationTime = universe.totaltimeelapsed;
@@ -1968,32 +1964,36 @@ processEscapeKey:
                 }
                 else
                 {
-                    TypeOfFormation alreadyformed = clSelectionAlreadyInFormation(&universe.mainCommandLayer,(SelectCommand *)&selSelected);
-                    if ((alreadyformed == NO_FORMATION && mrFormationName == NULL) || (mrNewFormation == PARADE_FORMATION_FLAG))
+                    if (mrNewFormation > LAST_CYCLE_FORMATION)
                     {
-                        mrNewFormation = 0;
+                        mrNewFormation = DELTA_FORMATION;
                     }
                     else
                     {
                         if (keyIsHit(SHIFTKEY))
                         {
-                            if (mrNewFormation <= 0)
+                            if (mrNewFormation == FIRST_CYCLE_FORMATION)
                             {
-                                mrNewFormation = CUSTOM_FORMATION - 1;
+                                mrNewFormation = LAST_CYCLE_FORMATION;
                             }
                             else
                             {
                                 mrNewFormation--;
                             }
+
                             tutGameMessage("KB_FormationPrevious");
                         }
                         else
                         {
-                            mrNewFormation++;
-                            if (mrNewFormation >= CUSTOM_FORMATION)
+                            if (mrNewFormation == LAST_CYCLE_FORMATION)
                             {
-                                mrNewFormation = 0;
+                                mrNewFormation = FIRST_CYCLE_FORMATION;
                             }
+                            else
+                            {
+                                mrNewFormation++;
+                            }
+
                             tutGameMessage("KB_FormationNext");
                         }
                     }
@@ -2218,7 +2218,6 @@ cancelfocus:
         case LBRACK:
             if(keyIsHit(SHIFTKEY))
             {
-                if (RGL) rglFeature(RGL_GAMMA_DN);
                 shGammaDown();
                 break;
             }
@@ -2240,7 +2239,6 @@ cancelfocus:
         case RBRACK:
             if(keyIsHit(SHIFTKEY))
             {
-                if (RGL) rglFeature(RGL_GAMMA_UP);
                 shGammaUp();
                 break;
             }
@@ -2364,7 +2362,7 @@ cancelfocus:
                 mrScuttle(NULL, NULL);
             }
             break;
-#if UNIVERSE_TURBOPAUSE_DEBUG
+
         case BACKSLASHKEY:
             if ((!multiPlayerGame) || (playPackets) || (universePause) || (mrDisabled) )
             {
@@ -2372,7 +2370,7 @@ cancelfocus:
                 dbgMessage(universeTurbo ? "Turbo ON" : "Turbo OFF");
             }
             break;
-#endif
+
         case IKEY:
             {
                 tutGameMessage("KB_Retire");
@@ -2841,7 +2839,7 @@ char *mrMenuItemByFormation[] =
     /* CLAW_FORMATION    */ "CSM_ClawFormation",
     /* WALL_FORMATION    */ "CSM_WallFormation",
     /* SPHERE_FORMATION  */ "CSM_SphereFormation",
-    /* PICKET_FORMATION  */ "CSM_PicketFormation",
+    /* CUSTOM_FORMATION  */ "CSM_PicketFormation",
 };
 
 char *mrMenuItemByTactic[] =
@@ -5482,31 +5480,6 @@ void mrRegionDraw(regionhandle reg)
         return;
     }
 
-    if (!glCapFastFeature(GL_BLEND))
-    {
-        if (mrWhiteOut)
-        {
-            rectangle rect = { 0,0,MAIN_WindowWidth,MAIN_WindowHeight };
-            sdword c;
-            real32 t;
-
-            if (mrWhiteOutT < 0.5f)
-            {
-                t = mrWhiteOutT * 2.0f;
-                c = (sdword)(t * 255.0f);
-                primRectSolid2(&rect, colRGB((70*c)>>8,(70*c)>>8,(255*c)>>8));
-            }
-            else
-            {
-                t = 2.0f * (mrWhiteOutT - 0.5f);
-                c = (sdword)(t * 155.0f);
-                primRectSolid2(&rect, colRGB(70+c,70+c,255));
-            }
-
-            return;
-        }
-    }
-
     if (piePointSpecMode != PSM_Idle)
     {                                                       //draw point spec
         pieLineDrawCallback = pieAllShipsToPiePlateDraw;
@@ -5659,11 +5632,11 @@ void mrRegionDraw(regionhandle reg)
                 // check again if mothership or carrier in - don't want them in delta, etc.
                 if (MothershipOrCarrierIndexInSelection((SelectCommand *)&selSelected) >= 0)
                 {
-                    mrNewFormation = PARADE_FORMATION_FLAG;
+                    mrNewFormation = PARADE_FORMATION;
                 }
 
                 strcpy(msgName, "Game_Formation_");
-                if (mrNewFormation == PARADE_FORMATION_FLAG)
+                if (mrNewFormation == PARADE_FORMATION)
                 {
                     strcat(msgName, strGetString(strPARADE_FORMATION));
                 }
@@ -5674,9 +5647,9 @@ void mrRegionDraw(regionhandle reg)
                 tutGameMessage(msgName);
 
                 mrFormationName = NULL;                         //no longer selecting formations
-                if (mrNewFormation == PARADE_FORMATION_FLAG)
+                if (mrNewFormation == PARADE_FORMATION)
                 {
-                    speechEvent(selSelected.ShipPtr[0], COMM_SetFormation, PICKET_FORMATION);
+                    speechEvent(selSelected.ShipPtr[0], COMM_SetFormation, SPEECH_PARADE_FORMATION);
                     clWrapSetMilitaryParade(&universe.mainCommandLayer,(SelectCommand *)&selSelected);
                 }
                 else
@@ -5776,10 +5749,6 @@ void mrReset(void)
     mrHoldRight = mrHoldLeft = mrNULL;                      //in case player was band-boxing or rotating
     mouseCursorShow();
     piePointSpecMode = PSM_Idle;                             //in case player was moving
-    if (RGLtype == SWtype)
-    {
-        rglFeature(RGL_SPEEDY);
-    }
 }
 
 /*-----------------------------------------------------------------------------

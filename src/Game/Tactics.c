@@ -78,7 +78,7 @@ real32 DELAY_FORMTIGHTNESS_CHANGE = 5.0f;
 
 //local prototypes
 bool tacticsShipCanDodge(Ship *ship);
-bool tacticsShipIsAffectedByTactcis(Ship *ship);
+bool tacticsShipIsAffectedByTactics(Ship *ship);
 bool tacticsIsShipLookingForAnyOfThese(Ship *ship,SelectCommand *selection);
 bool tacticsAreEnemiesNearby(Ship *leadership, Ship *thisship,real32 retaliateZone);
 
@@ -782,10 +782,10 @@ bool tacticsShipCanDodge(Ship *ship)
             return FALSE;
         }
     }
-    return(tacticsShipIsAffectedByTactcis(ship));
+    return(tacticsShipIsAffectedByTactics(ship));
 }
 
-bool tacticsShipIsAffectedByTactcis(Ship *ship)
+bool tacticsShipIsAffectedByTactics(Ship *ship)
 {
 #ifdef DEBUG_TACTICS
     dbgAssertOrIgnore(tacticsOn);
@@ -822,7 +822,7 @@ sdword tacticsGetFormationOptimalState(SelectCommand *selection)
         for(i=0;i<selection->numShips;i++)
         {
             //if non-strike craft in formation, maintain tight formation
-            if(!tacticsShipIsAffectedByTactcis(selection->ShipPtr[i]))
+            if(!tacticsShipIsAffectedByTactics(selection->ShipPtr[i]))
                 return(TightFormation);
 
             //for now, loose formations ONLY if ALL evasive...later we'll fix
@@ -1626,30 +1626,6 @@ real32 tacticsMaxDistToTarget(SelectCommand *selection,SpaceObjRotImpTarg *targe
         }
     }
     return(fsqrt(maxdistsqr));
-}
-
-bool tacticsIsShipLookingForShip(Ship *ship,Ship *target)
-{
-    AttackAtom  *attackatom;
-    Node *node;
-    sdword i;
-
-    node = universe.AttackMemory.head;
-
-    while(node != NULL)
-    {
-        attackatom = (AttackAtom *)listGetStructOfNode(node);
-        if(target == attackatom->retreater)
-        {
-            for(i=0;i<attackatom->attackerList.numShips;i++)
-            {
-                if(ship == attackatom->attackerList.ShipPtr[i])
-                   return TRUE;
-            }
-        }
-        node = node->next;
-    }
-    return FALSE;
 }
 
 //function to perform dodging perhaps bad place...

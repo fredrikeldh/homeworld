@@ -139,7 +139,6 @@ void nebDeleteChunk(nebChunk* chunk);
 void nebInitChunk(nebChunk* chunk);
 void nebInitTendril(nebTendril* tendril);
 void nebAddTendril(nebChunk* chunk, nebTendril* tendril, udword flags);
-void nebCopyEllipse(ellipseObject* dest, ellipseObject* src, vector* pos, real32 radius);
 nebTendril* nebGetFreshTendril(nebulae_t* neb);
 nebChunk* nebPickChunk(nebulae_t* neb, sdword type, nebChunk* constrainta, nebChunk* constraintb);
 void nebDistributeChunks(nebulae_t* neb, vector* origin, vector* dimension);
@@ -165,9 +164,6 @@ sdword nebTendrilPtrToNum(nebulae_t* neb, nebTendril *nebTendril);
 
 nebChunk *nebNumToChunkPtr(nebulae_t* neb, sdword num);
 sdword nebChunkPtrToNum(nebulae_t* neb, nebChunk *nebChunk);
-
-nebulae_t* nebNumToNebulaePtr(sdword num);
-sdword nebNebulaePtrToNum(nebulae_t* neb);
 
 #endif
 

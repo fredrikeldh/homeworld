@@ -492,7 +492,7 @@ void psPlugLinkSet(char *directory,char *field,void *dataToFillIn)
     link = (pluglink *)regChildAlloc(psBaseRegion->child, (sdword)dataToFillIn, //create the region
             plugXMargin + x, plugYMargin + y, header->width, header->height, plugLinkExtra(linkName),
             RPE_Enter | RPE_Exit | RPE_EnterHoldLeft | RPE_ExitHoldLeft | RPE_PressLeft);
-    regFunctionSet(&link->reg, psLinkProcess);
+    regFunctionSet(&link->reg, (regionfunction) psLinkProcess);
     regDrawFunctionSet(&link->reg, psLinkDraw);
 
     link->onTexture = trPalettedTextureCreate(header->data, header->palette, header->width, header->height);
@@ -578,7 +578,6 @@ void psShutdown(void)
 extern void *hGLDeviceContext;              //void * is really a HDC
 DEFINE_TASK(psRenderTaskFunction)
 {
-    static bool shouldSwap;
     static regionhandle reg;
 
     taskBegin;
@@ -657,27 +656,12 @@ DEFINE_TASK(psRenderTaskFunction)
             }
             psScreenTimeout = 0.0f;                         //don't try to time out any more
         }
-        shouldSwap = feSavingMouseCursor;
-        if (shouldSwap)
-        {
-            if (RGL)
-                rglFeature(RGL_SAVEBUFFER_ON);
-        }
-        else
-        {
-            if (RGL)
-                rglFeature(RGL_SAVEBUFFER_OFF);
-        }
         primErrorMessagePrint();
         regFunctionsDraw();                                 //render all regions
         primErrorMessagePrint();
         /* need to update audio event layer */
         soundEventUpdate();
 
-        if (shouldSwap)
-        {
-            mouseStoreCursorUnder();
-        }
         mouseDraw();                                        //draw mouse atop everything
 
         if (!feDontFlush)
@@ -686,10 +670,6 @@ DEFINE_TASK(psRenderTaskFunction)
         }
         feDontFlush = FALSE;
         primErrorMessagePrint();
-        if (shouldSwap)
-        {
-            mouseRestoreCursorUnder();
-        }
         primErrorMessagePrint();
 
         taskYield(0);
@@ -755,7 +735,7 @@ void psScreenStart(char *name)
     psBaseRegion = regChildAlloc(NULL, 0, plugXMargin, plugYMargin, 640, 480, 0, RPE_ModalBreak);
     regSiblingMoveToFront(psBaseRegion);
     reg = regChildAlloc(psBaseRegion, 0, plugXMargin, plugYMargin, 640, 480, 0, RPE_Enter | RPM_PressRelease);
-    regFunctionSet(reg, psBaseRegionProcess);
+    regFunctionSet(reg, (regionfunction) psBaseRegionProcess);
     regDrawFunctionSet(reg, psBaseRegionDraw);
 
     psScreenTimeout = 0.0f;
@@ -778,7 +758,7 @@ void psScreenStart(char *name)
     bitSet(reg->child->userID, PLF_FadeRegion);
     for (index = 0; psScreenSkipKey[index] != 0; index++)
     {
-        regKeyChildAlloc(reg, 0xffffffff, RPE_KeyDown, psBaseRegionProcess, 1, psScreenSkipKey[index]);
+        regKeyChildAlloc(reg, 0xffffffff, RPE_KeyDown, (regionfunction) psBaseRegionProcess, 1, psScreenSkipKey[index]);
         if (!bitTest(psGlobalFlags, PMF_CanSkip))
         {                                                   //only escape (first key) can be used in a no-skip screen sequence
             break;

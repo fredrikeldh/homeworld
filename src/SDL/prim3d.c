@@ -15,7 +15,6 @@
 #include "devstats.h"
 #include "FastMath.h"
 #include "FastMath.h"
-#include "glcaps.h"
 #include "glinc.h"
 #include "LinkedList.h"
 #include "Memory.h"
@@ -54,13 +53,10 @@ void primLine3(vector *p1, vector *p2, color c)
 {
     bool blendon = FALSE;
 
-    if (glCapFeatureExists(GL_LINE_SMOOTH))
-    {
-        blendon = glIsEnabled(GL_BLEND);
-        if (!blendon) glEnable(GL_BLEND);
-        glEnable(GL_LINE_SMOOTH);
-        rndAdditiveBlends(FALSE);
-    }
+    blendon = glIsEnabled(GL_BLEND);
+    if (!blendon) glEnable(GL_BLEND);
+    glEnable(GL_LINE_SMOOTH);
+    rndAdditiveBlends(FALSE);
 
     glColor3ub(colRed(c), colGreen(c), colBlue(c));
     glBegin(GL_LINES);
@@ -68,11 +64,8 @@ void primLine3(vector *p1, vector *p2, color c)
     glVertex3fv((const GLfloat *)p2);
     glEnd();
 
-    if (glCapFeatureExists(GL_LINE_SMOOTH))
-    {
-        if (!blendon) glDisable(GL_BLEND);
-        glDisable(GL_LINE_SMOOTH);
-    }
+    if (!blendon) glDisable(GL_BLEND);
+    glDisable(GL_LINE_SMOOTH);
 }
 
 /*-----------------------------------------------------------------------------
@@ -250,12 +243,9 @@ void primCircleOutline3(vector *centre, real32 radius, sdword nSlices,
     c[2] = centre->z;
 
     glShadeModel(GL_SMOOTH);
-    if (glCapFeatureExists(GL_LINE_SMOOTH))
-    {
-        glEnable(GL_BLEND);
-        glEnable(GL_LINE_SMOOTH);
-        rndAdditiveBlends(FALSE);
-    }
+    glEnable(GL_BLEND);
+    glEnable(GL_LINE_SMOOTH);
+    rndAdditiveBlends(FALSE);
 
     vec_ptr = &vertices->vertice[0];
 
@@ -352,11 +342,8 @@ void primCircleOutline3(vector *centre, real32 radius, sdword nSlices,
             break;
     }
 
-    if (glCapFeatureExists(GL_LINE_SMOOTH))
-    {
-        glDisable(GL_BLEND);
-        glDisable(GL_LINE_SMOOTH);
-    }
+    glDisable(GL_BLEND);
+    glDisable(GL_LINE_SMOOTH);
 }
 
 /*-----------------------------------------------------------------------------
@@ -461,20 +448,13 @@ static bool gWasBlending;
 ----------------------------------------------------------------------------*/
 void primBeginPointSize3Fade(real32 size)
 {
-    if (glCapFeatureExists(GL_POINT_SIZE))
+    glPointSize(size);
+    gWasBlending = glIsEnabled(GL_BLEND);
+    if (!gWasBlending)
     {
-        glPointSize(size);
+        glEnable(GL_BLEND);
     }
-    gFastBlends = glCapFastFeature(GL_BLEND);
-    if (gFastBlends)
-    {
-        gWasBlending = glIsEnabled(GL_BLEND);
-        if (!gWasBlending)
-        {
-            glEnable(GL_BLEND);
-        }
-        rndAdditiveBlends(FALSE);
-    }
+    rndAdditiveBlends(FALSE);
     glBegin(GL_POINTS);
 }
 
@@ -627,13 +607,6 @@ void primSolidTexture3(vector *p1, real32 size, color c, trhandle tex)
     real32 biasRed, biasGreen, biasBlue;
     texreg* reg;
 
-    if (!glCapFeatureExists(RGL_COLOROP_ADD))
-    {
-        //multi-pass render to approximate a missing feature
-        primSolidTexture3_multi(p1, size, c, tex);
-        return;
-    }
-
     halfsize = 0.5f * size;
 
     rndTextureEnable(TRUE);
@@ -652,12 +625,6 @@ void primSolidTexture3(vector *p1, real32 size, color c, trhandle tex)
     biasGreen = colReal32(colGreen(c));
     biasBlue = colReal32(colBlue(c));
 
-    if (RGL)
-    {
-        glPixelTransferf(GL_RED_BIAS, biasRed);
-        glPixelTransferf(GL_GREEN_BIAS, biasGreen);
-        glPixelTransferf(GL_BLUE_BIAS, biasBlue);
-    }
     glColor3f(biasRed, biasGreen, biasBlue);
 
     glBegin(GL_QUADS);
@@ -670,13 +637,6 @@ void primSolidTexture3(vector *p1, real32 size, color c, trhandle tex)
     glTexCoord2f(0.0f, 1.0f);
     glVertex3f(p1->x-halfsize, p1->y+halfsize, 0.0f);
     glEnd();
-
-    if (RGL)
-    {
-        glPixelTransferf(GL_RED_BIAS, 0.0f);
-        glPixelTransferf(GL_GREEN_BIAS, 0.0f);
-        glPixelTransferf(GL_BLUE_BIAS, 0.0f);
-    }
 
     glDisable(GL_BLEND);
 //    glDepthMask(GL_TRUE);
@@ -704,12 +664,6 @@ void primSolidTexture3Fade(vector *p1, real32 size, color c, trhandle tex, real3
    biasGreen = colReal32(colGreen(c));
    biasBlue = colReal32(colBlue(c));
 
-   if (RGL)
-   {
-       glPixelTransferf(GL_RED_BIAS, biasRed);
-       glPixelTransferf(GL_GREEN_BIAS, biasGreen);
-       glPixelTransferf(GL_BLUE_BIAS, biasBlue);
-   }
    glColor4f(biasRed, biasGreen, biasBlue, fade);
 
    glBegin(GL_QUADS);
@@ -722,13 +676,6 @@ void primSolidTexture3Fade(vector *p1, real32 size, color c, trhandle tex, real3
    glTexCoord2f(0.0f, 1.0f);
    glVertex3f(p1->x-halfsize, p1->y+halfsize, 0.0f);
    glEnd();
-
-   if (RGL)
-   {
-       glPixelTransferf(GL_RED_BIAS, 0.0f);
-       glPixelTransferf(GL_GREEN_BIAS, 0.0f);
-       glPixelTransferf(GL_BLUE_BIAS, 0.0f);
-   }
 
    glDisable(GL_BLEND);
    rndAdditiveBlends(FALSE);

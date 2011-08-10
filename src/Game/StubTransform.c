@@ -32,7 +32,7 @@ typedef struct
 ----------------------------------------------------------------------------*/
 int transDetermineKatmaiSupport(unsigned int haveKatmai)
 {
-	return 0;
+  return 0;
 }
 
 /*-----------------------------------------------------------------------------
@@ -135,4 +135,3 @@ void kniTransFreeVertexLists(void)
 void transSetKatmaiSupport(unsigned int on)
 {
 }
-

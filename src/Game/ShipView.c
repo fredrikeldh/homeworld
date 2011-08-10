@@ -20,7 +20,6 @@
 #include "FEReg.h"
 #include "font.h"
 #include "FontReg.h"
-#include "glcaps.h"
 #include "glinc.h"
 #include "Gun.h"
 #include "Light.h"
@@ -62,6 +61,9 @@
 #define SV_StatFont                 "HW_EuroseCond_11.hff" //"Small_Fonts_8.hff"
 
 #define SV_ViewMargin               8
+
+#define SV_360_ROTATION_SECS        5.0f
+#define SV_PITCH_FLATTEN_SECS       2.0f
 
 regionhandle svShipViewRegion  = NULL;
 regionhandle svFirepowerRegion = NULL;
@@ -314,6 +316,13 @@ void svShipViewRender(featom* atom, regionhandle region)
     char* keystring;
     bool resetRender = FALSE;
     char    temp[100];
+
+    // facilitates smooth transition between auto/manual rotation of ship
+    static real32 angle_user_rotated_to       = 0.0f;
+    static real32 declination_user_rotated_to = 0.0f;
+    static real32 time_user_rotated_view      = 0.0f;
+           real32 real_time_angle             = 0.0f;
+    static real32 user_real_angle_offset      = 0.0f;
     
     rect = &region->rect;
     viewRect.x0 = 0;
@@ -397,14 +406,34 @@ void svShipViewRender(featom* atom, regionhandle region)
 
             mouseCursorHide();
             mousePositionSet(svMouseCentreX, svMouseCentreY); // Reset position so it doesn't walk off region
+
+            // keep track of where the user left the camera so we can sync auto-rotation with it
+            angle_user_rotated_to       = svCamera.angle;
+            declination_user_rotated_to = svCamera.declination;
+            time_user_rotated_view      = universe.totaltimeelapsed;
         }
         else // auto rotate ship model
         {
             // continual 360 degree yaw rotation
-            svCamera.angle += DEG_TO_RAD(1);
+            real_time_angle = DEG_TO_RAD(remainder(universe.totaltimeelapsed, SV_360_ROTATION_SECS) / SV_360_ROTATION_SECS * 360);
+
+            if (angle_user_rotated_to >= 0.0) {
+                user_real_angle_offset = angle_user_rotated_to - real_time_angle;
+                angle_user_rotated_to = -1.0;
+            }
+
+            svCamera.angle = real_time_angle + user_real_angle_offset;
             
             // collapse pitch to default declination
-            svCamera.declination += 0.02 * (DEG_TO_RAD(svDeclination) - svCamera.declination);
+            if (time_user_rotated_view > 0.0) {
+                if (universe.totaltimeelapsed > time_user_rotated_view + SV_PITCH_FLATTEN_SECS) {
+                    svCamera.declination = DEG_TO_RAD(svDeclination);
+                    time_user_rotated_view = 0.0;
+                }
+                else {
+                    svCamera.declination = declination_user_rotated_to + (DEG_TO_RAD(svDeclination) - declination_user_rotated_to) * ((universe.totaltimeelapsed - time_user_rotated_view) / SV_PITCH_FLATTEN_SECS);
+                }
+            }
             
             if (svMouseInside) mouseCursorShow();
         }
@@ -626,8 +655,6 @@ void svFirepowerRender(featom *atom, regionhandle region)
 
     currentFont = fontMakeCurrent(svShipStatFont);
 
-    if (RGLtype == SWtype) primRectSolid2(&region->rect, FEC_Background);
-
     if(info->svFirePower !=0)
     {
         firepower = (uword) info->svFirePower;
@@ -710,8 +737,6 @@ void svCoverageRender(featom *atom, regionhandle region)
 
     width = fontWidthf("%s",buf);
 
-    if (RGLtype == SWtype) primRectSolid2(&region->rect, FEC_Background);
-
     fontPrintf(
         rect->x0,//rect->x1 - width,
         rect->y0,
@@ -757,8 +782,6 @@ void svManeuverRender(featom *atom, regionhandle region)
     }
 
     currentFont = fontMakeCurrent(svShipStatFont);
-
-    if (RGLtype == SWtype) primRectSolid2(&region->rect, FEC_Background);
 
     svShipManeuverability(info,maneuverability);
     sprintf(buf,ShipStatToNiceStr(Maneuver),maneuverability);
@@ -818,8 +841,6 @@ void svArmorRender(featom *atom, regionhandle region)
 
     width = fontWidthf("%s",buf);
 
-    if (RGLtype == SWtype) primRectSolid2(&region->rect, FEC_Background);
-
     fontPrintf(
         rect->x0,//rect->x1 - width,
         rect->y0,
@@ -866,8 +887,6 @@ void svTopSpeedRender(featom *atom, regionhandle region)
     }
 
     currentFont = fontMakeCurrent(svShipStatFont);
-
-    if (RGLtype == SWtype) primRectSolid2(&region->rect, FEC_Background);
 
     //sprintf(buf,"%d", (uword)info->staticheader.maxvelocity);
     //topspeed contains a %d for the numerical location of the maxvelocity
@@ -941,8 +960,6 @@ void svMassRender(featom *atom, regionhandle region)
         buf);                       //width of number
         //ShipTypeStatToNiceStr(svShipType, Mass));//width of number
 
-
-    if (RGLtype == SWtype) primRectSolid2(&region->rect, FEC_Background);
 
     fontPrintf(
         rect->x0,//rect->x1 - width,

@@ -15,12 +15,10 @@
 #include "AutoLOD.h"
 #include "Battle.h"
 #include "Debug.h"
-#include "debugwnd.h"
 #include "devstats.h"
 #include "FEColour.h"
 #include "FEFlow.h"
 #include "FontReg.h"
-#include "glcaps.h"
 #include "glinc.h"
 #include "InfoOverlay.h"
 #include "Key.h"
@@ -42,6 +40,9 @@
     #define strcasecmp _stricmp
 #endif
 
+#ifdef _WIN32
+    #include "debugwnd.h"
+#endif
 
 /*=============================================================================
     Definitions:
@@ -616,7 +617,7 @@ void opKeyboardDraw(featom *atom, regionhandle region)
     {                                                       //if region not processed yet
         region->flags = RPE_PressLeft | RPE_PressRight |
                         RPE_WheelUp | RPE_WheelDown;        //receive mouse presses from now on
-        regFunctionSet(region, opSelectKey);          //set new region handler function
+        regFunctionSet(region, (regionfunction) opSelectKey);          //set new region handler function
         regFilterSet(region, region->flags | RPE_DoubleLeft | RPE_DoubleRight);
 
         //opKeyboardStart();
@@ -999,24 +1000,6 @@ void opKeyboardStart(void)
     }
 }
 
-void opKeyResetToDefault(char* name, featom* atom)
-{
-    sdword i;
-
-    for (i = 0; KeyTranslations[i].sendkey > 0; i++)
-    {
-        TempKeyTranslations[i].key1 = DefaultKeyTranslations[i];
-        TempKeyTranslations[i].key2 = 0;
-    }
-
-#ifdef DEBUG_STOMP
-    regVerify(keyboardregion);
-#endif
-
-    bitSet(keyboardregion->status, RSF_DrawThisFrame);
-}
-
-
 char UpperHex2Char(uword num)
 {
     uword x;
@@ -1075,35 +1058,6 @@ bool opResHackSupported(void)
     depth  = opSaveMAIN_WindowDepth;
 
     mode = opSaveRndSelected->dev->modes;
-    while (mode != NULL)
-    {
-        if (mode->width == width &&
-            mode->height == height &&
-            mode->depth == depth)
-        {
-            return TRUE;
-        }
-        mode = mode->next;
-    }
-
-    return FALSE;
-}
-
-bool opResSupported(sdword index)
-{
-    opres* res;
-    rdevice* dev;
-    rmode* mode;
-    int width, height, depth;
-
-    res = &opRes[index];
-    dev = opRnd[opRenderCurrentSelected].dev;
-
-    width  = res->width;
-    height = res->height;
-    depth  = res->depth;
-
-    mode = dev->modes;
     while (mode != NULL)
     {
         if (mode->width == width &&
@@ -1181,11 +1135,6 @@ void opCountdownYes(char* name, featom* atom)
     opTimerActive = FALSE;
     feScreenDisappear(NULL, NULL);
     opGLCStart();
-    if (strcasecmp(GLC_RENDERER, GENERIC_OPENGL_RENDERER) == 0)
-    {
-        GeneralMessageBox(strGetString(strGDIGeneric0),
-                          strGetString(strGDIGeneric1));
-    }
 }
 
 void opCountdownNo(char* name, featom* atom)
@@ -1330,77 +1279,38 @@ void opOptionsAcceptHelper(char* name, featom* atom, char* linkName)
     opOldDevcaps  = gDevcaps;
     opOldDevcaps2 = gDevcaps2;
 
-    if (rnd->type == RIN_TYPE_OPENGL)
+    if (opResChanged() || opDeviceIndex != opRenderCurrentSelected)
     {
-        if (RGLtype != GLtype || opResChanged() || 
-            (opDeviceIndex != opRenderCurrentSelected))
+        if (opResHackSupported())
         {
-            if (opResHackSupported())
+            soundEventShutdown();
+            mainSaveRender();
+            opGLCStop();
+
+            MAIN_WindowWidth  = opSaveMAIN_WindowWidth;
+            MAIN_WindowHeight = opSaveMAIN_WindowHeight;
+            MAIN_WindowDepth  = opSaveMAIN_WindowDepth;
+
+            opDevcaps  = gDevcaps;
+            opDevcaps2 = gDevcaps2;
+            gDevcaps  = rnd->dev->devcaps;
+            gDevcaps2 = rnd->dev->devcaps2;
+            if (mainLoadGL(rnd->data))
             {
-                soundEventShutdown();
-                mainSaveRender();
-                opGLCStop();
-
-                MAIN_WindowWidth  = opSaveMAIN_WindowWidth;
-                MAIN_WindowHeight = opSaveMAIN_WindowHeight;
-                MAIN_WindowDepth  = opSaveMAIN_WindowDepth;
-
-                opDevcaps  = gDevcaps;
-                opDevcaps2 = gDevcaps2;
-                gDevcaps  = rnd->dev->devcaps;
-                gDevcaps2 = rnd->dev->devcaps2;
-                if (mainLoadGL(rnd->data))
-                {
-                    opDeviceIndex = opRenderCurrentSelected;
-                    opCountdownBoxStart();
-                }
-                else
-                {
-                    gDevcaps  = opDevcaps;
-                    gDevcaps2 = opDevcaps2;
-                    mainRestoreRender();
-                    opModeswitchFailed();
-                }
-
-                soundEventRestart();
-                SDL_Delay(20);
-                opGLCStart();
+                opDeviceIndex = opRenderCurrentSelected;
+                opCountdownBoxStart();
             }
-        }
-    }
-    else
-    {
-        if (RGLtype != SWtype || opResChanged())
-        {
-            if (opResHackSupported())
+            else
             {
-                soundEventShutdown();
-                mainSaveRender();
-                opGLCStop();
-
-                MAIN_WindowWidth  = opSaveMAIN_WindowWidth;
-                MAIN_WindowHeight = opSaveMAIN_WindowHeight;
-                MAIN_WindowDepth  = opSaveMAIN_WindowDepth;
-
-                opDevcaps  = gDevcaps;
-                opDevcaps2 = gDevcaps2;
-                gDevcaps  = rnd->dev->devcaps;
-                gDevcaps2 = rnd->dev->devcaps2;
-                if (mainLoadParticularRGL("sw", ""))
-                {
-                    opDeviceIndex = opRenderCurrentSelected;
-                    opCountdownBoxStart();
-                }
-                else
-                {
-                    gDevcaps  = opDevcaps;
-                    gDevcaps2 = opDevcaps2;
-                    mainRestoreRender();
-                    opModeswitchFailed();
-                }
-                soundEventRestart();
-                opGLCStart();
+                gDevcaps  = opDevcaps;
+                gDevcaps2 = opDevcaps2;
+                mainRestoreRender();
+                opModeswitchFailed();
             }
+
+            soundEventRestart();
+            SDL_Delay(20);
+            opGLCStart();
         }
     }
 
@@ -1943,7 +1853,7 @@ void opMusicVolume(char* name, featom* atom)
        f = regFilterSet(atom->region, 0);
        regFilterSet(atom->region, f | RPE_HoldLeft);
 
-       shandle->processFunction  = opMusicVolumeProcess;
+       shandle->processFunction  = (uicfunction) opMusicVolumeProcess;
        opMusicVolumeProcess(atom->region, 0, 0, 0);
 
 //       shandle->processFunction  = opMusicVolumeProcess;
@@ -1977,7 +1887,7 @@ void opSFXVolume(char* name, featom* atom)
         f = regFilterSet(atom->region, 0);
         regFilterSet(atom->region, f | RPE_HoldLeft);
 
-        shandle->processFunction  = opSFXVolumeProcess;
+        shandle->processFunction  = (uicfunction) opSFXVolumeProcess;
         opSFXVolumeProcess(atom->region, 0, 0, 0);
 
 //        AddSmoothie(&sfxsmoothie);
@@ -2009,7 +1919,7 @@ void opSpeechVolume(char* name, featom* atom)
         f = regFilterSet(atom->region, 0);
         regFilterSet(atom->region, f | RPE_HoldLeft);
 
-        shandle->processFunction  = opSpeechVolumeProcess;
+        shandle->processFunction  = (uicfunction) opSpeechVolumeProcess;
 
         opSpeechVolumeProcess(atom->region, 0, 0, 0);
 
@@ -2064,7 +1974,7 @@ void opNumberChannels(char* name, featom* atom)
         f = regFilterSet(atom->region, 0);
         regFilterSet(atom->region, f | RPE_HoldLeft);
 
-        shandle->processFunction  = opNumChannelsProcess;
+        shandle->processFunction  = (uicfunction) opNumChannelsProcess;
         opNumChannelsProcess(atom->region, 0, 0, 0);
     }
     else
@@ -2384,17 +2294,6 @@ void opEffectsHelper(void)
     }
 
     trFilterEnable(texLinearFiltering);
-    if (RGL)
-    {
-        if (enableStipple)
-        {
-            glEnable(GL_POLYGON_STIPPLE);
-        }
-        else
-        {
-            glDisable(GL_POLYGON_STIPPLE);
-        }
-    }
 }
 
 void opUpdateVideoSettings(void)
@@ -2480,7 +2379,7 @@ void opDetailThreshold(char* name, featom* atom)
         f = regFilterSet(atom->region, 0);
         regFilterSet(atom->region, f | RPE_HoldLeft);
 
-        shandle->processFunction  = opDetailThresholdProcess;
+        shandle->processFunction  = (uicfunction) opDetailThresholdProcess;
 
         opDetailDisable();
     }
@@ -2515,7 +2414,7 @@ void opBrightness(char* name, featom* atom)
         f = regFilterSet(atom->region, 0);
         regFilterSet(atom->region, f | RPE_HoldLeft);
 
-        shandle->processFunction = opBrightnessProcess;
+        shandle->processFunction = (uicfunction) opBrightnessProcess;
     }
     else
     {
@@ -2847,23 +2746,8 @@ void opRenderListLoad(void)
         memStrncpy(opRnd[opRenderNumber].data, dev->data, 63);
         memStrncpy(opRnd[opRenderNumber].name, dev->name, 63);
 
-        switch (mainActiveRenderer())
-        {
-        case GLtype:
-            if (dev->type == RIN_TYPE_OPENGL)
-            {
-                opRenderCurrentSelected = opRenderNumber;
-                opRndSelected = &opRnd[opRenderNumber];
-            }
-            break;
-
-        default:
-            if (dev->type == RIN_TYPE_SOFTWARE)
-            {
-                opRenderCurrentSelected = opRenderNumber;
-                opRndSelected = &opRnd[opRenderNumber];
-            }
-        }
+        opRenderCurrentSelected = opRenderNumber;
+        opRndSelected = &opRnd[opRenderNumber];
 
         //increment device count
         opRenderNumber++;
@@ -2963,7 +2847,7 @@ void EqualizerCommon(char* name, featom* atom, sdword ID)
         f = regFilterSet(atom->region, 0);
         regFilterSet(atom->region, f | RPE_HoldLeft);
 
-        shandle->processFunction = opEqualizerProcess;
+        shandle->processFunction = (uicfunction) opEqualizerProcess;
 
 /*        //smoothies
         smootheqvalue[ID] = (real32)opEqualizerSettings[shandle->ID];
@@ -3250,7 +3134,7 @@ void opMouseSensitivity(char* name, featom* atom)
        f = regFilterSet(atom->region, 0);
        regFilterSet(atom->region, f | RPE_HoldLeft);
 
-       shandle->processFunction  = opMouseSensitivityProcess;
+       shandle->processFunction  = (uicfunction) opMouseSensitivityProcess;
 
     }
     else
@@ -3275,7 +3159,7 @@ void opBattleChatterCB(char* name, featom* atom)
        f = regFilterSet(atom->region, 0);
        regFilterSet(atom->region, f | RPE_HoldLeft);
 
-       shandle->processFunction  = opBattleChatterProcess;
+       shandle->processFunction  = (uicfunction) opBattleChatterProcess;
        opBattleChatterProcess(atom->region, 0, 0, 0);
     }
     else
@@ -3299,7 +3183,7 @@ void opNumberEffects(char* name, featom* atom)
        f = regFilterSet(atom->region, 0);
        regFilterSet(atom->region, f | RPE_HoldLeft);
 
-       shandle->processFunction  = opNumEffectsProcess;
+       shandle->processFunction  = (uicfunction) opNumEffectsProcess;
        opNumEffectsProcess(atom->region, 0, 0, 0);
     }
     else if (FELASTCALL(atom))
@@ -3322,7 +3206,7 @@ void opCPUDifficulty(char* name, featom* atom)
         f = regFilterSet(atom->region, 0);
         regFilterSet(atom->region, f | RPE_HoldLeft);
 
-        shandle->processFunction = opCPUDifficultyProcess;
+        shandle->processFunction = (uicfunction) opCPUDifficultyProcess;
     }
     else if (FELASTCALL(atom))
     {
@@ -3344,7 +3228,7 @@ void opCPUAttacks(char* name, featom* atom)
         f = regFilterSet(atom->region, 0);
         regFilterSet(atom->region, f | RPE_HoldLeft);
 
-        shandle->processFunction = opCPUAttacksProcess;
+        shandle->processFunction = (uicfunction) opCPUAttacksProcess;
     }
     else if (FELASTCALL(atom))
     {
@@ -3636,15 +3520,12 @@ udword opNoPalIncreaseProcess(regionhandle region, sdword ID, udword event, udwo
 
     if (event == RPE_ReleaseLeft)
     {
-        if (trNoPalettes)
+        opNoPalMB += 4;
+        if (opNoPalMB > opNoPalMaxMB)
         {
-            opNoPalMB += 4;
-            if (opNoPalMB > opNoPalMaxMB)
-            {
-                opNoPalMB = opNoPalMaxMB;
-            }
-            trNoPalResizePool(opNoPalMB);
+            opNoPalMB = opNoPalMaxMB;
         }
+        trNoPalResizePool(opNoPalMB);
         region->status |= RSF_DrawThisFrame;
         opNoPalDirty();
         return 0;
@@ -3661,15 +3542,12 @@ udword opNoPalDecreaseProcess(regionhandle region, sdword ID, udword event, udwo
 
     if (event == RPE_ReleaseLeft)
     {
-        if (trNoPalettes)
+        opNoPalMB -= 4;
+        if (opNoPalMB < opNoPalMinMB)
         {
-            opNoPalMB -= 4;
-            if (opNoPalMB < opNoPalMinMB)
-            {
-                opNoPalMB = opNoPalMinMB;
-            }
-            trNoPalResizePool(opNoPalMB);
+            opNoPalMB = opNoPalMinMB;
         }
+        trNoPalResizePool(opNoPalMB);
         region->status |= RSF_DrawThisFrame;
         opNoPalDirty();
         return 0;
@@ -3685,7 +3563,7 @@ void opNoPalDecrease(featom* atom, regionhandle region)
         region->flags = RPE_PressLeft | RPE_ReleaseLeft | RPE_Enter | RPE_Exit;
         if (!bitTest(atom->flags, FAF_Disabled))
         {
-            regFunctionSet(region, opNoPalDecreaseProcess);
+            regFunctionSet(region, (regionfunction) opNoPalDecreaseProcess);
         }
     }
     mgDrawArrow(region, TRUE, FALSE);
@@ -3698,7 +3576,7 @@ void opNoPalIncrease(featom* atom, regionhandle region)
         region->flags = RPE_PressLeft | RPE_ReleaseLeft | RPE_Enter | RPE_Exit;
         if (!bitTest(atom->flags, FAF_Disabled))
         {
-            regFunctionSet(region, opNoPalIncreaseProcess);
+            regFunctionSet(region, (regionfunction) opNoPalIncreaseProcess);
         }
     }
     mgDrawArrow(region, FALSE, FALSE);
@@ -3725,11 +3603,11 @@ void opNoPalDraw(featom* atom, regionhandle region)
     primRectSolid2(&region->rect, colBlack);
     oldfont = fontMakeCurrent(ghDefaultFont);
 
-    sprintf(buf, "%dMB", trNoPalettes ? opNoPalMB : 0);
-    c = trNoPalettes ? colRGB(255,200,0) : colRGB(191,150,0);
-    opBlackRect(region->rect.x0 - (trNoPalettes ? 5 : 0),
+    sprintf(buf, "%dMB", opNoPalMB);
+    c = colRGB(255,200,0);
+    opBlackRect(region->rect.x0 - 5,
                 region->rect.y0, buf);
-    fontPrint(region->rect.x0 - (trNoPalettes ? 5 : 0), region->rect.y0, c, buf);
+    fontPrint(region->rect.x0 - 5, region->rect.y0, c, buf);
     fontMakeCurrent(oldfont);
 }
 

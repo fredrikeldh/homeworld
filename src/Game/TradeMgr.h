@@ -75,15 +75,8 @@ void tmClearTechs(void);
 sdword tmTradeBegin(regionhandle region, sdword ID, udword event, udword data);
 void tmLeave(char *string, featom *atom);
 
-void tmCloseIfOpen(void);
-
-bool tmCanBuildTechType(void);
-
-
 void tmCostListDraw(featom *atom, regionhandle region);
-void tmTecListDraw(featom *atom, regionhandle region);
 void tmDialogDraw(featom *atom, regionhandle region);
-void tmnumberRUsDraw(featom *atom, regionhandle region);
 void tmTechInfoDraw(featom *atom, regionhandle region);
 
 

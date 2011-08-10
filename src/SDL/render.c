@@ -31,7 +31,6 @@
 #include "FastMath.h"
 #include "File.h"
 #include "font.h"
-#include "glcaps.h"
 #include "glinc.h"
 #include "Globals.h"
 #include "Gun.h"
@@ -76,6 +75,9 @@
 #include "Universe.h"
 #include "UnivUpdate.h"
 #include "utility.h"
+#ifdef HW_ENABLE_GLES
+#include "SDL_syswm.h"
+#endif
 
 #if defined _MSC_VER
 	#define isnan(x) _isnan(x)
@@ -137,6 +139,26 @@ renderfunction rndMainViewRender = rndMainViewRenderFunction;
 static sdword rndHint = 0;
 #endif
 
+#ifdef HW_ENABLE_GLES
+static EGLDisplay *egl_display = EGL_NO_DISPLAY;
+static EGLSurface egl_surface = EGL_NO_SURFACE;
+static EGLContext egl_context = EGL_NO_CONTEXT;
+static EGLConfig egl_config;
+#else
+PFNGLBINDBUFFERPROC glBindBuffer = 0;
+PFNGLDELETEBUFFERSPROC glDeleteBuffers = 0;
+PFNGLGENBUFFERSPROC glGenBuffers = 0;
+PFNGLBUFFERDATAPROC glBufferData = 0;
+PFNGLBUFFERSUBDATAPROC glBufferSubData = 0;
+#endif
+
+PFNGLDRAWTEXIOESPROC glDrawTexiOES = 0;
+
+static char *gl_extensions = 0;
+
+static bool useVBO = FALSE;
+static GLuint vboStars;
+
 /* Should remove this stuff after cleaning up rgl functions. */
 /*
 HGLRC hGLRenderContext;
@@ -181,8 +203,6 @@ typedef struct c4ub_v3f_s
     real32 v[3];
 } c4ub_v3f;
 c4ub_v3f* stararray = NULL;
-c4ub_v3f* bigstararray = NULL;
-
 
 //asteroid0 stuff
 typedef struct asteroid0data
@@ -835,6 +855,18 @@ bool setupPixelFormat()
 	static Uint32 lastDepth  = 0;
 	static bool   lastFull   = FALSE;
 	int FSAA = 0; //os_config_read_uint( NULL, "FSAA", 1 )
+#ifdef HW_ENABLE_GLES
+    SDL_SysWMinfo info;
+    EGLint num_config = 1;
+    EGLint attribs[] = {
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT,
+        EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
+        EGL_DEPTH_SIZE, 16,
+        EGL_NONE
+    };
+    EGLContext new_context = EGL_NO_CONTEXT;
+    EGLSurface new_surface = EGL_NO_SURFACE;
+#endif
 
     // don't bother doing anything if nothing's actually changed
 	if(lastWidth  == MAIN_WindowWidth
@@ -858,20 +890,72 @@ bool setupPixelFormat()
 			return FALSE;
 	}
 
-	/* Set attributes. */
-	SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE,  MAIN_WindowDepth);
-	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,   16);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+    /* Create OpenGL window. */
+    flags = SDL_SWSURFACE;
+    
+#ifndef HW_ENABLE_GLES
+    flags |= SDL_OPENGL;
 
-	/* Create OpenGL window. */
-	flags = SDL_HWSURFACE | SDL_OPENGL;
-	if (/* main */ fullScreen) flags |= SDL_FULLSCREEN;
+    /* Set attributes. */
+    SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE,  MAIN_WindowDepth);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,   16);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+#endif
+
+    if (/* main */ fullScreen) flags |= SDL_FULLSCREEN;
 	if (!SDL_SetVideoMode(MAIN_WindowWidth, MAIN_WindowHeight,
 		MAIN_WindowDepth, flags))
 		return FALSE;
 
-	
+#ifdef HW_ENABLE_GLES
+    SDL_VERSION(&info.version);
+    if (SDL_GetWMInfo(&info) != 1) {
+        fprintf(stderr, "EGL cannot use this SDL version\n");
+        return FALSE;
+    }
+
+    egl_display = eglGetDisplay((EGLNativeDisplayType)info.info.x11.gfxdisplay);
+    if (egl_display == EGL_NO_DISPLAY) {
+        fprintf(stderr, "EGL found no available displays\n");
+        return FALSE;
+    }
+
+    if (!eglInitialize(egl_display, NULL, NULL)) {
+        fprintf(stderr, "EGL failed to initialize: code 0x%x\n", eglGetError());
+        return FALSE;
+    }
+
+    if (!eglChooseConfig(egl_display, attribs, &egl_config, 1, &num_config) || num_config < 1) {
+        fprintf(stderr, "EGL failed to find any valid config with required attributes: code 0x%x\n", eglGetError());
+        return FALSE;
+    }
+
+    new_context = eglCreateContext(egl_display, egl_config, EGL_NO_CONTEXT, NULL);
+    if (new_context == EGL_NO_CONTEXT) {
+        fprintf(stderr, "EGL failed to create context: code 0x%x\n", eglGetError());
+        return FALSE;
+    }
+    
+    new_surface = eglCreateWindowSurface(egl_display, egl_config, (EGLNativeWindowType)info.info.x11.window, NULL);
+    if (new_surface == EGL_NO_SURFACE) {
+        fprintf(stderr, "EGL failed to create a window surface: 0x%x\n", eglGetError());
+        return FALSE;
+    }
+
+    if (!eglMakeCurrent(egl_display, new_surface, new_surface, new_context)) {
+        fprintf(stderr, "EGL failed to change current surface: 0x%x\n", eglGetError());
+        return FALSE;
+    }
+
+    if (egl_context != EGL_NO_CONTEXT) {
+        eglMakeCurrent(egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+        eglDestroyContext(egl_display, egl_context);
+        eglDestroySurface(egl_display, egl_surface);
+    }
+    egl_context = new_context;
+    egl_surface = new_surface;
+#else
 	if ( FSAA ) {
 	    SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 1 );
 	    SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, FSAA );
@@ -890,6 +974,7 @@ bool setupPixelFormat()
                 return FALSE;
 	    }
 	}
+#endif
 
 	SDL_ShowCursor(SDL_DISABLE);
 
@@ -905,7 +990,37 @@ bool setupPixelFormat()
 	lastDepth  = MAIN_WindowDepth;
 	lastFull   = fullScreen;
 
+#ifdef HW_ENABLE_GLES
+    glDrawTexiOES = eglGetProcAddress("glDrawTexiOES");
+#else
+    glBindBuffer = SDL_GL_GetProcAddress("glBindBuffer");
+    glDeleteBuffers = SDL_GL_GetProcAddress("glDeleteBuffers");
+    glGenBuffers = SDL_GL_GetProcAddress("glGenBuffers");
+    glBufferData = SDL_GL_GetProcAddress("glBufferData");
+    glBufferSubData = SDL_GL_GetProcAddress("glBufferSubData");
+#endif
+
+    gl_extensions = glGetString(GL_EXTENSIONS);
+    printf("GL Extensions:\n%s\n", gl_extensions);
+
+    useVBO = glCheckExtension("GL_ARB_vertex_buffer_object");
+
 	return TRUE;
+}
+
+int glCheckExtension(const char *ext) {
+    bool gotext = gl_extensions ? strstr(gl_extensions, ext) != NULL : gl_extensions;
+    if (strcmp(ext, "GL_ARB_vertex_buffer_object") == 0) {
+#ifdef HW_ENABLE_GLES
+        /* part of the standard in GLES */
+        return 1;
+#else
+        return gotext && glBindBuffer && glDeleteBuffers && glGenBuffers && glBufferData && glBufferSubData;
+#endif
+    } else if (strcmp(ext, "GL_OES_draw_texture") == 0) {
+        return gotext && glDrawTexiOES;
+    }
+    return gotext;
 }
 
 /*bool setupPalette(HDC hDC)*/
@@ -913,12 +1028,15 @@ bool setupPalette()
 {
 	int pix_size;
 
-	/* Never call SDL_GL_GetAttribute when using RGL... */
+#ifndef HW_ENABLE_GLES
 	if (SDL_GL_GetAttribute(SDL_GL_BUFFER_SIZE, &pix_size) == -1)
 	{
+#endif
 		/* Hoping it will work... */
 		pix_size = MAIN_WindowDepth;
+#ifndef HW_ENABLE_GLES
 	}
+#endif
 	if (pix_size >= 15)
 		return TRUE;
 
@@ -930,55 +1048,37 @@ typedef int (*AUXINITPOSITIONPROC)(GLuint, GLuint, GLuint, GLuint, GLuint);
 
 sdword rndSmallInit(rndinitdata* initData, bool GL)
 {
-    if (GL)
+    Uint32 flags;
+
+    /*
+    hGLWindow = initData->hWnd;
+    hGLDeviceContext = GetDC(initData->hWnd);
+    */
+    /*if (!setupPixelFormat(hGLDeviceContext))*/
+    if (!setupPixelFormat())
     {
-        Uint32 flags;
-
-        /*
-        hGLWindow = initData->hWnd;
-        hGLDeviceContext = GetDC(initData->hWnd);
-        */
-        /*if (!setupPixelFormat(hGLDeviceContext))*/
-        if (!setupPixelFormat())
-        {
-            return FALSE;
-        }
-        /*if (!setupPalette(hGLDeviceContext))*/
-        if (!setupPalette())
-        {
-            /* Kill the window we created. */
-            flags = SDL_WasInit(SDL_INIT_EVERYTHING);
-            if (flags & ~SDL_INIT_VIDEO)
-                SDL_QuitSubSystem(SDL_INIT_VIDEO);
-            else
-                SDL_Quit();
-            return FALSE;
-        }
-        /*
-        hGLRenderContext = (HGLRC)rwglCreateContext((unsigned int)hGLDeviceContext);
-        rwglMakeCurrent((int)hGLDeviceContext, (int)hGLRenderContext);
-        */
+        return FALSE;
     }
-    else
+    /*if (!setupPalette(hGLDeviceContext))*/
+    if (!setupPalette())
     {
-        AUXINITPOSITIONPROC initPositionProc;
-
-        initPositionProc = (AUXINITPOSITIONPROC)rwglGetProcAddress("rauxInitPosition");
-        dbgAssertOrIgnore(initPositionProc != NULL);
-
-        hGLWindow = (udword)(initData->hWnd);
-        rglCreateWindow((GLint)hGLWindow, (GLint)MAIN_WindowWidth, (GLint)MAIN_WindowDepth);
-
-        if (!initPositionProc(0, 0, initData->width, initData->height, MAIN_WindowDepth))
-        {
-            return FALSE;
-        }
-    }
-
-#ifndef _MACOSX_FIX_GL
-    glLockArraysEXT   = (LOCKARRAYSEXTproc)rwglGetProcAddress("glLockArraysEXT");
-    glUnlockArraysEXT = (UNLOCKARRAYSEXTproc)rwglGetProcAddress("glUnlockArraysEXT");
+        /* Kill the window we created. */
+        flags = SDL_WasInit(SDL_INIT_EVERYTHING);
+#ifdef HW_ENABLE_GLES
+        eglMakeCurrent(egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+        eglDestroyContext(egl_display, egl_context);
+        egl_config = EGL_NO_CONTEXT;
+        eglDestroySurface(egl_display, egl_surface);
+        egl_surface = EGL_NO_SURFACE;
+        eglTerminate(egl_display);
+        egl_display = EGL_NO_DISPLAY;
 #endif
+        if (flags & ~SDL_INIT_VIDEO)
+            SDL_QuitSubSystem(SDL_INIT_VIDEO);
+        else
+            SDL_Quit();
+        return FALSE;
+    }
 
     return TRUE;
 }
@@ -997,53 +1097,15 @@ sdword rndInit(rndinitdata *initData)
     static GLfloat  diffuseProperties[] = {0.8f, 0.8f, 0.8f, 1.0f};
     static GLfloat  specularProperties[] = {1.0f, 1.0f, 1.0f, 1.0f};
 
-    if (!RGL)
+    if (!setupPixelFormat())
     {
-        /*
-        hGLWindow = initData->hWnd;
-        hGLDeviceContext = GetDC(initData->hWnd);
-        */
-        /*if (!setupPixelFormat(hGLDeviceContext))*/
-        if (!setupPixelFormat())
-        {
-            dbgMessage("rndInit: GL couldn't setupPixelFormat");
-            return !OKAY;
-        }
-        /*if (!setupPalette(hGLDeviceContext))*/
-        if (!setupPalette())
-        {
-            dbgMessage("rndInit: GL couldn't setupPalette");
-            return !OKAY;
-        }
-        /*
-        hGLRenderContext = (HGLRC)rwglCreateContext((unsigned int)hGLDeviceContext);  //greate GL render context and select into window
-        rwglMakeCurrent((int)hGLDeviceContext, (int)hGLRenderContext);
-        */
-
-//        auxInitPosition(0, 0, initData->width, initData->height);   //create the viewport for rendering
-//        auxInitDisplayMode(AUX_RGB | AUX_DEPTH | AUX_DOUBLE);       //set mode (direct color, Z-buffered, double buffered)
+        dbgMessage("rndInit: GL couldn't setupPixelFormat");
+        return !OKAY;
     }
-    else
+    if (!setupPalette())
     {
-        AUXINITPOSITIONPROC initPositionProc;
-
-        initPositionProc = (AUXINITPOSITIONPROC)rwglGetProcAddress("rauxInitPosition");
-        dbgAssertOrIgnore(initPositionProc != NULL);
-
-        hGLWindow = (udword)(initData->hWnd);
-        rglCreateWindow((GLint)hGLWindow, (GLint)MAIN_WindowWidth, (GLint)MAIN_WindowDepth);
-
-        if (!initPositionProc(0, 0, initData->width, initData->height, MAIN_WindowDepth))
-        {
-            dbgMessage("rndInit: RGL couldn't initPositionProc");
-            return !OKAY;
-        }
-    }
-
-    glCapStartup();
-    if (!glCapFeatureExists(GL_SHARED_TEXTURE_PALETTE_EXT))
-    {
-        trNoPalettes = TRUE;
+        dbgMessage("rndInit: GL couldn't setupPalette");
+        return !OKAY;
     }
 
 #if RND_VERBOSE_LEVEL >= 1
@@ -1053,7 +1115,11 @@ sdword rndInit(rndinitdata *initData)
     dbgMessagef("rndInit: OpenGL Extensions :%s", glGetString(GL_EXTENSIONS));
 #endif
     rndSetClearColor(colRGBA(0,0,0,255));
+#ifdef HW_ENABLE_GLES
+    glClearDepthf( 1.0f );
+#else
     glClearDepth( 1.0 );
+#endif
 
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     rndAdditiveBlending = FALSE;
@@ -1083,22 +1149,17 @@ sdword rndInit(rndinitdata *initData)
 
 #if RND_FRAME_RATE
     rndFrameRateTaskHandle = taskStart(rndFrameRateTaskFunction, RND_FrameRatePeriod, 0);//start frame rate task
-    regKeyChildAlloc(ghMainRegion, RND_FrameRateKey, RPE_KeyDown, rndFrameRateToggle, 1, RND_FrameRateKey);
+    regKeyChildAlloc(ghMainRegion, RND_FrameRateKey, RPE_KeyDown, (regionfunction) rndFrameRateToggle, 1, RND_FrameRateKey);
 #endif//RND_FRAME_RATE
 #if defined(COLLISION_CHECK_STATS) || defined(PROFILE_TIMERS)
-    regKeyChildAlloc(ghMainRegion, RND_CollStatsKey, RPE_KeyDown, rndCollStatsToggle, 1, RND_CollStatsKey);
+    regKeyChildAlloc(ghMainRegion, RND_CollStatsKey, RPE_KeyDown, (regionfunction) rndCollStatsToggle, 1, RND_CollStatsKey);
 #endif
 #if RND_POLY_STATS
     rndPolyStatsTaskHandle = taskStart(rndPolyStatsTaskFunction, RND_PolyStatsPeriod, 0);//start frame rate task
-    regKeyChildAlloc(ghMainRegion, RND_PolyStatsKey, RPE_KeyDown, rndPolyStatsToggle, 1, RND_PolyStatsKey);
+    regKeyChildAlloc(ghMainRegion, RND_PolyStatsKey, RPE_KeyDown, (regionfunction) rndPolyStatsToggle, 1, RND_PolyStatsKey);
 #endif //RND_POLY_STATS
 
-    glDepthFunc(glCapDepthFunc);
-
-#ifndef _MACOSX_FIX_GL
-    glLockArraysEXT   = (LOCKARRAYSEXTproc)rwglGetProcAddress("glLockArraysEXT");
-    glUnlockArraysEXT = (UNLOCKARRAYSEXTproc)rwglGetProcAddress("glUnlockArraysEXT");
-#endif
+    glDepthFunc(GL_LEQUAL);
 
     return(OKAY);
 }
@@ -1112,28 +1173,28 @@ sdword rndInit(rndinitdata *initData)
 ----------------------------------------------------------------------------*/
 void rndClose(void)
 {
-    if (RGL)
-    {
-        rglDeleteWindow((GLint)hGLWindow);
+    Uint32 flags = SDL_WasInit(SDL_INIT_EVERYTHING);
+    if (!(flags & SDL_INIT_VIDEO))
+        return;
+    if (stararray) {
+        if (useVBO)
+            glDeleteBuffers(1, &vboStars);
+        else
+            memFree(stararray);
     }
+#ifdef HW_ENABLE_GLES
+    eglMakeCurrent(egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    eglDestroyContext(egl_display, egl_context);
+    egl_config = EGL_NO_CONTEXT;
+    eglDestroySurface(egl_display, egl_surface);
+    egl_surface = EGL_NO_SURFACE;
+    eglTerminate(egl_display);
+    egl_display = EGL_NO_DISPLAY;
+#endif
+    if (flags ^ SDL_INIT_VIDEO)
+        SDL_QuitSubSystem(SDL_INIT_VIDEO);
     else
-    {
-        /*
-        if (hGLRenderContext)
-        {
-            rwglMakeCurrent(0, 0);                              //release GL render context
-            rwglDeleteContext((int)hGLRenderContext);
-        }
-        ReleaseDC(hGLWindow, hGLDeviceContext);                 //release the Device context
-        */
-		Uint32 flags = SDL_WasInit(SDL_INIT_EVERYTHING);
-		if (!(flags & SDL_INIT_VIDEO))
-			return;
-		if (flags ^ SDL_INIT_VIDEO)
-			SDL_QuitSubSystem(SDL_INIT_VIDEO);
-		else
-			SDL_Quit();
-    }
+        SDL_Quit();
 }
 
 /*-----------------------------------------------------------------------------
@@ -1189,20 +1250,6 @@ void rndBillboardDisable(void)
 
 void rndFilter(bool on)
 {
-    if (!RGL)
-    {
-        return;
-    }
-    if (on)
-    {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    }
-    else
-    {
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    }
 }
 
 static real64 rndNear(real64 in)
@@ -1248,8 +1295,8 @@ void rndBackgroundRender(real32 radius, Camera* camera, bool bDrawStars)
     {
         bool blends, pointSize;
 
-        blends = glCapFeatureExists(GL_POINT_SMOOTH);
-        pointSize = glCapFeatureExists(GL_POINT_SIZE);
+        blends = TRUE;
+        pointSize = TRUE;
 
         glPointSize(1.0f);
 
@@ -1272,22 +1319,18 @@ void rndBackgroundRender(real32 radius, Camera* camera, bool bDrawStars)
                         rndNear(camera->clipPlaneNear), camera->clipPlaneFar);
 
         //draw small stars
-        if (glCapFeatureExists(GL_VERTEX_ARRAY))
-        {
-            glInterleavedArrays(GL_C4UB_V3F, 0, (GLvoid*)stararray);
-            glDrawArrays(GL_POINTS, 0, universe.star3dinfo->Num3dStars - NUM_BIG_STARS);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        if (useVBO) {
+            glBindBuffer(GL_ARRAY_BUFFER, vboStars);
+            glColorPointer(4, GL_UNSIGNED_BYTE, 16, 0);
+            glVertexPointer(3, GL_FLOAT, 16, (GLubyte*)4);
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        } else {
+            glColorPointer(4, GL_UNSIGNED_BYTE, 16, (GLubyte*)stararray);
+            glVertexPointer(3, GL_FLOAT, 16, ((GLubyte*)stararray) + 4);
         }
-        else
-        {
-            glBegin(GL_POINTS);
-            for (index = 0; index < (universe.star3dinfo->Num3dStars - NUM_BIG_STARS); index++)
-            {
-                glColor4ub(stararray[index].c[0], stararray[index].c[1],
-                           stararray[index].c[2], stararray[index].c[3]);
-                glVertex3fv((GLfloat*)&stararray[index].v);
-            }
-            glEnd();
-        }
+        glDrawArrays(GL_POINTS, 0, universe.star3dinfo->Num3dStars - NUM_BIG_STARS);
 
         if (blends && pointSize)
         {
@@ -1309,22 +1352,9 @@ void rndBackgroundRender(real32 radius, Camera* camera, bool bDrawStars)
         }
 
         //draw big stars
-        if (glCapFeatureExists(GL_VERTEX_ARRAY))
-        {
-            glInterleavedArrays(GL_C4UB_V3F, 0, (GLvoid*)bigstararray);
-            glDrawArrays(GL_POINTS, 0, NUM_BIG_STARS);
-        }
-        else
-        {
-            glBegin(GL_POINTS);
-            for (index = 0; index < NUM_BIG_STARS; index++)
-            {
-                glColor4ub(bigstararray[index].c[0], bigstararray[index].c[1],
-                           bigstararray[index].c[2], bigstararray[index].c[3]);
-                glVertex3fv((GLfloat*)&bigstararray[index].v);
-            }
-            glEnd();
-        }
+        glDrawArrays(GL_POINTS, (universe.star3dinfo->Num3dStars - NUM_BIG_STARS), NUM_BIG_STARS);
+        glDisableClientState(GL_COLOR_ARRAY);
+        glDisableClientState(GL_VERTEX_ARRAY);
 
         if (blends)
         {
@@ -1604,26 +1634,17 @@ bool rndFade(SpaceObj* spaceobj, Camera* camera)
 
     if (distsqr < mindist || g_ReplaceHack)
     {
-        if (RGL && !usingShader)
-            rglLightingAdjust(0.0f);
-        else
-            meshSetFade(0.0f);
+        meshSetFade(0.0f);
     }
     else if (distsqr < mindist+fadedist)
     {
         real32 amount = (distsqr - mindist) / fadedist;
-        if (RGL && !usingShader)
-            rglLightingAdjust(amount);
-        else
-            meshSetFade(amount);
+        meshSetFade(amount);
         rndAdditiveBlends(FALSE);
     }
     else
     {
-        if (RGL && !usingShader)
-            rglLightingAdjust(1.0f);
-        else
-            meshSetFade(1.0f);
+        meshSetFade(1.0f);
         return TRUE;
     }
 
@@ -1632,10 +1653,7 @@ bool rndFade(SpaceObj* spaceobj, Camera* camera)
 
 void rndUnFade()
 {
-    if (RGL && !usingShader)
-        rglLightingAdjust(0.0f);
-    else
-        meshSetFade(0.0f);
+    meshSetFade(0.0f);
 }
 
 /*-----------------------------------------------------------------------------
@@ -1828,7 +1846,7 @@ void rndDrawAsteroid0(sdword n)
     color   c;
     vector* v;
 
-    glPointSize(glCapFeatureExists(GL_POINT_SIZE) ? 2.0f : 1.0f);
+    glPointSize(2.0f);
     glBegin(GL_POINTS);
     for (index = 0; index < n; index++)
     {
@@ -2125,19 +2143,9 @@ void rndPostRenderDebug2DStuff(Camera *camera)
 #endif
         extern sdword trTextureChanges, trAvoidedChanges;
 
-        if (RGL)
-        {
-            sprintf(string, "(%d . %d) (%u) %u . %u . %u",
-                    trTextureChanges, trAvoidedChanges,
-                    alodGetPolys(), rglNumPolys(),
-                    rglCulledPolys(), meshRenders);
-        }
-        else
-        {
-            sprintf(string, "(%d . %d) (%u) . %u",
-                    trTextureChanges, trAvoidedChanges,
-                    alodGetPolys(), meshRenders);
-        }
+        sprintf(string, "(%d . %d) (%u) . %u",
+                trTextureChanges, trAvoidedChanges,
+                alodGetPolys(), meshRenders);
 
         trTextureChanges = 0;
         trAvoidedChanges = 0;
@@ -2282,7 +2290,6 @@ void rndMainViewAllButRenderFunction(Camera *camera)
 void rndMainViewRenderFunction(Camera *camera)
 {
     Node *objnode;
-    bool twopass;
     SpaceObj *spaceobj;
     udword i,numstars;
     Star3d *star;
@@ -2320,11 +2327,6 @@ void rndMainViewRenderFunction(Camera *camera)
         return;
     }
 #endif
-
-    if (RGL)
-    {
-        rglFeature(RGL_LOCK);                               //exclusive lock on the framebuffer
-    }
 
     primModeClear2();                                       //go to 3D rendering mode
 
@@ -2399,11 +2401,10 @@ void rndMainViewRenderFunction(Camera *camera)
         {
             c4ub_v3f* ptr;
 
-            stararray = (c4ub_v3f*)memAlloc((numstars - NUM_BIG_STARS) * sizeof(c4ub_v3f), "stararray", NonVolatile);
-            bigstararray = (c4ub_v3f*)memAlloc(NUM_BIG_STARS * sizeof(c4ub_v3f), "bigstararray", NonVolatile);
+            stararray = (c4ub_v3f*)memAlloc(numstars * sizeof(c4ub_v3f), "stararray", NonVolatile);
 
             ptr = stararray;
-            for (i = 0, star = universe.star3dinfo->Stars; i < (numstars - NUM_BIG_STARS); i++, star++, ptr++)
+            for (i = 0, star = universe.star3dinfo->Stars; i < numstars; i++, star++, ptr++)
             {
                 ptr->c[0] = star->r;
                 ptr->c[1] = star->g;
@@ -2414,15 +2415,12 @@ void rndMainViewRenderFunction(Camera *camera)
                 ptr->v[2] = star->position.z;
             }
 
-            for (ptr = bigstararray; i < numstars; i++, star++, ptr++)
-            {
-                ptr->c[0] = star->r;
-                ptr->c[1] = star->g;
-                ptr->c[2] = star->b;
-                ptr->c[3] = 200;
-                ptr->v[0] = star->position.x;
-                ptr->v[1] = star->position.y;
-                ptr->v[2] = star->position.z;
+            if (useVBO) {
+                glGenBuffers(1, &vboStars);
+                glBindBuffer(GL_ARRAY_BUFFER, vboStars);
+                glBufferData(GL_ARRAY_BUFFER, numstars * sizeof(c4ub_v3f), stararray, GL_STATIC_DRAW);
+                glBindBuffer(GL_ARRAY_BUFFER, 0);
+                memFree(stararray);
             }
         }
 
@@ -2482,11 +2480,6 @@ void rndMainViewRenderFunction(Camera *camera)
         rc();
     }
 
-    if (RGL && rndFogOn)
-    {
-        glEnable(GL_FOG);
-    }
-
 #if PIE_MOVE_NEARTO
     //clear out the 'move near to' info
     selClosestTarget = NULL;
@@ -2496,26 +2489,7 @@ void rndMainViewRenderFunction(Camera *camera)
     trailsRendered = shipTrails = 0;
     alodSetPolys(0);
 
-#if WILL_TWO_PASS
-    if (RGL && (RGLtype == SWtype))
-    {
-        twopass = TRUE;
-    }
-    else
-    {
-        twopass = FALSE;
-    }
-#else
-    twopass = FALSE;
-#endif
-    if (twopass)
-    {
-        objnode = universe.RenderList.tail;
-    }
-    else
-    {
-        objnode = universe.RenderList.head;
-    }
+    objnode = universe.RenderList.head;
 
     while (objnode != NULL)
     {
@@ -2549,33 +2523,30 @@ dontdraw:
                 }
                 break;
             case OBJ_EffectType:                            //if type effect
-                if (!twopass)
+                effect = (Effect *)spaceobj;                    //get effect pointer
+                if(effect->owner != NULL)
                 {
-                    effect = (Effect *)spaceobj;                    //get effect pointer
-                    if(effect->owner != NULL)
+                    SpaceObj *effectowner = (SpaceObj *)effect->owner;
+                    if(effectowner->objtype == OBJ_BulletType)
                     {
-                       SpaceObj *effectowner = (SpaceObj *)effect->owner;
-                       if(effectowner->objtype == OBJ_BulletType)
-                       {
-                         //effect is owned by a bullet
-                         if(((Bullet *) effectowner)->bulletType == BULLET_Laser)
-                         {
-                            //effect is owned by a defense fighter laser beam
-                            defenseFighterAdjustLaser(((Bullet *) effectowner));
-                            etgEffectUpdate(effect, 0.0f);                        //luke suggested fix to laser length problem
-                         }
-                         else if(((Bullet *) effectowner)->bulletType == BULLET_Beam)
-                         {
-                             if(((Bullet *)effectowner)->timelived <= UNIVERSE_UPDATE_PERIOD)
-                             {
-                                goto dontdraw2;
-                             }
-                         }
-                       }
+                        //effect is owned by a bullet
+                        if(((Bullet *) effectowner)->bulletType == BULLET_Laser)
+                        {
+                        //effect is owned by a defense fighter laser beam
+                        defenseFighterAdjustLaser(((Bullet *) effectowner));
+                        etgEffectUpdate(effect, 0.0f);                        //luke suggested fix to laser length problem
+                        }
+                        else if(((Bullet *) effectowner)->bulletType == BULLET_Beam)
+                        {
+                            if(((Bullet *)effectowner)->timelived <= UNIVERSE_UPDATE_PERIOD)
+                            {
+                            goto dontdraw2;
+                            }
+                        }
                     }
-                    etgEffectDraw(effect);
-dontdraw2:;
                 }
+                etgEffectDraw(effect);
+dontdraw2:;
                 break;
             case OBJ_ShipType:
                 if (spaceobj->staticinfo->staticheader.LOD != NULL)
@@ -2608,12 +2579,6 @@ dontdraw2:;
                         if (taskTimeElapsed-((Ship *)spaceobj)->flashtimer < FLASH_TIMER)
                         {
                             g_ReplaceHack = TRUE;
-                            if (RGL)
-                            {
-                                glPixelTransferf(GL_RED_BIAS, 0.3f);
-                                glPixelTransferf(GL_GREEN_BIAS, 0.3f);
-                                glPixelTransferf(GL_BLUE_BIAS, 0.3f);
-                            }
                         }
 
                         switch (level->flags & LM_LODType)
@@ -2654,15 +2619,8 @@ dontdraw2:;
                                     if (shipStaticInfo->scaleCap != 0.0f)
                                     {                   //if there's a scaling cap
                                         real32 scaleFactor;
-                                        if (glCapFeatureExists(GL_RESCALE_NORMAL))
-                                        {
-                                            glEnable(GL_RESCALE_NORMAL);
-                                            rndNormalization = TRUE;
-                                        }
-                                        else
-                                        {
-                                            rndNormalizeEnable(TRUE);
-                                        }
+                                        glEnable(GL_RESCALE_NORMAL);
+                                        rndNormalization = TRUE;
                                         scaleFactor = 1.0f - selCameraSpace.z * shipStaticInfo->scaleCap;
 #if RND_VERBOSE_LEVEL >= 1
                                         if (isnan((double)scaleFactor))
@@ -2712,7 +2670,7 @@ dontdraw2:;
                                 }
 */
                                 i = ((Ship *)spaceobj)->colorScheme;
-                                dbgAssertOrIgnore(i >= 0 && i < TE_NumberPlayers);
+                                dbgAssertOrIgnore(i >= 0 && i < MAX_MULTIPLAYER_PLAYERS);
                                 if (bitTest(spaceobj->flags,SOF_Cloaked))
                                 {
                                     g_WireframeHack = (bool8)((((Ship *)spaceobj)->playerowner == universe.curPlayerPtr) || proximityCanPlayerSeeShip(universe.curPlayerPtr,((Ship *)spaceobj)));
@@ -2866,15 +2824,8 @@ dontdraw2:;
                                 }
                                 shPopLightMatrix();
 
-                                if (glCapFeatureExists(GL_RESCALE_NORMAL))
-                                {
-                                    glDisable(GL_RESCALE_NORMAL);
-                                    rndNormalization = FALSE;
-                                }
-                                else
-                                {
-                                    rndNormalizeEnable(FALSE);
-                                }
+                                glDisable(GL_RESCALE_NORMAL);
+                                rndNormalization = FALSE;
                                 break;
                             case LT_TinySprite:
                                 dbgFatalf(DBG_Loc, "Unsupported LOD type 0x%x", level->flags);
@@ -2899,12 +2850,6 @@ dontdraw2:;
                         if (g_ReplaceHack)
                         {
                             g_ReplaceHack = FALSE;
-                            if (RGL)
-                            {
-                                glPixelTransferf(GL_RED_BIAS, 0.0f);
-                                glPixelTransferf(GL_GREEN_BIAS, 0.0f);
-                                glPixelTransferf(GL_BLUE_BIAS, 0.0f);
-                            }
                         }
 
                         {
@@ -3028,12 +2973,6 @@ dontdraw2:;
                     if (taskTimeElapsed-((Ship *)spaceobj)->flashtimer < FLASH_TIMER)
                     {
                         g_ReplaceHack = TRUE;
-                        if (RGL)
-                        {
-                            glPixelTransferf(GL_RED_BIAS, 0.3f);
-                            glPixelTransferf(GL_GREEN_BIAS, 0.3f);
-                            glPixelTransferf(GL_BLUE_BIAS, 0.3f);
-                        }
                     }
 
                     switch (level->flags & LM_LODType)
@@ -3072,7 +3011,7 @@ dontdraw2:;
                             case OBJ_DustType:
                                 rndFade(spaceobj, camera);
                                 meshRenders++;
-                                cloudRenderSystem((void*)level->pData, ((DustCloud*)spaceobj)->stub, spaceobj->currentLOD);
+                                cloudRenderSystem(((DustCloud*)spaceobj)->stub, spaceobj->currentLOD);
 //                                shipsAtLOD[spaceobj->currentLOD]++;
                                 rndUnFade();
                                 break;
@@ -3143,12 +3082,6 @@ renderDefault:
                     if (g_ReplaceHack)
                     {
                         g_ReplaceHack = FALSE;
-                        if (RGL)
-                        {
-                            glPixelTransferf(GL_RED_BIAS, 0.0f);
-                            glPixelTransferf(GL_GREEN_BIAS, 0.0f);
-                            glPixelTransferf(GL_BLUE_BIAS, 0.0f);
-                        }
                     }
 
                     glPopMatrix();
@@ -3172,58 +3105,7 @@ renderDefault:
             default:
                 dbgFatalf(DBG_Loc, "Undefined object type %d", spaceobj->objtype);
         }
-        if (twopass)
-        {
-            objnode = objnode->prev;
-        }
-        else
-        {
-            objnode = objnode->next;
-        }
-    }
-
-    if (twopass)
-    {
-        objnode = universe.RenderList.head;
-        while (objnode != NULL)
-        {
-            spaceobj = (SpaceObj*)listGetStructOfNode(objnode);
-            g_WireframeHack = FALSE;
-            rndPerspectiveCorrection(FALSE);
-            switch (spaceobj->objtype)
-            {
-            case OBJ_EffectType:
-                effect = (Effect *)spaceobj;                    //get effect pointer
-                if(effect->owner != NULL)
-                {
-                   SpaceObj *effectowner = (SpaceObj *)effect->owner;
-                   if(effectowner->objtype == OBJ_BulletType)
-                   {
-                     //effect is owned by a bullet
-                     if(((Bullet *) effectowner)->bulletType == BULLET_Laser)
-                     {
-                        //effect is owned by a defense fighter laser beam
-                        defenseFighterAdjustLaser(((Bullet *) effectowner));
-                        etgEffectUpdate(effect, 0.0f);                        //luke suggested fix to laser length problem
-                     }
-                     else if(((Bullet *) effectowner)->bulletType == BULLET_Beam)
-                     {
-                         if(((Bullet *)effectowner)->timelived <= UNIVERSE_UPDATE_PERIOD)
-                         {
-                            goto dontdraw3;
-                         }
-                     }
-                   }
-                }
-                etgEffectDraw(effect);
-                break;
-
-            default:
-                dbgFatalf(DBG_Loc, "Undefined object type %d", spaceobj->objtype);
-dontdraw3:;
-            }
-            objnode = objnode->next;
-        }
+        objnode = objnode->next;
     }
 
     //
@@ -3273,11 +3155,6 @@ dontdraw3:;
 
     rndPerspectiveCorrection(FALSE);
 
-    if (RGL)
-    {
-        glDisable(GL_FOG);
-    }
-
     nebRender();
 
     if (rndPostObjectCallback != NULL)
@@ -3288,10 +3165,6 @@ dontdraw3:;
     rndPostRenderDebug3DStuff(camera);
     primModeSet2();
     rndPostRenderDebug2DStuff(camera);
-    if (RGL)
-    {
-        rglFeature(RGL_UNLOCK);         //remove our exclusive lock
-    }
 }
 
 GLuint plug_handle = 0;
@@ -3484,32 +3357,22 @@ void rndShamelessPlug()
     winWidth  -= 1.0f;
     winHeight -= 1.0f;
 
-    if (RGLtype == SWtype)
-    {
-        glTexCoord2f(winWidth - fwidth, 0);
-        trClearCurrent();
-        glBindTexture(GL_TEXTURE_2D, plug_handle);
-        glDrawPixels(plug_width, plug_height, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
-    }
-    else
-    {
-        rndTextureEnable(TRUE);
-        rndAdditiveBlends(FALSE);
-        trClearCurrent();
-        glBindTexture(GL_TEXTURE_2D, plug_handle);
+    rndTextureEnable(TRUE);
+    rndAdditiveBlends(FALSE);
+    trClearCurrent();
+    glBindTexture(GL_TEXTURE_2D, plug_handle);
 
-        glColor4ub(255,255,255,255);
-        glBegin(GL_QUADS);
-        glTexCoord2f(0.0f, 1.0f);
-        glVertex2f(winWidth - fwidth, fheight);
-        glTexCoord2f(0.0f, 0.0f);
-        glVertex2f(winWidth - fwidth, 0);
-        glTexCoord2f(1.0f, 0.0f);
-        glVertex2f(winWidth, 0);
-        glTexCoord2f(1.0f, 1.0f);
-        glVertex2f(winWidth, fheight);
-        glEnd();
-    }
+    glColor4ub(255,255,255,255);
+    glBegin(GL_QUADS);
+    glTexCoord2f(0.0f, 1.0f);
+    glVertex2f(winWidth - fwidth, fheight);
+    glTexCoord2f(0.0f, 0.0f);
+    glVertex2f(winWidth - fwidth, 0);
+    glTexCoord2f(1.0f, 0.0f);
+    glVertex2f(winWidth, 0);
+    glTexCoord2f(1.0f, 1.0f);
+    glVertex2f(winWidth, fheight);
+    glEnd();
 
     glPopMatrix();
     glMatrixMode(GL_PROJECTION);
@@ -3943,7 +3806,6 @@ void rndDrawScissorBars(bool scissorEnabled)
 ----------------------------------------------------------------------------*/
 DEFINE_TASK(rndRenderTask)
 {
-    static bool shouldSwap;
     static sdword index;
 #ifdef PROFILE_TIMERS
     static sdword y;
@@ -3990,47 +3852,14 @@ DEFINE_TASK(rndRenderTask)
         }
 #endif
         glColor3ub(colRed(RND_StarColor), colGreen(RND_StarColor), colBlue(RND_StarColor));
-        shouldSwap = feShouldSaveMouseCursor();
-        if (shouldSwap)
+        if (lmActive)
         {
-            if (RGL)
-            {
-                rglFeature(RGL_SAVEBUFFER_ON);
-                if (mainRasterSkip)
-                {
-                    rglFeature(RGL_NOSKIP_RASTER);
-                }
-            }
+            rndClearToBlack();
+            glClear(GL_DEPTH_BUFFER_BIT);
         }
         else
         {
-            if (RGL)
-            {
-                rglFeature(RGL_SAVEBUFFER_OFF);
-            }
-            /*if (binkDonePlaying)*/
-            {
-                if (RGL)
-                {
-                    if (mainRasterSkip && gameIsRunning)
-                    {
-                        rglFeature(RGL_SKIP_RASTER);
-                    }
-                    else
-                    {
-                        rglFeature(RGL_NOSKIP_RASTER);
-                    }
-                }
-                if (lmActive)
-                {
-                    rndClearToBlack();
-                    glClear(GL_DEPTH_BUFFER_BIT);
-                }
-                else
-                {
-                    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the buffers
-                }
-            }
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); //clear the buffers
         }
 
         rndScissorEnabled = glIsEnabled(GL_SCISSOR_TEST);   //can we do scissoring?
@@ -4084,11 +3913,6 @@ DEFINE_TASK(rndRenderTask)
         // set the cursor type, reset the variables then draw the mouse cursor
         mouseSelectCursorSetting();
         mouseSetCursorSetting();
-        shouldSwap = feShouldSaveMouseCursor();
-        if (shouldSwap)
-        {
-            mouseStoreCursorUnder();
-        }
         
         mouseDraw();                                        //draw mouse atop everything
       
@@ -4116,13 +3940,6 @@ DEFINE_TASK(rndRenderTask)
         else if (keyIsStuck(PAUSEKEY))
         {
             keyClearSticky(PAUSEKEY);
-            if (RGL)
-            {
-#if SS_VERBOSE_LEVEL >= 1
-                dbgMessagef("Multi-shot end.");
-#endif
-                rglFeature(RGL_MULTISHOT_END);
-            }
         }
         
         if (rndTakeScreenshot)
@@ -4180,12 +3997,6 @@ DEFINE_TASK(rndRenderTask)
                 rndFlush();
             }
             feDontFlush = FALSE;
-        }
-        primErrorMessagePrint();
-
-        if (shouldSwap)
-        {
-            mouseRestoreCursorUnder();
         }
         primErrorMessagePrint();
 afterTheSwap:
@@ -4326,7 +4137,6 @@ sdword rndPerspectiveCorrection(sdword bEnable)
 #endif
     if (mainNoPerspective)
     {
-        if (RGL) glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_FASTEST);
         return(oldStatus);
     }
     if (bEnable)
@@ -4421,87 +4231,6 @@ sdword rndAdditiveBlends(sdword bAdditive)
 
     return(oldStatus);
 }
-
-/*-----------------------------------------------------------------------------
-    Name        : rndMaterialfv
-    Description : set GL material params
-    Inputs      : face - GL_FRONT or GL_FRONT_AND_BACK
-                  pname - GL_AMBIENT or GL_DIFFUSE
-                  params - RGBA [0..1]
-    Outputs     :
-    Return      : TRUE if material was updated, FALSE if same as last
-----------------------------------------------------------------------------*/
-#define V4_EQUAL(A, B) (A[0] != B[0] || A[1] != B[1] || A[2] != B[2] || A[3] != B[3]) ? FALSE : TRUE
-#define V4_SET(D, S) \
-    { \
-        D[0] = S[0]; \
-        D[1] = S[1]; \
-        D[2] = S[2]; \
-        D[3] = S[3]; \
-    }
-sdword rndMaterialfv(sdword face, sdword pname, real32* params)
-{
-    static real32 ambient[2][4] = {{-1.0f, -1.0f, -1.0f, -1.0f},{-1.0f, -1.0f, -1.0f, -1.0f}};
-    static real32 diffuse[2][4] = {{-1.0f, -1.0f, -1.0f, -1.0f},{-1.0f, -1.0f, -1.0f, -1.0f}};
-
-    if (face == -1)
-    {
-        real32 reset[4] = {-1.0f, -1.0f, -1.0f, -1.0f};
-        V4_SET(ambient[0], reset);
-        V4_SET(ambient[1], reset);
-        V4_SET(diffuse[0], reset);
-        V4_SET(diffuse[1], reset);
-        return TRUE;
-    }
-
-    if (face == GL_FRONT)
-    {
-        if (pname == GL_AMBIENT)
-        {
-            if (!V4_EQUAL(ambient[0], params))
-            {
-                V4_SET(ambient[0], params);
-                glMaterialfv(face, pname, params);
-                return TRUE;
-            }
-        }
-        else
-        {
-            if (!V4_EQUAL(diffuse[0], params))
-            {
-                V4_SET(diffuse[0], params);
-                glMaterialfv(face, pname, params);
-                return TRUE;
-            }
-        }
-    }
-    else
-    {
-        if (pname == GL_AMBIENT)
-        {
-            if (!V4_EQUAL(ambient[0], params) || !V4_EQUAL(ambient[1], params))
-            {
-                V4_SET(ambient[0], params);
-                V4_SET(ambient[1], params);
-                glMaterialfv(face, pname, params);
-                return TRUE;
-            }
-        }
-        else
-        {
-            if (!V4_EQUAL(diffuse[0], params) || !V4_EQUAL(ambient[1], params))
-            {
-                V4_SET(diffuse[0], params);
-                V4_SET(diffuse[1], params);
-                glMaterialfv(face, pname, params);
-                return TRUE;
-            }
-        }
-    }
-
-    return FALSE;
-}
-
 
 #define vcSub(a,b,c) \
     (a)->x = (b)->x - (c)->x; \
@@ -4679,17 +4408,10 @@ void rndSetScreenFill(sdword count, color c)
 ----------------------------------------------------------------------------*/
 void rndSetClearColor(color c)
 {
-    if (glCapFeatureExists(GL_COLOR_CLEAR_VALUE))
-    {
-        glClearColor(colReal32(colRed(c)),
-                     colReal32(colGreen(c)),
-                     colReal32(colBlue(c)),
-                     1.0f);
-    }
-    else
-    {
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-    }
+    glClearColor(colReal32(colRed(c)),
+                    colReal32(colGreen(c)),
+                    colReal32(colBlue(c)),
+                    1.0f);
 }
 
 /*-----------------------------------------------------------------------------
@@ -4702,8 +4424,6 @@ void rndSetClearColor(color c)
 void rndResetGLState(void)
 {
     trClearCurrent();
-
-    rndMaterialfv(-1, 0, NULL);
 
     if (rndAdditiveBlending)
     {
@@ -4886,22 +4606,14 @@ void rndClearToBlack(void)
 {
     real32 bgcolor[4];
 
-    if (glCapFeatureExists(GL_COLOR_CLEAR_VALUE))
-    {
-        //get current clearcolor
-        glGetFloatv(GL_COLOR_CLEAR_VALUE, (GLfloat*)bgcolor);
-        //set clearcolor to black
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        //clear the screen
-        glClear(GL_COLOR_BUFFER_BIT);
-        //reset clearcolor
-        glClearColor(bgcolor[0], bgcolor[1], bgcolor[2], bgcolor[3]);
-    }
-    else
-    {
-        //clear the screen
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
+    //get current clearcolor
+    glGetFloatv(GL_COLOR_CLEAR_VALUE, (GLfloat*)bgcolor);
+    //set clearcolor to black
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    //clear the screen
+    glClear(GL_COLOR_BUFFER_BIT);
+    //reset clearcolor
+    glClearColor(bgcolor[0], bgcolor[1], bgcolor[2], bgcolor[3]);
 }
 
 /*-----------------------------------------------------------------------------
@@ -4915,22 +4627,14 @@ void rndAllClearToBlack(void)
 {
     real32 bgcolor[4];
 
-    if (glCapFeatureExists(GL_COLOR_CLEAR_VALUE))
-    {
-        //get current clearcolor
-        glGetFloatv(GL_COLOR_CLEAR_VALUE, (GLfloat*)bgcolor);
-        //set clearcolor to black
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        //clear the screen
-        rndClear();
-        //reset clearcolor
-        glClearColor(bgcolor[0], bgcolor[1], bgcolor[2], bgcolor[3]);
-    }
-    else
-    {
-        //clear the screen
-        rndClear();
-    }
+    //get current clearcolor
+    glGetFloatv(GL_COLOR_CLEAR_VALUE, (GLfloat*)bgcolor);
+    //set clearcolor to black
+    glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+    //clear the screen
+    rndClear();
+    //reset clearcolor
+    glClearColor(bgcolor[0], bgcolor[1], bgcolor[2], bgcolor[3]);
 }
 
 /*-----------------------------------------------------------------------------
@@ -4949,11 +4653,6 @@ void rndClear(void)
         glClear(GL_COLOR_BUFFER_BIT);
         rndFlush();
     }
-
-    if (RGLtype == SWtype)
-    {
-        rglFeature(RGL_SPEEDY);
-    }
 }
 
 /*-----------------------------------------------------------------------------
@@ -4967,9 +4666,10 @@ void rndFlush(void)
 {
     glFlush();
     primErrorMessagePrint();
-    if (!RGL)
-    {
-        SDL_GL_SwapBuffers();
-    }
+#ifdef HW_ENABLE_GLES
+    eglSwapBuffers(egl_display, egl_surface);
+#else
+    SDL_GL_SwapBuffers();
+#endif
     SDL_Delay(1);
 }

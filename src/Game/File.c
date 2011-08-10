@@ -443,17 +443,23 @@ static bool8 fileNameCorrectCase (char* fileName)
 	if (isalpha(fileNameCopy[0]) && strcmp(fileNameCopy + 1, ":") == 0)
 	{
 		fileNameCopy[2] = '/';
-#else
-	if (fileNameCopy[0] == '\0')
-	{
-		fileNameCopy[0] = '/';
-#endif
 
 		dbgAssertOrIgnore(pathComponentCount > 1);
 		pathComponentCount--;
 
 		isPathAbsolute = TRUE;
 	}
+#else
+	if (fileNameCopy[0] == '\0')
+	{
+		fileNameCopy[0] = '/';
+
+		dbgAssertOrIgnore(pathComponentCount > 1);
+		pathComponentCount--;
+
+		isPathAbsolute = TRUE;
+	}
+#endif
 
 	/* Now we start the search for the given file.  For each path component,
 	   we first do an exact check to see if it exists using the case given
@@ -1118,7 +1124,7 @@ void fileDelete(char *_fileName)
 {
     char *fileName;
 
-    fileName = filePathPrepend(_fileName, FF_IgnorePrepend);    //get full path
+    fileName = filePathPrepend(_fileName, FF_IgnorePrepend);  // use unadulterated path
     fileNameReplaceSlashesInPlace(fileName);
 
     remove(fileName);
@@ -1897,7 +1903,7 @@ char *filePathPrepend(char *fileName, udword flags)
     return filePathTempBuffer;
 }
 
-void fileCDROMPathSet(char *path)
+bool fileCDROMPathSet(char *path)
 {
 #ifdef _WIN32
     char message[80];
@@ -1910,6 +1916,7 @@ void fileCDROMPathSet(char *path)
     }
 #endif
     filePathMaxBufferSet(fileCDROMPath, path);
+    return TRUE;
 }
 
 void fileHomeworldDataPathSet(char *path)
@@ -1917,14 +1924,16 @@ void fileHomeworldDataPathSet(char *path)
     filePathMaxBufferSet(fileHomeworldDataPath, path);
 }
 
-void fileOverrideBigPathSet(char *path)
+bool fileOverrideBigPathSet(char *path)
 {
     filePathMaxBufferSet(fileOverrideBigPath, path);
+    return TRUE;
 }
 
-void fileUserSettingsPathSet(char *path)
+bool fileUserSettingsPathSet(char *path)
 {
     filePathMaxBufferSet(fileUserSettingsPath, path);
+    return TRUE;
 }
 
 

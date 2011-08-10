@@ -48,21 +48,18 @@
     extern udword dbgStackBase;
 #endif
 
-extern char   dbgFatalErrorString[DBG_BufferLength];
-extern sdword dbgInt3Enabled;
+extern sdword dbgAllowInterrupts;
 
+void dbgMessage  (char *string     );
+void dbgMessagef (char *format, ...);
 
-sdword dbgMessage  (char *string);
-sdword dbgMessagef (char *format, ...);
+void dbgWarning  (char *file, sdword line, char *string      );
+void dbgWarningf (char *file, sdword line, char *format, ... );
 
-sdword dbgWarning  (char *file, sdword line, char *format      );
-sdword dbgWarningf (char *file, sdword line, char *format, ... );
+void dbgFatal    (char *file, sdword line, char *string      );
+void dbgFatalf   (char *file, sdword line, char *format, ... );
 
-sdword dbgFatal    (char *file, sdword line, char *format      );
-sdword dbgFatalf   (char *file, sdword line, char *format, ... );
-
-sdword dbgNonFatal (char *file, sdword line, char *error       );
-sdword dbgNonFatalf(char *file, sdword line, char *format, ... );
-
+void dbgNonFatal (char *file, sdword line, char *string      );
+void dbgNonFatalf(char *file, sdword line, char *format, ... );
 
 #endif

@@ -7,6 +7,7 @@
 #include <string.h>
 
 #include "AIPlayer.h"
+#include "AIResourceMan.h"
 #include "AIShip.h"
 #include "AITrack.h"
 #include "AIVar.h"
@@ -147,6 +148,7 @@ bool singlePlayerHyperspacingInto     = FALSE;
 bool spHoldHyperspaceWindow           = FALSE;
 bool spBinkPlay                       = FALSE;
 bool triggerNIS                       = FALSE;
+bool spCollectResourcesAtEndOfMission = FALSE;
 
 real32 spFleetModifier = 0.0f;
 real32 spFleetStr      = 0.0f;
@@ -1160,37 +1162,6 @@ bool NoneDoingHS(udword state)
     return TRUE;
 }
 
-bool AllDoingExceptMeHS(udword state, Ship* me)
-{
-    InsideShip* insideship;
-    Node* objnode;
-    Ship* ship;
-
-    objnode = singlePlayerGameInfo.ShipsInHyperspace.head;
-    while (objnode != NULL)
-    {
-        insideship = (InsideShip*)listGetStructOfNode(objnode);
-        ship = insideship->ship;
-        dbgAssertOrIgnore(ship->objtype == OBJ_ShipType);
-
-        if (allianceIsShipAlly(ship,universe.curPlayerPtr) &&
-            ShipCanMakeHyperspace(ship))
-        {
-            if (ship != me)
-            {
-                if (ship->shipSinglePlayerGameInfo->hsState != state)
-                {
-                    return FALSE;
-                }
-            }
-        }
-
-        objnode = objnode->next;
-    }
-
-    return TRUE;
-}
-
 void InstantlyHyperspaceOut(Ship *ship,Ship *mothership)
 {
     CalculateHyperspaceTimeForShip(ship,mothership);
@@ -2093,6 +2064,41 @@ void spHyperspaceButtonPushed(void)
     spMainScreenAndLockout(SPLOCKOUT_MR);
 
     HyperspaceRollCallBegin(ghMainRegion,0,0,0);
+
+    if (spCollectResourcesAtEndOfMission) {
+        SelectCommand *playerFleet = selectAllPlayersShips(universe.curPlayerPtr);
+
+        // player must have a resource collector available
+        if (ShiptypeInSelection(playerFleet, ResourceCollector)) {
+            SelectCommand *shipsRemaining = shipLinkedListAsSelectCommand(&universe.ShipList, "remaining ships");
+
+            MakeShipsNotIncludeTheseShips(shipsRemaining, playerFleet);          // = enemy ships remaining
+            MakeShipsOnlyFollowConstraints(shipsRemaining, aiuIsShipDangerous);  // = offensive enemy ships remaining
+
+            // player must have eliminated all offensive enemy vessels to harvest automatically safely
+            if (shipsRemaining->numShips == 0) {
+                sdword resourcesLeft = NumberOfEasilyAccesibleRUs(NULL);
+
+                if (resourcesLeft > 0) {
+                    char *resources_collected_strings[] = {
+                        "Resources collected",
+                        "Ressources collectées",
+                        "Ressourcen gesammelt",
+                        "Los recursos recaudados",
+                        "Le risorse raccolte",
+                    };
+
+                    universe.curPlayerPtr->resourceUnits += resourcesLeft;
+
+                    kasfLocationCard(5000, resources_collected_strings[strCurLanguage]);
+                }
+            }
+
+            memFree(shipsRemaining);
+        }
+
+        memFree(playerFleet);
+    }
 }
 
 void spTaskBarHyperspaceCB(struct taskbutton *button, ubyte *userData)
@@ -2130,7 +2136,7 @@ void singlePlayerClose(void)
     }
     smSensorWeirdness = FALSE;
     // turns on Fleet command again, if it's been turned off
-    soundEventSetActorFlag(ACTOR_FLEETCOMMAND_FLAG, TRUE);
+    soundEventSetActorFlag(SPEECH_ACTOR_FLEET_COMMAND, TRUE);
 #if SP_DEBUGLEVEL2
     mrKASDebugDrawStates = FALSE;
     mrKASDebugDrawTimers = FALSE;

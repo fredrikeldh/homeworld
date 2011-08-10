@@ -188,9 +188,6 @@ lgqueuegameplayerinfo;
 void lgStartMultiPlayerLANGameScreens(regionhandle region, sdword ID, udword event, udword data, bool AlreadyLoggedIn);
 void lgShutdownMultiPlayerGameScreens(void);
 
-void lgConnectedToChannel(bool existing);
-void lgFailedToConnectToChannel(bool existing);
-
 void lgDisplayMessage(char *message);
 
 void lgProcessGameChatPacket(struct ChatPacket *packet);
@@ -203,9 +200,6 @@ void lgNotifyGameDisolved(void);
 
 void lgStartup(void);
 void lgShutdown(void);
-
-//sets the game options based on gameName
-void lgSetGameType(char *gameName);
 
 void mgShowScreen(sdword screennum, bool disappear);
 

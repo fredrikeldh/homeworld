@@ -89,7 +89,7 @@ void MinelayerCorvetteStaticInit(char *directory,char *filename,struct ShipStati
 {
     MinelayerCorvetteStatics *corvstat = (statinfo->shiprace == R1) ? &MinelayerCorvetteStaticRace1 : &MinelayerCorvetteStaticRace2;
 
-    memset(corvstat,sizeof(*corvstat),0);
+    memset(corvstat, 0, sizeof(MinelayerCorvetteStatics));
     scriptSetStruct(directory,filename,AttackSideStepParametersScriptTable,(ubyte *)&corvstat->sidestepParameters);
 
     statinfo->custstatinfo = corvstat;
@@ -223,7 +223,7 @@ void SetAIVecHeading(Ship *ship, SpaceObjRotImpTarg *target, vector *trajectory)
         vecAddTo(spec->aivec, *trajectory);
         vecScalarMultiply(spec->aivec,spec->aivec,minelayercorvettestatics->FlyAwayDist[target_class]);
     }
-    if(!(target->posinfo.isMoving & ISMOVING_MOVING))
+    if(!IS_MOVING_LINEARLY(target->posinfo.isMoving))
     {    //if target isn't moving, randomize trajectory
         randeg = randombetween(5,30);
         randegf = (real32) ((randeg & 1) ? randeg : -randeg);
@@ -785,7 +785,7 @@ void MineLayerCorvette_PreFix(Ship *ship)
 {
     MinelayerCorvetteSpec *spec = (MinelayerCorvetteSpec *)ship->ShipSpecifics;
 
-    spec->mineforminfo = ConvertPointerInListToNum(&universe.MineFormationList,spec->mineforminfo);
+    spec->mineforminfo = (MineFormationInfo *) ConvertPointerInListToNum(&universe.MineFormationList,spec->mineforminfo);
 }
 
 void MineLayerCorvette_Fix(Ship *ship)

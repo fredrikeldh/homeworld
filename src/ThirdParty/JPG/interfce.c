@@ -4,7 +4,7 @@
 // ---------------------
 // Author...: Gus J Grubba
 // Date ....: October 1995
-// Descr....: Interface to JPEG library
+// Descr....: Interface to JPEG library (Homeworld SDL)
 //
 // History .: Oct, 27 1995 - Started
 //
@@ -194,7 +194,7 @@ void JpegRead( JPEGDATA *data ) {
      row_stride = cinfo.output_width * cinfo.output_components;
 
      buffer = (*cinfo.mem->alloc_sarray)
-     		((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
+		((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 
      bf = data->ptr;
      y  = 0;

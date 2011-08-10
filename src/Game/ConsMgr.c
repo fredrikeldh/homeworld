@@ -123,8 +123,6 @@ sdword cmSelectRightAdjust = 0;
 
 #define NUM_CMCARRIERS          4
 
-#define UNIVERSE_TURBO_REPEAT       19
-
 #define CM_MaxJobsMothership    2
 #define CM_MaxJobsHeavyCruiser  2
 #define CM_MaxJobsCarrier       2
@@ -1180,14 +1178,7 @@ void cmBuildTaskFunction(void)
                                 progress->timeFraction = decrement & 0x0000FFFF; // save fraction bits
                                 decrement >>= 16; // Convert back to integer
                             }
-/*#if (!UNIVERSE_TURBORECORD_ONLY)
-#if UNIVERSE_TURBOPAUSE_DEBUG
-                            if (universeTurbo)
-                            {
-                                decrement *= (UNIVERSE_TURBO_REPEAT+1);
-                            }
-#endif
-#endif*/
+
                             if (!universePause)
                             {
                                 progress->costSoFar += decrement;
@@ -1221,19 +1212,7 @@ void cmBuildTaskFunction(void)
                                 else
         #endif
                                 {
-/*#if (!UNIVERSE_TURBORECORD_ONLY)
-#if UNIVERSE_TURBOPAUSE_DEBUG
-                                    if (universeTurbo)
-                                    {
-                                        progress->timeLeft-=UNIVERSE_TURBO_REPEAT;
-                                    }
-                                    else
-#endif
-#endif*/
-                                    {
-                                        progress->timeLeft--;                   //decrement the time
-                                    }
-
+                                    progress->timeLeft--;                   //decrement the time
                                 }
                             }
 
@@ -1895,80 +1874,6 @@ void cmPauseJobs(char *string, featom *atom)
     cmDirtyShipInfo();
 }
 
-#if(0)
-/*-----------------------------------------------------------------------------
-    Name        : cmPauseJobs
-    Description : Callback to pause/unpause all current jobs
-    Inputs      :
-    Outputs     :
-    Return      :
-----------------------------------------------------------------------------*/
-void cmPauseJobsOld(char *string, featom *atom)
-{
-    udword index;
-    bool allpaused = TRUE;
-    shipinprogress *sip;
-
-    if((tutorial==TUTORIAL_ONLY) & !tutEnable.bBuildPauseJobs)
-        return;
-
-    cmDirtyShipInfo();
-
-    /*
-    if (bitTest(taskData[cmBuildTask]->flags, TF_Paused))
-    {
-        speechEventFleet(COMM_F_Const_Resume, 0, universe.curPlayerIndex);
-        taskResume(cmBuildTask);
-    }
-    else
-    {
-        speechEventFleet(COMM_F_Const_Pause, 0, universe.curPlayerIndex);
-        taskPause(cmBuildTask);
-    }
-    */
-
-    //check if all selected ships paused
-
-    for (index=0; (cmShipsAvailable[index].nJobs!=-1) && allpaused; index++)
-    {
-        //if (cmShipsAvailable[index].selected)
-        sip = cmSIP(index);
-
-        if (sip->selected)
-        {
-            if (!sip->paused)
-            {
-                allpaused = FALSE;
-            }
-        }
-    }
-
-    if (allpaused)  //unpause them all
-    {
-        for (index=0; (cmShipsAvailable[index].nJobs!=-1) && allpaused; index++)
-        {
-            sip = cmSIP(index);
-            if (sip->selected)
-            {
-                sip->paused = FALSE;
-            }
-        }
-
-    }
-    else    //pause them all
-    {
-        for (index=0; (cmShipsAvailable[index].nJobs!=-1) && allpaused; index++)
-        {
-            sip = cmSIP(index);
-            if (sip->selected)
-            {
-                sip->paused = TRUE;
-            }        }
-
-    }
-}
-#endif
-
 /*-----------------------------------------------------------------------------
     Name        : cmShipCostsDraw
     Description : Draw the cost of building selected ships.
@@ -2527,154 +2432,6 @@ sdword cmLeftArrowProcess(regionhandle region, sdword ID, udword event, udword d
     cmDirtyShipInfo();
     return(0);
 }
-
-/*-----------------------------------------------------------------------------
-    Name        : cmDrawArrow
-    Description :
-    Inputs      :
-    Outputs     :
-    Return      :
-----------------------------------------------------------------------------*/
-
-void new_cmDrawArrow(regionhandle region, bool leftArrow)
-{
-    sdword y, index, numlines, startind=0;
-    bool newline = FALSE;
-    rectangle *rect = &region->rect;
-    rectangle arrowrect;
-
-    triangle tri;
-    sdword width = rect->x1 - rect->x0 - 4;
-    shipsinprogress *factory;
-    shipinprogress *progress;
-    fonthandle currentFont;
-    sdword leftoffset = 0;
-
-    numlines = 0;
-
-    currentFont = fontMakeCurrent(cmDefaultFont);
-
-    for (index=0; cmShipsAvailable[index].nJobs!=-1; index++)
-    {
-        if ( (cmShipsAvailable[index].itemtype==ITEM_SHIP) &&
-             (cmShipsAvailable[index].itemstat != STAT_CANTBUILD) )
-            newline=TRUE;
-        else if ( (cmShipsAvailable[index].itemtype==ITEM_CLASS) &&
-                  (cmShipsAvailable[index].itemstat==STAT_PRINT) )
-            newline = TRUE;
-
-        if (newline)
-        {
-            newline = FALSE;
-            numlines++;
-            if (numlines==cmUpperIndex+1)
-            {
-                startind = index;
-                break;
-            }
-        }
-    }
-
-    #define YOFFSET 200
-
-    newline=FALSE;
-    numlines=0;
-
-    y = rect->y0 + CM_ASMarginTop;
-    factory = curshipsInProgress;
-
-    if(leftArrow)
-    {
-        tri.x0 = rect->x1 - 2;
-        tri.x1 = rect->x0 + 2;
-        tri.x2 = rect->x1 - 2;
-    }
-    else
-    {
-        tri.x0 = rect->x0 + 2;
-        tri.x1 = rect->x0 + 2;
-        tri.x2 = rect->x1 - 2;
-    }
-
-    for (index=startind;cmShipsAvailable[index].nJobs!=-1; index++)
-    {
-        if (y + fontHeight(" ") >= rect->y1)
-        {
-            break;
-        }
-
-        if ( (cmShipsAvailable[index].itemtype==ITEM_SHIP) &&
-             (cmShipsAvailable[index].itemstat==STAT_CANBUILD) )
-        {
-            progress = &factory->progress[cmShipsAvailable[index].info->shiptype];
-
-            if(leftArrow)
-            {
-                tri.y0 = YOFFSET + y;
-                tri.y1 = YOFFSET + y + (width / 2);
-                tri.y2 = YOFFSET + y + width;
-            }
-            else
-            {
-                tri.y0 = YOFFSET + y;
-                tri.y1 = YOFFSET + y + width;
-                tri.y2 = YOFFSET + y + (width / 2);
-            }
-
-            if(((leftArrow && cmLeftArrowActive) || (!leftArrow && cmRightArrowActive)) && (index==cmArrowIndex))
-            {
-                cmLeftArrowActive  = FALSE;
-                cmRightArrowActive = FALSE;
-                cmArrowIndex = -1;
-                primTriSolid2(&tri, colRGB(200, 0, 0));
-            }
-
-
-            primTriOutline2(&tri, 1, colRGB(200, 200, 0));
-
-            if (leftArrow)
-                leftoffset = 3;
-            else
-                leftoffset = 0;
-
-
-            arrowrect.x0 = rect->x0;
-            arrowrect.x1 = rect->x0 + 20;
-            arrowrect.y0 = y;
-            arrowrect.y1 = y + 20;
-
-            //trPalettedTextureMakeCurrent(cmArrowTexture[0 + leftoffset], cmArrowIcon[0 + leftoffset]->palette);
-            trRGBTextureMakeCurrent(cmArrowTexture[0 + leftoffset]);
-
-            rndPerspectiveCorrection(FALSE);
-            glDisable(GL_ALPHA_TEST);
-            glDisable(GL_BLEND);
-            primRectSolidTextured2(&arrowrect);
-
-
-
-
-
-
-            newline=TRUE;
-        }
-        else if ( (cmShipsAvailable[index].itemtype==ITEM_CLASS) &&
-                  (cmShipsAvailable[index].itemstat==STAT_PRINT) )
-        {
-            newline=TRUE;
-        }
-
-        if (newline)
-        {
-            newline = FALSE;
-
-            y+= fontHeight(" ") + CM_ASInterSpacing;
-        }
-    }
-    fontMakeCurrent(currentFont);
-}
-
-
 
 /*-----------------------------------------------------------------------------
     Name        : cmDrawArrow
@@ -4258,47 +4015,6 @@ void cmDeterministicShutdown(void)
 void cmDeterministicReset(void)
 {
     listDeleteAll(&cmDetermProgress);
-}
-
-crc32 cmDeterministicCRC(void)
-{
-    Node* node;
-    cmDetermProgress_t* block;
-    cmDetermProgress_t* ptr;
-    cmDetermProgress_t* curNode;
-    sdword size;
-    crc32 crc;
-
-    if (cmDetermProgress.num == 0)
-    {
-        return 0;
-    }
-
-    size = cmDetermProgress.num * sizeof(cmDetermProgress_t);
-    block = (cmDetermProgress_t*)memAlloc(size, "temp dblock", Volatile);
-    ptr  = block;
-    node = cmDetermProgress.head;
-    while (node != NULL)
-    {
-        curNode = (cmDetermProgress_t*)listGetStructOfNode(node);
-
-        //copy node into block
-        memcpy(ptr, curNode, sizeof(cmDetermProgress_t));
-
-        //clear non-deterministic members
-        memset(&ptr->node, 0, sizeof(Node));
-        ptr->creator = NULL;
-
-        //advance
-        ptr++;
-        node = node->next;
-    }
-
-    crc = crc32Compute((ubyte*)block, size);
-
-    memFree(block);
-
-    return crc;
 }
 
 void cmDeterministicBuildDisplay(void)

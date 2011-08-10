@@ -161,7 +161,7 @@ void defensefightertargetbullet(Ship *ship, Bullet *bullettotarget)
     laser->traveldist = gunstatic->bulletlength;
     laser->beamtraveldist = gunstatic->bulletlength;
 
-    //laser->posinfo.isMoving = TRUE;
+    //SET_MOVING_LINEARLY(laser->posinfo.isMoving);
     //laser->posinfo.haventCalculatedDist = TRUE;
     laser->DFGFieldEntryTime = 0.0f;
 
@@ -262,11 +262,6 @@ void defensefightertargetbullet(Ship *ship, Bullet *bullettotarget)
     if (stat != NULL && etgFireEffectsEnabled && !etgFrequencyExceeded(stat))
 #endif
     {                                                       //if there is a gun fire effect
-        if (RGLtype == SWtype)
-        {                                                   //smaller fire effects in software
-            floatDamage *= etgSoftwareScalarFire;
-            intDamage = TreatAsUdword(floatDamage);
-        }
         newEffect = etgEffectCreate(stat, laser, NULL, NULL, NULL, 1.0f, EAF_AllButNLips, 1, intDamage);
 //        univAddObjToRenderListIf((SpaceObj *)newEffect,(SpaceObj *)ship);     // add to render list if parent ship is in render list
     }
@@ -318,7 +313,7 @@ void defensefightertargetbullet(Ship *ship, Bullet *bullettotarget)
         newEffect->posinfo.position = bullettotarget->posinfo.position; //start at same spot as bullet
         newEffect->posinfo.velocity = bullettotarget->posinfo.velocity; //start at same spot as bullet
         etgEffectCodeStart(stat, newEffect, 1, intDamage);//get the code a-runnin'
-        newEffect->posinfo.isMoving = FALSE;
+        SET_MOVING_IMMOBILE(newEffect->posinfo.isMoving);
         newEffect->posinfo.haventCalculatedDist = TRUE;
         univUpdateObjRotInfo((SpaceObjRot *)newEffect);
 
@@ -560,10 +555,6 @@ void DefenseFighterDestroyedABullet(Ship *ship, Bullet *bullet, Bullet *laser)
     {
         //floatDamage = 30.0f;     //?????
         floatDamage = bullet->damageFull;
-        if (RGLtype == SWtype)
-        {                                                   //smaller bullet death effects in software
-            floatDamage *= etgSoftwareScalarHit;
-        }
         intDamage = TreatAsUdword(floatDamage);
 
 //        vecScalarMultiply(newVelocity,bullet->posinfo.velocity,0.3f);
@@ -1001,8 +992,8 @@ void SaveDefenseStruct(DefenseStruct *defenseStruct)
     chunk = CreateChunk(BASIC_STRUCTURE,sizeof(DefenseStruct),defenseStruct);
     savecontents = (DefenseStruct *)chunkContents(chunk);
 
-    savecontents->bullet = SpaceObjRegistryGetID((SpaceObj *)savecontents->bullet);
-    savecontents->laser = SpaceObjRegistryGetID((SpaceObj *)savecontents->laser);
+    savecontents->bullet = (Bullet *) SpaceObjRegistryGetID((SpaceObj *)savecontents->bullet);
+    savecontents->laser = (Bullet *) SpaceObjRegistryGetID((SpaceObj *)savecontents->laser);
 
     SaveThisChunk(chunk);
     memFree(chunk);

@@ -110,6 +110,10 @@ bool clRemoveTargetFromSelection(SelectAnyCommand *selection,TargetPtr removeTar
     sdword i;
     bool removedAny = FALSE;
 
+    if (selection == NULL) {
+        return FALSE;
+    }
+
     for (i=0;i<selection->numTargets; )
     {
         if (removeTargetPtr == selection->TargetPtr[i])
@@ -1901,37 +1905,6 @@ bool growSelectRemoveShip(GrowSelection *growSelect,Ship *ship)
     return clRemoveShipFromSelection(growSelect->selection,ship);
 }
 
-/*-----------------------------------------------------------------------------
-    Name        : growSelectRemoveShipBySettingNULL
-    Description : Remove ship references from a grow selection
-    Inputs      :
-    Outputs     :
-    Return      : TRUE if a ship reference was removed
-----------------------------------------------------------------------------*/
-bool growSelectRemoveShipBySettingNULL(GrowSelection *growSelect,Ship *ship)
-{
-    SelectCommand *selection = growSelect->selection;
-    sdword numShips;
-    sdword i;
-
-    if (selection == NULL)
-    {
-        return FALSE;
-    }
-    numShips = selection->numShips;
-
-    for (i=0;i<numShips;i++)
-    {
-        if (selection->ShipPtr[i] == ship)
-        {
-            selection->ShipPtr[i] = NULL;
-            return TRUE;
-        }
-    }
-
-    return FALSE;
-}
-
 void growSelectRemoveShipIndex(GrowSelection *growSelect,sdword index)
 {
     SelectCommand *selection = growSelect->selection;
@@ -1992,4 +1965,27 @@ bool MakeSelectionKamikazeCapable(SelectCommand *selection)
     return TRUE;
 }
 
+SelectCommand * shipLinkedListAsSelectCommand(LinkedList *list, char *label)
+{
+    Node *objnode = NULL;
+    SelectCommand *selection = NULL;
+    Ship *ship = NULL;
+    udword i = 0;
 
+    selection = memAlloc(sizeofSelectCommand(list->num), (label == NULL ? "" : label), 0);
+    objnode = list->head;
+
+    while (objnode != NULL)
+    {
+        ship = (Ship *)listGetStructOfNode(objnode);
+        dbgAssertOrIgnore(ship->objtype == OBJ_ShipType);
+
+        selection->ShipPtr[i++] = ship;
+
+        objnode = objnode->next;
+    }
+
+    selection->numShips = i;
+
+    return selection;
+}

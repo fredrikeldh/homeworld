@@ -1021,7 +1021,7 @@ void tutHideText(void)
     tutRemoveAllPointers();
 
     //kills the speech associated with the text
-    speechEventActorStop(ACTOR_FLEETCOMMAND_FLAG, 0.1f);
+    speechEventActorStop(SPEECH_ACTOR_FLEET_COMMAND, 0.1f);
 }
 
 
@@ -1758,7 +1758,7 @@ long    ImageCount;
 
     tutImageAtom.region = (void*)tutImageRegion;
     tutImageRegion->atom = &tutImageAtom;
-    tutImageAtom.pData = szImages;
+    tutImageAtom.pData = (ubyte *) szImages;
 
     tutImageVisible = TRUE;
 
@@ -1948,7 +1948,7 @@ sdword FlagBit;
     pFlagMem = (sdword *)&tutEnable;
 	pFlagMem += Index/32;
 
-#ifdef _MACOSX_FIX_PPC // FIX_ENDIAN?
+#if FIX_ENDIAN
 	FlagBit = 1 << (31 - Index & 31);
 #else
 	FlagBit = 1 << (Index & 31);

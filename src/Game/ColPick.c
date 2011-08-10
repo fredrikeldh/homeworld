@@ -272,43 +272,6 @@ color* cpHueSatImageCreate(void)
     return cpHueSatData;
 }
 
-color* cpValueTextureGradientCreateScaled(sdword width, sdword height)
-{
-    color* buffer;
-    sdword hue, sat, i;
-    real32 realRed, realGreen, realBlue, value, valStep;
-
-    valStep = 1.0f / (real32)height;
-    value   = 1.0f;
-
-    if (cpColorMode == 0)
-    {
-        hue = cpBaseHue;
-        sat = cpBaseSaturation;
-    }
-    else
-    {
-        hue = cpStripeHue;
-        sat = cpStripeSaturation;
-    }
-
-    buffer = memAlloc(height * width * sizeof(color), "ColorPickerValue", 0);
-
-    for (i = 0; i < height; i++)
-    {
-        colHSVToRGB(&realRed, &realGreen, &realBlue,
-                    colUbyteToReal(hue), colUbyteToReal(sat), value);
-
-        memClearDword(buffer + i * width,
-                      colRGB(colRealToUbyte(realRed), colRealToUbyte(realGreen), colRealToUbyte(realBlue)),
-                      width);
-
-        value -= valStep;
-    }
-
-    return(buffer);
-}
-
 /*-----------------------------------------------------------------------------
     Name        : cpValueTextureGradientCreate
     Description : Create the gradient bitmap for the value slider.  Gradient built off the
@@ -404,15 +367,8 @@ void cpPreviewTexturePrepare(void)
     }
     else
     {
-        if (trNoPalettes)
-        {
-            trRGBTextureDelete(cpPreviewTexture);
-            cpPreviewTexture = trPalettedTextureCreate(cpPreviewImage->data, cpPreviewTexturePalette, CP_PreviewWidth, CP_PreviewHeight);
-        }
-        else
-        {
-            trPalettedTextureMakeCurrent(cpPreviewTexture, cpPreviewTexturePalette);
-        }
+        trRGBTextureDelete(cpPreviewTexture);
+        cpPreviewTexture = trPalettedTextureCreate(cpPreviewImage->data, cpPreviewTexturePalette, CP_PreviewWidth, CP_PreviewHeight);
     }
 #endif //PREVIEW_IMAGE
 }
@@ -643,10 +599,10 @@ void cpBaseColor(char *name, featom *atom)
         dbgMessage("cpBaseColor: CallOnCreate");
 #endif                                                      //set up the two process user regions
         cpHueSaturationRegion = feRegionFindByFunction("CP_HueSaturation");
-        regFunctionSet(cpHueSaturationRegion, cpHueSaturationProcess);
+        regFunctionSet(cpHueSaturationRegion, (regionfunction) cpHueSaturationProcess);
         regFilterSet(cpHueSaturationRegion, RPE_PressLeft | RPE_HoldLeft | RPE_ReleaseLeft | RPE_ExitHoldLeft);
         cpValueRegion = feRegionFindByFunction("CP_Value");
-        regFunctionSet(cpValueRegion, cpValueProcess);
+        regFunctionSet(cpValueRegion, (regionfunction) cpValueProcess);
         regFilterSet(cpValueRegion, RPE_PressLeft | RPE_HoldLeft | RPE_ReleaseLeft | RPE_ExitHoldLeft);
                                                             //set toggle state of the base/strip color selector buttons
         feToggleButtonSet("CP_BaseColor", TRUE);
@@ -865,14 +821,6 @@ void cpNumberDraw(featom *atom, regionhandle region, sdword value)
     if (bitTest(atom->flags, FAF_BorderVisible))
     {
         primRectOutline2(r, atom->borderWidth, atom->borderColor);
-    }
-
-    if (feShouldSaveMouseCursor())
-    {
-        rectangle rect = region->rect;
-        rect.x0++;
-        rect.y1 -= 2;
-        primRectSolid2(&rect, colBlack);
     }
 
     fhSave = fontCurrentGet();                              //save the current font
@@ -1094,15 +1042,6 @@ void cpValueDraw(featom *atom, regionhandle region)
     else
     {
         val = cpStripeValue;
-    }
-
-    if (feShouldSaveMouseCursor())
-    {
-        rectangle rect = region->rect;
-        rect.x1++;
-        rect.y0 -= cpValueArrowHeight / 2 + 1;
-        rect.y1 += cpValueArrowHeight / 2 + 1;
-        primRectSolid2(&rect, colBlack);
     }
 
     val = val * (region->rect.y1 - region->rect.y0) / CP_ValueTextureHeight;

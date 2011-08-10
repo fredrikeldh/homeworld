@@ -34,7 +34,6 @@
 #include "Universe.h"
 #include "Mesh.h"
 #include "Shader.h"
-#include "glcaps.h"
 #include "AutoLOD.h"
 #include "CRC32.h"
 #include "Hash.h"
@@ -50,27 +49,10 @@
 
 #define meshColour(NORMAL) shColourSet0((vector*)NORMAL);
 
-#define _MESH_OBJECT_RENDER(O, M, C)\
-    if (g_Output) meshObjectOutput(O, M, C);\
-    else if (g_Points) meshObjectPoints(O, M, C);\
-    else meshObjectRender(O, M, C);
-
 #define MESH_OBJECT_RENDER(O, M, C)\
     if (g_SpecHack)\
     {\
         meshSpecObjectRender(O, M, C);\
-    }\
-    else if (usingShader && rndLightingEnabled && !g_WireframeHack)\
-    {\
-        if (RGL)\
-        {\
-            if (glIsEnabled(GL_CLIP_PLANE0)) meshObjectRenderLitRGL(O, M, C);\
-            else meshObjectRenderLitRGLvx(O, M, C);\
-        }\
-        else\
-        {\
-            meshObjectRenderLit(O, M, C);\
-        }\
     }\
     else\
     {\
@@ -90,11 +72,8 @@ real32 visibleUV[3][2];
 bool g_SpecificPoly = FALSE;
 
 void meshSpecObjectRender(polygonobject *object, materialentry *materials, sdword iColorScheme);
-void meshObjectRenderLitRGLvx(polygonobject *object, materialentry *materials, sdword iColorScheme);
 
 bool gSelfIllum;
-
-bool usingShader = TRUE;
 
 bool bFade = FALSE;
 real32 meshFadeAlpha = 1.0f;
@@ -166,7 +145,6 @@ meshMorphLineColors[] =
 ----------------------------------------------------------------------------*/
 void meshStartup()
 {
-    usingShader = TRUE;
 }
 
 /*-----------------------------------------------------------------------------
@@ -190,21 +168,14 @@ void meshShutdown()
 ----------------------------------------------------------------------------*/
 void meshSetFade(real32 fade)
 {
-    if (!usingShader)
+    meshFadeAlpha = 1.0f - fade;
+    if (meshFadeAlpha == 1.0f)
     {
         bFade = FALSE;
     }
     else
     {
-        meshFadeAlpha = 1.0f - fade;
-        if (meshFadeAlpha == 1.0f)
-        {
-            bFade = FALSE;
-        }
-        else
-        {
-            bFade = TRUE;
-        }
+        bFade = TRUE;
     }
 }
 
@@ -323,16 +294,19 @@ StaticInfo *meshNameToStaticInfo(char *fileName)
                   race - race of players to compare to.  If NUM_RACES, there is no
                     race and only one handle is allocated (cookie wast can you say?)
                   meshReference - mesh reference to pass to the texture registry
-    Outputs     : allocates a list of texture handles TE_NumberPlayers in length.
-    Return      : pointer to this new list of handles cast to a handle.
+    Outputs     : allocates a list of texture handles MAX_MULTIPLAYER_PLAYERS in length.
+    Return      : pointer to this new list of handles
 ----------------------------------------------------------------------------*/
-trhandle meshTextureRegisterAllPlayers(char *fullName, void *meshReference)
+trhandle * meshTextureRegisterAllPlayers(char *fullName, void *meshReference)
 {
     trhandle handleList[MAX_MULTIPLAYER_PLAYERS], *allocedList;
-    sdword index, nRegistered = 0;
+    sdword index, nRegistered = 0, nHandles = MAX_MULTIPLAYER_PLAYERS;
     StaticInfo *info;
 
-    memClearDword(handleList, TR_Invalid, TE_NumberPlayers);//allocate and clear handle list
+    //allocate and clear handle list
+    trhandle *d = ( trhandle *) handleList;
+    while (nHandles--) *d++ = TR_Invalid;
+
     info = meshNameToStaticInfo(fullName);
     if (info == NULL)
     {
@@ -343,10 +317,10 @@ trhandle meshTextureRegisterAllPlayers(char *fullName, void *meshReference)
     {
         for (index = 0; index < MAX_MULTIPLAYER_PLAYERS; index++)
         {
-            dbgAssertOrIgnore(index < TE_NumberPlayers);
+            dbgAssertOrIgnore(index < MAX_MULTIPLAYER_PLAYERS);
             handleList[index] = TR_Invalid;
 
-            if (((ShipStaticInfo *)info)->teamColor[index])
+            if (utyShipsAlwaysUseOwnerColors || ((ShipStaticInfo *)info)->teamColor[index])
             {                                               //if this player can build this ship
                 handleList[index] = trTextureRegister(fullName, //register in this players's colors
                         &teColorSchemes[index].textureColor, meshReference);
@@ -354,13 +328,16 @@ trhandle meshTextureRegisterAllPlayers(char *fullName, void *meshReference)
             }
         }
     }
+
     if (nRegistered > 0)
-    {                                                       //if some were registered
-        allocedList = memAlloc(TE_NumberPlayers * sizeof(trhandle), "trhandle*TE_NumberPlayers", NonVolatile);
-        memcpy(allocedList, handleList, TE_NumberPlayers * sizeof(trhandle));
-        return((trhandle)(allocedList));                    //return memAlloced copy
+    {
+        // copy handleList because it will go out of scope once we leave this function
+        allocedList = memAlloc(MAX_MULTIPLAYER_PLAYERS * sizeof(trhandle), "trhandle*MAX_MULTIPLAYER_PLAYERS", NonVolatile);
+        memcpy(allocedList, handleList, MAX_MULTIPLAYER_PLAYERS * sizeof(trhandle));
+        return allocedList;
     }
-    return(TR_Invalid);
+
+    return NULL;
 }
 
 /*-----------------------------------------------------------------------------
@@ -645,7 +622,7 @@ meshdata *meshLoad(char *inFileName)
     polygonobject *object;
     char fullName[FL_Path];
     sdword fileLength;
-    trhandle handle;
+    trhandle *handles;
 
 #if FIX_ENDIAN
     sdword i;
@@ -693,7 +670,6 @@ meshdata *meshLoad(char *inFileName)
 #if FIX_ENDIAN
 	header.version          = FIX_ENDIAN_INT_32( header.version );
 	header.pName            = ( char *)FIX_ENDIAN_INT_32( ( udword )header.pName );
-	header.fileSize         = FIX_ENDIAN_INT_32( header.fileSize );
 	header.localSize        = FIX_ENDIAN_INT_32( header.localSize );
 	header.nPublicMaterials = FIX_ENDIAN_INT_32( header.nPublicMaterials );
 	header.nLocalMaterials  = FIX_ENDIAN_INT_32( header.nLocalMaterials );
@@ -733,13 +709,12 @@ meshdata *meshLoad(char *inFileName)
         newFormat = FALSE;
     }
 
-    mesh = memAlloc(fileLength - sizeof(header)/*header.fileSize*/ + sizeof(meshdata) -   //allocate the memory for file
+    mesh = memAlloc(fileLength - sizeof(header) + sizeof(meshdata) -   //allocate the memory for file
                     sizeof(polygonobject), fileName, NonVolatile);
     memNameSetLong((memcookie*)((ubyte *)mesh - sizeof(memcookie)), fileName);
     //now that it is all loaded in, all pointers need to be fixed up
     offset = (memsize)mesh - sizeof(GeoFileHeader) +
         sizeof(meshdata) - sizeof(polygonobject);           //!!! add size of materials when they're in???
-//    mesh->localSize = header.localSize;
     if (newFormat)
     {
         mesh->localSize = 0;
@@ -757,7 +732,7 @@ meshdata *meshLoad(char *inFileName)
 #if MESH_RETAIN_FILENAMES
     mesh->fileName = memStringDupe(fileName);
 #endif
-    fileBlockRead(file, &mesh->object[0], fileLength - sizeof(header)/*header.fileSize*/);
+    fileBlockRead(file, &mesh->object[0], fileLength - sizeof(header));
     fileClose(file);                                        //close the file
 
     mesh->name = header.pName + offset;                     //set name pointer
@@ -937,13 +912,13 @@ meshdata *meshLoad(char *inFileName)
         mesh->localMaterial[index].bTexturesRegistered = FALSE;
         if (mesh->localMaterial[index].texture != 0)
         {                                                   //if there is a texture
-            mesh->localMaterial[index].texture = offset + (ubyte *)mesh->localMaterial[index].texture;//fix up texture name pointer
+            mesh->localMaterial[index].texture = (trhandle)(offset + (char *)(mesh->localMaterial[index].texture));//fix up texture name pointer
             mesh->localMaterial[index].textureNameSave = (char *)mesh->localMaterial[index].texture;
             meshTextureNameToPath(fullName, fileName, (char *)mesh->localMaterial[index].texture);
-            handle = meshTextureRegisterAllPlayers(fullName, mesh);//register the texture
-            if (handle != TR_Invalid)
+            handles = meshTextureRegisterAllPlayers(fullName, mesh);
+            if (handles != NULL)
             {                                               //if anything was registered
-                mesh->localMaterial[index].texture = handle;
+                mesh->localMaterial[index].texture = handles;
                 mesh->localMaterial[index].bTexturesRegistered = TRUE;
             }
         }
@@ -1044,7 +1019,6 @@ void meshRecolorize(meshdata *mesh)
     trhandle *handles, validHandle;
     StaticInfo *info;
     char fullName[FL_Path];
-    trhandle handle;
 
     info = meshNameToStaticInfo(mesh->fileName);
     if (info == NULL)
@@ -1059,10 +1033,10 @@ void meshRecolorize(meshdata *mesh)
             if (!mesh->localMaterial[index].bTexturesRegistered)
             {                                               //if textures were never registered properly
                 meshTextureNameToPath(fullName, mesh->fileName, (char *)mesh->localMaterial[index].texture);
-                handle = meshTextureRegisterAllPlayers(fullName, mesh);//register the texture
-                if (handle != TR_Invalid)
+                handles = meshTextureRegisterAllPlayers(fullName, mesh);
+                if (handles != NULL)
                 {                                               //if anything was registered
-                    mesh->localMaterial[index].texture = handle;
+                    mesh->localMaterial[index].texture = handles;
                     mesh->localMaterial[index].bTexturesRegistered = TRUE;
                 }
             }
@@ -1194,14 +1168,14 @@ void meshFree(meshdata *mesh)
 //        if (mesh->localMaterial[index].texture != TR_Invalid)//if material has a texture
         if (mesh->localMaterial[index].bTexturesRegistered)
         {
-            for (j = 0; j < TE_NumberPlayers; j++)
+            for (j = 0; j < MAX_MULTIPLAYER_PLAYERS; j++)
             {                                               //for each player
                 if (((trhandle *)mesh->localMaterial[index].texture)[j] != TR_Invalid)
                 {                                           //if this player was this race
 #ifdef _X86_64
                     if (((trhandle *)mesh->localMaterial[index].texture)[j] != 0xffffffffffffffff) // Check for -1
                     {
-                        if (((trhandle *)mesh->localMaterial[index].texture)[j] < 6000 ) {
+                        if (((trhandle *)mesh->localMaterial[index].texture)[j] < TR_RegistrySize ) {
 #endif
                 
                     trTextureUnregister(((trhandle *)mesh->localMaterial[index].texture)[j]);
@@ -1236,21 +1210,19 @@ void meshCurrentMaterialDefault(materialentry *material, sdword iColorScheme)
     GLenum face;
 #if MESH_TEAM_COLORS
     color teamAmbient, teamDiffuse;
-#if MESH_SPECULAR
     color teamSpecular;
-#endif
 #endif
     if (bitTest(material->flags, MDF_2Sided))
     {                                                       //if 2-sided material
         face = GL_FRONT_AND_BACK;
         rndBackFaceCullEnable(FALSE);                       //disable culling
-        if (!usingShader) glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);    //2-sided lightmodel
+        glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);    //2-sided lightmodel
     }
     else
     {
-        face = GL_FRONT;
+        face = GL_FRONT_AND_BACK;
         rndBackFaceCullEnable(TRUE);                        //enable culling
-        if (!usingShader) glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);   //1-sided lightmodel
+        glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);   //1-sided lightmodel
     }
 
     gSelfIllum = FALSE;
@@ -1261,7 +1233,7 @@ void meshCurrentMaterialDefault(materialentry *material, sdword iColorScheme)
     else if (bitTest(material->flags, MDF_SelfIllum))
     {
         gSelfIllum = TRUE;
-        if (bFade && (RGLtype == GLtype))
+        if (bFade)
         {
             rndTextureEnvironment(RTE_Modulate);
         }
@@ -1283,14 +1255,7 @@ void meshCurrentMaterialDefault(materialentry *material, sdword iColorScheme)
         attribs[1] = (GLfloat)(colGreen(material->ambient)) / 255.0f;
         attribs[2] = (GLfloat)(colBlue(material->ambient)) / 255.0f;
         attribs[3] = 1.0f;
-        if (usingShader)
-        {
-            shSetMaterial(attribs, NULL); //shader
-        }
-        else
-        {
-            rndMaterialfv(face, GL_AMBIENT, attribs);
-        }
+        glMaterialfv(face, GL_AMBIENT, attribs);
 
         attribs[0] = (GLfloat)(colRed(material->diffuse)) / 255.0f;
         attribs[1] = (GLfloat)(colGreen(material->diffuse)) / 255.0f;
@@ -1303,21 +1268,12 @@ void meshCurrentMaterialDefault(materialentry *material, sdword iColorScheme)
         {
             attribs[3] = 1.0f;
         }
-        if (usingShader)
-        {
-            shSetMaterial(NULL, attribs); //shader
-        }
-        else
-        {
-            rndMaterialfv(face, GL_DIFFUSE, attribs);
-        }
+        glMaterialfv(face, GL_DIFFUSE, attribs);
 
-#if MESH_SPECULAR
         attribs[0] = (GLfloat)(colRed(material->specular)) / 255.0f;
         attribs[1] = (GLfloat)(colGreen(material->specular)) / 255.0f;
         attribs[2] = (GLfloat)(colBlue(material->specular)) / 255.0f;
         glMaterialfv(face, GL_SPECULAR, attribs);
-#endif
 #if MESH_TEAM_COLORS
     }
     else
@@ -1326,30 +1282,19 @@ void meshCurrentMaterialDefault(materialentry *material, sdword iColorScheme)
         {                                                   //it's a base color poly
             teamAmbient  = teColorSchemes[iColorScheme].ambient;
             teamDiffuse  = teColorSchemes[iColorScheme].diffuse;
-#if MESH_SPECULAR
             teamSpecular = teColorSchemes[iColorScheme].specular;
-#endif
         }
         else
         {                                                   //else it's a stripe color
             teamAmbient  = teColorSchemes[iColorScheme].stripeAmbient;
             teamDiffuse  = teColorSchemes[iColorScheme].stripeDiffuse;
-#if MESH_SPECULAR
             teamSpecular = teColorSchemes[iColorScheme].stripeSpecular;
-#endif
         }
         attribs[0] = (GLfloat)(colRed(teamAmbient)) / 255.0f;
         attribs[1] = (GLfloat)(colGreen(teamAmbient)) / 255.0f;
         attribs[2] = (GLfloat)(colBlue(teamAmbient)) / 255.0f;
         attribs[3] = 1.0f;
-        if (usingShader)
-        {
-            shSetMaterial(attribs, NULL); //shader
-        }
-        else
-        {
-            rndMaterialfv(face, GL_AMBIENT, attribs);
-        }
+        glMaterialfv(face, GL_AMBIENT, attribs);
 
         attribs[0] = (GLfloat)(colRed(teamDiffuse)) / 255.0f;
         attribs[1] = (GLfloat)(colGreen(teamDiffuse)) / 255.0f;
@@ -1362,21 +1307,12 @@ void meshCurrentMaterialDefault(materialentry *material, sdword iColorScheme)
         {
             attribs[3] = 1.0f;
         }
-        if (usingShader)
-        {
-            shSetMaterial(NULL, attribs); //shader
-        }
-        else
-        {
-            rndMaterialfv(face, GL_DIFFUSE, attribs);
-        }
+        glMaterialfv(face, GL_DIFFUSE, attribs);
 
-#if MESH_SPECULAR
         attribs[0] = (GLfloat)(colRed(teamSpecular)) / 255.0f;
         attribs[1] = (GLfloat)(colGreen(teamSpecular)) / 255.0f;
         attribs[2] = (GLfloat)(colBlue(teamSpecular)) / 255.0f;
         glMaterialfv(face, GL_SPECULAR, attribs);
-#endif
     }
 #endif //MESH_TEAM_COLORS
 //    if (material->texture != TR_Invalid && !g_WireframeHack)
@@ -1425,11 +1361,6 @@ void meshCurrentMaterialDefault(materialentry *material, sdword iColorScheme)
             glShadeModel(GL_FLAT);
         }
     }
-
-    if (usingShader)
-    {
-        shUpdateLighting(); //shader
-    }
 }
 
 /*-----------------------------------------------------------------------------
@@ -1448,13 +1379,13 @@ void meshCurrentMaterialTex(materialentry *material, sdword iColorScheme)
     {                                                       //if 2-sided material
         face = GL_FRONT_AND_BACK;
         rndBackFaceCullEnable(FALSE);                       //disable culling
-        if (!usingShader) glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);    //2-sided lightmodel
+        glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);    //2-sided lightmodel
     }
     else
     {
-        face = GL_FRONT;
+        face = GL_FRONT_AND_BACK;
         rndBackFaceCullEnable(TRUE);                        //enable culling
-        if (!usingShader) glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);   //1-sided lightmodel
+        glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);   //1-sided lightmodel
     }
 
     if (bitTest(material->flags, MPM_Smooth) && enableSmoothing == TRUE)
@@ -1647,10 +1578,9 @@ void meshObjectRender(polygonobject *object, materialentry *materials, sdword iC
 
     if (g_WireframeHack)
     {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         lightOn = rndLightingEnable(FALSE);
         glColor3ub(200,200,200);
-        enableBlend = glCapFeatureExists(GL_LINE_SMOOTH);
+        enableBlend = TRUE;
         if (enableBlend)
         {
             glEnable(GL_LINE_SMOOTH);
@@ -1669,7 +1599,7 @@ void meshObjectRender(polygonobject *object, materialentry *materials, sdword iC
     normalList = object->pNormalList;                       //get base of normal list
     polygon = object->pPolygonList;                         //get first polygon list entry
 
-    glBegin(GL_TRIANGLES);                                  //prepare to draw triangles
+    glBegin(g_WireframeHack ? GL_LINE_LOOP : GL_TRIANGLES);                                  //prepare to draw triangles
 
     for (iPoly = 0; iPoly < object->nPolygons; iPoly++)
     {
@@ -1687,7 +1617,7 @@ void meshObjectRender(polygonobject *object, materialentry *materials, sdword iC
             {
                 glEnable(GL_BLEND);
             }
-            glBegin(GL_TRIANGLES);                          //start new run
+            glBegin(g_WireframeHack ? GL_LINE_LOOP : GL_TRIANGLES);                          //start new run
 #if MESH_MATERIAL_STATS
             nMaterialChanges++;                             //record material stats
             iMaterialMax = max(currentMaterial, iMaterialMax);
@@ -1855,7 +1785,7 @@ void meshObjectRender(polygonobject *object, materialentry *materials, sdword iC
     glEnd();                                            //done drawing these triangles
 
     glShadeModel(GL_SMOOTH);
-    if (!usingShader) glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
+    glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
 
     if (enableBlend)
     {
@@ -1864,560 +1794,12 @@ void meshObjectRender(polygonobject *object, materialentry *materials, sdword iC
 
     if (g_WireframeHack)
     {
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         rndLightingEnable(lightOn);
         if (enableBlend)
         {
             glDisable(GL_LINE_SMOOTH);
         }
     }
-}
-
-void meshEnableVertexArrays(void* vlist, sdword first, sdword count)
-{
-    glVertexPointer(3, GL_FLOAT, 4*sizeof(GLfloat), vlist);
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisableClientState(GL_EDGE_FLAG_ARRAY);
-    glDisableClientState(GL_INDEX_ARRAY);
-
-    if (glCapFeatureExists(GL_COMPILED_ARRAYS_EXT))
-    {
-        glLockArraysEXT(first, count);
-    }
-}
-
-void meshDisableVertexArrays(void)
-{
-    glDisableClientState(GL_VERTEX_ARRAY);
-    if (glCapFeatureExists(GL_COMPILED_ARRAYS_EXT))
-    {
-        glUnlockArraysEXT();
-    }
-}
-
-/*-----------------------------------------------------------------------------
-    Name        : meshObjectRenderLit
-    Description : this mesh renderer performs lighting operations itself as a
-                  workaround for buggy or slow GL impl's.
-                  uses ArrayElement for vertices, & will compiled arrays
-    Inputs      : ...
-    Outputs     :
-    Return      :
-    Assert      : lighting is enabled
-----------------------------------------------------------------------------*/
-void meshObjectRenderLit(polygonobject *object, materialentry *materials, sdword iColorScheme)
-{
-    sdword iPoly;
-    vertexentry *vertexList;
-    polyentry *polygon;
-    normalentry *normal, *normalList;
-    sdword currentMaterial = -1;
-    GLenum mode = GL_SMOOTH;
-
-    glShadeModel(mode);
-
-    rndLightingEnable(FALSE);
-
-    vertexList = object->pVertexList;                       //get base of vertex list
-
-    normalList = object->pNormalList;                       //get base of normal list
-    polygon = object->pPolygonList;                         //get first polygon list entry
-
-    alodIncPolys(object->nPolygons);
-
-    meshEnableVertexArrays((void*)vertexList, 0, object->nVertices);
-
-    glBegin(GL_TRIANGLES);                                  //prepare to draw triangles
-
-    for (iPoly = 0; iPoly < object->nPolygons; iPoly++)
-    {
-#if MESH_ANAL_CHECKING                                      //validate vertex indices
-        dbgAssertOrIgnore(polygon->iV0 < object->nVertices);
-        dbgAssertOrIgnore(polygon->iV1 < object->nVertices);
-        dbgAssertOrIgnore(polygon->iV2 < object->nVertices);
-#endif
-        if (polygon->iMaterial != currentMaterial)
-        {                                                   //if a new material
-            glEnd();                                        //end current polygon run
-            currentMaterial = polygon->iMaterial;           //remember current material
-            meshCurrentMaterial(&materials[currentMaterial], iColorScheme);//set new material
-            if (bFade)
-            {
-                glEnable(GL_BLEND);
-            }
-            glBegin(GL_TRIANGLES);                          //start new run
-#if MESH_MATERIAL_STATS
-            nMaterialChanges++;                             //record material stats
-            iMaterialMax = max(currentMaterial, iMaterialMax);
-#endif //MESH_MATERIAL_STATS
-        }
-
-        switch (meshPolyMode)
-        {
-            case MPM_Flat:
-                dbgAssertOrIgnore(polygon->iFaceNormal != UWORD_Max);
-                normal = &normalList[polygon->iFaceNormal];
-                meshColour(normal); //shader
-
-                glArrayElement(polygon->iV0);
-                glArrayElement(polygon->iV1);
-                glArrayElement(polygon->iV2);
-#if RND_POLY_STATS
-                rndNumberPolys++;
-#endif //RND_POLY_STATS
-                break;
-            case MPM_Texture:
-                dbgAssertOrIgnore(polygon->iFaceNormal != UWORD_Max);
-                normal = &normalList[polygon->iFaceNormal];
-                meshColour(normal); //shader
-
-                glTexCoord2f(polygon->s0, polygon->t0);
-                glArrayElement(polygon->iV0);
-
-                glTexCoord2f(polygon->s1, polygon->t1);
-                glArrayElement(polygon->iV1);
-
-                glTexCoord2f(polygon->s2, polygon->t2);
-                glArrayElement(polygon->iV2);
-#if RND_POLY_STATS
-                rndNumberPolys++;
-                rndNumberTextured++;
-#endif //RND_POLY_STATS
-                break;
-            case MPM_Smooth:
-                dbgAssertOrIgnore(vertexList[polygon->iV0].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV0].iVertexNormal];
-                meshColour(normal); //shader
-                glArrayElement(polygon->iV0);
-
-                dbgAssertOrIgnore(vertexList[polygon->iV1].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV1].iVertexNormal];
-                meshColour(normal); //shader
-                glArrayElement(polygon->iV1);
-
-                dbgAssertOrIgnore(vertexList[polygon->iV2].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV2].iVertexNormal];
-                meshColour(normal); //shader
-                glArrayElement(polygon->iV2);
-#if RND_POLY_STATS
-                rndNumberPolys++;
-                rndNumberSmoothed++;
-#endif //RND_POLY_STATS
-                break;
-            case MPM_SmoothTexture:
-                dbgAssertOrIgnore(vertexList[polygon->iV0].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV0].iVertexNormal];
-                meshColour(normal); //shader
-                glTexCoord2f(polygon->s0, polygon->t0);
-                glArrayElement(polygon->iV0);
-
-                dbgAssertOrIgnore(vertexList[polygon->iV1].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV1].iVertexNormal];
-                meshColour(normal); //shader
-                glTexCoord2f(polygon->s1, polygon->t1);
-                glArrayElement(polygon->iV1);
-
-                dbgAssertOrIgnore(vertexList[polygon->iV2].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV2].iVertexNormal];
-                meshColour(normal); //shader
-                glTexCoord2f(polygon->s2, polygon->t2);
-                glArrayElement(polygon->iV2);
-#if MESH_SURFACE_NAME_DEBUG
-                if (gTestTexture)
-                {
-                    dbgMessagef("(%4.2f, %4.2f, %4.2f) => (%4.2f, %4.2f)", vertexList[polygon->iV0].x, vertexList[polygon->iV0].y, vertexList[polygon->iV0].z, polygon->s0, polygon->t0);
-                    dbgMessagef("(%4.2f, %4.2f, %4.2f) => (%4.2f, %4.2f)", vertexList[polygon->iV1].x, vertexList[polygon->iV1].y, vertexList[polygon->iV1].z, polygon->s1, polygon->t1);
-                    dbgMessagef("(%4.2f, %4.2f, %4.2f) => (%4.2f, %4.2f)", vertexList[polygon->iV2].x, vertexList[polygon->iV2].y, vertexList[polygon->iV2].z, polygon->s2, polygon->t2);
-                }
-#endif
-#if RND_POLY_STATS
-                rndNumberPolys++;
-                rndNumberTextured++;
-                rndNumberSmoothed++;
-#endif //RND_POLY_STATS
-                break;
-            default:
-#if MESH_ERROR_CHECKING
-                dbgFatalf(DBG_Loc, "meshRender: invalid meshPolyMode: 0x%x", meshPolyMode);
-#endif
-                break;
-        }
-        polygon++;
-    }
-    glEnd();                                            //done drawing these triangles
-
-    meshDisableVertexArrays();
-
-    glShadeModel(GL_SMOOTH);
-    if (!usingShader) glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
-
-    if (bFade)
-    {
-        glDisable(GL_BLEND);
-    }
-
-    rndLightingEnable(TRUE); //shader
-}
-
-/*-----------------------------------------------------------------------------
-    Name        : meshObjectRenderLitRGL
-    Description : this mesh renderer performs lighting operations itself as a
-                  workaround for buggy or slow GL impl's
-    Inputs      : ...
-    Outputs     :
-    Return      :
-    Assert      : lighting is enabled
-----------------------------------------------------------------------------*/
-void meshObjectRenderLitRGL(polygonobject *object, materialentry *materials, sdword iColorScheme)
-{
-    sdword iPoly;
-    vertexentry *vertexList;
-    polyentry *polygon;
-    normalentry *normal, *normalList;
-    sdword currentMaterial = -1;
-    GLenum mode = GL_SMOOTH;
-
-    glShadeModel(mode);
-
-    rndLightingEnable(FALSE);
-
-    vertexList = object->pVertexList;                       //get base of vertex list
-
-    normalList = object->pNormalList;                       //get base of normal list
-    polygon = object->pPolygonList;                         //get first polygon list entry
-
-    alodIncPolys(object->nPolygons);
-
-    glBegin(GL_TRIANGLES);                                  //prepare to draw triangles
-
-    for (iPoly = 0; iPoly < object->nPolygons; iPoly++)
-    {
-#if MESH_ANAL_CHECKING                                      //validate vertex indices
-        dbgAssertOrIgnore(polygon->iV0 < object->nVertices);
-        dbgAssertOrIgnore(polygon->iV1 < object->nVertices);
-        dbgAssertOrIgnore(polygon->iV2 < object->nVertices);
-#endif
-        if (polygon->iMaterial != currentMaterial)
-        {                                                   //if a new material
-            glEnd();                                        //end current polygon run
-            currentMaterial = polygon->iMaterial;           //remember current material
-            meshCurrentMaterial(&materials[currentMaterial], iColorScheme);//set new material
-            if (bFade)
-            {
-                glEnable(GL_BLEND);
-            }
-            glBegin(GL_TRIANGLES);                          //start new run
-#if MESH_MATERIAL_STATS
-            nMaterialChanges++;                             //record material stats
-            iMaterialMax = max(currentMaterial, iMaterialMax);
-#endif //MESH_MATERIAL_STATS
-        }
-
-        switch (meshPolyMode)
-        {
-            case MPM_Flat:
-                dbgAssertOrIgnore(polygon->iFaceNormal != UWORD_Max);
-                normal = &normalList[polygon->iFaceNormal];
-                meshColour(normal); //shader
-
-                glVertex3fv((GLfloat*)&vertexList[polygon->iV0]);
-                glVertex3fv((GLfloat*)&vertexList[polygon->iV1]);
-                glVertex3fv((GLfloat*)&vertexList[polygon->iV2]);
-#if RND_POLY_STATS
-                rndNumberPolys++;
-#endif //RND_POLY_STATS
-                break;
-            case MPM_Texture:
-                dbgAssertOrIgnore(polygon->iFaceNormal != UWORD_Max);
-                normal = &normalList[polygon->iFaceNormal];
-                meshColour(normal); //shader
-
-                glTexCoord2f(polygon->s0, polygon->t0);
-                glVertex3fv((GLfloat*)&vertexList[polygon->iV0]);
-
-                glTexCoord2f(polygon->s1, polygon->t1);
-                glVertex3fv((GLfloat*)&vertexList[polygon->iV1]);
-
-                glTexCoord2f(polygon->s2, polygon->t2);
-                glVertex3fv((GLfloat*)&vertexList[polygon->iV2]);
-#if RND_POLY_STATS
-                rndNumberPolys++;
-                rndNumberTextured++;
-#endif //RND_POLY_STATS
-                break;
-            case MPM_Smooth:
-                dbgAssertOrIgnore(vertexList[polygon->iV0].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV0].iVertexNormal];
-                meshColour(normal); //shader
-                glVertex3fv((GLfloat*)&vertexList[polygon->iV0]);
-
-                dbgAssertOrIgnore(vertexList[polygon->iV1].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV1].iVertexNormal];
-                meshColour(normal); //shader
-                glVertex3fv((GLfloat*)&vertexList[polygon->iV1]);
-
-                dbgAssertOrIgnore(vertexList[polygon->iV2].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV2].iVertexNormal];
-                meshColour(normal); //shader
-                glVertex3fv((GLfloat*)&vertexList[polygon->iV2]);
-#if RND_POLY_STATS
-                rndNumberPolys++;
-                rndNumberSmoothed++;
-#endif //RND_POLY_STATS
-                break;
-            case MPM_SmoothTexture:
-                dbgAssertOrIgnore(vertexList[polygon->iV0].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV0].iVertexNormal];
-                meshColour(normal); //shader
-                glTexCoord2f(polygon->s0, polygon->t0);
-                glVertex3fv((GLfloat*)&vertexList[polygon->iV0]);
-
-                dbgAssertOrIgnore(vertexList[polygon->iV1].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV1].iVertexNormal];
-                meshColour(normal); //shader
-                glTexCoord2f(polygon->s1, polygon->t1);
-                glVertex3fv((GLfloat*)&vertexList[polygon->iV1]);
-
-                dbgAssertOrIgnore(vertexList[polygon->iV2].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV2].iVertexNormal];
-                meshColour(normal); //shader
-                glTexCoord2f(polygon->s2, polygon->t2);
-                glVertex3fv((GLfloat*)&vertexList[polygon->iV2]);
-#if MESH_SURFACE_NAME_DEBUG
-                if (gTestTexture)
-                {
-                    dbgMessagef("(%4.2f, %4.2f, %4.2f) => (%4.2f, %4.2f)", vertexList[polygon->iV0].x, vertexList[polygon->iV0].y, vertexList[polygon->iV0].z, polygon->s0, polygon->t0);
-                    dbgMessagef("(%4.2f, %4.2f, %4.2f) => (%4.2f, %4.2f)", vertexList[polygon->iV1].x, vertexList[polygon->iV1].y, vertexList[polygon->iV1].z, polygon->s1, polygon->t1);
-                    dbgMessagef("(%4.2f, %4.2f, %4.2f) => (%4.2f, %4.2f)", vertexList[polygon->iV2].x, vertexList[polygon->iV2].y, vertexList[polygon->iV2].z, polygon->s2, polygon->t2);
-                }
-#endif
-#if RND_POLY_STATS
-                rndNumberPolys++;
-                rndNumberTextured++;
-                rndNumberSmoothed++;
-#endif //RND_POLY_STATS
-                break;
-            default:
-#if MESH_ERROR_CHECKING
-                dbgFatalf(DBG_Loc, "meshRender: invalid meshPolyMode: 0x%x", meshPolyMode);
-#endif
-                break;
-        }
-        polygon++;
-    }
-    glEnd();                                            //done drawing these triangles
-
-    glShadeModel(GL_SMOOTH);
-    if (!usingShader) glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
-
-    if (bFade)
-    {
-        glDisable(GL_BLEND);
-    }
-
-    rndLightingEnable(TRUE); //shader
-}
-
-/*-----------------------------------------------------------------------------
-    Name        : meshObjectRenderLitRGLvx
-    Description : rGL version of meshObjectRenderLit that takes advantage of rGL's
-                  vertex arrays which are decoupled from other client state
-    Inputs      : ...
-    Outputs     :
-    Return      :
-----------------------------------------------------------------------------*/
-void meshObjectRenderLitRGLvx(polygonobject *object, materialentry *materials, sdword iColorScheme)
-{
-    sdword iPoly;
-    vertexentry *vertexList;
-    polyentry *polygon;
-    normalentry *normal, *normalList;
-    sdword currentMaterial = -1;
-    GLenum mode = GL_SMOOTH;
-    hmatrix modelview, projection;
-
-    //load identity matrices into modelview, projection
-    glGetFloatv(GL_PROJECTION_MATRIX, (GLfloat*)&projection);
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glGetFloatv(GL_MODELVIEW_MATRIX, (GLfloat*)&modelview);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
-    //tell rGL to reuse our buffers and such
-    rglEnable(RGL_RASTERIZE_ONLY);
-
-    glShadeModel(mode);
-
-    rndLightingEnable(FALSE);
-
-    vertexList = object->pVertexList;                       //get base of vertex list
-    //possibly expand the size of the vertex pool
-    transGrowVertexLists((object->nVertices + 3) & (~3));
-    if (transPerspectiveMatrix(&projection))
-    {
-        transTransformCompletely(
-            object->nVertices, clipVertexList, eyeVertexList, vertexList, &modelview, &projection);
-    }
-    else
-    {
-        //object -> eye
-        transTransformVertexList(object->nVertices, eyeVertexList, vertexList, &modelview);
-        //eye -> clip
-        transGeneralPerspectiveTransform(object->nVertices, clipVertexList, eyeVertexList, &projection);
-    }
-
-    //use our vertex buffer
-    glVertexPointer(4, GL_FLOAT, 0, (void*)clipVertexList);
-    glEnableClientState(GL_VERTEX_ARRAY);
-
-    normalList = object->pNormalList;                       //get base of normal list
-    polygon = object->pPolygonList;                         //get first polygon list entry
-
-    //increase the number of polys the autolod module has seen
-    alodIncPolys(object->nPolygons);
-
-    glBegin(GL_TRIANGLES);                                  //prepare to draw triangles
-
-    for (iPoly = 0; iPoly < object->nPolygons; iPoly++)
-    {
-#if MESH_ANAL_CHECKING                                      //validate vertex indices
-        dbgAssertOrIgnore(polygon->iV0 < object->nVertices);
-        dbgAssertOrIgnore(polygon->iV1 < object->nVertices);
-        dbgAssertOrIgnore(polygon->iV2 < object->nVertices);
-#endif
-        if (polygon->iMaterial != currentMaterial)
-        {                                                   //if a new material
-            glEnd();                                        //end current polygon run
-            currentMaterial = polygon->iMaterial;           //remember current material
-            meshCurrentMaterial(&materials[currentMaterial], iColorScheme);//set new material
-            if (bFade)
-            {
-                glEnable(GL_BLEND);
-            }
-            glBegin(GL_TRIANGLES);                          //start new run
-#if MESH_MATERIAL_STATS
-            nMaterialChanges++;                             //record material stats
-            iMaterialMax = max(currentMaterial, iMaterialMax);
-#endif //MESH_MATERIAL_STATS
-        }
-
-        switch (meshPolyMode)
-        {
-            case MPM_Flat:
-                dbgAssertOrIgnore(polygon->iFaceNormal != UWORD_Max);
-                normal = &normalList[polygon->iFaceNormal];
-                meshColour(normal);
-
-                glArrayElement(polygon->iV0);
-                glArrayElement(polygon->iV1);
-                glArrayElement(polygon->iV2);
-#if RND_POLY_STATS
-                rndNumberPolys++;
-#endif //RND_POLY_STATS
-                break;
-            case MPM_Texture:
-                dbgAssertOrIgnore(polygon->iFaceNormal != UWORD_Max);
-                normal = &normalList[polygon->iFaceNormal];
-                meshColour(normal);
-
-                glTexCoord2f(polygon->s0, polygon->t0);
-                glArrayElement(polygon->iV0);
-
-                glTexCoord2f(polygon->s1, polygon->t1);
-                glArrayElement(polygon->iV1);
-
-                glTexCoord2f(polygon->s2, polygon->t2);
-                glArrayElement(polygon->iV2);
-#if RND_POLY_STATS
-                rndNumberPolys++;
-                rndNumberTextured++;
-#endif //RND_POLY_STATS
-                break;
-            case MPM_Smooth:
-                dbgAssertOrIgnore(vertexList[polygon->iV0].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV0].iVertexNormal];
-                meshColour(normal);
-                glArrayElement(polygon->iV0);
-
-                dbgAssertOrIgnore(vertexList[polygon->iV1].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV1].iVertexNormal];
-                meshColour(normal);
-                glArrayElement(polygon->iV1);
-
-                dbgAssertOrIgnore(vertexList[polygon->iV2].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV2].iVertexNormal];
-                meshColour(normal);
-                glArrayElement(polygon->iV2);
-#if RND_POLY_STATS
-                rndNumberPolys++;
-                rndNumberSmoothed++;
-#endif //RND_POLY_STATS
-                break;
-            case MPM_SmoothTexture:
-                dbgAssertOrIgnore(vertexList[polygon->iV0].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV0].iVertexNormal];
-                meshColour(normal);
-                glTexCoord2f(polygon->s0, polygon->t0);
-                glArrayElement(polygon->iV0);
-
-                dbgAssertOrIgnore(vertexList[polygon->iV1].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV1].iVertexNormal];
-                meshColour(normal);
-                glTexCoord2f(polygon->s1, polygon->t1);
-                glArrayElement(polygon->iV1);
-
-                dbgAssertOrIgnore(vertexList[polygon->iV2].iVertexNormal != UWORD_Max);
-                normal = &normalList[vertexList[polygon->iV2].iVertexNormal];
-                meshColour(normal);
-                glTexCoord2f(polygon->s2, polygon->t2);
-                glArrayElement(polygon->iV2);
-#if MESH_SURFACE_NAME_DEBUG
-                if (gTestTexture)
-                {
-                    dbgMessagef("(%4.2f, %4.2f, %4.2f) => (%4.2f, %4.2f)", vertexList[polygon->iV0].x, vertexList[polygon->iV0].y, vertexList[polygon->iV0].z, polygon->s0, polygon->t0);
-                    dbgMessagef("(%4.2f, %4.2f, %4.2f) => (%4.2f, %4.2f)", vertexList[polygon->iV1].x, vertexList[polygon->iV1].y, vertexList[polygon->iV1].z, polygon->s1, polygon->t1);
-                    dbgMessagef("(%4.2f, %4.2f, %4.2f) => (%4.2f, %4.2f)", vertexList[polygon->iV2].x, vertexList[polygon->iV2].y, vertexList[polygon->iV2].z, polygon->s2, polygon->t2);
-                }
-#endif
-#if RND_POLY_STATS
-                rndNumberPolys++;
-                rndNumberTextured++;
-                rndNumberSmoothed++;
-#endif //RND_POLY_STATS
-                break;
-            default:
-#if MESH_ERROR_CHECKING
-                dbgFatalf(DBG_Loc, "meshRender: invalid meshPolyMode: 0x%x", meshPolyMode);
-#endif
-                break;
-        }
-        polygon++;
-    }
-    glEnd();                                            //done drawing these triangles
-
-    glShadeModel(GL_SMOOTH);
-    if (!usingShader) glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
-
-    if (bFade)
-    {
-        glDisable(GL_BLEND);
-    }
-
-    rndLightingEnable(TRUE);
-
-    //reload projection matrix
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf((GLfloat*)&projection);
-    //ASSERT: modelview is always popped after a meshObjectRender
-    glMatrixMode(GL_MODELVIEW);
-
-    //reset state
-    rglDisable(RGL_RASTERIZE_ONLY);
-    glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 /*-----------------------------------------------------------------------------
@@ -2571,7 +1953,7 @@ void meshSpecObjectRender(polygonobject *object, materialentry *materials, sdwor
     glEnd();                                            //done drawing these triangles
 
     glShadeModel(GL_SMOOTH);
-    if (!usingShader) glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
+    glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
     rndLightingEnable(lightOn);
 }
 
@@ -2907,7 +2289,7 @@ void meshMorphedObjectRender(
     }
 
     glShadeModel(GL_SMOOTH);
-    if (!usingShader) glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
+    glLightModelf(GL_LIGHT_MODEL_TWO_SIDE, GL_FALSE);
 }
 
 /*-----------------------------------------------------------------------------

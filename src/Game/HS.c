@@ -13,7 +13,6 @@ Copyright Relic Entertainment, Inc.  All rights reserved.
 #include "Damage.h"
 #include "Debug.h"
 #include "FEReg.h"
-#include "glcaps.h"
 #include "glinc.h"
 #include "Globals.h"
 #include "GravWellGenerator.h"
@@ -91,7 +90,7 @@ void hsOrientEffect(Ship* ship)
     {
         if (effect->particleBlock[index] != NULL)
         {
-            system = effect->particleBlock[index];
+            system = (psysPtr) effect->particleBlock[index];
             part = (particle*)((ubyte*)system + partHeaderSize(system));
 
             bitSet(part->flags, PART_XYZSCALE);
@@ -170,7 +169,7 @@ void hsStart(Ship* ship, real32 cliptDelta, bool into, bool displayEffect)
 
     dmgStopEffect(ship, DMG_All);
 
-    if (!glCapFastFeature(GL_BLEND) || !displayEffect)
+    if (!displayEffect)
     {
         //don't bother with the tons-of-alpha effect if the horsepower isn't available
         return;
@@ -224,36 +223,40 @@ void hsStart(Ship* ship, real32 cliptDelta, bool into, bool displayEffect)
     }
 }
 
+#ifdef HW_ENABLE_GLES
+void hsGetEquation(Ship* ship, GLfloat equation[])
+#else
 void hsGetEquation(Ship* ship, GLdouble equation[])
+#endif
 {
     StaticCollInfo* sinfo = &ship->staticinfo->staticheader.staticCollInfo;
     ShipSinglePlayerGameInfo* ssinfo = ship->shipSinglePlayerGameInfo;
 
-    equation[0] = 0.0;
-    equation[1] = 0.0;
-    equation[2] = 1.0;
-    equation[3] = 0.0;
+    equation[0] = 0.0f;
+    equation[1] = 0.0f;
+    equation[2] = 1.0f;
+    equation[3] = 0.0f;
 
     switch (ssinfo->hsState)
     {
     case HS_SLICING_INTO:
-        equation[2] = -1.0;
+        equation[2] = -1.0f;
         equation[3] = ssinfo->clipt * (sinfo->forwardlength);
         break;
     case HS_COLLAPSE_INTO:
-        equation[2] = -1.0;
+        equation[2] = -1.0f;
         equation[3] = -(sinfo->forwardlength);
         break;
     case HS_POPUP_OUTOF:
-        equation[2] = 1.0;
+        equation[2] = 1.0f;
         equation[3] = -(sinfo->forwardlength);
         break;
     case HS_SLICING_OUTOF:
-        equation[2] = 1.0;
+        equation[2] = 1.0f;
         equation[3] = -ssinfo->clipt * (sinfo->forwardlength);
         break;
     case HS_COLLAPSE_OUTOF:
-        equation[2] = 1.0;
+        equation[2] = 1.0f;
         equation[3] = (sinfo->forwardlength);
     }
 }
@@ -267,7 +270,11 @@ void hsGetEquation(Ship* ship, GLdouble equation[])
 ----------------------------------------------------------------------------*/
 void hsContinue(Ship* ship, bool displayEffect)
 {
+#ifdef HW_ENABLE_GLES
+    GLfloat equation[4] = {0.0, 0.0, 1.0, 0.0};
+#else
     GLdouble equation[4] = {0.0, 0.0, 1.0, 0.0};
+#endif
     StaticCollInfo* sinfo = &ship->staticinfo->staticheader.staticCollInfo;
     ShipSinglePlayerGameInfo* ssinfo = ship->shipSinglePlayerGameInfo;
 
@@ -296,7 +303,11 @@ void hsContinue(Ship* ship, bool displayEffect)
                 nliphak = host->magnitudeSquared;
                 glScalef(nliphak,nliphak,nliphak);
 
+#ifdef HW_ENABLE_GLES
+                glClipPlanef(GL_CLIP_PLANE0, equation);
+#else
                 glClipPlane(GL_CLIP_PLANE0, equation);
+#endif
                 glEnable(GL_CLIP_PLANE0);
 
                 glLoadMatrixf((GLfloat*)&prevModelview);
@@ -371,7 +382,7 @@ void hsContinue(Ship* ship, bool displayEffect)
         {
             if (effect->particleBlock[index] != NULL)
             {
-                system = effect->particleBlock[index];
+                system = (psysPtr) effect->particleBlock[index];
                 part = (particle*)((ubyte*)system + partHeaderSize(system));
                 part->position = effect->posinfo.position;
             }
@@ -380,7 +391,11 @@ void hsContinue(Ship* ship, bool displayEffect)
 
     if (!singlePlayerGameInfo.hyperspaceFails)
     {
+#ifdef HW_ENABLE_GLES
+        glClipPlanef(GL_CLIP_PLANE0, equation);
+#else
         glClipPlane(GL_CLIP_PLANE0, equation);
+#endif
         glEnable(GL_CLIP_PLANE0);
     }
 }
@@ -394,78 +409,31 @@ void hsContinue(Ship* ship, bool displayEffect)
 ----------------------------------------------------------------------------*/
 void hsRectangle(vector* origin, real32 rightlength, real32 uplength, ubyte alpha, bool outline, color c)
 {
-    real32 x, y, z;
-    real32 rightlen, uplen;
-    ubyte red, green, blue;
+    real32 rlen = HS_DIST_2 * uplength;
+    real32 ulen = HS_DIST_2 * rightlength;
+    real32 v[12] = { origin->x - rlen, origin->y + ulen, origin->z,
+                     origin->x + rlen, origin->y + ulen, origin->z,
+                     origin->x - rlen, origin->y - ulen, origin->z,
+                     origin->x + rlen, origin->y - ulen, origin->z };
+    ubyte red = colRed(c);
+    ubyte green = colGreen(c);
+    ubyte blue = colBlue(c);
 
-    red = colRed(c);
-    green = colGreen(c);
-    blue = colBlue(c);
-
-    x = origin->x;
-    y = origin->y;
-    z = origin->z;
-    rightlen = HS_DIST_2 * uplength;
-    uplen = HS_DIST_2 * rightlength;
-
-    glColor4ub(red, green, blue, alpha);
-    glBegin(GL_QUADS);
-    glVertex3f(x - rightlen, y - uplen, z);
-    glVertex3f(x - rightlen, y + uplen, z);
-    glVertex3f(x + rightlen, y + uplen, z);
-    glVertex3f(x + rightlen, y - uplen, z);
-    glEnd();
-
-    if (outline)
-    {
-        glLineWidth(2.0f);
-        glColor4ub((ubyte)(red + 40), (ubyte)(green + 40), blue, alpha);
-        glBegin(GL_LINE_LOOP);
-        glVertex3f(x - rightlen, y - uplen, z);
-        glVertex3f(x - rightlen, y + uplen, z);
-        glVertex3f(x + rightlen, y + uplen, z);
-        glVertex3f(x + rightlen, y - uplen, z);
-        glEnd();
-        glLineWidth(1.0f);
-    }
-}
-
-void hsRectangle2(vector* origin, real32 rightlength, real32 uplength, ubyte alpha, bool outline)
-{
-    real32 x, y, z;
-    real32 rightlen, uplen;
-    ubyte red, green, blue;
-
-    red = 70;
-    green = 90;
-    blue = 255;
-
-    x = origin->x;
-    y = origin->y;
-    z = origin->z;
-    rightlen = HS_DIST_2 * uplength;
-    uplen = HS_DIST_2 * rightlength;
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, v);
 
     glColor4ub(red, green, blue, alpha);
-    glBegin(GL_QUADS);
-    glVertex3f(x - rightlen, y - uplen, z);
-    glVertex3f(x - rightlen, y + uplen, z);
-    glVertex3f(x + rightlen, y + uplen, z);
-    glVertex3f(x + rightlen, y - uplen, z);
-    glEnd();
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 
-    if (outline)
-    {
+    if (outline) {
+        ubyte l[4] = { 0, 1, 3, 2 };
         glLineWidth(2.0f);
         glColor4ub((ubyte)(red + 40), (ubyte)(green + 40), blue, alpha);
-        glBegin(GL_LINE_LOOP);
-        glVertex3f(x - rightlen, y - uplen, z);
-        glVertex3f(x - rightlen, y + uplen, z);
-        glVertex3f(x + rightlen, y + uplen, z);
-        glVertex3f(x + rightlen, y - uplen, z);
-        glEnd();
+        glDrawElements(GL_LINE_LOOP, 4, GL_UNSIGNED_BYTE, l);
         glLineWidth(1.0f);
     }
+
+    glDisableClientState(GL_VERTEX_ARRAY);
 }
 
 /*-----------------------------------------------------------------------------
@@ -503,24 +471,19 @@ void hsDesat(ubyte* r, ubyte* g, ubyte* b, color c, real32 scale)
 ----------------------------------------------------------------------------*/
 void hsLine(vector* origin, real32 rightlength, real32 uplength, ubyte alpha, color c)
 {
-    real32 x, y, z;
-    real32 length, width;
+    real32 rlen = 0.8f * rightlength;
+    real32 v[6] = { origin->x, origin->y - rlen, origin->z,
+                    origin->x, origin->y + rlen, origin->z };
     ubyte  red, green, blue;
 
     hsDesat(&red, &green, &blue, c, 0.70f);
-
-    x = origin->x;
-    y = origin->y;
-    z = origin->z;
-    length = 0.8f * rightlength;
-    width = uplength;
-
     glColor4ub(red, green, blue, alpha);
-    glLineWidth(width);
-    glBegin(GL_LINES);
-    glVertex3f(x, y - length, z);
-    glVertex3f(x, y + length, z);
-    glEnd();
+
+    glLineWidth(uplength);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_FLOAT, 0, v);
+    glDrawArrays(GL_LINES, 0, 2);
+    glDisableClientState(GL_VERTEX_ARRAY);
     glLineWidth(1.0f);
 }
 
@@ -925,7 +888,9 @@ void hsStaticGateRender(hsStaticGate* gate)
     bool lightEnabled;
     Derelict* derelict;
     hmatrix hmat;
-    vector origin = {0.0f, 0.0f, 0.0f};
+    vector origin = { 0.0f, 0.0f, 0.0f };
+    color c = colRGB(70, 90, 255);
+
 
     if (singlePlayerHyperspacingInto)
     {
@@ -959,7 +924,7 @@ void hsStaticGateRender(hsStaticGate* gate)
 
     glEnable(GL_BLEND);
     glDepthMask(GL_FALSE);
-    hsRectangle2(&origin, HYPERSPACEGATE_WIDTH, HYPERSPACEGATE_HEIGHT, 90, TRUE);
+    hsRectangle(&origin, HYPERSPACEGATE_WIDTH, HYPERSPACEGATE_HEIGHT, 90, TRUE, c);
 
     glDepthMask(GL_TRUE);
     glDisable(GL_BLEND);
@@ -1068,7 +1033,7 @@ void hsPreFixStaticData(ubyte *data)
 
     for (i = 0, pGate = (hsStaticGate*)data; i < hsStaticNumGates; i++, pGate++)
     {
-        pGate->derelict = SpaceObjRegistryGetID((SpaceObj *)pGate->derelict);
+        pGate->derelict = (DerelictPtr) SpaceObjRegistryGetID((SpaceObj *)pGate->derelict);
     }
 }
 

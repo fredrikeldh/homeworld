@@ -26,7 +26,6 @@
 #include "devstats.h"
 #include "FastMath.h"
 #include "font.h"
-#include "glcaps.h"
 #include "glinc.h"
 #include "GravWellGenerator.h"
 #include "InfoOverlay.h"
@@ -1163,15 +1162,8 @@ renderDerelictAsDot:
     rndTextureEnable(FALSE);
     rndLightingEnable(FALSE);
 
-    if (glCapFastFeature(GL_BLEND))
-    {
-        glEnable(GL_BLEND);
-        rndAdditiveBlends(FALSE);
-    }
-    else
-    {
-        glDisable(GL_BLEND);
-    }
+    glEnable(GL_BLEND);
+    rndAdditiveBlends(FALSE);
     glShadeModel(GL_FLAT);
     for (index = 0; index < numNebulae; index++)
     {
@@ -1757,7 +1749,6 @@ blob *smBlobsDraw(Camera *camera, LinkedList *list, hmatrix *modelView, hmatrix 
     sdword radius;
     vector p0, p1;
     real32 x, y, screenRadius;
-    bool reActivateStipple;
 #if BOB_VERBOSE_LEVEL >= 2
     sdword nBlobs = 0;
 #endif
@@ -1769,7 +1760,7 @@ blob *smBlobsDraw(Camera *camera, LinkedList *list, hmatrix *modelView, hmatrix 
 
     mouseCursorObjPtr  = NULL;               //Falko: got an obscure crash where mouseCursorObjPtr was mangled, will this work?
 
-    smBigPoints = glCapFeatureExists(GL_POINT_SIZE);
+    smBigPoints = TRUE;
 
     memset(toClassUsed, 0, sizeof(toClassUsed));
     closestBlob = NULL;
@@ -1808,22 +1799,7 @@ blob *smBlobsDraw(Camera *camera, LinkedList *list, hmatrix *modelView, hmatrix 
     closestSortDistance -= smClosestMargin;
     farthestSortDistance += smFarthestMargin;
 
-    if (RGL && glIsEnabled(GL_POLYGON_STIPPLE))
-    {
-        reActivateStipple = TRUE;
-        glDisable(GL_POLYGON_STIPPLE);
-    }
-    else
-    {
-        reActivateStipple = FALSE;
-    }
-
     //do 1 pass (backwards) through all the blobs to render the blobs themselves
-//    node = list->tail;
-//    while (node != NULL)
-//    {
-//        thisBlob = (blob *)listGetStructOfNode(node);
-//        node = node->prev;
     for (blobIndex = smNumberBlobsSorted - 1; blobIndex >= 0; blobIndex--)
     {
         thisBlob = smBlobSortList[blobIndex];
@@ -1900,11 +1876,6 @@ blob *smBlobsDraw(Camera *camera, LinkedList *list, hmatrix *modelView, hmatrix 
                 closestBlob = thisBlob;
             }
         }
-    }
-
-    if (reActivateStipple)
-    {
-        glEnable(GL_POLYGON_STIPPLE);
     }
 
 #if SM_VERBOSE_LEVEL >= 3
@@ -2292,8 +2263,6 @@ void smSensorsCloseForGood(void)
                              255));
     smSensorsActive = FALSE;
     universe.dontUpdateRenderList = FALSE;
-    if (RGL)
-        rglFeature(RGL_NORMDEPTH);
     if (smScrollListLeft) memFree(smScrollListLeft);
     if (smScrollListRight) memFree(smScrollListRight);
     if (smScrollListTop) memFree(smScrollListTop);
@@ -4058,7 +4027,7 @@ void smSensorsBegin(char *name, featom *atom)
         reg = reg->next;
     }
     dbgAssertOrIgnore(smViewportRegion != NULL);
-    regFunctionSet(smViewportRegion, smViewportProcess);
+    regFunctionSet(smViewportRegion, (regionfunction) smViewportProcess);
     regFilterSet(smViewportRegion, SM_ViewportFilter);
     smViewRectangle = smViewportRegion->rect;
 
@@ -4250,29 +4219,27 @@ void smSensorsBegin(char *name, featom *atom)
     soundEvent(NULL, UI_SensorsIntro);
 
     universe.dontUpdateRenderList = TRUE;
-    if (RGL)
-        rglFeature(RGL_SANSDEPTH);
     smRenderCount = 0;
 
     //add any additional key messages the sensors manager will need
-    regKeyChildAlloc(smViewportRegion, SHIFTKEY,      RPE_KeyUp | RPE_KeyDown, smViewportProcess, 1, SHIFTKEY);
-    regKeyChildAlloc(smViewportRegion, MKEY,          RPE_KeyUp | RPE_KeyDown, smViewportProcess, 1, MKEY);
-    regKeyChildAlloc(smViewportRegion, FKEY,          RPE_KeyUp | RPE_KeyDown, smViewportProcess, 1, FKEY);
-    regKeyChildAlloc(smViewportRegion, MMOUSE_BUTTON, RPE_KeyUp | RPE_KeyDown, smViewportProcess, 1, MMOUSE_BUTTON);
+    regKeyChildAlloc(smViewportRegion, SHIFTKEY,      RPE_KeyUp | RPE_KeyDown, (regionfunction) smViewportProcess, 1, SHIFTKEY);
+    regKeyChildAlloc(smViewportRegion, MKEY,          RPE_KeyUp | RPE_KeyDown, (regionfunction) smViewportProcess, 1, MKEY);
+    regKeyChildAlloc(smViewportRegion, FKEY,          RPE_KeyUp | RPE_KeyDown, (regionfunction) smViewportProcess, 1, FKEY);
+    regKeyChildAlloc(smViewportRegion, MMOUSE_BUTTON, RPE_KeyUp | RPE_KeyDown, (regionfunction) smViewportProcess, 1, MMOUSE_BUTTON);
 
-    regKeyChildAlloc(smViewportRegion, ARRLEFT,  RPE_KeyUp | RPE_KeyDown, smViewportProcess, 1, ARRLEFT );
-    regKeyChildAlloc(smViewportRegion, ARRRIGHT, RPE_KeyUp | RPE_KeyDown, smViewportProcess, 1, ARRRIGHT);
-    regKeyChildAlloc(smViewportRegion, ARRUP,    RPE_KeyUp | RPE_KeyDown, smViewportProcess, 1, ARRUP   );
-    regKeyChildAlloc(smViewportRegion, ARRDOWN,  RPE_KeyUp | RPE_KeyDown, smViewportProcess, 1, ARRDOWN );
+    regKeyChildAlloc(smViewportRegion, ARRLEFT,  RPE_KeyUp | RPE_KeyDown, (regionfunction) smViewportProcess, 1, ARRLEFT );
+    regKeyChildAlloc(smViewportRegion, ARRRIGHT, RPE_KeyUp | RPE_KeyDown, (regionfunction) smViewportProcess, 1, ARRRIGHT);
+    regKeyChildAlloc(smViewportRegion, ARRUP,    RPE_KeyUp | RPE_KeyDown, (regionfunction) smViewportProcess, 1, ARRUP   );
+    regKeyChildAlloc(smViewportRegion, ARRDOWN,  RPE_KeyUp | RPE_KeyDown, (regionfunction) smViewportProcess, 1, ARRDOWN );
 
 #if SM_TOGGLE_SENSOR_LEVEL
-    regKeyChildAlloc(smViewportRegion, LKEY, RPE_KeyUp | RPE_KeyDown, smViewportProcess, 1, LKEY);
+    regKeyChildAlloc(smViewportRegion, LKEY, RPE_KeyUp | RPE_KeyDown, (regionfunction) smViewportProcess, 1, LKEY);
 #endif
 
 
     for (index = ZEROKEY; index <= NINEKEY; index++)
     {
-        regKeyChildAlloc(smViewportRegion, index, RPE_KeyUp | RPE_KeyDown, smViewportProcess, 1, index);
+        regKeyChildAlloc(smViewportRegion, index, RPE_KeyUp | RPE_KeyDown, (regionfunction) smViewportProcess, 1, index);
     }
     mouseCursorShow();
     cameraCopyPositionInfo(&smCamera, mrCamera);

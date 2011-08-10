@@ -20,7 +20,6 @@
 #include "font.h"
 #include "FontReg.h"
 #include "main.h"
-#include "glcaps.h"
 #include "texreg.h"
 #include "Twiddle.h"
 #include "devstats.h"
@@ -1065,12 +1064,14 @@ sdword fontPrintN(sdword x, sdword y, color c, char *string, sdword maxCharacter
     }
 
     //display the GL font-page version if we "should" and "can"
-    if (RGLtype != SWtype &&
-        glfontDisplayString(fontCurrentFont, string, x, y, c))
+    if (glfontDisplayString(fontCurrentFont, string, x, y, c))
     {
         return TRUE;
     }
 
+#ifdef HW_ENABLE_GLES
+    fprintf(stderr, "failed to display string: %s\n", string);
+#else
 #if FONT_MANUAL_CLIP
 /*
     if (x <= (-MAIN_WindowWidth) || x >= MAIN_WindowWidth || y <= (-MAIN_WindowHeight) || y >= MAIN_WindowHeight)
@@ -1176,6 +1177,7 @@ noDraw:
         string++;                                           //and character pointer
         maxCharacters--;
     }
+#endif
 
     return(OKAY);
 }

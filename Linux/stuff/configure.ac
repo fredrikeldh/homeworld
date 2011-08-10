@@ -135,6 +135,36 @@ if test "$platform_win32" = "no" ; then
     fi
 fi
 
+AC_MSG_CHECKING([if libraries can be versioned])
+GLD=`$LD --help < /dev/null 2>/dev/null | grep version-script`
+if test "$GLD"; then
+	have_ld_version_script=yes
+	AC_MSG_RESULT(yes)
+else
+	have_ld_version_script=no
+	AC_MSG_RESULT(no)
+	AC_MSG_WARN(*** You have not enabled versioned symbols.)
+fi
+AM_CONDITIONAL(HAVE_LD_VERSION_SCRIPT, test "$have_ld_version_script" = "yes")
+
+dnl JPEG MEMORY MANAGER
+AC_ARG_ENABLE(jpegmemmgr,
+	AS_HELP_STRING([--enable-jpegmemmgr],
+		[Needs sorting, but will force here to jmemansi]), [jpegmemmgr=jmemansi], [jpegmemmgr=jmemansi])
+	AC_SUBST(MEMORYMGR,[jmemansi])
+	echo "* JPEG Memory manager defined as jmemansi *"
+
+
+dnl USE ASM
+AC_ARG_ENABLE(asm,
+	AS_HELP_STRING([--enable-asm],
+		[Force the use of compiled code. Should be removing this code so this is for fallback testing]),[useasm=yes],[useasm=no])
+if test "x$useasm" = "xyes" ; then
+	echo "* Compiling ASM code. (-D_USE_ASM) *"
+	CFLAGS="$CFLAGS -D_USE_ASM "
+	CPPFLAGS="$CPPFLAGS -D_USE_ASM "
+fi
+
 dnl WIN32 FIX ME
 AC_ARG_ENABLE(win32fixme,
 	AS_HELP_STRING([--disable-win32fixme],
@@ -152,14 +182,16 @@ dnl Configure options for Enabling Movies.
 AC_ARG_ENABLE(movies,
         AS_HELP_STRING([--enable-movies],[include movie code into Homeworld]),[movies=yes])
 if test "x$movies" = "xyes" ; then
-	AC_CHECK_HEADER([ffmpeg/avformat.h], [
-		AC_CHECK_HEADER([ffmpeg/avcodec.h], [
-			AC_CHECK_LIB([avcodec], [img_convert], [
+	AC_CHECK_HEADER([libavformat/avformat.h], [
+		AC_CHECK_HEADER([libavcodec/avcodec.h], [
+		  AC_CHECK_HEADER([libswscale/swscale.h], [
+			AC_CHECK_LIB([swscale], [sws_scale], [
 				AC_CHECK_LIB([avformat],[av_open_input_file],[
 			        	echo "* Including Movie code for Homeworld (HW_ENABLE_MOVIES) *"
 				        HWGAME_CFLAGS="$HWGAME_CFLAGS -DHW_ENABLE_MOVIES"
-				        MOVIE_LIBS="-lavcodec -lavformat"
+				        MOVIE_LIBS="-lavcodec -lavformat -lswscale"
 				],[])
+	          ],[])
 			], [])
 		],[])
 	],[])
@@ -183,8 +215,21 @@ AC_ARG_ENABLE(oldsound,
         AS_HELP_STRING([--enable-oldsound],[include old sound objects into Homeworld]),[oldsound=yes])
 AM_CONDITIONAL(OLD_SOUND, test "$oldsound" = "yes")
 
+AC_CHECK_LIB([GL], [glBegin], [
+    echo "* Using OpenGL for Homeworld *"
+    GL_LIBS="-lGL"
+], [
+    AC_CHECK_LIB([GLES_CM], [glEnableClientState], [
+            echo "* Using OpenGL ES for Homeworld (HW_ENABLE_GLES) *"
+            HWGAME_CFLAGS="$HWGAME_CFLAGS -DHW_ENABLE_GLES"
+            GL_LIBS="-lGLES_CM"
+    ], [
+    ])
+])
+
 AC_SUBST([MOVIE_LIBS])
 AC_SUBST([NET_LIBS])
+AC_SUBST([GL_LIBS])
 AC_SUBST([SSE_FLAGS])
 AC_SUBST([TRANSFORM])
 AC_SUBST(CC_FOR_BUILD)

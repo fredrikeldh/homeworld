@@ -10,6 +10,7 @@
 #define ___SOUNDEVENTPRIVATE_H
 
 #include "ObjTypes.h"
+#include "soundcmn.h"
 #include "SoundStructs.h"
 #include "SpaceObj.h"
 #include "Types.h"
@@ -151,8 +152,6 @@ extern sdword RANDOM_AMBIENCE_ADDRANDOM;
 =============================================================================*/
 void SEupdateShipRange(void);
 
-sword SEcalcvolumeold(double distance);
-sword SEcalcvolume(real32 distance, real32 maxdist);
 sword SEcalcenginevol(sdword shipclass, real32 distance);
 sword SEcalcvol(sdword shipclass, real32 distance);
 bool SEinrange(sdword shipclass, real32 distance);
@@ -197,11 +196,10 @@ extern SFXLUT	*SpecHitEventsLUT;
 extern SFXLUT	*UIEventsLUT;
 
 /* new banks */
-extern ubyte	*GunBank;
-extern ubyte	*ShipBank;
-extern ubyte	*SpecialEffectBank;
-extern ubyte	*UIBank;
-
+extern BANK *GunBank;
+extern BANK *ShipBank;
+extern BANK *SpecialEffectBank;
+extern BANK *UIBank;
 
 extern sdword  ambienthandle;
 

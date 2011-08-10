@@ -132,9 +132,6 @@ void growSelectAddShip(GrowSelection *growSelect,Ship *ship);
 // Returns TRUE if obj was removed
 bool growSelectRemoveShip(GrowSelection *growSelect,Ship *ship);
 
-// Returns TRUE if obj was removed
-bool growSelectRemoveShipBySettingNULL(GrowSelection *growSelect,Ship *ship);
-
 // Removes ship at index index from growSelect
 void growSelectRemoveShipIndex(GrowSelection *growSelect,sdword index);
 
@@ -300,6 +297,9 @@ void makeSelectionHyperspaceCapable(SelectCommand *selection);
 //removes certain ships from an attack selection so that guarding ships
 //isn't wacky
 void makeShipsNotHaveNonCombatShipsForGuardAttack(SelectCommand *selection);
+
+// convert a LinkedList of ships into the equivalent SelectCommand
+SelectCommand * shipLinkedListAsSelectCommand(LinkedList *list, char *label);
 
 // Selects all of the current player's non-hyperspacing ships
 SelectCommand *selectAllCurrentPlayersNonHyperspacingShips(void);

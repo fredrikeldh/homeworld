@@ -222,8 +222,6 @@ psysPtr partCreateSystem(particleType t, udword n);
 psysPtr partCreateSystemWithDelta(particleType t, udword n, udword delta);
 psysPtr partCreateSphericalSystem(particleType t, udword n);
 psysPtr partCreateSphericalSystemWithDelta(particleType t, udword n, udword delta);
-void partDefaultSystem(ShipPtr ship);
-
 udword partHeaderSize(psysPtr psys);
 
 //system modifiers
@@ -255,7 +253,6 @@ void partModifyDeltaColor(psysPtr psys,
                           real32 dr, real32 dg, real32 db, real32 da);
 void partModifyColorBias(psysPtr psys, real32 rb, real32 gb, real32 bb);
 void partModifyAddColor(psysPtr psys, color c);
-void partModifyOffsetLOF(psysPtr psys, real32 offset);
 
 //for billboard systems
 void partModifyAnimation(psysPtr psys, void* tstruct);
@@ -380,7 +377,6 @@ void partSetAlphaMode(udword mode);     //0 - normal, 1 - additive, 2 - stippled
 void partSetColorScheme(sdword colorScheme);
 
 void partCreateCallbackSet(void (*function)(sdword userValue, ubyte *userData), sdword userValue, ubyte *userData);
-void partMultiplySystemByMatrix(psysPtr psys, matrix *m);
 
 void partCircleSolid3(vector* centre, real32 radius, sdword nSlices, color c);
 
