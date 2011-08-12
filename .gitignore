@@ -4,6 +4,7 @@ src/io
 src/org
 src/com
 *~
+*.o
 HomeworldSDL.big
 
 Mac/build
