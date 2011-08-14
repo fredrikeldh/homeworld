@@ -4,7 +4,7 @@ Import('*')
 
 sources = Glob("*.c")
 
-notincl = ["debugwnd.c", "wave.c", "win32glue.c"]
+notincl = ["debugwnd.c", "wave.c", "win32glue.c", "prim3d.c", "render.c"]
 
 for nifile in notincl:
 	for s in sources:

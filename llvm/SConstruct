@@ -3,8 +3,8 @@ import os
 
 os.environ["dragonegg_disable_version_check"] = "1"
 
-libs = ["SDL", "avcodec", "avformat", "swscale"]
 tools = []
+libs = []
 
 def descend(subdirs):
 	
@@ -40,18 +40,16 @@ env.Append(CCFLAGS="-emit-llvm -c")
 env.Append(CCFLAGS="-Wall -fno-strict-aliasing -Wextra")
 env.VariantDir('build', ['src', 'tools'])
 
-for lib in libs:
-	if not conf.CheckLib(lib):
-		Exit(1)
-
 env.ParseConfig('sdl-config --cflags --libs')
 env.ParseConfig('pkg-config libavcodec --cflags --libs')
 env.ParseConfig('pkg-config libavformat --cflags --libs')
+env.ParseConfig('pkg-config glesv1_cm --cflags --libs')
+env.ParseConfig('pkg-config glew --cflags --libs')
 
 print "* " + game_descriptions[game_index]
 print "* " + build_descriptions[build_index]
 
-defi = [game_types[game_index], build_types[build_index], "HW_ENABLE_MOVIES", "_LINUX_FIX_ME", "_X86", "_REENTRANT"]
+defi = [game_types[game_index], build_types[build_index], "HW_ENABLE_MOVIES", "_LINUX_FIX_ME", "_X86", "_REENTRANT", "GENERIC_ETGCALLFUNCTION", "HW_ENABLE_GLES"]
 env.Append(CPPDEFINES=defi)
 
 top_srcdir = ".."
@@ -68,6 +66,7 @@ descend('..')
 name = 'llHomeworld'
 prog = env.Program(
 	target = name,
+	source = "../src/homeworld.c",
 	LIBS = libs
 )
 
