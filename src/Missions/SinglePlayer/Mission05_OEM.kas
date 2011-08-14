@@ -4,15 +4,9 @@
 //                                                                      //
 //----------------------------------------------------------------------//
 
-#ifdef _WIN32
-    #include "..\\..\\Game\\Attributes.h"
-    #include "..\\..\\Game\\SoundMusic.h"
-    #include "..\\..\\Game\\SpeechEvent.h"
-#else
-    #include "../../Game/Attributes.h"
-    #include "../../Game/SoundMusic.h"
-    #include "../../Game/SpeechEvent.h"
-#endif
+#include "Attributes.h"
+#include "SoundMusic.h"
+#include "SpeechEvent.h"
 
     LOCALIZATION //컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
 

@@ -2,13 +2,8 @@
 //  MISSION05 - Battle w/ sacking force
 //
 
-#ifdef _WIN32
-    #include "..\\..\\Game\\SoundMusic.h"
-    #include "..\\..\\Game\\SpeechEvent.h"
-#else
-    #include "../../Game/SoundMusic.h"
-    #include "../../Game/SpeechEvent.h"
-#endif
+#include "SoundMusic.h"
+#include "SpeechEvent.h"
 
     LOCALIZATION //컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴컴
 
