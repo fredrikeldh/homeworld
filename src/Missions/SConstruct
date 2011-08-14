@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+# Import everything in global
+import os
+Import('*')
+
+generated = []
+generated.append(descend("SinglePlayer"))
+#generated.append(descend("Tutorials"))
+
+directory = "Generated"
+
+def compileLevels(path):
+	levels = Glob(directory + "/" + path)
+	for levelFile in levels:
+		basename = levelFile.name
+		names = os.path.splitext(basename)
+		filename = names[0]
+		abspath = levelFile.abspath
+		
+		names = os.path.splitext(abspath)
+		
+		f = filename
+		
+		executable = ""
+		
+		for node in tools[0]:
+			executable += node.__str__()
+			
+		rootDir = Dir('#')
+			
+		executable = os.path.relpath(executable, directory)
+		
+		# Use relative paths to kas2c binary
+		relpath = os.path.relpath(abspath, directory)
+		
+		change = os.path.relpath(directory, rootDir.abspath)
+
+		cmd = "chdir " + change + " && " +  executable + " " + relpath + " " + f + ".c " + f + ".h " + f + ".func.c"
+
+		genf = directory + "/" + f
+		env.Command([genf + ".c", genf + ".h", genf + ".func.c"], directory + "/" + f + ".kp", cmd)
+
+compileLevels("Mission*.kp")
+compileLevels("Tutorial*.kp")
+
+descend(directory)

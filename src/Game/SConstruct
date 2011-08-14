@@ -1,3 +1,26 @@
 #!/usr/bin/env python
+# Import everything in global
+Import('*')
 
-sources = Glob('*.c')
+missions = [
+"../Missions/Generated/Mission01.h",
+"../Missions/Generated/Mission02.h",
+"../Missions/Generated/Mission03.h",
+"../Missions/Generated/Mission04.h",
+"../Missions/Generated/Mission05.h",
+"../Missions/Generated/Mission05_OEM.h",
+"../Missions/Generated/Mission06.h",
+"../Missions/Generated/Mission07.h",
+"../Missions/Generated/Mission08.h",
+"../Missions/Generated/Mission09.h",
+"../Missions/Generated/Mission10.h",
+"../Missions/Generated/Mission11.h",
+"../Missions/Generated/Mission12.h",
+"../Missions/Generated/Mission13.h",
+"../Missions/Generated/Mission14.h",
+"../Missions/Generated/Mission15.h",
+"../Missions/Generated/Mission16.h"
+]
+
+hwlibrary("Game", Glob('*.c') + missions)
+

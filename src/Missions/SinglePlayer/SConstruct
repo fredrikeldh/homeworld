@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+# Import everything in global
+import os
+Import('*')
+
+alternate = "../../Game"
+
+def preprocess(path, processedPath):
+	if not type(path) == str:
+		path = path.name
+
+	rootDir = Dir('#')
+	change = os.path.relpath(".", rootDir.abspath)
+	cmd = "chdir " + change + " && gcc -E -x c  -I" + alternate + " " + path + " > " + processedPath
+
+	env.Command(processedPath, path, cmd)
+#gcc -E -x c  -I../../../src/Game ../../../src/Missions/SinglePlayer/Mission01.kas > Mission01.kp
+
+
+#	source = open(path, "r")
+#	target = open(processedPath, "w")
+#	
+#	line = ""
+#	while True:
+#		line = source.readline()
+#		
+#		if line == "":
+#			break;
+#			
+#		names = line.split("#include", 2)
+#		
+#		if names.__len__() == 1:
+#			target.write(line)
+#		else:
+#			include = names[1].strip("\"\'<> \n")
+#			includeFile = None
+#			
+#			try:
+#				includeFile = open(include, "r")
+#			except IOError:
+#				for alt in alternate:
+#					try:
+#						#print alt + include
+#						#print os.path.abspath(".")
+#						includeFile = open(alt + include, "r")
+#					except IOError:
+#						pass
+#
+#			if includeFile == None:
+#				print "No include found: " + include + " in file " + path
+#			
+#			while True:
+#				line = includeFile.readline()
+#				
+#				if line == "":
+#					break;
+#					
+#				target.write(line)
+
+levels = Glob("Mission*.kas")
+
+processedLevels = []
+
+for level in levels:
+	names = os.path.splitext(level.name)
+	filename = names[0]
+	processedLevel = filename + ".kp"
+	preprocess(level, "../Generated/" + processedLevel)
+	processedLevels.append(processedLevel)
+
+Return("processedLevels")
+

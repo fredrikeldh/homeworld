@@ -1,4 +1,10 @@
 #!/usr/bin/env python
+import os
+
+os.environ["dragonegg_disable_version_check"] = "1"
+
+libs = ["SDL", "avcodec", "avformat", "swscale"]
+tools = []
 
 def descend(subdirs):
 	
@@ -8,11 +14,17 @@ def descend(subdirs):
 		for i in range( 0, subdirs.__len__(), 1 ):
 			subdirs[i] += '/SConstruct'
 		
-	SConscript(subdirs)
+	return SConscript(subdirs)
+	
+def hwlibrary(name, sources):
+	slib = env.StaticLibrary("libhw_" + name, sources)
+	libs.append(slib)
+	
+def hwtool(tool):
+	tools.append(tool)
 
 env = Environment()
-target = 'llHomeworld'
-
+conf = Configure(env)
 
 game_descriptions = ["Building original binary for Homeworld", "Building Raiders Retreat binary for Homeworld", "Building Demo binary for Homeworld"]
 game_types = ["HW_GAME_HOMEWORLD", "HW_GAME_RAIDER_RETREAT", "HW_GAME_DEMO"]
@@ -22,23 +34,43 @@ build_descriptions = ["Building debug binary for Homeworld", "Building distribut
 build_types = ["HW_BUILD_FOR_DEBUGGING", "HW_BUILD_FOR_DISTRIBUTION"]
 build_index = 0
 
-env.Replace(CC = "llvm-gcc")
+env.Replace(CC = "llvm-gcc-4.2")
 env.Replace(LINK = "llvm-ld")
 env.Append(CCFLAGS="-emit-llvm -c")
-print game_descriptions[game_index]
-env.Append(CPPDEFINES=game_types[game_index])
+env.Append(CCFLAGS="-Wall -fno-strict-aliasing -Wextra")
+env.VariantDir('build', ['src', 'tools'])
 
-print build_descriptions[build_index]
-env.Append(CPPDEFINES=build_types[build_index])
+for lib in libs:
+	if not conf.CheckLib(lib):
+		Exit(1)
 
-env.Append(CPPDEFINES=HW_ENABLE_MOVIES)
+env.ParseConfig('sdl-config --cflags --libs')
+env.ParseConfig('pkg-config libavcodec --cflags --libs')
+env.ParseConfig('pkg-config libavformat --cflags --libs')
 
-#print env.items()
+print "* " + game_descriptions[game_index]
+print "* " + build_descriptions[build_index]
 
-#env.Program(target = target, source = ["helloworld.c"])
+defi = [game_types[game_index], build_types[build_index], "HW_ENABLE_MOVIES", "_LINUX_FIX_ME", "_X86", "_REENTRANT"]
+env.Append(CPPDEFINES=defi)
 
-Export('env', 'descend')
+top_srcdir = ".."
+includedirs = [top_srcdir + "/src/ThirdParty/CRC", top_srcdir + "/src/ThirdParty/JPG", top_srcdir + "/src/ThirdParty/LZSS", top_srcdir + "/src/Game", top_srcdir + "/src/SDL", top_srcdir + "/src/Ships", top_srcdir + "/src/ThirdParty/Titan", "/usr/include/x86_64-linux-gnu"]
+
+for i in range(0, includedirs.__len__(), 1):
+	includedirs[i] = env.Dir(includedirs[i]).abspath
+
+env.Append(CPPPATH=includedirs)
+
+Export('env', 'hwlibrary', 'tools', 'descend')
 descend('..')
 
+name = 'llHomeworld'
+prog = env.Program(
+	target = name,
+	LIBS = libs
+)
+
+Depends(prog, tools)
 
 

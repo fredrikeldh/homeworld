@@ -2,5 +2,5 @@
 # Import everything in global
 Import('*')
 
-descend(['Missions', 'Game', 'ThirdParty', 'SDL', 'Ships'])
+env.StaticLibrary("libhw_CRC", "CRC32.c")
 
