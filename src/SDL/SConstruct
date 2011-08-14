@@ -4,12 +4,7 @@ Import('*')
 
 sources = Glob("*.c")
 
-notincl = ["debugwnd.c", "wave.c", "win32glue.c", "prim3d.c", "render.c"]
+ignored = ["debugwnd.c", "wave.c", "win32glue.c", "prim3d.c", "render.c", "TitanInterfaceC.stub.c"]
 
-for nifile in notincl:
-	for s in sources:
-		if s.name == nifile:
-			sources.remove(s)
-
-hwlibrary("SDL", sources)
+hwlibrary("SDL", sources, ignored)
 
