@@ -5,6 +5,11 @@ src/org
 src/com
 *~
 *.o
+*.Po
+*.a
+*.bc
+Makefile
+Makefile.in
 HomeworldSDL.big
 
 Mac/build
