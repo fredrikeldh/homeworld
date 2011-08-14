@@ -37,7 +37,7 @@ build_index = 0
 env.Replace(CC = "llvm-gcc-4.2")
 env.Replace(LINK = "llvm-ld")
 env.Append(CCFLAGS="-emit-llvm -c")
-env.Append(CCFLAGS="-Wall -fno-strict-aliasing -Wextra -Werror=uninitialized -Werror=implicit-function-declaration -Werror=trigraphs -Werror=unused-but-set-parameter -O2")
+env.Append(CCFLAGS="-Wall -fno-strict-aliasing -Wextra -Werror=uninitialized -Werror=trigraphs -Werror=init-self -Werror=format -Werror=format-security -Werror=implicit -O2")
 env.VariantDir('build', ['../src', '../tools'])
 
 env.ParseConfig('sdl-config --cflags --libs')
