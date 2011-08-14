@@ -6,6 +6,11 @@
 #include <GLES/egl.h>
 #include <GLES/glext.h>
 
+#ifndef GL_LINE_STIPPLE
+// Copy of GL/glew.h
+#define GL_LINE_STIPPLE 0x0B24
+#endif
+
 #define GL_QUADS                0x0007
 #define GL_POLYGON              0x0009
 
