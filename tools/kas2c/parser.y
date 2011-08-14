@@ -27,6 +27,20 @@
 #undef TRUE
 #undef FALSE
 
+//
+// Declare to prevent warnings
+//
+#ifndef yylex
+int yylex();
+#endif
+
+#ifndef yyerror
+int yyerror (char const *);
+#endif
+//
+//
+//
+
 int parseLevel = LEVEL_LEVEL;
 
 int ifOnceIndex;  // up to 2^32 IFONCE statements per WATCH or INIT routine
@@ -266,7 +280,7 @@ char levelName[MAX_LEVEL_NAME_LENGTH+1]; // current input filename
 FILE *yyhout, *yyfout;
 unsigned int functionCount;  // number of FSM functions
 
-int yyerror (char *s)
+int yyerror (char const *s)
 {
     if (!strcasecmp(s, "parse error"))
         fprintf(stderr, "%s(%d) error : at '%s', %s\n", curFilename, lineNum, yytext, stateHelpGet());
