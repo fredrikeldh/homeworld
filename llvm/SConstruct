@@ -25,12 +25,14 @@ def generateProgActions(source, target, env, for_signature):
 	if not type(source) == str:
 		for ones in source:
 			src_string += os.path.relpath(ones.__str__(), topDir.abspath) + " "
-			
+	
+	output = target[0]
 	for ones in env["LIBS"]:
+		Depends(output, ones)
 		for n in ones:
 			src_string += os.path.relpath(n.__str__(), topDir.abspath) + " "
 	
-	return env["LINK"] + " " + src_string + " -o " + os.path.relpath(target[0].abspath, topDir.abspath)
+	return env["LINK"] + " " + src_string + " -o " + os.path.relpath(output.abspath, topDir.abspath)
 
 bcBuilder = Builder(
 	generator = generateLibActions,
