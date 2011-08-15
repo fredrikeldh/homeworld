@@ -378,7 +378,7 @@ void matCreateMatFromVecs(matrix *result,vector *col1,vector *col2,vector *col3)
 ----------------------------------------------------------------------------*/
 void matMultiplyMatByMat(matrix *result,matrix *first,matrix *second)
 {
-#if defined (_MSC_VER) && defined (_USE_ASM) 
+#if defined (_USE_ASM) && defined (_MSC_VER)
     static real32* c;
     static real32* a;
     static real32* b;
@@ -659,7 +659,7 @@ void matMultiplyMatByMat(matrix *result,matrix *first,matrix *second)
 ----------------------------------------------------------------------------*/
 void matMultiplyMatByVec(vector *result,matrix *matrix,vector *vector)
 {
-#if defined (_MSC_VER)
+#if defined (_USE_ASM) && defined (_MSC_VER)
     real32* dest = (real32*)result;
     real32* source = (real32*)vector;
     real32* mat = (real32*)matrix;
@@ -724,7 +724,7 @@ void matMultiplyMatByVec(vector *result,matrix *matrix,vector *vector)
         pop     edi
         pop     esi
     }
-#elif defined (__GNUC__) && defined (__i386__) && !defined (_MACOSX_FIX_86)
+#elif defined (_USE_ASM) && defined (__GNUC__) && defined (__i386__) && !defined (_MACOSX_FIX_86)
     __asm__ __volatile__ (
         "    flds    0*"FSIZE_STR"("SOURCE")\n"               /*s0*/
         "    fmuls   (0+0*3)*"FSIZE_STR"("MATRIX")\n"         /*a0*/
@@ -790,7 +790,7 @@ void matMultiplyMatByVec(vector *result,matrix *matrix,vector *vector)
 ----------------------------------------------------------------------------*/
 void matMultiplyVecByMat(vector *result,vector *vector,matrix *matrix)
 {
-#if defined (_MSC_VER)
+#if defined (_USE_ASM) && defined (_MSC_VER)
     real32* dest = (real32*)result;
     real32* source = (real32*)vector;
     real32* mat = (real32*)matrix;
@@ -855,7 +855,7 @@ void matMultiplyVecByMat(vector *result,vector *vector,matrix *matrix)
         pop     edi
         pop     esi
     }
-#elif defined (__GNUC__) && defined (__i386__) && !defined (_MACOSX_FIX_86)
+#elif defined (_USE_ASM) && defined (__GNUC__) && defined (__i386__) && !defined (_MACOSX_FIX_86)
     __asm__ __volatile__ (
         "    flds    0*"FSIZE_STR"("SOURCE")\n"               /*s0*/
         "    fmuls   (0+0*3)*"FSIZE_STR"("MATRIX")\n"         /*a0*/

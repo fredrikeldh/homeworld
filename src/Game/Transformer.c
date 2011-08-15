@@ -50,9 +50,11 @@ void transGeneralPerspectiveTransform_intrin(sdword, hvector*, hvector*, hmatrix
 void kniTransFreeVertexLists(void);
 void transSetKatmaiSupport(unsigned int);
 
+#if defined (_USE_ASM)
 void transTransformVertexList_asm(sdword n, hvector* dest, vertexentry* source, hmatrix* m);
 void transPerspectiveTransform_asm(sdword n, hvector* dest, hvector* source, hmatrix* m);
 void transGeneralPerspectiveTransform_asm(sdword n, hvector* dest, hvector* source, hmatrix* m);
+#endif //(_USE_ASM)
 
 static udword haveKatmai, haveFXSR;
 static int useKatmai;
@@ -77,7 +79,7 @@ static transPerspective_proc transGeneral;
 static int chkcpubit()
 {
     int rval;
-#if defined (_MSC_VER)
+#if defined (_USE_ASM) && defined (_MSC_VER)
     _asm
     {
         pusha
@@ -116,7 +118,7 @@ static int chkcpubit()
 
         popa
     }
-#elif defined (__GNUC__) && defined (__i386__) && !defined (_MACOSX_FIX_86)
+#elif defined (_USE_ASM) && defined (__GNUC__) && defined (__i386__) && !defined (_MACOSX_FIX_86)
     __asm__ __volatile__ (
         "    pushfl\n"
         "    popl %%eax\n"
@@ -198,7 +200,7 @@ void transStartup(void)
         }
         else
         {
-#if defined (_MSC_VER)
+#if defined (_USE_ASM) && defined (_MSC_VER)
 
             if(has_feature(CPU_FEATURE_SSE))
             {
@@ -206,7 +208,7 @@ void transStartup(void)
                 haveFXSR = 1;
             }
 
-#elif defined (__GNUC__) && defined (__i386__) && !defined (_MACOSX_FIX_86)
+#elif defined (_USE_ASM) && defined (__GNUC__) && defined (__i386__) && !defined (_MACOSX_FIX_86)
             __asm__ __volatile__ (
                 "    movl $1, %%eax\n"
                 "    cpuid\n"
@@ -229,9 +231,15 @@ void transStartup(void)
 
 #ifndef _MACOSX_FIX_MISC
     useKatmai = transCanSupportKatmai();
+#if defined (_USE_ASM)
     transVertexList = (useKatmai) ? transTransformVertexList_intrin : transTransformVertexList_asm;
     transPerspective = (useKatmai) ? transPerspectiveTransform_intrin : transPerspectiveTransform_asm;
     transGeneral = (useKatmai) ? transGeneralPerspectiveTransform_intrin : transGeneralPerspectiveTransform_asm;
+#else
+    transVertexList = transTransformVertexList_intrin;
+    transPerspective = transPerspectiveTransform_intrin;
+    transGeneral = transGeneralPerspectiveTransform_intrin;
+#endif //(_USE_ASM)
 #endif 
 }
 
@@ -314,7 +322,7 @@ void transGrowVertexLists(sdword nVertices)
             clipVertexList, nVerts * sizeof(hvector), "clip vertex list", NonVolatile);
     }
 }
-
+#if defined (_USE_ASM)
 //x87 3D transform
 void transTransformVertexList_asm(sdword n, hvector* dest, vertexentry* source, hmatrix* m)
 {
@@ -447,6 +455,7 @@ void transTransformVertexList_asm(sdword n, hvector* dest, vertexentry* source, 
         : "c" (n), "S" (source), "b" (dest), "D" (m) );
 #endif
 }
+#endif //(_USE_ASM)
 
 /*-----------------------------------------------------------------------------
     Name        : transTransformVertexList
@@ -473,6 +482,7 @@ void transTransformVertexList(sdword n, hvector* dest, vertexentry* source, hmat
     transVertexList(n, dest, source, m);
 }
 
+#if defined (_USE_ASM)
 //x87 perspective transform
 void transPerspectiveTransform_asm(sdword n, hvector* dest, hvector* source, hmatrix* m)
 {
@@ -571,6 +581,7 @@ void transPerspectiveTransform_asm(sdword n, hvector* dest, hvector* source, hma
         : "eax" );
 #endif
 }
+#endif //(_USE_ASM)
 
 /*-----------------------------------------------------------------------------
     Name        : transSinglePerspectiveTransform
@@ -684,6 +695,7 @@ void transTransformCompletely(
     }
 }
 
+#if defined (_USE_ASM)
 //x87 general perspective transform
 void transGeneralPerspectiveTransform_asm(sdword n, hvector* dest, hvector* source, hmatrix* m)
 {
@@ -857,6 +869,7 @@ void transGeneralPerspectiveTransform_asm(sdword n, hvector* dest, hvector* sour
         : "c" (n), "D" (dest), "d" (m), "S" (source) );
 #endif
 }
+#endif //(_USE_ASM)
 
 /*-----------------------------------------------------------------------------
     Name        : transGeneralPerspectiveTransform

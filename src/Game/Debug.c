@@ -55,7 +55,7 @@ char *dbgStackDump(void)
     {
         return(NULL);
     }
-
+#if defined (_USE_ASM)
     //find stack pointers
 #if defined (_MSC_VER)
     _asm mov eax, esp
@@ -63,6 +63,7 @@ char *dbgStackDump(void)
 #elif defined (__GNUC__) && defined (__i386__)
     __asm__ __volatile__ ( "movl %%esp, %0\n\t" : "=r" (_ESP) );
 #endif
+#endif //(_USE_ASM)
 
     _ESP = _ESP & (~3);                                     //round off to dword boundary
     dbgStackBase = dbgStackBase & (~3);
@@ -207,9 +208,9 @@ void dbgFatal(char *file, sdword line, char *string)
 
     if (dbgAllowInterrupts)
     {
-#if defined (_MSC_VER)
+#if defined (_USE_ASM) && defined (_MSC_VER)
         _asm int 3
-#elif defined (__GNUC__) && (defined (__i386__) || defined (__x86_64__))
+#elif defined (_USE_ASM) && defined (__GNUC__) && (defined (__i386__) || defined (__x86_64__))
         __asm__ ( "int $3\n\t" );
 #else
         char *null_ptr = NULL;
@@ -256,9 +257,9 @@ void dbgNonFatal(char *file, sdword line, char *string)
 
     if (dbgAllowInterrupts)
     {
-#if defined (_MSC_VER)
+#if defined (_USE_ASM) && defined (_MSC_VER)
         _asm int 3
-#elif defined (__GNUC__) && (defined (__i386__) || defined (__x86_64__))
+#elif defined (_USE_ASM) && defined (__GNUC__) && (defined (__i386__) || defined (__x86_64__))
         __asm__ ( "int $3\n\t" );
 #else
         char *null_ptr = NULL;
