@@ -44,3 +44,4 @@ compileLevels("Mission*.kp")
 compileLevels("Tutorial*.kp")
 
 descend(directory)
+

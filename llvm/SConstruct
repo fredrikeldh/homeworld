@@ -78,7 +78,7 @@ def hwlibrary(name, sources, ignored = []):
 			bcFiles += n.__str__() + " "
 		
 	slib = env.LLVM_LIB("libhw_" + name, objects)
-	print slib[0].abspath
+
 	libs.append(slib)
 	return slib
 	
