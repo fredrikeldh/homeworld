@@ -62,6 +62,8 @@ def descend(subdirs):
 def hwlibrary(name, sources, ignored = []):
 	objects = []
 
+	if type(sources) is str:
+		sources = [sources]
 	for s in sources:
 		valid = True
 		for ign in ignored:
