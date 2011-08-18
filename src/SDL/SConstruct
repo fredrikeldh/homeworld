@@ -4,7 +4,7 @@ Import('*')
 
 sources = Glob("*.c")
 
-ignored = ["debugwnd.c", "wave.c", "win32glue.c", "prim3d.c", "render.c", "TitanInterfaceC.stub.c"]
+ignored = ["debugwnd.c", "wave.c", "win32glue.c", "prim3d.c", "TitanInterfaceC.stub.c"]
 
 hwlibrary("SDL", sources, ignored)
 
