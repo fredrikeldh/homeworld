@@ -2,5 +2,5 @@
 # Import everything in global
 Import('*')
 
-env.StaticLibrary("libhw_CRC", "CRC32.c")
+hwlibrary("CRC", "CRC32.c")
 
