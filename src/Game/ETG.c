@@ -3910,11 +3910,9 @@ sdword etgNewInteger(struct etgeffectstatic *stat, ubyte *dest, char *opcode, ch
     if (etgParseMode == EPM_Constant)
     {                                                       //if we're creating a constant
         start = strtok(params, " =\t");
-#ifdef _X86_64
-        nScanned = sscanf(start, "%ld", &initial);
-#else
-        nScanned = sscanf(start, "%d", &initial);
-#endif
+
+        nScanned = sscanf(start, MEMSIZE_FORMAT, &initial);
+
 #if ETG_ERROR_CHECKING
         if (stat->constLength + 4 > ETG_ConstDataPool)
         {
@@ -3941,11 +3939,7 @@ sdword etgNewInteger(struct etgeffectstatic *stat, ubyte *dest, char *opcode, ch
     start = etgParseVariable(params, &bSetInitial);         //prepare string
     if (bSetInitial)
     {
-#ifdef _X86_64
-        nScanned = sscanf(start, "%ld", &initial);           //scan the initial value
-#else
-        nScanned = sscanf(start, "%d", &initial);           //scan the initial value
-#endif
+        nScanned = sscanf(start, MEMSIZE_FORMAT, &initial);           //scan the initial value
 #if ETG_ERROR_CHECKING
         if (nScanned != 1)
         {
@@ -4190,11 +4184,9 @@ sdword etgSetTextureParse(struct etgeffectstatic *stat, ubyte *dest, char *opcod
         }
 #endif
         function->parameter[function->nParameters].type = EVT_Constant;
-#ifdef _X86_64
-        nScanned = sscanf(param, "%ld", &function->parameter[function->nParameters].param);
-#else
-        nScanned = sscanf(param, "%d", &function->parameter[function->nParameters].param);
-#endif
+
+        nScanned = sscanf(param, SMEMSIZE_FORMAT, &function->parameter[function->nParameters].param);
+
 #if ETG_ERROR_CHECKING
         if (nScanned != 1)
         {
@@ -5430,11 +5422,7 @@ sdword etgSpawnParse(struct etgeffectstatic *stat, ubyte *dest, char *opcodeStri
             }
             else
             {                                               //else it's an integer
-#ifdef _X86_64
-                nScanned = sscanf(param, "%ld", &call->parameter[nParams].param);
-#else
-                nScanned = sscanf(param, "%d", &call->parameter[nParams].param);
-#endif
+                nScanned = sscanf(param, SMEMSIZE_FORMAT, &call->parameter[nParams].param);
             }
 #if ETG_ERROR_CHECKING
             if (nScanned != 1)
@@ -5721,11 +5709,7 @@ sdword etgCreateEffectsParse(struct etgeffectstatic *stat, ubyte *dest, char *op
             }
             else
             {                                               //else it's an integer
-#ifdef _X86_64
-                nScanned = sscanf(param, "%ld", &call->parameter[nParams].param);
-#else
-                nScanned = sscanf(param, "%d", &call->parameter[nParams].param);
-#endif
+                nScanned = sscanf(param, SMEMSIZE_FORMAT, &call->parameter[nParams].param);
             }
 #if ETG_ERROR_CHECKING
             if (nScanned != 1)
