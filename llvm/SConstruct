@@ -64,6 +64,7 @@ def hwlibrary(name, sources, ignored = []):
 
 	if type(sources) is str:
 		sources = [sources]
+
 	for s in sources:
 		valid = True
 		for ign in ignored:
@@ -109,7 +110,7 @@ env.ParseConfig('pkg-config glesv1_cm --cflags --libs')
 print "* " + game_descriptions[game_index]
 print "* " + build_descriptions[build_index]
 
-defi = [game_types[game_index], build_types[build_index], "HW_ENABLE_MOVIES", "_LINUX_FIX_ME", "_X86", "_REENTRANT", "GENERIC_ETGCALLFUNCTION", "HW_ENABLE_GLES"]
+defi = [game_types[game_index], build_types[build_index], "HW_ENABLE_MOVIES", "_LINUX_FIX_ME", "_X86", "_REENTRANT", "GENERIC_ETGCALLFUNCTION", "HW_ENABLE_GLES", "LLVM"]
 env.Append(CPPDEFINES=defi)
 
 top_srcdir = ".."
