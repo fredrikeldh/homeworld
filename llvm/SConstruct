@@ -18,7 +18,7 @@ def generateLibActions(source, target, env, for_signature):
 		for ones in source:
 			src_string += os.path.relpath(ones.__str__(), topDir.abspath) + " "
 	
-	return env["LINK"] + " -link-as-library " + src_string + " -o " + os.path.relpath(target[0].abspath, topDir.abspath)
+	return env["LINK"] + " -link-as-library -disable-opt " + src_string + " -o " + os.path.relpath(target[0].abspath, topDir.abspath)
 	
 def generateProgActions(source, target, env, for_signature):
 	src_string = ""
