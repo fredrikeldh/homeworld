@@ -3447,7 +3447,7 @@ void nisSoundEventSet(char *directory,char *field,void *dataToFillIn)
 {
     nisevent *event = nisNewEvent(NEO_SoundEvent);
     event->param[0] = event->param[1] = 0;
-    sscanf(field, "%d", &event->param[0]);
+    sscanf(field, SMEMSIZE_FORMAT, &event->param[0]);
 }
 /*-----------------------------------------------------------------------------
     Name        : nisSeparateExpression
@@ -3512,7 +3512,7 @@ void nisSpeechEventSet(char *directory,char *field,void *dataToFillIn)
     event->param[0] = (udword)(sdword)evaluatedNumber;
     if (*nextString)
     {
-        sscanf(nextString + 1, "%d", &event->param[1]);
+        sscanf(nextString + 1, SMEMSIZE_FORMAT, &event->param[1]);
     }
     for (i = 0; (field[i] = toupper(field[i])); i++) { }
     if ((actorString = strstr(field, "ACTOR")) != NULL)
@@ -3546,7 +3546,7 @@ void nisFleetSpeechEventSet(char *directory,char *field,void *dataToFillIn)
     event->param[0] = (udword)(sdword)evaluatedNumber;
     if (*nextString)
     {
-        sscanf(nextString + 1, "%d", &event->param[1]);
+        sscanf(nextString + 1, SMEMSIZE_FORMAT, &event->param[1]);
     }
 }
 void nisAnimaticSpeechEventSet(char* directory, char* field, void* dataToFillIn)
@@ -3569,7 +3569,7 @@ void nisAnimaticSpeechEventSet(char* directory, char* field, void* dataToFillIn)
     event->param[0] = (udword)(sdword)evaluatedNumber;
     if (*nextString)
     {
-        sscanf(nextString + 1, "%d", &event->param[1]);
+        sscanf(nextString + 1, SMEMSIZE_FORMAT, &event->param[1]);
     }
 }
 #ifdef _WIN32_FIX_ME
@@ -3600,7 +3600,7 @@ void nisRemainAtEndSet(char *directory,char *field,void *dataToFillIn)
 void nisCameraFOVSet(char *directory,char *field,void *dataToFillIn)
 {
     nisevent *event = nisNewEvent(NEO_CameraFOV);
-    sscanf(field, "%d", &event->param[0]);
+    sscanf(field, SMEMSIZE_FORMAT, &event->param[0]);
 }
 void nisRaceSwap(char *directory,char *field,void *dataToFillIn)
 {
@@ -4275,7 +4275,8 @@ void nisStaticOffSet(char *directory, char *field, void *dataToFillIn)
     nisevent *event = nisNewEventNoObject(NEO_StaticOff);
     sdword nScanned;
 
-    nScanned = sscanf(field, "%d", &event->param[0]);
+    nScanned = sscanf(field, SMEMSIZE_FORMAT, &event->param[0]);
+
     dbgAssertOrIgnore(nScanned == 1);
     dbgAssertOrIgnore(event->param[0] >= 0 && event->param[0] < NIS_NumberStatics);
 }
@@ -4345,7 +4346,8 @@ void nisMinimumLODSet(char *directory, char *field, void *dataToFillIn)
     nisevent *event = nisNewEvent(NEO_MinimumLOD);
     sdword nScanned;
 
-    nScanned = sscanf(field, "%d", &event->param[0]);
+    nScanned = sscanf(field, SMEMSIZE_FORMAT, &event->param[0]);
+
     dbgAssertOrIgnore(nScanned == 1);
     dbgAssertOrIgnore(event->param[0] >= 0 && event->param[0] < 10);
 }
