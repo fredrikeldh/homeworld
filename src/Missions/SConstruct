@@ -15,30 +15,32 @@ def compileLevels(path):
 		basename = levelFile.name
 		names = os.path.splitext(basename)
 		filename = names[0]
-		abspath = levelFile.abspath
-		
-		names = os.path.splitext(abspath)
-		
-		f = filename
 		
 		executable = ""
 		
-		for node in tools[0]:
+		kasTool = tools[0]
+		
+		for node in kasTool:
 			executable += node.__str__()
 			
 		rootDir = Dir('#')
+
+		relDirectory = os.path.relpath(directory, rootDir.abspath)
 			
+		# Use relative paths to kas2c binary
 		executable = os.path.relpath(executable, directory)
 		
-		# Use relative paths to kas2c binary
-		relpath = os.path.relpath(abspath, directory)
+		# Use relative paths for output
+		relOutputPath = os.path.relpath(os.path.splitext(levelFile.abspath)[0], rootDir.abspath)
 		
-		change = os.path.relpath(directory, rootDir.abspath)
+		# Use relative paths for input
+		relInputPath = os.path.relpath(levelFile.abspath, rootDir.abspath)
+		
+		cmd = "chdir " + relDirectory + " && " + executable + " " + filename + ".kp " + filename + ".c " + filename + ".h " + filename + ".func.c"
 
-		cmd = "chdir " + change + " && " +  executable + " " + relpath + " " + f + ".c " + f + ".h " + f + ".func.c"
-
-		genf = directory + "/" + f
-		env.Command([genf + ".c", genf + ".h", genf + ".func.c"], directory + "/" + f + ".kp", cmd)
+		genf = directory + "/" + filename
+		command = env.Command([genf + ".c", genf + ".h", genf + ".func.c"], genf + ".kp", cmd)
+		Depends(command, kasTool)
 
 compileLevels("Mission*.kp")
 compileLevels("Tutorial*.kp")

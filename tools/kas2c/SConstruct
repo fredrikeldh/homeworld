@@ -2,8 +2,6 @@
 # Import everything in global
 Import('*')
 
-#c_extension = '.c'
-
 flags = env["CCFLAGS"]
 path = env["CPPPATH"]
 
@@ -12,13 +10,8 @@ env["CCFLAGS"] = flags
 env.MergeFlags("CCFLAGS", ["-g", "-O2", "-malign-double"])
 env.MergeFlags("CPPDEFINES", ["_X86", {"_GNU_SOURCE" : "1"}, "_REENTRANT"])
 env["CPPPATH"] = path
-env.Replace(YACCFLAGS = "-d")
+env.Replace(YACCFLAGS = "-y -d")
 env.Replace(LEXFLAGS = "-i")
-#target = 'lexer'
-#lex = env.CFile(target = target + c_extension, source = target + '.l')
-
-#target = 'parser'
-#yac = env.CFile(target = target + c_extension, source = target + '.y')
 
 tool = env.Program(
 	target = 'kas2c',
@@ -27,14 +20,4 @@ tool = env.Program(
 )
 
 tools.append(tool)
-
-
-#gcc -DHAVE_CONFIG_H -I. -I../..  -I../../src/Game -D_LINUX_FIX_ME   -g -O2 -malign-double -D_X86 -D_LINUX_FIX_ME  -DHW_GAME_HOMEWORLD -DHW_BUILD_FOR_DISTRIBUTION -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -MT kas2c-parser.o -MD -MP -MF .deps/kas2c-parser.Tpo -c -o kas2c-parser.o `test -f 'parser.c' || echo './'`parser.c
-#mv -f .deps/kas2c-parser.Tpo .deps/kas2c-parser.Po
-#gcc -DHAVE_CONFIG_H -I. -I../..  -I../../src/Game -D_LINUX_FIX_ME   -g -O2 -malign-double -D_X86 -D_LINUX_FIX_ME  -DHW_GAME_HOMEWORLD -DHW_BUILD_FOR_DISTRIBUTION -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -MT kas2c-lexer.o -MD -MP -MF .deps/kas2c-lexer.Tpo -c -o kas2c-lexer.o `test -f 'lexer.c' || echo './'`lexer.c
-#mv -f .deps/kas2c-lexer.Tpo .deps/kas2c-lexer.Po
-#gcc -DHAVE_CONFIG_H -I. -I../..  -I../../src/Game -D_LINUX_FIX_ME   -g -O2 -malign-double -D_X86 -D_LINUX_FIX_ME  -DHW_GAME_HOMEWORLD -DHW_BUILD_FOR_DISTRIBUTION -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT  -MT kas2c-kas2c.o -MD -MP -MF .deps/kas2c-kas2c.Tpo -c -o kas2c-kas2c.o `test -f 'kas2c.c' || echo './'`kas2c.c
-#mv -f .deps/kas2c-kas2c.Tpo .deps/kas2c-kas2c.Po
-#/bin/bash ../../libtool --tag=CC   --mode=link gcc  -g -O2 -malign-double -D_X86 -D_LINUX_FIX_ME  -DHW_GAME_HOMEWORLD -DHW_BUILD_FOR_DISTRIBUTION -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT    -o kas2c kas2c-parser.o kas2c-lexer.o kas2c-kas2c.o -lfl 
-#libtool: link: gcc -g -O2 -malign-double -D_X86 -D_LINUX_FIX_ME -DHW_GAME_HOMEWORLD -DHW_BUILD_FOR_DISTRIBUTION -I/usr/include/SDL -D_GNU_SOURCE=1 -D_REENTRANT -o kas2c kas2c-parser.o kas2c-lexer.o kas2c-kas2c.o  -lfl
 
