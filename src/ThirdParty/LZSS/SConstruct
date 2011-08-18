@@ -2,5 +2,5 @@
 # Import everything in global
 Import('*')
 
-env.StaticLibrary("libhw_LZSS", Glob("*.c"))
+hwlibrary("LZSS", Glob("*.c"))
 
