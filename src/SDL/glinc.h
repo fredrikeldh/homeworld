@@ -230,6 +230,12 @@ static inline void glVertex3fv(const GLfloat *v) {
 #define glColor4f(R, G, B, A) glesColor4f(R, G, B, A)
 #define glNormal3f(X, Y, Z) glesNormal3f(X, Y, Z)
 
+#elif defined HW_ENABLE_GLES2
+
+#include <EGL/egl.h>
+#include <GLES2/gl2ext.h>
+
+
 #else
 
 #include <SDL_opengl.h>

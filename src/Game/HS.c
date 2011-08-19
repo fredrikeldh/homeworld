@@ -223,7 +223,7 @@ void hsStart(Ship* ship, real32 cliptDelta, bool into, bool displayEffect)
     }
 }
 
-#ifdef HW_ENABLE_GLES
+#ifdef HW_ENABLE_GLES || HW_ENABLE_GLES2
 void hsGetEquation(Ship* ship, GLfloat equation[])
 #else
 void hsGetEquation(Ship* ship, GLdouble equation[])
@@ -270,7 +270,7 @@ void hsGetEquation(Ship* ship, GLdouble equation[])
 ----------------------------------------------------------------------------*/
 void hsContinue(Ship* ship, bool displayEffect)
 {
-#ifdef HW_ENABLE_GLES
+#ifdef HW_ENABLE_GLES || HW_ENABLE_GLES2
     GLfloat equation[4] = {0.0, 0.0, 1.0, 0.0};
 #else
     GLdouble equation[4] = {0.0, 0.0, 1.0, 0.0};
@@ -305,6 +305,8 @@ void hsContinue(Ship* ship, bool displayEffect)
 
 #ifdef HW_ENABLE_GLES
                 glClipPlanef(GL_CLIP_PLANE0, equation);
+#elif defined HW_ENABLE_GLES2
+#error TODO
 #else
                 glClipPlane(GL_CLIP_PLANE0, equation);
 #endif
@@ -393,6 +395,8 @@ void hsContinue(Ship* ship, bool displayEffect)
     {
 #ifdef HW_ENABLE_GLES
         glClipPlanef(GL_CLIP_PLANE0, equation);
+#elif defined HW_ENABLE_GLES2
+#error TODO
 #else
         glClipPlane(GL_CLIP_PLANE0, equation);
 #endif

@@ -75,7 +75,7 @@
 #include "Universe.h"
 #include "UnivUpdate.h"
 #include "utility.h"
-#ifdef HW_ENABLE_GLES
+#ifdef HW_ENABLE_GLES || HW_ENABLE_GLES2
 #include "SDL_syswm.h"
 #endif
 
@@ -139,7 +139,7 @@ renderfunction rndMainViewRender = rndMainViewRenderFunction;
 static sdword rndHint = 0;
 #endif
 
-#ifdef HW_ENABLE_GLES
+#ifdef HW_ENABLE_GLES || HW_ENABLE_GLES2
 static EGLDisplay *egl_display = EGL_NO_DISPLAY;
 static EGLSurface egl_surface = EGL_NO_SURFACE;
 static EGLContext egl_context = EGL_NO_CONTEXT;
@@ -855,7 +855,7 @@ bool setupPixelFormat()
 	static Uint32 lastDepth  = 0;
 	static bool   lastFull   = FALSE;
 	int FSAA = 0; //os_config_read_uint( NULL, "FSAA", 1 )
-#ifdef HW_ENABLE_GLES
+#ifdef HW_ENABLE_GLES || HW_ENABLE_GLES2
     SDL_SysWMinfo info;
     EGLint num_config = 1;
     EGLint attribs[] = {
@@ -893,7 +893,7 @@ bool setupPixelFormat()
     /* Create OpenGL window. */
     flags = SDL_SWSURFACE;
     
-#ifndef HW_ENABLE_GLES
+#ifndef HW_ENABLE_GLES && HW_ENABLE_GLES2
     flags |= SDL_OPENGL;
 
     /* Set attributes. */
@@ -908,7 +908,7 @@ bool setupPixelFormat()
 		MAIN_WindowDepth, flags))
 		return FALSE;
 
-#ifdef HW_ENABLE_GLES
+#ifdef HW_ENABLE_GLES || HW_ENABLE_GLES2
     SDL_VERSION(&info.version);
     if (SDL_GetWMInfo(&info) != 1) {
         fprintf(stderr, "EGL cannot use this SDL version\n");
@@ -990,7 +990,7 @@ bool setupPixelFormat()
 	lastDepth  = MAIN_WindowDepth;
 	lastFull   = fullScreen;
 
-#ifdef HW_ENABLE_GLES
+#ifdef HW_ENABLE_GLES || HW_ENABLE_GLES2
     glDrawTexiOES = eglGetProcAddress("glDrawTexiOES");
 #else
     glBindBuffer = SDL_GL_GetProcAddress("glBindBuffer");
@@ -1011,7 +1011,7 @@ bool setupPixelFormat()
 int glCheckExtension(const char *ext) {
     bool gotext = gl_extensions ? strstr(gl_extensions, ext) != NULL : gl_extensions;
     if (strcmp(ext, "GL_ARB_vertex_buffer_object") == 0) {
-#ifdef HW_ENABLE_GLES
+#ifdef HW_ENABLE_GLES || HW_ENABLE_GLES2
         /* part of the standard in GLES */
         return 1;
 #else
@@ -1028,13 +1028,13 @@ bool setupPalette()
 {
 	int pix_size;
 
-#ifndef HW_ENABLE_GLES
+#ifndef HW_ENABLE_GLES && HW_ENABLE_GLES2
 	if (SDL_GL_GetAttribute(SDL_GL_BUFFER_SIZE, &pix_size) == -1)
 	{
 #endif
 		/* Hoping it will work... */
 		pix_size = MAIN_WindowDepth;
-#ifndef HW_ENABLE_GLES
+#ifndef HW_ENABLE_GLES && HW_ENABLE_GLES2
 	}
 #endif
 	if (pix_size >= 15)
@@ -1064,7 +1064,7 @@ sdword rndSmallInit(rndinitdata* initData, bool GL)
     {
         /* Kill the window we created. */
         flags = SDL_WasInit(SDL_INIT_EVERYTHING);
-#ifdef HW_ENABLE_GLES
+#ifdef HW_ENABLE_GLES || HW_ENABLE_GLES2
         eglMakeCurrent(egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
         eglDestroyContext(egl_display, egl_context);
         egl_config = EGL_NO_CONTEXT;
@@ -1115,7 +1115,7 @@ sdword rndInit(rndinitdata *initData)
     dbgMessagef("rndInit: OpenGL Extensions :%s", glGetString(GL_EXTENSIONS));
 #endif
     rndSetClearColor(colRGBA(0,0,0,255));
-#ifdef HW_ENABLE_GLES
+#ifdef HW_ENABLE_GLES || HW_ENABLE_GLES2
     glClearDepthf( 1.0f );
 #else
     glClearDepth( 1.0 );
@@ -1182,7 +1182,7 @@ void rndClose(void)
         else
             memFree(stararray);
     }
-#ifdef HW_ENABLE_GLES
+#ifdef HW_ENABLE_GLES || HW_ENABLE_GLES2
     eglMakeCurrent(egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     eglDestroyContext(egl_display, egl_context);
     egl_config = EGL_NO_CONTEXT;
@@ -2224,7 +2224,7 @@ void rndPostRenderDebug2DStuff(Camera *camera)
 
 #if DEBUG_FONT_CHECK_SPECIAL
     fontMakeCurrent(testing);
-    fontPrint(10,50,colWhite,"ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ");
+    fontPrint(10,50,colWhite,"ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½");
 
     if ((keyIsStuck(CONTROLKEY)) && (keyIsHit(SHIFTKEY)))
     {
@@ -4666,7 +4666,7 @@ void rndFlush(void)
 {
     glFlush();
     primErrorMessagePrint();
-#ifdef HW_ENABLE_GLES
+#ifdef HW_ENABLE_GLES || HW_ENABLE_GLES2
     eglSwapBuffers(egl_display, egl_surface);
 #else
     SDL_GL_SwapBuffers();
