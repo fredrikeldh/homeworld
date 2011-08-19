@@ -2,5 +2,10 @@
 # Import everything in global
 Import('*')
 
-env.StaticLibrary("libhw_JPG", Glob("*.c"))
+ignores = ["ansi2knr.c", "cjpeg.c", "ckconfig.c", "djpeg.c",
+"jmemname.c", "jpegtran.c", "jmemnobs.c", "jmemdos.c", "jmemmac.c",
+"rdjpgcom.c", "rdjpgcom.c", "wrjpgcom.c"
+	]
+
+hwlibrary("JPG", Glob("*.c"), ignores)
 
