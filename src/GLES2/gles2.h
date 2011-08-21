@@ -14,12 +14,14 @@
 #include "emul/light.h"
 #include "emul/line.h"
 #include "emul/material.h"
+#include "emul/normal.h"
+#include "emul/point.h"
 
 /*
 #include <GLES2/emul/matrices.h>
 #include <GLES/emul/normal.h>
-#include <GLES2/emul/normal.h>
-#include <GLES2/emul/point.h>
+
+
 #include <GLES/emul/state.h>
 #include <GLES2/emul/state.h>
 #include <GLES/emul/texture.h>

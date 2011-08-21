@@ -1,50 +1,25 @@
 
-GLenum validCaps[] =
+StateSetup::StateSetup() :
+	GLPart(),
+	caps({false,false,false,false,false,false,false,false}),
+	shadeModel(GL_SMOOTH)
 {
-	GL_VERTEX_ARRAY,
-	GL_NORMAL_ARRAY,
-	GL_COLOR_ARRAY,
-	GL_INDEX_ARRAY,
-	GL_TEXTURE_COORD_ARRAY,
-	GL_EDGE_FLAG_ARRAY,
-	GL_FOG_COORD_ARRAY,
-	GL_SECONDARY_COLOR_ARRAY
-};
-
-TYPE_INDEX_FUNCTION(validCaps)
-
-void glEnableClientState(GLenum cap)
-{
-	short index = TYPE_INDEX_FUNCTION_NAME(cap);
-
-	if( index == -1 )
-	{
-		glSetError(GL_INVALID_ENUM);
-		return;
-	}
-
-	caps[index] = TRUE;
 }
 
-void glDisableClientState(GLenum cap)
+void StateSetup::SetState(GLenum cap, bool value)
 {
-	short index = TYPE_INDEX_FUNCTION_NAME(cap);
-
-	if( index == -1 )
-	{
-		glSetError(GL_INVALID_ENUM);
+	short index = GetIndex(cap);
+	
+	if( index < 0 )
 		return;
-	}
-
-	caps[index] = FALSE;
+	
+	caps[index] = value;
 }
 
-GLenum shadeModel = GL_SMOOTH;
-
-void glShadeModel(GLenum mode)
+void StateSetup::SetModel(GLenum mode)
 {
 	if( shadeModel == mode )
-		return;
+		return; // already set
 
 	switch( mode )
 	{
@@ -52,6 +27,22 @@ void glShadeModel(GLenum mode)
 	case GL_SMOOTH:
 		shadeModel = GL_SMOOTH;
 	default:
-		glSetError(GL_INVALID_ENUM);
+		SetError(GL_INVALID_ENUM);
 	}
 }
+
+void glShadeModel(GLenum mode)
+{
+	Get<StateSetup>().SetModel(mode);
+}
+
+void glEnableClientState(GLenum cap)
+{
+	Get<StateSetup>().SetState(cap, true);
+}
+
+void glDisableClientState(GLenum cap)
+{
+	Get<StateSetup>().SetState(cap, false);
+}
+
