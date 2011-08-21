@@ -3,13 +3,13 @@
 Import('*')
 
 flags = env["CCFLAGS"]
-path = env["CPPPATH"]
 
 env = Environment()
 env["CCFLAGS"] = flags
 env.MergeFlags("CCFLAGS", ["-g", "-O2", "-malign-double"])
 env.MergeFlags("CPPDEFINES", ["_X86", {"_GNU_SOURCE" : "1"}, "_REENTRANT"])
-env["CPPPATH"] = path
+env["CPPPATH"] = includedirs
+env.ParseConfig('sdl-config --cflags --libs')
 env.Replace(YACCFLAGS = "-y -d")
 env.Replace(LEXFLAGS = "-i")
 

@@ -602,7 +602,7 @@ void partBindAlternate(trhandle tex)
         return;
     }
 
-#ifndef HW_ENABLE_GLES
+#if !defined HW_ENABLE_GLES && !defined HW_ENABLE_GLES2
     //check alternates
     for (i = 0; i < alternateIndex; i++)
     {

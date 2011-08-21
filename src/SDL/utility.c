@@ -3788,6 +3788,9 @@ char* utyGameSystemsPreInit(void)
 		int page_size = getpagesize();
 		newSize = (sdword)((real32)phys_pages * (real32)page_size
             * MEM_HeapDefaultScalar);
+#elif __native_client__
+		// Doesn't seem like we can access the available
+		// memory. Leave default.
 #else
         long phys_pages = sysconf(_SC_PHYS_PAGES);
         long page_size = sysconf (_SC_PAGE_SIZE);

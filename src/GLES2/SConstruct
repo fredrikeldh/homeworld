@@ -1,0 +1,9 @@
+#!/usr/bin/env python
+# Import everything in global
+Import('*')
+
+sources = []
+sources.append(Glob('*.cpp'))
+sources.append(Glob('emul/*.cpp'))
+
+hwlibrary("GLES2", sources)

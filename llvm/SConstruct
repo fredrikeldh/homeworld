@@ -9,6 +9,7 @@ libs = []
 topDir = Dir('#')
 
 env = Environment()
+#env.Replace(CXX = "llvm-c++-4.2")
 env.Replace(CC = "llvm-gcc-4.2")
 env.Replace(LINK = "llvm-ld")
 
@@ -100,29 +101,33 @@ build_index = 0
 
 env.Append(CFLAGS="-emit-llvm -c -std=gnu99")
 env.Append(CCFLAGS="-Wall -Wstrict-aliasing -Wextra -Werror=uninitialized -Werror=trigraphs -Werror=init-self -Werror=format -Werror=format-security -Werror=implicit -Werror=sequence-point -O2")
+env.Append(CXXFLAGS="-std=gnu++0x")
 env.VariantDir('build', ['../src', '../tools'])
 
 env.ParseConfig('sdl-config --cflags --libs')
 env.ParseConfig('pkg-config libavcodec --cflags --libs')
 env.ParseConfig('pkg-config libavformat --cflags --libs')
-env.ParseConfig('pkg-config glesv1_cm --cflags --libs')
+#env.ParseConfig('pkg-config glesv1_cm --cflags --libs')
+
+env.Append(CPPPATH=["/home/andreas/Projects/native_client_sdk_0_5_1026/toolchain/linux_x86/x86_64-nacl/include"])
 
 print "* " + game_descriptions[game_index]
 print "* " + build_descriptions[build_index]
 
-defi = [game_types[game_index], build_types[build_index], "HW_ENABLE_MOVIES", "_LINUX_FIX_ME", "_X86", "_REENTRANT", "GENERIC_ETGCALLFUNCTION", "HW_ENABLE_GLES", "LLVM"]
+defi = [game_types[game_index], build_types[build_index], "HW_ENABLE_MOVIES", "_LINUX_FIX_ME", "_X86_64", "_REENTRANT", "GENERIC_ETGCALLFUNCTION", "HW_ENABLE_GLES2", "LLVM", "__native_client__"]
 env.Append(CPPDEFINES=defi)
 
 top_srcdir = ".."
-includedirs = [top_srcdir + "/src/ThirdParty/CRC", top_srcdir + "/src/ThirdParty/JPG", top_srcdir + "/src/ThirdParty/LZSS", top_srcdir + "/src/Game", top_srcdir + "/src/SDL", top_srcdir + "/src/Ships", top_srcdir + "/src/ThirdParty/Titan", "/usr/include/x86_64-linux-gnu"]
+includedirs = [top_srcdir + "/src/ThirdParty/CRC", top_srcdir + "/src/ThirdParty/JPG", top_srcdir + "/src/ThirdParty/LZSS", top_srcdir + "/src/Game", top_srcdir + "/src/SDL", top_srcdir + "/src/Ships", top_srcdir + "/src/ThirdParty/Titan", top_srcdir + "/src"]
 
 for i in range(0, includedirs.__len__(), 1):
 	includedirs[i] = env.Dir(includedirs[i]).abspath
 
 env.Append(CPPPATH=includedirs)
+env.Append(CPPPATH="/usr/include/x86_64-linux-gnu")
 env["OBJSUFFIX"] = ".bc"
 
-Export('env', 'hwlibrary', 'tools', 'descend')
+Export('env', 'hwlibrary', 'tools', 'descend', "includedirs")
 descend('..')
 
 name = 'llHomeworld'
