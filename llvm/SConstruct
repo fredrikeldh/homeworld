@@ -98,7 +98,7 @@ build_descriptions = ["Building debug binary for Homeworld", "Building distribut
 build_types = ["HW_BUILD_FOR_DEBUGGING", "HW_BUILD_FOR_DISTRIBUTION"]
 build_index = 0
 
-env.Append(CCFLAGS="-emit-llvm -c")
+env.Append(CFLAGS="-emit-llvm -c -std=gnu99")
 env.Append(CCFLAGS="-Wall -Wstrict-aliasing -Wextra -Werror=uninitialized -Werror=trigraphs -Werror=init-self -Werror=format -Werror=format-security -Werror=implicit -Werror=sequence-point -O2")
 env.VariantDir('build', ['../src', '../tools'])
 
