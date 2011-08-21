@@ -13,20 +13,23 @@ protected:
 	};
 private:
 	
-	template<GLenum One>
-	bool eval(GLenum value)
+	template<short INDEX, GLenum One>
+	bool GetIndex(GLenum value)
 	{
-		return value == One;
+		if( value == One )
+			return INDEX;
+		else
+			return -1; // Not found
 	};
 
-	template<GLenum One, GLenum Two, GLenum... Others>
-	bool eval(GLenum value)
+	template<short INDEX, GLenum One, GLenum Two, GLenum... Others>
+	bool GetIndex(GLenum value)
 	{
-		if( eval<One>(value) )
-			return true;
+		if( value == One )
+			return INDEX;
 	
 		// Try out the rest
-		return eval<Two, Others...>(value);
+		return GetIndex<INDEX + 1, Two, Others...>(value);
 	};
 protected:
 	template<typename T>
@@ -52,10 +55,16 @@ protected:
 		glSetError(error);
 	}
 	
-public:
+	short GetIndex(GLenum value)
+	{
+		return GetIndex<0, ValidEnums...>(value);
+	}
+	
 	bool Evaluate(GLenum value)
 	{
-		bool isValid = eval<ValidEnums...>(value);
+		short index = GetIndex(value);
+
+		bool isValid = (index >= 0);
 
 		if( !isValid )
 			SetError(GL_INVALID_ENUM);
