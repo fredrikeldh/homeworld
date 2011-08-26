@@ -1,5 +1,5 @@
 
-#include "gles.h"
+#include "normal.h"
 
 static GLfloat gles_normals[16384];
 static unsigned int gles_normal_count = 0;

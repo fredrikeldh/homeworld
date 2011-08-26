@@ -3,6 +3,8 @@
 // Add everything that's not already defined by GLES emulation
 //
 
+#include "../../GLES1/emul/defines.h"
+
 #define GL_FRONT           0x0404
 #define GL_BACK            0x0405
 #define GL_FRONT_AND_BACK  0x0408
@@ -43,6 +45,9 @@
 
 #define GL_ALPHA_TEST  0x0BC0
 
+#define GL_ALPHA_SCALE                    0x0D1C
+#define GL_MAX_LIGHTS                     0x0D31
+
 #define GL_MAX_CLIP_PLANES 0x0D32
 
 // LightParameter
@@ -50,6 +55,13 @@
 #define GL_DIFFUSE  0x1201
 #define GL_SPECULAR 0x1202
 #define GL_POSITION 0x1203
+
+#define GL_SPOT_DIRECTION                 0x1204
+#define GL_SPOT_EXPONENT                  0x1205
+#define GL_SPOT_CUTOFF                    0x1206
+#define GL_CONSTANT_ATTENUATION           0x1207
+#define GL_LINEAR_ATTENUATION             0x1208
+#define GL_QUADRATIC_ATTENUATION          0x1209
 
 #define GL_DOUBLE   0x140A
 
@@ -64,6 +76,18 @@
 // ShadingModels
 #define GL_FLAT   0x1D00
 #define GL_SMOOTH 0x1D01
+
+#define GL_TEXTURE_ENV_MODE               0x2200
+#define GL_TEXTURE_ENV                    0x2300
+
+#define GL_LIGHT0                         0x4000
+#define GL_LIGHT1                         0x4001
+#define GL_LIGHT2                         0x4002
+#define GL_LIGHT3                         0x4003
+#define GL_LIGHT4                         0x4004
+#define GL_LIGHT5                         0x4005
+#define GL_LIGHT6                         0x4006
+#define GL_LIGHT7                         0x4007
 
 // FogMode
 #define GL_EXP                            0x0800
@@ -88,6 +112,25 @@
 #define GL_SECONDARY_COLOR_ARRAY          0x845E
 
 #define GL_FOG_COORD_SRC                  0x8450
+#define GL_TEXTURE_FILTER_CONTROL         0x8500
+#define GL_TEXTURE_LOD_BIAS               0x8501
+#define GL_COMBINE_RGB                    0x8571
+#define GL_COMBINE_ALPHA                  0x8572
+#define GL_RGB_SCALE                      0x8573
+#define GL_SRC0_RGB                       0x8580
+#define GL_SRC1_RGB                       0x8581
+#define GL_SRC2_RGB                       0x8582
+#define GL_SRC0_ALPHA                     0x8588
+#define GL_SRC1_ALPHA                     0x8589
+#define GL_SRC2_ALPHA                     0x858A
+#define GL_OPERAND0_RGB                   0x8590
+#define GL_OPERAND1_RGB                   0x8591
+#define GL_OPERAND2_RGB                   0x8592
+#define GL_OPERAND0_ALPHA                 0x8598
+#define GL_OPERAND1_ALPHA                 0x8599
+#define GL_OPERAND2_ALPHA                 0x859A 
+#define GL_POINT_SPRITE                   0x8861
+#define GL_COORD_REPLACE                  0x8862
 
 // TextureEnvMode
 #define GL_MODULATE 0x2100
@@ -107,5 +150,6 @@
 // LightName
 #define GL_LIGHT0                         0x4000
 #define GL_LIGHT1                         0x4001
+
 
 

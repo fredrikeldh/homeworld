@@ -11,7 +11,7 @@ void ClipSetup::SetClipPlane(
 {
 	if( plane < GL_CLIP_PLANE0 || plane >= GL_MAX_CLIP_PLANES )
 	{
-		glSetError(GL_INVALID_ENUM );
+		SetError(GL_INVALID_ENUM );
 		return;
 	}
 	

@@ -59,7 +59,7 @@ void ColorSetup::SetPointer(
 {
 	if( (size != 3 && size != 4) || stride < 0 )
 	{
-		glSetError(GL_INVALID_VALUE);
+		SetError(GL_INVALID_VALUE);
 		return;
 	}
 

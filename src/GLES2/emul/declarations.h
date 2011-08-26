@@ -1,7 +1,7 @@
 #ifndef _HW_GLES2_DECLARATION_H_
 #define _HW_GLES2_DECLARATION_H_
 
-#include "include.h"
+#include "../../GLES1/emul/declarations.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -44,6 +44,11 @@ void glFogfv(
 
 void glGetFloatv(GLenum pname, GLfloat* params);
 void glGetIntegerv(GLenum pname, GLint* params);
+
+void glLightfv(
+	GLenum          light,
+	GLenum          pname,
+	const GLfloat*  params);
 
 void glLightModelfv(
 	GLenum          pname,
@@ -108,6 +113,12 @@ void glTexCoordPointer(
 	GLenum         type,
 	GLsizei        stride,
 	const GLvoid*  pointer);
+	
+void glTexEnvi(
+	GLenum target,
+	GLenum pname,
+	GLint param
+);
 
 void glTranslatef(
 	GLfloat  x,

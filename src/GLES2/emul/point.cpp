@@ -1,4 +1,6 @@
 
+#include "point.h"
+
 PointSetup::PointSetup() :
 	point_size(1)
 {
@@ -18,6 +20,6 @@ void PointSetup::SetSize(GLfloat  size)
 
 void glPointSize(GLfloat  size)
 {
-	Get<PointSize>().SetSize(size);
+	Get<PointSetup>().SetSize(size);
 }
 

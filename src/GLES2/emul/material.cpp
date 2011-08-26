@@ -1,5 +1,5 @@
 
-#include "../gles2.h"
+#include "material.h"
 
 const GLubyte MaterialSetup::MFRONT = 1 << 0;
 const GLubyte MaterialSetup::MBACK  = 1 << 1;
@@ -58,7 +58,7 @@ void MaterialSetup::Set(
 {
 	GLubyte cullBits = getFaceBitMap(face);
 	
-	if( glGetErrorX() != GL_NO_ERROR )
+	if( GetError() != GL_NO_ERROR )
 		return;
 
 	if( !Evaluate(pname) )

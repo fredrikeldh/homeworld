@@ -1,4 +1,6 @@
 
+#include "state.h"
+
 StateSetup::StateSetup() :
 	GLPart(),
 	caps({false,false,false,false,false,false,false,false}),

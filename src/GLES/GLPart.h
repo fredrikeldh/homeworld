@@ -2,12 +2,13 @@
 #define _HW_GLES2_GLPART_H_
 
 #include "include.h"
-#include "../../GLES/emul/error.h"
+#include <errno.h>
 
 template<GLenum... ValidEnums>
 class GLPart
 {
 protected:
+	static const GLenum INVALID_INDEX;
 	GLPart()
 	{
 	};
@@ -19,7 +20,7 @@ private:
 		if( value == One )
 			return INDEX;
 		else
-			return -1; // Not found
+			return GetIndex<INDEX>(value); // Not found
 	};
 
 	template<short INDEX, GLenum One, GLenum Two, GLenum... Others>
@@ -30,6 +31,12 @@ private:
 	
 		// Try out the rest
 		return GetIndex<INDEX + 1, Two, Others...>(value);
+	};
+	
+	template<short INDEX>
+	bool GetIndex(GLenum)
+	{
+		return -1;
 	};
 protected:
 	template<typename T>
@@ -50,9 +57,25 @@ protected:
 		}
 	}
 	
+	GLenum GetError()
+	{
+		GLenum error = glGetError();
+		
+		if( error != GL_NO_ERROR )
+			return error;
+
+		return errno;
+	}
+	
+	template<GLenum ERROR>
+	void SetError()
+	{
+		errno = ERROR;
+	}
+	
 	void SetError(GLenum error)
 	{
-		glSetError(error);
+		errno = error;
 	}
 	
 	short GetIndex(GLenum value)
@@ -71,6 +94,19 @@ protected:
 	
 		return isValid;
 	};
+	
+	template<GLenum...VALIDS>
+	bool Evaluate(GLenum value)
+	{
+		short index = GetIndex<0, VALIDS ...>(value);
+
+		bool isValid = (index >= 0);
+
+		if( !isValid )
+			SetError(GL_INVALID_ENUM);
+	
+		return isValid;
+	}
 };
 
 #endif //_HW_GLES2_GLPART_H_

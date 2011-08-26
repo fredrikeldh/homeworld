@@ -55,7 +55,12 @@ Setup<
 	FogSetup,
 	LightSetup,
 	LineSetup,
-	MaterialSetup
+	MaterialSetup,
+	NormalSetup,
+	PointSetup,
+	StateSetup,
+	TextureSetup,
+	VertexSetup
 > setup(); 
 
 template<typename T>

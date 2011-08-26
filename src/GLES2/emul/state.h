@@ -1,4 +1,6 @@
 
+#include "include.h"
+
 class StateSetup : public GLPart<
 	GL_VERTEX_ARRAY,
 	GL_NORMAL_ARRAY,

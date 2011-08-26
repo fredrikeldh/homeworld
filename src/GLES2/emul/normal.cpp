@@ -16,7 +16,7 @@ void NormalSetup::SetPointer(
 {
 	if( stride < 0 )
 	{
-		glSetError(GL_INVALID_VALUE);
+		SetError<GL_INVALID_VALUE>();
 		return;
 	}
 
