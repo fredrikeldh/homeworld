@@ -48,3 +48,15 @@ void glDisableClientState(GLenum cap)
 	Get<StateSetup>().SetState(cap, false);
 }
 
+void glDrawPixels(
+	GLsizei         width,
+	GLsizei         height,
+	GLenum          format,
+	GLenum          type,
+	const GLvoid *  data)
+{
+	//TODO: implement
+		
+}
+
+

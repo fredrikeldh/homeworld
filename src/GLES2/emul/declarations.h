@@ -30,6 +30,13 @@ void glColorPointer(
 
 void glDisableClientState(GLenum cap);
 
+void glDrawPixels(
+	GLsizei         width,
+	GLsizei         height,
+	GLenum          format,
+	GLenum          type,
+	const GLvoid *  data);
+
 void glEnableClientState(GLenum cap);
 
 void glFogf(
@@ -82,18 +89,12 @@ void glNormalPointer(
 
 void glPointSize(GLfloat  size);
 
-
-
-
-
-
 void glPushMatrix();
 
 void glPopMatrix();
 
-
-
-
+void glRasterPos2f (GLfloat x, GLfloat y);
+void glRasterPos2fv (const GLfloat *v);
 
 void glRotatef(
 	GLfloat  angle,

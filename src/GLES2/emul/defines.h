@@ -9,6 +9,9 @@
 #define GL_BACK            0x0405
 #define GL_FRONT_AND_BACK  0x0408
 
+#define GL_STACK_OVERFLOW                 0x0503
+#define GL_STACK_UNDERFLOW                0x0504
+
 // Applies subsequent matrix operations to the modelview matrix stack.
 #define GL_MODELVIEW  0x1700
 // Applies subsequent matrix operations to the projection matrix stack.
@@ -18,6 +21,9 @@
 #define GL_TEXTURE    2
 */
 
+#define GL_CURRENT_COLOR                  0x0B00
+#define GL_CURRENT_TEXTURE_COORDS         0x0B03
+
 #define GL_POINT_SMOOTH 0x0B10
 #define GL_POINT_SIZE   0x0B11
 #define GL_LINE_SMOOTH  0x0B20
@@ -26,8 +32,9 @@
 #define GL_LIGHT_MODEL_LOCAL_VIEWER       0x0B51
 
 // LightModelParameter
-#define GL_LIGHT_MODEL_TWO_SIDE 0x0B52
-#define GL_LIGHT_MODEL_AMBIENT  0x0B53 
+#define GL_LIGHT_MODEL_TWO_SIDE           0x0B52
+#define GL_LIGHT_MODEL_AMBIENT            0x0B53 
+#define GL_SHADE_MODEL                    0x0B54
 
 #define GL_FOG                            0x0B60
 #define GL_FOG_INDEX                      0x0B61
@@ -43,7 +50,13 @@
 #define GL_MODELVIEW_MATRIX  0x0BA6
 #define GL_PROJECTION_MATRIX 0x0BA7
 
-#define GL_ALPHA_TEST  0x0BC0
+#define GL_ALPHA_TEST                     0x0BC0
+#define GL_ALPHA_TEST_FUNC                0x0BC1
+#define GL_ALPHA_TEST_REF                 0x0BC2
+#define GL_BLEND_DST                      0x0BE0
+#define GL_BLEND_SRC                      0x0BE1
+
+#define GL_PERSPECTIVE_CORRECTION_HINT    0x0C50
 
 #define GL_ALPHA_SCALE                    0x0D1C
 #define GL_MAX_LIGHTS                     0x0D31
@@ -95,12 +108,14 @@
 
 #define GL_RESCALE_NORMAL 0x803A
 
-#define GL_VERTEX_ARRAY          0x8074
-#define GL_NORMAL_ARRAY          0x8075
-#define GL_COLOR_ARRAY           0x8076
-#define GL_INDEX_ARRAY           0x8077
-#define GL_TEXTURE_COORD_ARRAY   0x8078
-#define GL_EDGE_FLAG_ARRAY       0x8079
+#define GL_RGB8                           0x8051
+
+#define GL_VERTEX_ARRAY                   0x8074
+#define GL_NORMAL_ARRAY                   0x8075
+#define GL_COLOR_ARRAY                    0x8076
+#define GL_INDEX_ARRAY                    0x8077
+#define GL_TEXTURE_COORD_ARRAY            0x8078
+#define GL_EDGE_FLAG_ARRAY                0x8079
 
 #define GL_LIGHT_MODEL_COLOR_CONTROL      0x81F8
 #define GL_SINGLE_COLOR                   0x81F9
