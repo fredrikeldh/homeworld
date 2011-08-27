@@ -140,7 +140,7 @@ renderfunction rndMainViewRender = rndMainViewRenderFunction;
 static sdword rndHint = 0;
 #endif
 
-#ifdef HW_ENABLE_GLES || HW_ENABLE_GLES2
+#if defined HW_ENABLE_GLES || defined HW_ENABLE_GLES2
 static EGLDisplay *egl_display = EGL_NO_DISPLAY;
 static EGLSurface egl_surface = EGL_NO_SURFACE;
 static EGLContext egl_context = EGL_NO_CONTEXT;
@@ -991,7 +991,7 @@ bool setupPixelFormat()
 	lastDepth  = MAIN_WindowDepth;
 	lastFull   = fullScreen;
 
-#ifdef HW_ENABLE_GLES || HW_ENABLE_GLES2
+#if defined HW_ENABLE_GLES || defined HW_ENABLE_GLES2
     glDrawTexiOES = eglGetProcAddress("glDrawTexiOES");
 #else
     glBindBuffer = SDL_GL_GetProcAddress("glBindBuffer");

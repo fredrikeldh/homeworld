@@ -103,7 +103,15 @@ extern PFNGLBUFFERSUBDATAPROC glBufferSubData;
 #endif
 
 #ifdef HW_ENABLE_GLES2
-typedef void (EGLAPIENTRY PFNGLDRAWTEXIOESPROC) (GLint x, GLint y, GLint z, GLint width, GLint height);
+
+#ifndef APIENTRY
+#define APIENTRY
+#endif
+#ifndef APIENTRYP
+#define APIENTRYP APIENTRY*
+#endif
+
+typedef void (APIENTRYP PFNGLDRAWTEXIOESPROC) (GLint x, GLint y, GLint z, GLint width, GLint height);
 #else
 typedef void (APIENTRYP PFNGLDRAWTEXIOESPROC) (GLint x, GLint y, GLint z, GLint width, GLint height);
 #endif //HW_ENABLE_GLES2
