@@ -9,8 +9,8 @@ libs = []
 topDir = Dir('#')
 
 env = Environment()
-#env.Replace(CXX = "llvm-c++-4.2")
-env.Replace(CC = "llvm-gcc-4.2")
+env.Replace(CXX = "dragonegg_disable_version_check=1 llvm-g++")
+env.Replace(CC = "dragonegg_disable_version_check=1 llvm-gcc")
 env.Replace(LINK = "llvm-ld")
 
 def generateLibActions(source, target, env, for_signature):
