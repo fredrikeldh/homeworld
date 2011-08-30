@@ -1,4 +1,7 @@
 
+#ifndef _HW_GLES2_TEXTURE_H_
+#define _HW_GLES2_TEXTURE_H_
+
 #include "include.h"
 
 class TextureSetup : public GLPart<
@@ -53,5 +56,5 @@ public:
 		GLint param;
 	} environment;
 };
-
+#endif //_HW_GLES2_TEXTURE_H_
 

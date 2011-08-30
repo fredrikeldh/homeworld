@@ -1,4 +1,7 @@
 
+#ifndef _HW_GLES2_VERTEX_H_
+#define _HW_GLES2_VERTEX_H_
+
 #include "include.h"
 #include "../../GLES1/emul/vertex.h"
 
@@ -33,4 +36,6 @@ namespace gles2
 	};
 
 };
+
+#endif //_HW_GLES2_VERTEX_H_
 

@@ -1,4 +1,7 @@
 
+#ifndef _HW_GLES2_STATE_H_
+#define _HW_GLES2_STATE_H_
+
 #include "include.h"
 
 class StateSetup : public GLPart<
@@ -18,4 +21,6 @@ public:
 	GLenum caps[8];
 	GLenum shadeModel;
 };
+
+#endif //_HW_GLES2_STATE_H_
 

@@ -1,4 +1,7 @@
 
+#ifndef _HW_GLES2_NORMAL_H_
+#define _HW_GLES2_NORMAL_H_
+
 #include "include.h"
 
 class NormalSetup : public GLPart<
@@ -19,4 +22,6 @@ public:
 	GLsizei       stride;
 	const GLvoid* pointer;
 };
+
+#endif //_HW_GLES2_NORMAL_H_
 

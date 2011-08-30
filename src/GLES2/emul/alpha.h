@@ -1,7 +1,7 @@
 #ifndef _HW_GLES2_ALPHA_H_
 #define _HW_GLES2_ALPHA_H_
 
-#include "../gles2.h"
+#include "include.h"
 
 class AlphaSetup : public GLPart<GL_NEVER,
 	GL_LESS,

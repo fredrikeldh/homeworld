@@ -5,7 +5,6 @@
 #include "emul/include.h"
 
 #ifdef __cplusplus
-#include "../GLES/GLPart.h"
 #include "emul/alpha.h"
 #include "emul/clip.h"
 #include "emul/color.h"
