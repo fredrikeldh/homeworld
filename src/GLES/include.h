@@ -1,6 +1,11 @@
 #ifndef _HW_GLES_INCLUDE_H_
 #define _HW_GLES_INCLUDE_H_
 
+#if defined HW_ENABLE_GLES2
+#include "../GLES2/glinclude.h"
+#else
+#include "../GLES1/glinclude.h"
+#endif //HW_ENABLE_GLES2
 #if defined __cplusplus
 #ifndef nullptr
 const                        // this is a const object...
