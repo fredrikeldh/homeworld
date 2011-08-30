@@ -2,5 +2,5 @@
 # Import everything in global
 Import('*')
 
-descend(['GLES', 'GLES2', 'Missions', 'Game', 'ThirdParty', 'SDL', 'Ships'])
+descend(['GLES2', 'Missions', 'Game', 'ThirdParty', 'SDL', 'Ships'])
 
