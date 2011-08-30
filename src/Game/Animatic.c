@@ -794,7 +794,7 @@ bool animAviPlay(sdword a, sdword b)
     if (a < 0)
     {
         animScriptHeader = NULL;
-        sprintf(filename, (char*)b);
+        sprintf(filename, "%s", (char*)b);
     }
     else
     {

@@ -1267,12 +1267,12 @@ void mgProcessLimit(char *name, char *retmessage)
     if ((limit > 1) && (limit < MAX_MULTIPLAYER_PLAYERS))
     {
         mgPlayerLimit = limit;
-        sprintf(retmessage, strGetString(strCommandLimit), limit);
+        sprintf(retmessage, "%s", strGetString(strCommandLimit), limit);
     }
     else
     {
         mgPlayerLimit = 0;
-        sprintf(retmessage, strGetString(strCommandLimitOff));
+        sprintf(retmessage, "%s", strGetString(strCommandLimitOff));
     }
 
     return;

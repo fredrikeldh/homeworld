@@ -1984,7 +1984,7 @@ void logfileLog(char *logfile, char *str)
 
     if ((file = fopen(logfile, "at")) != NULL)
     {
-        fprintf(file,str);
+        fprintf(file, "%s", str);
         fclose(file);
     }
 }
