@@ -76,7 +76,8 @@ typedef sdword	smemsize;
 typedef real32  memrealsize;
 #endif
 
-#ifndef bool                 // was: __cplusplus
+// Works only if __cplusplus is also checked (for C++)
+#if !defined bool && !defined __cplusplus
 typedef udword  bool;
 #endif
 
