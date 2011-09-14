@@ -14,6 +14,7 @@
 #include "emul/material.h"
 #include "emul/normal.h"
 #include "emul/point.h"
+#include "emul/render.h"
 #include "emul/state.h"
 #include "emul/texture.h"
 #include "emul/vertex.h"

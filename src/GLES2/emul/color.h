@@ -24,6 +24,8 @@ public:
 	);
 	void Set(GLfloat r, GLfloat g, GLfloat b, GLfloat a);
 	void Set(GLubyte r, GLubyte g, GLubyte b, GLubyte a);
+private:
+	friend class RENDER_PROCESSOR;
 	GLint size;
 	GLenum type;
 	GLsizei stride;

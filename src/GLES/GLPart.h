@@ -1,7 +1,8 @@
-#ifndef _HW_GLES2_GLPART_H_
-#define _HW_GLES2_GLPART_H_
+#ifndef _HW_GLES_GLPART_H_
+#define _HW_GLES_GLPART_H_
 
 #include "include.h"
+#include "data.h"
 #include <errno.h>
 
 template<GLenum... ValidEnums>
@@ -15,7 +16,7 @@ protected:
 private:
 	
 	template<short INDEX, GLenum One>
-	bool GetIndex(GLenum value)
+	bool GetIndexInternal(GLenum value)
 	{
 		if( value == One )
 			return INDEX;
@@ -24,7 +25,7 @@ private:
 	};
 
 	template<short INDEX, GLenum One, GLenum Two, GLenum... Others>
-	bool GetIndex(GLenum value)
+	bool GetIndexInternal(GLenum value)
 	{
 		if( value == One )
 			return INDEX;
@@ -34,27 +35,21 @@ private:
 	};
 	
 	template<short INDEX>
-	bool GetIndex(GLenum)
+	bool GetIndexInternal(GLenum)
 	{
 		return -1;
 	};
 protected:
 	template<typename T>
-	void Copy(const T* source, T* target, GLubyte size)
+	static void Copy(const T* source, T* target, GLubyte size)
 	{
-		Copy<T, T>(source, target, size);
+		Buffer::Copy<T>(source, target, size);
 	}
 	
 	template<typename T1, typename T2>
-	void Copy(const T1* source, T2* target, GLubyte size)
+	static void Copy(const T1* source, T2* target, GLubyte size)
 	{
-		// Copy matrix
-		for( ; size != 0; size-- )
-		{
-			*target = *source;
-			target++;
-			source++;
-		}
+		Buffer::Copy<T1, T2>(source, target, size);
 	}
 	
 	GLenum GetError()
@@ -78,9 +73,15 @@ protected:
 		errno = error;
 	}
 	
+	template<GLenum One, GLenum Two, GLenum... Others>
 	short GetIndex(GLenum value)
 	{
-		return GetIndex<0, ValidEnums...>(value);
+		return GetIndexInternal<0, One, Two, Others...>(value);
+	}
+	
+	short GetIndex(GLenum value)
+	{
+		return GetIndex<ValidEnums...>(value);
 	}
 	
 	bool Evaluate(GLenum value)
@@ -95,10 +96,10 @@ protected:
 		return isValid;
 	};
 	
-	template<GLenum...VALIDS>
+	template<GLenum ONE, GLenum...VALIDS>
 	bool Evaluate(GLenum value)
 	{
-		short index = GetIndex<0, VALIDS ...>(value);
+		short index = GetIndex<ONE, VALIDS ...>(value);
 
 		bool isValid = (index >= 0);
 
@@ -107,9 +108,11 @@ protected:
 	
 		return isValid;
 	}
+public:
+	virtual void Apply(RENDER_PROCESSOR* renderer);
 };
 
-#endif //_HW_GLES2_GLPART_H_
+#endif //_HW_GLES_GLPART_H_
 
 
 

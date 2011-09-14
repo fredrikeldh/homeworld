@@ -1,102 +1,117 @@
+#include "matrices.h"
 #include <Matrix.h>
+#include <math.h>
 
 GLfloat IDENTITY[] = {1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1};
-#define MATRIX_SIZE (sizeof(IDENTITY) / sizeof(IDENTITY[0]))
+/* TODO: reenable
+#if N_ELEMENTS(IDENTITY) != MATRIX_SIZE
+#error Matrix sizes are wrong!
+#endif
+*/
 
-typedef struct GLstack_t GLstack;
+enum MatrixType { TEXTURE_MATRIX, MODELVIEW_MATRIX, PROJECTION_MATRIX, COLOR_MATRIX };
 
-GLstack* glMatrices[GL_COLOR + 1];
-
-GLenum glActiveMatrixIndex = GL_MODELVIEW;
-
-struct GLstack_t
+MatrixSetup::MatrixSetup():
+	_activeMatrixIndex(MODELVIEW_MATRIX)
 {
-	GLstack* previous;
-	GLfloat matrix[MATRIX_SIZE];
-};
+	for( GLubyte times = 4; times; times--)
+	{
+		_topMatrixEntries.push_back(MatrixEntry(nullptr));
+	}
+}
 
-ubyte getMatrixIndex(GLenum mode)
+MatrixSetup::MatrixEntry::MatrixEntry(MatrixEntry* pPrevious):
+	previous(pPrevious)
+{
+	// Duplicate matrix values
+	
+	GLfloat* previousMatrix;
+	
+	if( previous )
+		previousMatrix = previous->matrix;
+	else
+		previousMatrix = IDENTITY;
+	
+	Copy(previousMatrix, matrix, MATRIX_SIZE);
+}
+
+
+GLubyte MatrixSetup::GetMatrixIndex(GLenum mode)
 {
 	switch( mode )
 	{
 	case GL_TEXTURE:
-		return 2;
+		return TEXTURE_MATRIX;
 	case GL_MODELVIEW:
+		return MODELVIEW_MATRIX;
 	case GL_PROJECTION:
+		return PROJECTION_MATRIX;
 	case GL_COLOR:
-		return mode;
+		return COLOR_MATRIX;
 	default:
-		glSetError(GL_INVALID_ENUM);
-		return 0;
+		SetError(GL_INVALID_ENUM);
+		return MODELVIEW_MATRIX;
 	}
 }
 
-GLenum getMatrixMode(ubyte index)
+GLenum MatrixSetup::GetMatrixMode()
 {
-	switch( index )
+	auto type = _activeMatrixIndex;
+	
+	switch( type )
 	{
-	case 0:
-	case 1:
-	case 3:
-		return index;
-	case 2:
+	case TEXTURE_MATRIX:
 		return GL_TEXTURE;
+	case MODELVIEW_MATRIX:
+		return GL_MODELVIEW;
+	case PROJECTION_MATRIX:
+		return GL_PROJECTION;
+	case COLOR_MATRIX:
+		return GL_COLOR;
 	default:
-		glSetError(GL_INVALID_ENUM);
-		return 0;
+		SetError(GL_INVALID_ENUM);
+		return GL_MODELVIEW;
 	}
 }
 
 void glMatrixMode(GLenum mode)
 {
-	glActiveMatrixIndex = getMatrixIndex(mode);
+	Get<MatrixSetup>().SetActive(mode);
 }
 
-GLstack* getMatrixStack(GLenum matrix)
+MatrixSetup::MatrixEntry& MatrixSetup::GetActiveMatrixEntry()
 {
-	GLstack* pStack = glMatrices[matrix];
-
-	if( !pStack )
-	{
-		pStack = malloc(sizeof(GLstack));
-		Copy(IDENTITY, pStack->matrix, MATRIX_SIZE);
-	}
-
-	return pStack;
+	return _topMatrixEntries[_activeMatrixIndex];
 }
 
-GLstack* getActiveMatrixStack(GLenum matrix)
+MatrixSetup::MatrixEntry& MatrixSetup::GetMatrixEntry(GLubyte type)
 {
-	return getMatrixStack(glActiveMatrixIndex);
+	return _topMatrixEntries[type];
 }
 
-GLfloat* getMatrix(GLenum matrix)
+MatrixSetup::MatrixEntry& MatrixSetup::GetMatrixEntry(GLenum type)
 {
-	return getMatrixStack(matrix)->matrix;
+	return GetMatrixEntry(GetMatrixIndex(type));
 }
 
-GLfloat* getActiveMatrix()
+void MatrixSetup::GetActiveMatrix(GLfloat* buffer)
 {
-	return getMatrix(glActiveMatrixIndex);
+	Copy(GetActiveMatrixEntry().matrix, buffer, MATRIX_SIZE);
+}
+
+void MatrixSetup::SetActiveMatrix(const GLfloat* buffer)
+{
+	Copy(buffer, GetActiveMatrixEntry().matrix, MATRIX_SIZE);
 }
 
 void glGetIntegerv(GLenum pname, GLint* params)
 {
-	switch( pname )
-	{
-	case GL_MATRIX_MODE:
-		*params = getMatrixMode(glActiveMatrixIndex);
-		break;
-	default:
-		glSetError(GL_INVALID_ENUM);
-		break;
-	}
+	Get<MatrixSetup>().Get<GLint>(pname, params);
 }
 
 void glLoadMatrixf(const GLfloat* m)
 {
-	GLfloat* pMatrix = getActiveMatrix();
-	Copy(m, pMatrix, MATRIX_SIZE);
+	Get<MatrixSetup>().SetActiveMatrix(m);
 }
 
 void glLoadIdentity()
@@ -106,48 +121,32 @@ void glLoadIdentity()
 
 void glGetFloatv(GLenum pname, GLfloat* params)
 {
-	switch( pname )
-	{
-	case GL_PROJECTION_MATRIX:
-	{
-		GLfloat* pMatrix = getMatrix(GL_PROJECTION);
-		Copy(pMatrix, params, MATRIX_SIZE);
-		break;
-	}
-	default:
-		glSetError(GL_INVALID_ENUM);
-		break;
-	}
+	Get<MatrixSetup>().Get(pname, params);
 }
 
 void glPushMatrix()
 {
-	GLstack* pNewStackHead = malloc(sizeof(GLstack));
-
-	// Save reference to previous stack entry
-	pNewStackHead->previous = getMatrixStack(glActiveMatrixIndex);
-
-	// Duplicate matrix values
-	copyMatrix(pNewStackHead->previous->matrix, pNewStackHead->matrix, MATRIX_SIZE);
-
-	glMatrices[glActiveMatrixIndex] = pNewStackHead;
+	Get<MatrixSetup>().Push();
 }
 
 void glPopMatrix()
 {
-	GLstack* pOldStackHead = getMatrixStack(glActiveMatrixIndex);
-	glMatrices[glActiveMatrixIndex] = pOldStackHead->previous;
-	free(pOldStackHead);
+	Get<MatrixSetup>().Pop();
 }
 
 void glMultMatrixf(const GLfloat* m)
 {
-	GLstack* pStack = getActiveMatrixStack();
+	Get<MatrixSetup>().MultiplyActive(m);
+}
+
+void MatrixSetup::MultiplyActive(const GLfloat* m)
+{
+	auto& pStack = GetActiveMatrixEntry();
 
 	GLfloat buffer[MATRIX_SIZE];
-	copyMatrix(pStack->matrix, buffer);
+	Copy(pStack.matrix, buffer, N_ELEMENTS(buffer));
 
-	 hmatMultiplyHMatByHMat(pStack->matrix, m, buffer);
+	MultiplyMatrix4fByMatrix4f(pStack.matrix, m, buffer);
 }
 
 void glScalef(
@@ -162,7 +161,7 @@ void glScalef(
 		0, 0, z, 0,
 		0, 0, 0, 1
 	};
-	glMultMatrix(matrix);
+	glMultMatrixf(matrix);
 }
 
 void glTranslatef(
@@ -177,7 +176,7 @@ void glTranslatef(
 		0, 0, 1, z,
 		0, 0, 0, 1
 	};
-	glMultMatrix(matrix);
+	glMultMatrixf(matrix);
 }
 
 void glRotatef(
@@ -199,7 +198,7 @@ void glRotatef(
 
    if (mag == 0.0) {
       /* generate an identity matrix and return */
-      MEMCPY(m, Identity, sizeof(GLfloat)*16);
+      Buffer::Copy<GLfloat, N_ELEMENTS(matrix)>(matrix, IDENTITY);
       return;
    }
 
@@ -207,7 +206,7 @@ void glRotatef(
    y /= mag;
    z /= mag;
 
-#define M(row,col)  m[col*4+row]
+#define M(row,col)  matrix[col*4+row]
 
    /*
     *     Arbitrary axis rotation matrix.
@@ -295,6 +294,35 @@ void glRotatef(
 
 #undef M
 
-	glMultMatrix(m);
+	glMultMatrixf(matrix);
+}
+
+void MatrixSetup::Push()
+{
+	// Save reference to previous stack entry
+	auto& previous = GetActiveMatrixEntry();
+
+	MatrixEntry* pNewStackHead = new MatrixEntry(&previous);
+
+	_topMatrixEntries[_activeMatrixIndex] = pNewStackHead;
+}
+
+void MatrixSetup::Pop()
+{
+	auto& old = GetActiveMatrixEntry();
+	
+	_topMatrixEntries[_activeMatrixIndex] = old.previous;
+	
+	delete &old;
+}
+
+void MatrixSetup::SetActive(GLenum mode)
+{
+	auto index = GetMatrixIndex(mode);
+	
+	if( GetError() != GL_NO_ERROR )
+		return; //failed
+	
+	_activeMatrixIndex = index;
 }
 

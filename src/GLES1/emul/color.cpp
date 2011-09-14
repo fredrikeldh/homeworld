@@ -19,12 +19,24 @@ static inline void glColor3ub(GLubyte red, GLubyte green, GLubyte blue) {
 
 ColorSetup::ColorSetup() :
 	GLPart(),
-	color_count(0)
+	_current({1, 1, 1, 1})
 {
+}
+
+void ColorSetup::Get(GLfloat* result)
+{
+	Copy(_current, result, 4);
 }
 
 void ColorSetup::Set(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
 {
+	GLfloat* target = _current;
+	
+	*(  target) = red;
+	*(++target) = green;
+	*(++target) = blue;
+	*(++target) = alpha;
+/*
 	if (gles_immediate) {
 		if (color_count / 4 <= gles_vertex_count / gles_vertex_dimensions) {
 			colors[color_count++] = red;
@@ -44,6 +56,7 @@ void ColorSetup::Set(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
 		colors[3] = alpha;
 		glColor4f(red, green, blue, alpha);
 	}
+*/
 }
 
 

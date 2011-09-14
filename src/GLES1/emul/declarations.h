@@ -14,6 +14,9 @@ void glColor4f(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
 void glColor3ub(GLubyte red, GLubyte green, GLubyte blue);
 void glColor4ub(GLubyte red, GLubyte green, GLubyte blue, GLubyte alpha);
 
+void glNormal3f(GLfloat nx, GLfloat ny, GLfloat nz);
+void glNormal3fv(const GLfloat *v);
+
 void glTexCoord2f(GLfloat s, GLfloat t);
 
 void glVertex2f(GLfloat x, GLfloat y);

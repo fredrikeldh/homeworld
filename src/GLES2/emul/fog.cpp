@@ -16,9 +16,6 @@ void FogSetup::Set(
 	GLenum    pname,
  	const T*  params)
 {
-	if( !Evaluate(pname) )
-		return;
-
 	GLfloat value = *params;
 
 	switch( pname )

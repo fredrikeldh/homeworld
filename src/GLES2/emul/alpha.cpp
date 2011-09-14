@@ -5,9 +5,21 @@ void AlphaSetup::SetFunc(
 	GLenum    func,
 	GLclampf  ref)
 {
-	if( !Evaluate(func) )
+	if
+	(
+		!Evaluate<
+			GL_NEVER,
+			GL_LESS,
+			GL_EQUAL,
+			GL_LEQUAL,
+			GL_GREATER,
+			GL_NOTEQUAL,
+			GL_GEQUAL,
+			GL_ALWAYS
+		>(func)
+	)
 		return;
-		
+	
 	this->func = func;
 	this->ref  = clamp(ref, 0.0f, 1.0f);
 }

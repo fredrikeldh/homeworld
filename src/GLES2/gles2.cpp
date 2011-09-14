@@ -6,7 +6,6 @@ template<typename... TYPES>
 class Setup
 {
 private:
-
 	struct FalseType { enum { value = false }; };
 	struct TrueType  { enum { value =  true }; };
 

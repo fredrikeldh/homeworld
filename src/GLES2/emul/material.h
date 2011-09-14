@@ -14,10 +14,19 @@ class MaterialSetup : public GLPart<
 	GL_COLOR_INDEX>
 {
 public:
+	template<typename T>
+	void Set(
+		GLenum         face,
+		GLenum         pname,
+		const T* params);
+private:
 	class Side
 	{
 	public:
 		Side();
+	private:
+		friend class MaterialSetup;
+		friend class RENDER_PROCESSOR;
 		GLfloat ambient[4];
 		GLfloat diffuse[4];
 		GLfloat specular[4];
@@ -25,15 +34,8 @@ public:
 		GLubyte shininess;
 		GLint   color_indices[4];
 	};
-	
-	template<typename T>
-	void Set(
-		GLenum         face,
-		GLenum         pname,
-		const T* params);
-	Side front;
-	Side back;
-private:
+
+	friend class RENDER_PROCESSOR;
 	GLubyte getFaceBitMap(GLenum face);
 	template <typename T>
 	void setAmbient(const GLubyte cullBits, const T* params);
@@ -42,6 +44,9 @@ private:
 	void setDiffuse(const GLubyte cullBits, const T* params);
 	static const GLubyte MFRONT;
 	static const GLubyte MBACK;
+	
+	Side front;
+	Side back;
 };
 
 #endif // _HW_GLES2_MATERIAL_H_

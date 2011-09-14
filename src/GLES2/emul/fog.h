@@ -20,6 +20,8 @@ public:
 		GLenum    pname,
 		const T*  params
 	);
+private:
+	friend class RENDER_PROCESSOR;
 	GLenum mode;
 	GLfloat density;
 	GLfloat start;

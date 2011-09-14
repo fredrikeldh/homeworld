@@ -1,5 +1,5 @@
 
-#include "../gles2.h"
+#include "clip.h"
 
 ClipSetup::ClipSetup() : GLPart()
 {
@@ -19,7 +19,6 @@ void ClipSetup::SetClipPlane(
 	
 	Copy(equation, planes[index], 4);
 }
-
 
 void glClipPlanef(
 	GLenum          plane,

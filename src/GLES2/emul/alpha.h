@@ -3,14 +3,7 @@
 
 #include "include.h"
 
-class AlphaSetup : public GLPart<GL_NEVER,
-	GL_LESS,
-	GL_EQUAL,
-	GL_LEQUAL,
-	GL_GREATER,
-	GL_NOTEQUAL,
-	GL_GEQUAL,
-	GL_ALWAYS>
+class AlphaSetup : public GLPart<>
 {
 private:
 	AlphaSetup();
@@ -18,6 +11,8 @@ public:
 	void SetFunc(
 		GLenum    func,
 		GLclampf  ref);
+private:
+	friend class RENDER_PROCESSOR;
 	GLenum   func;
 	GLclampf ref;
 };

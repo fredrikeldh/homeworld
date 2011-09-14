@@ -1,10 +1,29 @@
 
 #include "normal.h"
 
-static GLfloat gles_normals[16384];
-static unsigned int gles_normal_count = 0;
+NormalSetup::NormalSetup():
+	GLPart(),
+	_current({0, 0, 1})
+{
+}
 
-static inline void glNormal3f(GLfloat nx, GLfloat ny, GLfloat nz) {
+void NormalSetup::Get(const GLfloat* result)
+{
+	Copy(_current, result, 3);
+}
+
+void NormalSetup::Set(GLfloat x, GLfloat y, GLfloat z)
+{
+	GLfloat* target = _current;
+	
+	*(  target) = x;
+	*(++target) = y;
+	*(++target) = z;
+}
+
+void glNormal3f(GLfloat nx, GLfloat ny, GLfloat nz) {
+	Get<NormalSetup>.Set(nx, ny, nz);
+/*
     if (gles_immediate) {
         if (gles_normal_count / 3 <= gles_vertex_count / gles_vertex_dimensions) {
             gles_normals[gles_normal_count++] = nx;
@@ -21,9 +40,11 @@ static inline void glNormal3f(GLfloat nx, GLfloat ny, GLfloat nz) {
         gles_normals[2] = nz;
         glNormal3f(nx, ny, nz);
     }
+*/
 }
 
-static inline void glNormal3fv(const GLfloat *v) {
+
+void glNormal3fv(const GLfloat *v) {
     glNormal3f(v[0], v[1], v[2]);
 }
 

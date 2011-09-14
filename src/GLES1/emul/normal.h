@@ -1,2 +1,14 @@
-static inline void glNormal3f(GLfloat nx, GLfloat ny, GLfloat nz);
-static inline void glNormal3fv(const GLfloat *v);
+
+namespace gles1
+{
+	class NormalSetup : public GLPart<>
+	{
+	public:
+		NormalSetup();
+		void Get(const GLfloat*);
+		void Set(GLfloat x, GLfloat y, GLfloat z);
+	private:
+		GLfloat _current[3];
+	};
+};
+

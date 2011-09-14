@@ -11,6 +11,14 @@ namespace gles2
 	{
 	public:
 		VertexSetup();
+		
+		void SetPointer(
+			GLint          size,
+			GLenum         type,
+			GLsizei        stride,
+			const GLvoid*  pointer
+		);
+	private:
 	
 		class Pointer : public GLPart<
 			GL_SHORT,
@@ -27,6 +35,7 @@ namespace gles2
 				GLsizei        stride,
 				const GLvoid*  pointer
 			);
+		private:
 	
 			GLint         size;
 			GLenum        type;

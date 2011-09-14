@@ -7,13 +7,23 @@ void glVertexPointer(
 	GLsizei        stride,
 	const GLvoid*  pointer)
 {
-	Get<VertexSetup>().pointer.Set(size, type, stride, pointer);
+	Get<VertexSetup>().SetPointer(size, type, stride, pointer);
 }
 
 VertexSetup::VertexSetup() :
 	gles1::VertexSetup(),
 	pointer()
 {
+}
+
+void VertexSetup::SetPointer(
+	GLint          size,
+	GLenum         type,
+	GLsizei        stride,
+	const GLvoid*  pointer
+)
+{
+	this->pointer.Set(size, type, stride, pointer);
 }
 
 void VertexSetup::Pointer::Set(

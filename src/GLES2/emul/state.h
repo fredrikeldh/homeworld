@@ -3,23 +3,23 @@
 #define _HW_GLES2_STATE_H_
 
 #include "include.h"
+#include "../../GLES1/emul/state.h"
 
-class StateSetup : public GLPart<
-	GL_VERTEX_ARRAY,
-	GL_NORMAL_ARRAY,
-	GL_COLOR_ARRAY,
-	GL_INDEX_ARRAY,
-	GL_TEXTURE_COORD_ARRAY,
-	GL_EDGE_FLAG_ARRAY,
-	GL_FOG_COORD_ARRAY,
-	GL_SECONDARY_COLOR_ARRAY>
+namespace gles2
 {
-public:
-	StateSetup();
-	void SetState(GLenum cap, bool value);
-	void SetModel(GLenum mode);
-	GLenum caps[8];
-	GLenum shadeModel;
+	class StateSetup : public gles1::StateSetup
+	{
+	public:
+		StateSetup();
+		void SetState(GLenum cap, bool value);
+		void SetModel(GLenum mode);
+	protected:
+		virtual RenderPipe& GetRenderer();
+	private:
+		friend class RENDER_PROCESSOR;
+		GLenum caps[8];
+		GLenum shadeModel;
+	};
 };
 
 #endif //_HW_GLES2_STATE_H_

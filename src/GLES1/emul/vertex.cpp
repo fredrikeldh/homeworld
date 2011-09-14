@@ -2,12 +2,11 @@
 #include "vertex.h"
 
 VertexSetup::VertexSetup() :
-	GLPart(),
-	count(0),
-	dimensions(2)
+	GLPart()
 {
 }
 
+/*
 void VertexSetup::vertex_data()
 {
 	
@@ -33,33 +32,34 @@ void VertexSetup::vertex_data()
         color_count++;
     }
 }
-
-void VertexSetup::Set(GLfloat x, GLfloat y)
-{
-	if (mode == GL_QUADS && dimensions && count / dimensions == 4)
-		render_current();
-
-	dimensions = 2;
-	vertex[count++] = x;
-	vertex[count++] = y;
-	vertex_data();
-}
+*/
 
 void VertexSetup::Set(GLfloat x, GLfloat y, GLfloat z)
 {
+/*
 	if (mode == GL_QUADS && dimensions && count / dimensions == 4)
 		render_current();
-		
-	vertex_dimensions = 3;
-	vertex[count++] = x;
-	vertex[count++] = y;
-	vertex[count++] = z;
+*/
+	GLfloat* target = _vertices[_count * VERTEX_ELEMENT_COUNT];
+	Copy(x, target++);
+	Copy(y, target++);
+	Copy(z, target  );
+	
+	target = _colors[_count * COLOR_ELEMENT_COUNT];
+	Get<ColorSetup>.GetCurrent(target);
+	
+	target = _normals[_count * NORMAL_ELEMENT_COUNT];
+	Get<NormalSetup>.GetCurrent(target);
+
+	_count++;
+/*
 	vertex_data();
+*/
 }
 
 void glVertex2f(GLfloat x, GLfloat y)
 {
-	Get<VertexSetup>.Set(x, y);
+	glVertex3f(x, y, 0);
 }
 
 void glVertex3f(GLfloat x, GLfloat y, GLfloat z) {

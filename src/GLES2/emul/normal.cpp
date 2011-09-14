@@ -2,7 +2,7 @@
 #include "normal.h"
 
 NormalSetup::NormalSetup() :
-	GLPart(),
+	gles1::NormalSetup(),
 	type(GL_FLOAT),
 	stride(0),
 	pointer(nullptr)
@@ -20,7 +20,16 @@ void NormalSetup::SetPointer(
 		return;
 	}
 
-	if( !Evaluate(type) )
+	if
+	(
+		!Evaluate<
+			GL_BYTE,
+			GL_SHORT,
+			GL_INT,
+			GL_FLOAT,
+			GL_DOUBLE
+		>(type)
+	)
 		return;
 
 	this->type    = type;

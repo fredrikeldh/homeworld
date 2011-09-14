@@ -1,26 +1,27 @@
 
 #include "light.h"
 
+GLfloat LightSetup::DARK[] = {0, 0, 0, 0};
+
 LightSetup::LightSetup() : 
-	ambient({0.2, 0.2, 0.2, 1.0}),
+	ambient(0.2f, 0.2f, 0.2f, 1.0f, "u_ambient"),
 	color_control(GL_SINGLE_COLOR),
 	local_viewer(false),
 	two_sided(false)
 {
+	lights[0].diffuse.Set(1, 1, 1, 1);
+	lights[0].specular.Set(1, 1, 1, 1);
 }
 
 template<typename T>
 void LightSetup::Set(
-	GLenum          pname,
+	GLenum    pname,
 	const T*  params)
 {
-	if( !Evaluate(pname) )
-		return;
-		
 	switch( pname )
 	{
 	case GL_LIGHT_MODEL_AMBIENT:
-		Copy(params, ambient, 4);
+		ambient.Set(params);
 		break;
 	case GL_LIGHT_MODEL_COLOR_CONTROL:
 	{
@@ -39,6 +40,9 @@ void LightSetup::Set(
 	case GL_LIGHT_MODEL_TWO_SIDE:
 		two_sided = (*params != 0.0);
 		break;
+	default:
+		SetError<GL_INVALID_ENUM>();
+		return;
 	}
 }
 
@@ -87,101 +91,103 @@ void LightSetup::Set(
 		return;
 	
 	Light& light = lights[lightEnum - GL_LIGHT0];
+	
+	const GLfloat value = *params;
+#define INVALID_BREAK {SetError<GL_INVALID_VALUE>(); break;}
 		
 	switch( pname )
 	{
 	case GL_AMBIENT:
-		Copy(params, light.ambient, 4);
+		light.ambient.Set(params);
 		break;
 	case GL_DIFFUSE:
-		Copy(params, light.diffuse, 4);
+		light.diffuse.Set(params);
 		break;
 	case GL_SPECULAR:
-		Copy(params, light.specular, 4);
+		light.specular.Set(params);
 		break;
 	case GL_POSITION:
-		Copy(params, light.position, 4);
+		light.position.Set(params);
 		break;
 	case GL_SPOT_DIRECTION:
-		Copy(params, light.direction, 3);
+		light.direction.Set(params);
 		break;
 	case GL_SPOT_EXPONENT:
 	{
-		const GLfloat value = *params;
 		if( value < 0 || value > 128 )
-		{
-			SetError(GL_INVALID_VALUE);
-			break;
-		}
+			INVALID_BREAK
 		
-		light.spot_exponent = value;
+		light.spot_exponent.Set(value);
 		break;
 	}
 	case GL_SPOT_CUTOFF:
 	{
-		const GLfloat value = *params;
 		if( (value < 0 || value > 90) && (value != 180) )
-		{
-			SetError(GL_INVALID_VALUE);
-			break;
-		}
+			INVALID_BREAK
 		
-		light.spot_cutoff = value;
+		light.spot_cutoff.Set(value);
 		break;
 	}
 	case GL_CONSTANT_ATTENUATION:
 	{
-		const GLfloat value = *params;
 		if( value < 0 )
-		{
-			SetError(GL_INVALID_VALUE);
-			break;
-		}
+			INVALID_BREAK
 		
-		light.attenuations[0] = value;
+		light.constantAttenuation.Set(value);
 		break;
 	}
 	case GL_LINEAR_ATTENUATION:
 	{
-		const GLfloat value = *params;
 		if( value < 0 )
-		{
-			SetError(GL_INVALID_VALUE);
-			break;
-		}
+			INVALID_BREAK
 		
-		light.attenuations[1] = value;
+		light.linearAttenuation.Set(value);
 		break;
 	}
 	case GL_QUADRATIC_ATTENUATION:
 	{
-		const GLfloat value = *params;
 		if( value < 0 )
-		{
-			SetError(GL_INVALID_VALUE);
-			break;
-		}
+			INVALID_BREAK
 		
-		light.attenuations[2] = value;
+		light.quadraticAttenuation.Set(value);
 		break;
 	}
 	default:
-		SetError(GL_INVALID_ENUM);
-		break;
+		INVALID_BREAK
 	}
+#undef INVALID_BREAK
 }
 
 LightSetup::Light::Light() :
-	ambient({0, 0, 0, 1}),
-	diffuse({0, 0, 0, 1}),//The initial value for GL_LIGHT0 is (1, 1, 1, 1); 
-	specular({0, 0, 0, 1}),//The initial value for GL_LIGHT0 is (1, 1, 1, 1);
-	position({0, 0, 1, 0}),
-	direction({0, 0, -1}),
-	spot_exponent(0),
-	spot_cutoff(180),
-	attenuations({1, 0, 0})
+	ambient(0.0f, 0.0f, 0.0f, 1.0f,   "u_LightSource.ambient"),
+	diffuse(0.0f, 0.0f, 0.0f, 1.0f,   "u_LightSource.diffuse"),
+	specular(0.0f, 0.0f, 0.0f, 1.0f,  "u_LightSource.diffuse"),
+	position(0.0f, 0.0f, 1.0f, 0.0f,  "u_LightSource.position"),
+	direction(0.0f, 0.0f, -1.0f,   "u_LightSource.spotDirection"),
+	spot_exponent(0.0f,        "u_LightSource.spotExponent"),
+	spot_cutoff(180.0f,        "u_LightSource.spotCutoff"),
+	constantAttenuation(1.0f,  "u_LightSource.constantAttenuation"),
+	linearAttenuation(0.0f,    "u_LightSource.linearAttenuation"),
+	quadraticAttenuation(0.0f, "u_LightSource.quadraticAttenuation")
 {
 }
 
-
+void LightSetup::Apply(RENDER_PROCESSOR* pRenderer)
+{
+/*
+	ApplyTo
+	(
+		pRenderer,
+		ambient,
+		diffuse,
+		specular,
+		position,
+		spot_exponent,
+		spot_cutoff,
+		constantAttenuation,
+		linearAttenuation,
+		quadraticAttenuation
+	);
+*/
+}
 

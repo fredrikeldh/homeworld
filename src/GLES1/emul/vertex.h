@@ -6,14 +6,21 @@
 
 namespace gles1
 {
-	class VertexSetup : public GLPart<
-	>
+	class VertexSetup : public GLPart<>
 	{
 	public:
 		VertexSetup();
-		GLfloat vertex[16384];
-		GLuint count;
-		unsigned char dimensions;
+		void Set(GLfloat x, GLfloat y, GLfloat z);
+	private:
+		
+		unsigned int _count;
+		// 3
+		GLfloat _vertices[16384];
+		// 4
+		GLfloat _colors[16384];
+		
+		// 3
+		GLfloat _normals[16384];
 	};
 };
 

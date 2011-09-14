@@ -21,15 +21,33 @@ void StateSetup::Start(GLenum mode)
 	if( !Evaluate(mode) )
 		return;
 	
+	if( immediate )
+	{
+		SetError<GL_INVALID_OPERATION>();
+		return;
+	}
+	
 	immediate  = true;
 	this->mode = mode;
 }
 
 void StateSetup::End()
 {
-	if( vertex_count )
-		gles_render_current();
+	if( !immediate )
+	{
+		SetError<GL_INVALID_OPERATION>();
+		return;
+	}
 	
-	immediate = 0;
+	if( vertex_count )
+		GetRenderer().Render(this->mode);
+	
+	immediate = false;
 }
+
+RenderPipe& StateSetup::GetRenderer()
+{
+	return Get<RenderPipe>();
+}
+
 

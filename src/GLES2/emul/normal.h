@@ -3,24 +3,23 @@
 #define _HW_GLES2_NORMAL_H_
 
 #include "include.h"
+#include "../../GLES1/emul/normal.h"
 
-class NormalSetup : public GLPart<
-	GL_BYTE,
-	GL_SHORT,
-	GL_INT,
-	GL_FLOAT,
-	GL_DOUBLE
->
+namespace gles2
 {
-public:
-	NormalSetup();
-	void SetPointer(
-		GLenum        type,
-		GLsizei       stride,
-		const GLvoid* pointer);
-	GLenum        type;
-	GLsizei       stride;
-	const GLvoid* pointer;
+	class NormalSetup : public gles1::NormalSetup
+	{
+	public:
+		NormalSetup();
+		void SetPointer(
+			GLenum        type,
+			GLsizei       stride,
+			const GLvoid* pointer);
+	private:
+		GLenum        type;
+		GLsizei       stride;
+		const GLvoid* pointer;
+	};
 };
 
 #endif //_HW_GLES2_NORMAL_H_

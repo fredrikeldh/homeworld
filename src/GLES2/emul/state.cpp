@@ -2,7 +2,7 @@
 #include "state.h"
 
 StateSetup::StateSetup() :
-	GLPart(),
+	gles1::StateSetup(),
 	caps({false,false,false,false,false,false,false,false}),
 	shadeModel(GL_SMOOTH)
 {
@@ -10,7 +10,15 @@ StateSetup::StateSetup() :
 
 void StateSetup::SetState(GLenum cap, bool value)
 {
-	short index = GetIndex(cap);
+	short index = GetIndex<
+		GL_VERTEX_ARRAY,
+		GL_NORMAL_ARRAY,
+		GL_COLOR_ARRAY,
+		GL_INDEX_ARRAY,
+		GL_TEXTURE_COORD_ARRAY,
+		GL_EDGE_FLAG_ARRAY,
+		GL_FOG_COORD_ARRAY,
+		GL_SECONDARY_COLOR_ARRAY>(cap);
 	
 	if( index < 0 )
 		return;
@@ -57,6 +65,11 @@ void glDrawPixels(
 {
 	//TODO: implement
 		
+}
+
+RenderPipe& StateSetup::GetRenderer()
+{
+	return Get<RenderPipe>();
 }
 
 

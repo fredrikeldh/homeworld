@@ -7,7 +7,7 @@ void glTexCoordPointer(
 	const GLvoid*  pointer
 )
 {
-	Get<TextureSetup>().pointer.Set(size, type, stride, pointer);
+	Get<TextureSetup>().SetCoords(size, type, stride, pointer);
 }
 
 void glTexEnvi(
@@ -16,11 +16,11 @@ void glTexEnvi(
 	GLint param
 )
 {
-	Get<TextureSetup>().environment.Set(target, pname, param);
+	Get<TextureSetup>().SetEnvironment(target, pname, param);
 }
 
 TextureSetup::TextureSetup() :
-	GLPart(),
+	gles1::TextureSetup(),
 	pointer()
 {
 }

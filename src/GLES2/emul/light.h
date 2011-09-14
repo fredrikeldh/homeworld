@@ -4,14 +4,13 @@
 
 #include "include.h"
 
-class LightSetup : public GLPart<
-	GL_LIGHT_MODEL_AMBIENT,
-	GL_LIGHT_MODEL_COLOR_CONTROL,
-	GL_LIGHT_MODEL_LOCAL_VIEWER,
-	GL_LIGHT_MODEL_TWO_SIDE>
+class LightSetup : public GLPart<>
 {
 public:
 	LightSetup();
+	
+	static GLfloat DARK[4];
+	
 	template<typename T>
 	void Set(
 		GLenum    pname,
@@ -23,25 +22,36 @@ public:
 		GLenum          pname,
 		const GLfloat*  params
 	);
-	GLfloat ambient[4];
-	GLenum color_control;
-	bool local_viewer;
-	bool two_sided;
+	
+protected:
 	
 	class Light
 	{
 	public:
 		Light();
-		GLfloat ambient[4];
-		GLfloat diffuse[4];
-		GLfloat specular[4];
-		GLfloat position[4];
-		GLfloat direction[3];
-		GLfloat spot_exponent;
-		GLfloat spot_cutoff;
-		GLfloat attenuations[3];
+	private:
+		friend class LightSetup;
+		friend class RENDER_PROCESSOR;
+		Uniform<GLfloat, 4> ambient;
+		Uniform<GLfloat, 4> diffuse;
+		Uniform<GLfloat, 4> specular;
+		Uniform<GLfloat, 4> position;
+		Uniform<GLfloat, 3> direction;
+		Uniform<GLfloat, 1> spot_exponent;
+		Uniform<GLfloat, 1> spot_cutoff;
+		Uniform<GLfloat, 1> constantAttenuation;
+		Uniform<GLfloat, 1> linearAttenuation;
+		Uniform<GLfloat, 1> quadraticAttenuation;
 	};
+private:
+	friend class RENDER_PROCESSOR;
+	Uniform<GLfloat, 4> ambient;
+	GLenum color_control;
+	bool local_viewer;
+	bool two_sided; 
 	Light lights[GL_MAX_LIGHTS];
+	
+	virtual void Apply(RENDER_PROCESSOR* renderer);
 };
 
 #endif //_HW_GLES2_LIGHT_H_
