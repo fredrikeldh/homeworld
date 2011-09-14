@@ -189,6 +189,7 @@ void hmatMakeHMatFromMat(hmatrix *result, matrix *mat);
 void hmatMakeHMatFromMatAndVec(hmatrix *result, matrix *mat, vector *pos);
 void hmatCreateHMatFromHVecs(hmatrix *result, hvector *col1, hvector *col2, hvector *col3, hvector *col4);
 void hmatMultiplyHMatByHMat(hmatrix *result, hmatrix *first, hmatrix *second);
+void MultiplyMatrix4fByMatrix4f(real32* c, const real32* a, const real32* b);
 void hmatMultiplyHMatByHVec(hvector *result, hmatrix *matrix, hvector *vector);
 void hmatMultiplyHVecByHMat(hvector *result, hvector *vector, hmatrix *matrix);
 void hmatTranspose(hmatrix *matrix);

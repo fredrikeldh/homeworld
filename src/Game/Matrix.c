@@ -147,12 +147,19 @@ void hmatCreateHMatFromHVecs(hmatrix *result,hvector *col1,hvector *col2,hvector
 ----------------------------------------------------------------------------*/
 void hmatMultiplyHMatByHMat(hmatrix *result,hmatrix *first,hmatrix *second)
 {
+	MultiplyMatrix4fByMatrix4f
+	(
+		(real32*)result,
+		(real32*)first,
+		(real32*)second
+	);
+}
+
+void MultiplyMatrix4fByMatrix4f(real32* c, const real32* a, const real32* b)
+{
 #define A(row,col) a[4*col+row]
 #define B(row,col) b[4*col+row]
 #define P(row,col) c[4*col+row]
-    real32 *c = (real32*)result;
-    real32 *a = (real32*)first;
-    real32 *b = (real32*)second;
     real32 ai0, ai1, ai2, ai3;
     sdword i;
     for (i = 0; i < 4; i++)
