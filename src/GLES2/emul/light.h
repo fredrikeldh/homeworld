@@ -3,8 +3,10 @@
 #define _HW_GLES2_LIGHT_H_
 
 #include "include.h"
+#include "../../GLES/render_component.h"
+#include "../../GLES/uniform.h"
 
-class LightSetup : public GLPart<>
+class LightSetup : public GLPart<>, public IRenderComponent
 {
 public:
 	LightSetup();
@@ -23,15 +25,27 @@ public:
 		const GLfloat*  params
 	);
 	
-protected:
+	virtual void ApplyTo(RENDER_PROCESSOR* renderer);
 	
-	class Light
+protected:
+	class Light : public GLPart<>, public IRenderComponent
 	{
 	public:
-		Light();
+		Light(GLubyte index);
+		
+		ONLY_MOVE(Light)
+#if HAS_MOVE_ASSIGN_BUG
+		Light& operator=(Light&& other);
+#endif
 	private:
 		friend class LightSetup;
 		friend class RENDER_PROCESSOR;
+		
+		virtual void ApplyTo(RENDER_PROCESSOR* renderer);
+
+		std::string _prefix;
+		
+		Uniform<bool,    1> enabled;
 		Uniform<GLfloat, 4> ambient;
 		Uniform<GLfloat, 4> diffuse;
 		Uniform<GLfloat, 4> specular;
@@ -43,15 +57,15 @@ protected:
 		Uniform<GLfloat, 1> linearAttenuation;
 		Uniform<GLfloat, 1> quadraticAttenuation;
 	};
+	friend class std::vector<Light>;
+	
 private:
 	friend class RENDER_PROCESSOR;
 	Uniform<GLfloat, 4> ambient;
 	GLenum color_control;
 	bool local_viewer;
 	bool two_sided; 
-	Light lights[GL_MAX_LIGHTS];
-	
-	virtual void Apply(RENDER_PROCESSOR* renderer);
+	std::vector<Light> _lights;
 };
 
 #endif //_HW_GLES2_LIGHT_H_

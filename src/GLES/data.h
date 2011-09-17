@@ -1,6 +1,7 @@
 
 #include "include.h"
 #include <cstring>
+#include <vector>
 
 class Buffer
 {
@@ -21,12 +22,21 @@ public:
 	static void Copy(const T1* source, T2* target, GLubyte size)
 	{
 		// Copy matrix
-		for( ; size != 0; size-- )
+		for( ; size != 0; size--, target++, source++ )
 		{
 			*target = *source;
-			target++;
-			source++;
 		}
 	}
+	
+	template<typename T>
+	static void Copy(const T* source, std::vector<T>& target, GLubyte size)
+	{
+		// Copy matrix
+		for( typename std::vector< T >::iterator it = target.begin(); it != target.end() && size != 0; size--, it++, source++ )
+		{
+			*it = *source;
+		}
+	}
+
 };
 

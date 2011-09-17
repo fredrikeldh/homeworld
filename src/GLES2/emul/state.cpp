@@ -37,7 +37,7 @@ void StateSetup::SetModel(GLenum mode)
 	case GL_SMOOTH:
 		shadeModel = GL_SMOOTH;
 	default:
-		SetError(GL_INVALID_ENUM);
+		SetError<GL_INVALID_ENUM>();
 	}
 }
 
@@ -65,11 +65,6 @@ void glDrawPixels(
 {
 	//TODO: implement
 		
-}
-
-RenderPipe& StateSetup::GetRenderer()
-{
-	return Get<RenderPipe>();
 }
 
 

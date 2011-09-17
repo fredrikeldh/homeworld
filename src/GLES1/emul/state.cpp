@@ -18,7 +18,16 @@ StateSetup::StateSetup() :
 
 void StateSetup::Start(GLenum mode)
 {
-	if( !Evaluate(mode) )
+	if
+	(
+		!Evaluate
+		<
+			GL_POINTS      , GL_LINES    , GL_LINE_STRIP,
+			GL_LINE_LOOP   , GL_TRIANGLES, GL_TRIANGLE_STRIP,
+			GL_TRIANGLE_FAN, GL_QUADS    ,
+			GL_POLYGON
+		>(mode);
+	)
 		return;
 	
 	if( immediate )
@@ -43,11 +52,6 @@ void StateSetup::End()
 		GetRenderer().Render(this->mode);
 	
 	immediate = false;
-}
-
-RenderPipe& StateSetup::GetRenderer()
-{
-	return Get<RenderPipe>();
 }
 
 

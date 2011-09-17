@@ -44,6 +44,8 @@ public:
 			GLsizei        stride,
 			const GLvoid*  pointer
 		);
+		
+		virtual void ApplyTo(IRenderState* renderer);
 	private:
 		friend class TextureSetup;
 		friend class RENDER_PROCESSOR;
@@ -66,6 +68,8 @@ public:
 			GLenum pname,
 			GLint param
 		);
+		
+		virtual void ApplyTo(IRenderState* renderer);
 	private:
 		friend class TextureSetup;
 		friend class RENDER_PROCESSOR;
@@ -73,6 +77,7 @@ public:
 		GLenum pname;
 		GLint param;
 	};
+	
 private:
 	friend class RENDER_PROCESSOR;
 	Pointer pointer;

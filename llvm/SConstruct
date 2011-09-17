@@ -30,8 +30,8 @@ def generateProgActions(source, target, env, for_signature):
 	output = target[0]
 	for ones in env["LIBS"]:
 		Depends(output, ones)
-		for n in ones:
-			src_string += os.path.relpath(n.__str__(), topDir.abspath) + " "
+		n = ones
+		src_string += os.path.relpath(n.__str__(), topDir.abspath) + " "
 	
 	return env["LINK"] + " " + src_string + " -o " + os.path.relpath(output.abspath, topDir.abspath)
 
@@ -83,7 +83,9 @@ def hwlibrary(name, sources, ignored = []):
 		
 	slib = env.LLVM_LIB("libhw_" + name, objects)
 
-	libs.append(slib)
+	for n in slib:
+		libs.append(n)
+	
 	return slib
 	
 def hwtool(tool):
@@ -109,7 +111,12 @@ env.ParseConfig('pkg-config libavcodec --cflags --libs')
 env.ParseConfig('pkg-config libavformat --cflags --libs')
 #env.ParseConfig('pkg-config glesv1_cm --cflags --libs')
 
-env.Append(CPPPATH=["/home/andreas/Projects/native_client_sdk_0_5_1026/toolchain/linux_x86/x86_64-nacl/include"])
+#napath = "/home/andreas/Projects/native_client_sdk_0_5_1026/toolchain/linux_x86/x86_64-nacl/"
+
+env.Append(CPPPATH=[
+	#napath + "include",
+	#napath + "include/c++/4.4.3"
+])
 
 print "* " + game_descriptions[game_index]
 print "* " + build_descriptions[build_index]
@@ -124,7 +131,7 @@ for i in range(0, includedirs.__len__(), 1):
 	includedirs[i] = env.Dir(includedirs[i]).abspath
 
 env.Append(CPPPATH=includedirs)
-env.Append(CPPPATH="/usr/include/x86_64-linux-gnu")
+env.Append(CPPPATH=["/usr/include/x86_64-linux-gnu", "/usr/include/GLES2"])
 env["OBJSUFFIX"] = ".bc"
 
 Export('env', 'hwlibrary', 'tools', 'descend', "includedirs")

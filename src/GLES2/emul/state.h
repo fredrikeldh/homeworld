@@ -13,8 +13,6 @@ namespace gles2
 		StateSetup();
 		void SetState(GLenum cap, bool value);
 		void SetModel(GLenum mode);
-	protected:
-		virtual RenderPipe& GetRenderer();
 	private:
 		friend class RENDER_PROCESSOR;
 		GLenum caps[8];

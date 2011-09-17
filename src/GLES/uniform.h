@@ -3,120 +3,176 @@
 #define _HW_GLES_UNIFORM_H_
 
 #include "include.h"
+#include "iuniform.h"
+#include "iuniformvalue.h"
 #include "GLPart.h"
+#include "render_component.h"
+#include "render.h"
 #include <string>
 
-template<typename T>
-class BaseUniform : public GLPart<>
+template<typename T, GLubyte NUMBER>
+class BaseUniform : public GLPart<>, public IUniform<T, NUMBER>
 {
+protected:
+	std::vector<T> _array;
+
+	BaseUniform(const std::string&& name):
+		GLPart(),
+		IUniform<T, NUMBER>(std::move(name)),
+		_array(NUMBER)
+	{
+	};
+
 public:
-	virtual bool operator==(const T* other) const = 0;
+	BaseUniform(const T values[NUMBER], const std::string&& name):
+		BaseUniform(std::move(name))
+	{
+		for( GLubyte i = 0; i != NUMBER; i++ )
+		{
+			_array[i] = values[i];
+		}
+	};
+	
+	ONLY_MOVE(BaseUniform)
+	
+#if HAS_MOVE_ASSIGN_BUG
+	BaseUniform& operator=(BaseUniform&& other)
+	{
+		GLPart<>::operator=(std::move(other));
+		IUniform<T, NUMBER>::operator=(std::move(other));
+		_array = std::move(other._array);
+		return *this;
+	}
+#endif
+	
+	bool operator==(const T* other) const
+	{
+		GLubyte index = 0;
+		for( typename std::vector<T>::const_iterator it = _array.begin(); it != _array.end(); it++, index++ )
+		{
+			if( *it != other[index] )
+				return false;
+		}
+		
+		return true;
+	}
 	
 	bool operator!=(const T* other) const
 	{
 		return !(*this == other);
 	};
-private:
-	std::string name;
-protected:
-	BaseUniform(const char* name):
-		GLPart(),
-		name(name)
+	
+	virtual void Set(const T* values)
 	{
-	};
+		Copy(values, _array, NUMBER);
+	}
+	
+	virtual void ApplyTo(RENDER_PROCESSOR* pRenderer)
+	{
+		IUniform<T, NUMBER>::ApplyTo(pRenderer);
+		IUniformValue<T, NUMBER>& value = pRenderer->GetValue(*this); 
+		value.Set(_array);
+	}
 };
 
 template<typename T, unsigned char NUMBER>
-class Uniform
+class Uniform : public BaseUniform<T, NUMBER>
 {
+public:
+	ONLY_MOVE(Uniform)
+#if HAS_MOVE_ASSIGN_BUG
+	Uniform& operator=(Uniform&& other)
+	{
+		BaseUniform<T, NUMBER>::operator=(std::move(other));
+		return *this;
+	}
+#endif
 };
 
 template<typename T>
-class Uniform<T, 3> : public BaseUniform<T>
+class Uniform<T, 3> : public BaseUniform<T, 3>
 {
-private:
-	T _array[3];
 public:
-	Uniform(T x, T y, T z, const char* name):
-		BaseUniform<T>(name),
-		_array({x, y, z})
-	{};
-	
-	bool operator==(const T* other) const
+	ONLY_MOVE(Uniform)
+#if HAS_MOVE_ASSIGN_BUG
+	Uniform& operator=(Uniform&& other)
 	{
-		return memcmp(_array, other, 3) == 0;
-	};
-	
+		BaseUniform<T, 3>::operator=(std::move(other));
+		return *this;
+	}
+#endif
+
+	using BaseUniform<T, 3>::Set;
+	using BaseUniform<T, 3>::ApplyTo;
 	void Set(T x, T y, T z)
 	{
-		_array[0] = x;
-		_array[1] = y;
-		_array[2] = z;
-	};
-	
-	void Set(const T* values)
-	{
-		Copy(values, _array, 3);
-	};
-};
-
-template<typename T>
-class Uniform<T, 4> : public BaseUniform<T>
-{
-private:
-	T _array[4];
-public:
-	Uniform(T x, T y, T z, T w, const char* name):
-		BaseUniform<T>(name),
-		_array({x, y, z, w})
-	{};
-	
-	bool operator==(const T* other) const
-	{
-		return memcmp(_array, other, 4) == 0;
-	};
-	
-	void Set(T x, T y, T z, T w)
-	{
-		_array[0] = x;
-		_array[1] = y;
-		_array[2] = z;
-		_array[3] = w;
-	};
-	
-	void Set(const T* values)
-	{
-		Copy(values, _array, 4);
-	};
-};
-
-template<typename T>
-class Uniform<T, 1> : public BaseUniform<T>
-{
-private:
-	T value;
-	std::string name;
-public:
-	Uniform(T value, const char* name):
-		BaseUniform<T>(name),
-		value(value)
-	{
+		BaseUniform<T, 3>::_array[0] = x;
+		BaseUniform<T, 3>::_array[1] = y;
+		BaseUniform<T, 3>::_array[2] = z;
 	}
 	
-	bool operator==(const T* other) const
+	Uniform(T x, T y, T z, std::string&& name):
+		BaseUniform<T, 3>(std::move(name))
 	{
-		return value == *other;
-	};
+		Set(x, y, z);
+	}
+};
+
+template<typename T>
+class Uniform<T, 4> : public BaseUniform<T, 4>
+{
+public:
+	ONLY_MOVE(Uniform)
+#if HAS_MOVE_ASSIGN_BUG
+	Uniform& operator=(Uniform&& other)
+	{
+		BaseUniform<T, 4>::operator=(std::move(other));
+		return *this;
+	}
+#endif
 	
+	using BaseUniform<T, 4>::Set;
+	using BaseUniform<T, 4>::ApplyTo;
+	void Set(T x, T y, T z, T w)
+	{
+		BaseUniform<T, 4>::_array[0] = x;
+		BaseUniform<T, 4>::_array[1] = y;
+		BaseUniform<T, 4>::_array[2] = z;
+		BaseUniform<T, 4>::_array[3] = w;
+	}
+	
+	Uniform(T x, T y, T z, T w, std::string&& name):
+		BaseUniform<T, 4>(std::move(name))
+	{
+		Set(x, y, z, w);
+	}
+};
+
+template<typename T>
+class Uniform<T, 1> : public BaseUniform<T, 1>
+{
+public:
+	ONLY_MOVE(Uniform)
+#if HAS_MOVE_ASSIGN_BUG
+	Uniform& operator=(Uniform&& other)
+	{
+		BaseUniform<T, 1>::operator=(std::move(other));
+		return *this;
+	}
+#endif
+
+	using BaseUniform<T, 1>::Set;
+	using BaseUniform<T, 1>::ApplyTo;
 	void Set(T value)
 	{
-		this->value = value;
+		BaseUniform<T, 1>::_array[0] = value;
 	};
 	
-	void Set(const T* values)
+	Uniform(T value, std::string&& name):
+		BaseUniform<T, 1>(std::move(name))
 	{
-		value = *values;
-	};
+		Set(value);
+	}
 };
 
 #endif //_HW_GLES_UNIFORM_H_

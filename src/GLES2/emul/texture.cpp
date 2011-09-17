@@ -56,6 +56,11 @@ void TextureSetup::Pointer::Set(
 	this->pointer = pointer;
 }
 
+void TextureSetup::Pointer::ApplyTo(IRenderState* renderer)
+{
+	//TODO: Implement
+}
+
 void TextureSetup::Environment::Set(
 	GLenum target,
 	GLenum pname,
@@ -81,6 +86,11 @@ void TextureSetup::Environment::Set(
 	this->target = target;
 	this->pname = pname;
 	this->param = param;
+}
+
+void TextureSetup::Environment::ApplyTo(IRenderState* renderer)
+{
+	//TODO: Implement
 }
 
 

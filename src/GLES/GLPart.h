@@ -4,15 +4,28 @@
 #include "include.h"
 #include "data.h"
 #include <errno.h>
+#include <vector>
 
 template<GLenum... ValidEnums>
 class GLPart
 {
+public:
+
+	ENABLE_MOVE_AND_COPY(GLPart)
+
 protected:
 	static const GLenum INVALID_INDEX;
 	GLPart()
 	{
-	};
+	}
+	
+#if HAS_MOVE_ASSIGN_BUG
+	GLPart& operator=(GLPart&&)
+	{
+		return *this;
+	}
+#endif
+	
 private:
 	
 	template<short INDEX, GLenum One>
@@ -40,6 +53,12 @@ private:
 		return -1;
 	};
 protected:
+	template<typename T>
+	static void Copy(const T* source, std::vector<T>& target, GLubyte size)
+	{
+		Buffer::Copy<T>(source, target, size);
+	}
+
 	template<typename T>
 	static void Copy(const T* source, T* target, GLubyte size)
 	{
@@ -108,8 +127,6 @@ protected:
 	
 		return isValid;
 	}
-public:
-	virtual void Apply(RENDER_PROCESSOR* renderer);
 };
 
 #endif //_HW_GLES_GLPART_H_

@@ -1,5 +1,6 @@
 
 #include "light.h"
+#include <sstream>
 
 GLfloat LightSetup::DARK[] = {0, 0, 0, 0};
 
@@ -7,10 +8,17 @@ LightSetup::LightSetup() :
 	ambient(0.2f, 0.2f, 0.2f, 1.0f, "u_ambient"),
 	color_control(GL_SINGLE_COLOR),
 	local_viewer(false),
-	two_sided(false)
+	two_sided(false),
+	_lights()
 {
-	lights[0].diffuse.Set(1, 1, 1, 1);
-	lights[0].specular.Set(1, 1, 1, 1);
+	for( int i = 0; i != GL_MAX_LIGHTS; i++ )
+	{
+		_lights.push_back(Light(i));
+		AddComponent(_lights[i]);
+	}
+
+	_lights[0].diffuse.Set(1, 1, 1, 1);
+	_lights[0].specular.Set(1, 1, 1, 1);
 }
 
 template<typename T>
@@ -90,7 +98,7 @@ void LightSetup::Set(
 	)
 		return;
 	
-	Light& light = lights[lightEnum - GL_LIGHT0];
+	Light& light = _lights[lightEnum - GL_LIGHT0];
 	
 	const GLfloat value = *params;
 #define INVALID_BREAK {SetError<GL_INVALID_VALUE>(); break;}
@@ -158,36 +166,73 @@ void LightSetup::Set(
 #undef INVALID_BREAK
 }
 
-LightSetup::Light::Light() :
-	ambient(0.0f, 0.0f, 0.0f, 1.0f,   "u_LightSource.ambient"),
-	diffuse(0.0f, 0.0f, 0.0f, 1.0f,   "u_LightSource.diffuse"),
-	specular(0.0f, 0.0f, 0.0f, 1.0f,  "u_LightSource.diffuse"),
-	position(0.0f, 0.0f, 1.0f, 0.0f,  "u_LightSource.position"),
-	direction(0.0f, 0.0f, -1.0f,   "u_LightSource.spotDirection"),
-	spot_exponent(0.0f,        "u_LightSource.spotExponent"),
-	spot_cutoff(180.0f,        "u_LightSource.spotCutoff"),
-	constantAttenuation(1.0f,  "u_LightSource.constantAttenuation"),
-	linearAttenuation(0.0f,    "u_LightSource.linearAttenuation"),
-	quadraticAttenuation(0.0f, "u_LightSource.quadraticAttenuation")
+std::string __buildString(const char* prefix, GLubyte index, const char* postfix)
 {
+	std::stringstream stream;
+	stream << std::string(prefix) << index << postfix;
+	return stream.str();
 }
 
-void LightSetup::Apply(RENDER_PROCESSOR* pRenderer)
+LightSetup::Light::Light(GLubyte index) :
+	GLPart(),
+	IRenderComponent(),
+	_prefix(::__buildString("u_LightSource[", index, "].")),
+	enabled             (false,                  _prefix + "enabled"),
+	ambient             (0.0f, 0.0f, 0.0f, 1.0f, _prefix + "ambient"),
+	diffuse             (0.0f, 0.0f, 0.0f, 1.0f, _prefix + "diffuse"),
+	specular            (0.0f, 0.0f, 0.0f, 1.0f, _prefix + "specular"),
+	position            (0.0f, 0.0f, 1.0f, 0.0f, _prefix + "position"),
+	direction           (0.0f, 0.0f, -1.0f,      _prefix + "spotDirection"),
+	spot_exponent       (0.0f,                   _prefix + "spotExponent"),
+	spot_cutoff         (180.0f,                 _prefix + "spotCutoff"),
+	constantAttenuation (1.0f,                   _prefix + "constantAttenuation"),
+	linearAttenuation   (0.0f,                   _prefix + "linearAttenuation"),
+	quadraticAttenuation(0.0f,                   _prefix + "quadraticAttenuation")
 {
-/*
-	ApplyTo
+#define P(X) AddComponent(X)
+	P(enabled);
+	P(ambient);
+	P(diffuse);
+	P(specular);
+	P(position);
+	P(direction);
+	P(spot_cutoff);
+	P(constantAttenuation);
+	P(linearAttenuation);
+	P(quadraticAttenuation);
+#undef P
+}
+
+#if HAS_MOVE_ASSIGN_BUG
+LightSetup::Light& LightSetup::Light::operator=(LightSetup::Light&& other)
+{
+	GLPart::operator=(std::move(other));
+	IRenderComponent::operator=(std::move(other));
+	_prefix = std::move(other._prefix);
+	enabled             = std::move(other.enabled);
+	ambient             = std::move(other.ambient);
+	diffuse             = std::move(other.diffuse);
+	specular            = std::move(other.specular);
+	position            = std::move(other.position);
+	direction           = std::move(other.direction);
+	spot_exponent       = std::move(other.spot_exponent);
+	spot_cutoff         = std::move(other.spot_cutoff);
+	constantAttenuation = std::move(other.constantAttenuation);
+	linearAttenuation   = std::move(other.linearAttenuation);
+	quadraticAttenuation= std::move(other.quadraticAttenuation);
+	return *this;
+}
+#endif
+
+void LightSetup::Light::ApplyTo(RENDER_PROCESSOR* renderer)
+{
+	// Check whether we have to process anything
+	enabled.Set
 	(
-		pRenderer,
-		ambient,
-		diffuse,
-		specular,
-		position,
-		spot_exponent,
-		spot_cutoff,
-		constantAttenuation,
-		linearAttenuation,
-		quadraticAttenuation
+		ambient != LightSetup::DARK
+		|| diffuse != LightSetup::DARK
+		|| specular != LightSetup::DARK
 	);
-*/
+	
+	IRenderComponent::ApplyTo(renderer);
 }
-

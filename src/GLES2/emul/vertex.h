@@ -35,6 +35,8 @@ namespace gles2
 				GLsizei        stride,
 				const GLvoid*  pointer
 			);
+			
+			virtual void ApplyTo(IRenderState*);
 		private:
 	
 			GLint         size;
