@@ -12,7 +12,7 @@
 #include "../../GLES/include.h"
 #ifdef __cplusplus
 #include "../../GLES/GLPart.h"
-#include "../../GLES/uniform.h"
+#include "uniform.h"
 #endif //__cplusplus
 
 #endif //_HW_GLES2_INCLUDE_H_

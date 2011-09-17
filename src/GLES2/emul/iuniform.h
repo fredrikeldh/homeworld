@@ -3,7 +3,7 @@
 #define _HW_GLES_IUNIFORM_H_
 
 #include "include.h"
-#include "render_component.h"
+#include "../../GLES/render_component.h"
 #include <memory>
 #include <string>
 

@@ -4,8 +4,8 @@
 
 #include "include.h"
 #include "../../GLES1/emul/render.h"
-#include "../../GLES/iuniform.h"
-#include "../../GLES/iuniformvalue.h"
+#include "iuniform.h"
+#include "iuniformvalue.h"
 #include "light.h"
 #include <string>
 #include <vector>

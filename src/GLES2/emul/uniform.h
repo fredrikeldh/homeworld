@@ -5,9 +5,9 @@
 #include "include.h"
 #include "iuniform.h"
 #include "iuniformvalue.h"
-#include "GLPart.h"
-#include "render_component.h"
-#include "render.h"
+#include "../../GLES/GLPart.h"
+#include "../../GLES/render_component.h"
+#include "irenderstate.h"
 #include <string>
 
 template<typename T, GLubyte NUMBER>
@@ -67,7 +67,7 @@ public:
 		Copy(values, _array, NUMBER);
 	}
 	
-	virtual void ApplyTo(RENDER_PROCESSOR* pRenderer)
+	virtual void ApplyTo(IRenderState* pRenderer)
 	{
 		IUniform<T, NUMBER>::ApplyTo(pRenderer);
 		IUniformValue<T, NUMBER>& value = pRenderer->GetValue(*this); 

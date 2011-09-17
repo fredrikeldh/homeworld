@@ -1,6 +1,13 @@
 
 #include "render.h"
 
+RenderPipe::RenderPipe() :
+	GLPart(),
+	immediate(false),
+	mode(GL_TRIANGLES)
+{
+}
+
 void RenderPipe::Render()
 {
 	glEnableClientState(GL_VERTEX_ARRAY);
@@ -74,3 +81,52 @@ void RenderPipe::Render()
     }
     gles_normal_count = 0;
 }
+
+void glBegin(GLenum mode)
+{
+	Get<StateSetup>.Start(mode);
+}
+
+void glEnd(void)
+{
+	Get<StateSetup>.End();
+}
+
+void RenderPipe::Start(GLenum mode)
+{
+	if
+	(
+		!Evaluate
+		<
+			GL_POINTS      , GL_LINES    , GL_LINE_STRIP,
+			GL_LINE_LOOP   , GL_TRIANGLES, GL_TRIANGLE_STRIP,
+			GL_TRIANGLE_FAN, GL_QUADS    ,
+			GL_POLYGON
+		>(mode);
+	)
+		return;
+	
+	if( immediate )
+	{
+		SetError<GL_INVALID_OPERATION>();
+		return;
+	}
+	
+	immediate  = true;
+	this->mode = mode;
+}
+
+void RenderPipe::End()
+{
+	if( !immediate )
+	{
+		SetError<GL_INVALID_OPERATION>();
+		return;
+	}
+	
+	if( vertex_count )
+		Render(this->mode);
+	
+	immediate = false;
+}
+

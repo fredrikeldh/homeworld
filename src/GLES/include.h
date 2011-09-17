@@ -2,23 +2,32 @@
 #define _HW_GLES_INCLUDE_H_
 
 #if defined HW_ENABLE_GLES2
-#include "../GLES2/glinclude.h"
-
-#if defined __cplusplus
-class IRenderState;
-// use define since typedef does not work as a friend even with gcc 4.6!
-#define RENDER_PROCESSOR IRenderState
-#endif //__cplusplus
-
+	#include "../GLES2/glinclude.h"
 #else
-#include "../GLES1/glinclude.h"
+	#include "../GLES1/glinclude.h"
 #endif //HW_ENABLE_GLES2
 
 #ifndef N_ELEMENTS
-#define N_ELEMENTS(X) (sizeof(X)/sizeof(*(X)))
+	#define N_ELEMENTS(X) (sizeof(X)/sizeof(*(X)))
 #endif //N_ELEMENTS
 
 #if defined __cplusplus
+
+#if defined HW_ENABLE_GLES2
+namespace gles2
+{
+	class IRenderState;
+}
+// use define since typedef does not work as a friend even with gcc 4.6!
+#define RENDER_PROCESSOR gles2::IRenderState
+#else
+namespace gles1
+{
+	class IRenderState;
+}
+// use define since typedef does not work as a friend even with gcc 4.6!
+#define RENDER_PROCESSOR gles1::IRenderState
+#endif //HW_ENABLE_GLES2
 
 #ifndef nullptr
 const                        // this is a const object...

@@ -1,11 +1,15 @@
 
 #include "include.h"
 
-class RasterSetup : public GLPart<
->
+namespace gles2
 {
-public:
-	RasterSetup();
-	void Set(GLfloat x, GLfloat y);
-	GLfloat position[2];
-};
+	class RasterSetup : public GLPart<
+	>
+	{
+	public:
+		RasterSetup();
+		void Set(GLfloat x, GLfloat y);
+		GLfloat position[2];
+	};
+}
+

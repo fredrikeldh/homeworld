@@ -2,7 +2,7 @@
 #include "state.h"
 
 StateSetup::StateSetup() :
-	gles1::StateSetup(),
+	GLPart(),
 	caps({false,false,false,false,false,false,false,false}),
 	shadeModel(GL_SMOOTH)
 {

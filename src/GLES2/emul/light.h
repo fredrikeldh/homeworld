@@ -4,7 +4,7 @@
 
 #include "include.h"
 #include "../../GLES/render_component.h"
-#include "../../GLES/uniform.h"
+#include "uniform.h"
 
 class LightSetup : public GLPart<>, public IRenderComponent
 {

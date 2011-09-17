@@ -3,11 +3,10 @@
 #define _HW_GLES2_STATE_H_
 
 #include "include.h"
-#include "../../GLES1/emul/state.h"
 
 namespace gles2
 {
-	class StateSetup : public gles1::StateSetup
+	class StateSetup : public GLPart<>
 	{
 	public:
 		StateSetup();
