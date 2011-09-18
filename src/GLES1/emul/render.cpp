@@ -34,7 +34,7 @@ void RenderPipe::Render()
         case GL_TRIANGLES:
         case GL_TRIANGLE_STRIP:
         case GL_TRIANGLE_FAN:
-            glDrawArrays(gles_mode, 0, gles_vertex_count / gles_vertex_dimensions);
+            glDrawArraysEx(gles_mode, 0, gles_vertex_count / gles_vertex_dimensions);
             break;
         case GL_QUADS:
             glDrawElements(GL_TRIANGLE_STRIP, gles_vertex_count / gles_vertex_dimensions, GL_UNSIGNED_SHORT, gles_quad_indices);
@@ -130,3 +130,11 @@ void RenderPipe::End()
 	immediate = false;
 }
 
+void glDrawArraysEx
+(
+	GLenum   mode,
+	GLint    first,
+	GLsizei  count
+)
+{
+}

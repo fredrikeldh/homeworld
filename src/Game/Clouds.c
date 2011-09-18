@@ -990,10 +990,10 @@ void cloudRenderLightning(vector* pa, vector* pb, udword depth, sdword lod) {
     glVertexPointer(3, GL_FLOAT, 0, lightning);
     glLineWidth(width);
     glColor4f(CLOUD_LIGHTNING_FRINGE_RED, CLOUD_LIGHTNING_FRINGE_GREEN, CLOUD_LIGHTNING_FRINGE_BLUE, CLOUD_LIGHTNING_FRINGE_ALPHA * alpha);
-    glDrawArrays(GL_LINE_STRIP, 0, depth);
+    glDrawArraysEx(GL_LINE_STRIP, 0, depth);
     glLineWidth(width / 3.0f);
     glColor4f(CLOUD_LIGHTNING_MAIN_RED, CLOUD_LIGHTNING_MAIN_GREEN, CLOUD_LIGHTNING_MAIN_BLUE, CLOUD_LIGHTNING_MAIN_ALPHA * alpha);
-    glDrawArrays(GL_LINE_STRIP, 0, depth);
+    glDrawArraysEx(GL_LINE_STRIP, 0, depth);
     glDisableClientState(GL_VERTEX_ARRAY);
 }
 

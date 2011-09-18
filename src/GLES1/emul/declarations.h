@@ -14,6 +14,13 @@ void glColor4f(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
 void glColor3ub(GLubyte red, GLubyte green, GLubyte blue);
 void glColor4ub(GLubyte red, GLubyte green, GLubyte blue, GLubyte alpha);
 
+void glDrawArraysEx
+(
+	GLenum   mode,
+	GLint    first,
+	GLsizei  count
+);
+
 void glNormal3f(GLfloat nx, GLfloat ny, GLfloat nz);
 void glNormal3fv(const GLfloat *v);
 

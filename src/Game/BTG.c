@@ -1336,7 +1336,7 @@ void btgRender()
         if (btgStars[nStar].glhandle) {
             glColor4ub((GLubyte)btgStars[nStar].red, (GLubyte)btgStars[nStar].green, (GLubyte)btgStars[nStar].blue, (GLubyte)btgStars[nStar].alpha);
             glBindTexture(GL_TEXTURE_2D, btgStars[nStar].glhandle);
-            glDrawArrays(GL_TRIANGLE_STRIP, nStar * 4, 4);
+            glDrawArraysEx(GL_TRIANGLE_STRIP, nStar * 4, 4);
          }
     }
 

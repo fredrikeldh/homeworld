@@ -1331,7 +1331,7 @@ void rndBackgroundRender(real32 radius, Camera* camera, bool bDrawStars)
             glColorPointer(4, GL_UNSIGNED_BYTE, 16, (GLubyte*)stararray);
             glVertexPointer(3, GL_FLOAT, 16, ((GLubyte*)stararray) + 4);
         }
-        glDrawArrays(GL_POINTS, 0, universe.star3dinfo->Num3dStars - NUM_BIG_STARS);
+        glDrawArraysEx(GL_POINTS, 0, universe.star3dinfo->Num3dStars - NUM_BIG_STARS);
 
         if (blends && pointSize)
         {
@@ -1353,7 +1353,7 @@ void rndBackgroundRender(real32 radius, Camera* camera, bool bDrawStars)
         }
 
         //draw big stars
-        glDrawArrays(GL_POINTS, (universe.star3dinfo->Num3dStars - NUM_BIG_STARS), NUM_BIG_STARS);
+        glDrawArraysEx(GL_POINTS, (universe.star3dinfo->Num3dStars - NUM_BIG_STARS), NUM_BIG_STARS);
         glDisableClientState(GL_COLOR_ARRAY);
         glDisableClientState(GL_VERTEX_ARRAY);
 

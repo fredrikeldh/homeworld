@@ -1124,7 +1124,7 @@ void ferDraw(sdword x, sdword y, lifheader *texture)
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glVertexPointer(2, GL_FLOAT, 0, v);
         glTexCoordPointer(2, GL_FLOAT, 0, t);
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+        glDrawArraysEx(GL_TRIANGLE_STRIP, 0, 4);
         glDisableClientState(GL_VERTEX_ARRAY);
         glDisableClientState(GL_TEXTURE_COORD_ARRAY);
     }

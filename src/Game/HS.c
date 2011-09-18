@@ -423,7 +423,7 @@ void hsRectangle(vector* origin, real32 rightlength, real32 uplength, ubyte alph
     glVertexPointer(3, GL_FLOAT, 0, v);
 
     glColor4ub(red, green, blue, alpha);
-    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    glDrawArraysEx(GL_TRIANGLE_STRIP, 0, 4);
 
     if (outline) {
         ubyte l[4] = { 0, 1, 3, 2 };
@@ -482,7 +482,7 @@ void hsLine(vector* origin, real32 rightlength, real32 uplength, ubyte alpha, co
     glLineWidth(uplength);
     glEnableClientState(GL_VERTEX_ARRAY);
     glVertexPointer(3, GL_FLOAT, 0, v);
-    glDrawArrays(GL_LINES, 0, 2);
+    glDrawArraysEx(GL_LINES, 0, 2);
     glDisableClientState(GL_VERTEX_ARRAY);
     glLineWidth(1.0f);
 }
