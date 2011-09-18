@@ -6,12 +6,49 @@
 
 namespace gles2
 {
-	class StateSetup : public GLPart<>
+	class StateSetup : public GLPart<>, public IRenderComponent
 	{
 	public:
 		StateSetup();
 		void SetState(GLenum cap, bool value);
 		void SetModel(GLenum mode);
+		
+		virtual void ApplyTo(IRenderState* pRenderer);
+	protected:
+	
+		// Compile time version
+		template<GLenum value>
+		short GetStateIndex()
+		{
+			return IndexFast<GLenum>::Get
+			<
+				value,
+				GL_VERTEX_ARRAY,
+				GL_NORMAL_ARRAY,
+				GL_COLOR_ARRAY,
+				GL_INDEX_ARRAY,
+				GL_TEXTURE_COORD_ARRAY,
+				GL_EDGE_FLAG_ARRAY,
+				GL_FOG_COORD_ARRAY,
+				GL_SECONDARY_COLOR_ARRAY
+			>();
+		}
+		
+		// Runtime version
+		short GetStateIndex(GLenum value)
+		{
+			return IndexSlow<GLenum>::Get
+			<
+				GL_VERTEX_ARRAY,
+				GL_NORMAL_ARRAY,
+				GL_COLOR_ARRAY,
+				GL_INDEX_ARRAY,
+				GL_TEXTURE_COORD_ARRAY,
+				GL_EDGE_FLAG_ARRAY,
+				GL_FOG_COORD_ARRAY,
+				GL_SECONDARY_COLOR_ARRAY
+			>(value);
+		}
 	private:
 		friend class RENDER_PROCESSOR;
 		GLenum caps[8];

@@ -6,6 +6,79 @@
 #include <errno.h>
 #include <vector>
 
+template<typename T>
+class IndexFast
+{
+private:
+	template<T SEARCH_VALUE, short INDEX>
+	static short GetInternal()
+	{
+		return -1;
+	};
+
+	template<T SEARCH_VALUE, short INDEX, GLenum One>
+	static short GetInternal()
+	{
+		if( SEARCH_VALUE == One )
+			return INDEX;
+		else
+			return GetInternal<SEARCH_VALUE, INDEX>(); // Not found
+	};
+
+	template<T SEARCH_VALUE, short INDEX, T One, T Two, T... Others>
+	static short GetInternal()
+	{
+		if( SEARCH_VALUE == One )
+			return INDEX;
+
+		// Try out the rest
+		return GetInternal<T, SEARCH_VALUE, INDEX + 1, Two, Others...>();
+	};
+
+public:
+	template<T SEARCH_VALUE, T One, T Two, T... Others>
+	static short Get()
+	{
+		return GetInternal<SEARCH_VALUE, 0, One, Two, Others...>();
+	}
+};
+
+template<typename T>
+class IndexSlow
+{
+private:
+	template<short INDEX>
+	static short GetInternal(GLenum)
+	{
+		return -1;
+	};
+	
+	template<short INDEX, T One>
+	static short GetInternal(GLenum value)
+	{
+		if( value == One )
+			return INDEX;
+		else
+			return GetInternal<INDEX>(value); // Not found
+	};
+
+	template<short INDEX, T One, T Two, T... Others>
+	static short GetInternal(GLenum value)
+	{
+		if( value == One )
+			return INDEX;
+	
+		// Try out the rest
+		return GetInternal<INDEX + 1, Two, Others...>(value);
+	};
+public:
+	template<T One, T Two, T... Others>
+	static short Get(GLenum value)
+	{
+		return GetInternal<0, One, Two, Others...>(value);
+	}
+};
+
 template<GLenum... ValidEnums>
 class GLPart
 {
@@ -26,32 +99,6 @@ protected:
 	}
 #endif
 	
-private:
-	
-	template<short INDEX, GLenum One>
-	bool GetIndexInternal(GLenum value)
-	{
-		if( value == One )
-			return INDEX;
-		else
-			return GetIndex<INDEX>(value); // Not found
-	};
-
-	template<short INDEX, GLenum One, GLenum Two, GLenum... Others>
-	bool GetIndexInternal(GLenum value)
-	{
-		if( value == One )
-			return INDEX;
-	
-		// Try out the rest
-		return GetIndex<INDEX + 1, Two, Others...>(value);
-	};
-	
-	template<short INDEX>
-	bool GetIndexInternal(GLenum)
-	{
-		return -1;
-	};
 protected:
 	template<typename T>
 	static void Copy(const T* source, std::vector<T>& target, GLubyte size)
@@ -92,15 +139,9 @@ protected:
 		errno = error;
 	}
 	
-	template<GLenum One, GLenum Two, GLenum... Others>
 	short GetIndex(GLenum value)
 	{
-		return GetIndexInternal<0, One, Two, Others...>(value);
-	}
-	
-	short GetIndex(GLenum value)
-	{
-		return GetIndex<ValidEnums...>(value);
+		return IndexSlow<GLenum>::Get<ValidEnums...>(value);
 	}
 	
 	bool Evaluate(GLenum value)
@@ -118,7 +159,7 @@ protected:
 	template<GLenum ONE, GLenum...VALIDS>
 	bool Evaluate(GLenum value)
 	{
-		short index = GetIndex<ONE, VALIDS ...>(value);
+		short index = IndexSlow<GLenum>::Get<ONE, VALIDS ...>(value);
 
 		bool isValid = (index >= 0);
 

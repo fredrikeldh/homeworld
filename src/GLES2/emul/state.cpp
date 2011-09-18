@@ -1,24 +1,19 @@
 
 #include "state.h"
 
+
+
 StateSetup::StateSetup() :
 	GLPart(),
 	caps({false,false,false,false,false,false,false,false}),
 	shadeModel(GL_SMOOTH)
 {
+	//short index = getStateIndex<GL_COLOR_ARRAY>;
 }
 
 void StateSetup::SetState(GLenum cap, bool value)
 {
-	short index = GetIndex<
-		GL_VERTEX_ARRAY,
-		GL_NORMAL_ARRAY,
-		GL_COLOR_ARRAY,
-		GL_INDEX_ARRAY,
-		GL_TEXTURE_COORD_ARRAY,
-		GL_EDGE_FLAG_ARRAY,
-		GL_FOG_COORD_ARRAY,
-		GL_SECONDARY_COLOR_ARRAY>(cap);
+	short index = GetStateIndex(cap);
 	
 	if( index < 0 )
 		return;
@@ -65,6 +60,13 @@ void glDrawPixels(
 {
 	//TODO: implement
 		
+}
+
+void StateSetup::ApplyTo(IRenderState* pRenderer)
+{
+	
+	
+	
 }
 
 
