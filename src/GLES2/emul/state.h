@@ -18,7 +18,7 @@ namespace gles2
 	
 		// Compile time version
 		template<GLenum value>
-		short GetStateIndex()
+		static short GetStateIndex()
 		{
 			return IndexFast<GLenum>::Get
 			<
@@ -31,7 +31,7 @@ namespace gles2
 		}
 		
 		// Runtime version
-		short GetStateIndex(GLenum value)
+		static short GetStateIndex(GLenum value)
 		{
 			return IndexSlow<GLenum>::Get
 			<
@@ -45,6 +45,24 @@ namespace gles2
 		friend class RENDER_PROCESSOR;
 		GLenum caps[8];
 		GLenum shadeModel;
+		
+		class StaticIndices
+		{
+		public:
+			GLubyte COLOR;
+			GLubyte NORMAL;
+			GLubyte VERTEX;
+			GLubyte TEXTURE;
+			StaticIndices() :
+				COLOR(GetStateIndex<GL_COLOR_ARRAY>()),
+				NORMAL(GetStateIndex<GL_NORMAL_ARRAY>()),
+				VERTEX(GetStateIndex<GL_VERTEX_ARRAY>()),
+				TEXTURE(GetStateIndex<GL_TEXTURE_COORD_ARRAY>())
+			{
+			}
+		};
+		
+		static StaticIndices INDICES;
 	};
 };
 
