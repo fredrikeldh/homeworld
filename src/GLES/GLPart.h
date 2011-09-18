@@ -32,7 +32,7 @@ private:
 			return INDEX;
 
 		// Try out the rest
-		return GetInternal<T, SEARCH_VALUE, INDEX + 1, Two, Others...>();
+		return GetInternal<SEARCH_VALUE, INDEX + 1, Two, Others...>();
 	};
 
 public:
