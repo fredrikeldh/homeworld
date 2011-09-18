@@ -1,9 +1,13 @@
 
 #include "render.h"
+#include "mutex.h"
+
+// There can be only one - Renderer
+static Mutex _renderMutex;
 
 RenderPipe::RenderPipe() :
 	GLPart(),
-	immediate(false),
+	_immediate(false),
 	mode(GL_TRIANGLES)
 {
 }
@@ -84,12 +88,12 @@ void RenderPipe::Render()
 
 void glBegin(GLenum mode)
 {
-	Get<StateSetup>.Start(mode);
+	Get<RenderPipe>.Start(mode);
 }
 
 void glEnd(void)
 {
-	Get<StateSetup>.End();
+	Get<RenderPipe>.End();
 }
 
 void RenderPipe::Start(GLenum mode)
@@ -106,19 +110,22 @@ void RenderPipe::Start(GLenum mode)
 	)
 		return;
 	
-	if( immediate )
-	{
+	_renderMutex.Lock();
+
+	if( _immediate )
+	{ // Start was already called
+		_renderMutex.Unlock();
 		SetError<GL_INVALID_OPERATION>();
 		return;
 	}
 	
-	immediate  = true;
+	_immediate = true;
 	this->mode = mode;
 }
 
 void RenderPipe::End()
 {
-	if( !immediate )
+	if( _immediate )
 	{
 		SetError<GL_INVALID_OPERATION>();
 		return;
@@ -127,7 +134,33 @@ void RenderPipe::End()
 	if( vertex_count )
 		Render(this->mode);
 	
-	immediate = false;
+	_immediate = false;
+	_renderMutex.Unlock();
+}
+
+void RenderPipe::Render(GLenum  mode, GLint  first, GLsizei  count)
+{
+	if
+	(
+		!Evaluate
+		<
+			GL_POINTS,
+			GL_LINE_STRIP,
+			GL_TRIANGLE_STRIP,
+			GL_LINES
+		>(mode)
+	)
+		return;
+	
+	if( !_renderMutex.TryLock() )
+	{
+		SetError<GL_INVALID_OPERATION>();
+		return;
+	}
+	
+	glDrawArraysEx(mode, first, count);
+	
+	_renderMutex.Unlock();
 }
 
 void glDrawArraysEx
@@ -137,4 +170,5 @@ void glDrawArraysEx
 	GLsizei  count
 )
 {
+	Get<RenderPipe>().Render(mode, first, count);
 }

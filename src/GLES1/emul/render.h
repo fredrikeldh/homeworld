@@ -9,10 +9,11 @@ namespace gles1
 	{
 	public:
 		virtual void Render();
+		void Render(GLenum  mode, GLint  first, GLsizei  count);
 		void Start(GLenum enume);
 		void End();
 	private:
-		bool immediate;
+		bool _immediate;
 		GLenum mode;
 	};
 };
