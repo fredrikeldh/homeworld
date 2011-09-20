@@ -19,18 +19,6 @@
 #include "emul/texture.h"
 #include "emul/vertex.h"
 
-/*
-#include <GLES2/emul/matrices.h>
-#include <GLES/emul/normal.h>
-
-
-#include <GLES/emul/state.h>
-#include <GLES/emul/texture.h>
-#include <GLES2/emul/texture.h>
-#include <GLES/emul/vertex.h>
-#include <GLES2/emul/vertex.h>
-*/
-
 #endif //__cplusplus
 #endif //_HW_GLES2_H_
 #endif //HW_ENABLE_GLES2
