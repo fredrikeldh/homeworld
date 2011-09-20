@@ -2,4 +2,4 @@
 # Import everything in global
 Import('*')
 
-#hwlibrary("GLES", Glob('*.cpp'))
+#hwlibrary("GLES1", Glob('*.cpp'))
