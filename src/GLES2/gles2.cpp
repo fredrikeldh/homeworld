@@ -67,20 +67,5 @@ T& Get()
 {
 	return setup.Get<T>();
 }
-/*
-#include <GLES/emul/color.c>
-#include <GLES/emul/error.c>
-#include <GLES2/emul/light.c>
-#include <GLES2/emul/line.c>
-#include <GLES2/emul/matrices.c>
-#include <GLES/emul/normal.c>
-#include <GLES2/emul/point.c>
-#include <GLES/emul/state.c>
-#include <GLES2/emul/state.c>
-#include <GLES/emul/texture.c>
-#include <GLES2/emul/texture.c>
-#include <GLES/emul/vertex.c>
-#include <GLES2/emul/vertex.c>
-*/
 
 #endif //HW_ENABLE_GLES2
