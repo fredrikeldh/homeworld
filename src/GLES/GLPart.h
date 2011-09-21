@@ -82,6 +82,26 @@ public:
 class GLPart
 {
 public:
+	GLenum GetError()
+	{
+		GLenum error = glGetError();
+		
+		if( error != GL_NO_ERROR )
+			return error;
+
+		return errno;
+	}
+	
+	template<GLenum ERROR>
+	static void SetError()
+	{
+		errno = ERROR;
+	}
+	
+	static void SetError(GLenum error)
+	{
+		errno = error;
+	}
 
 	ENABLE_MOVE_AND_COPY(GLPart)
 
@@ -115,27 +135,6 @@ protected:
 	static void Copy(const T1* source, T2* target, GLubyte size)
 	{
 		Buffer::Copy<T1, T2>(source, target, size);
-	}
-	
-	GLenum GetError()
-	{
-		GLenum error = glGetError();
-		
-		if( error != GL_NO_ERROR )
-			return error;
-
-		return errno;
-	}
-	
-	template<GLenum ERROR>
-	void SetError()
-	{
-		errno = ERROR;
-	}
-	
-	void SetError(GLenum error)
-	{
-		errno = error;
 	}
 	
 	template<GLenum ONE, GLenum...VALIDS>
