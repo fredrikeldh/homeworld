@@ -1,5 +1,4 @@
 
-#ifdef HW_ENABLE_GLES2
 #include "gles2.h"
 
 template<typename... TYPES>
@@ -68,4 +67,3 @@ T& Get()
 	return setup.Get<T>();
 }
 
-#endif //HW_ENABLE_GLES2

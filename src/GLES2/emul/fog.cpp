@@ -1,5 +1,5 @@
 
-#include "../gles2.h"
+#include "fog.h"
 
 FogSetup::FogSetup() :
 	mode(GL_EXP),

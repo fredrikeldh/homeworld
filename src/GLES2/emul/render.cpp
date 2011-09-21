@@ -3,6 +3,7 @@
 #include "light.h"
 #include <cstring>
 #include <fstream>
+
 /*
 const mediump int gl_MaxVertexAttribs               8
 const mediump int gl_MaxVertexUniformVectors      128
@@ -12,6 +13,7 @@ const mediump int gl_MaxCombinedTextureImageUnits   8
 const mediump int gl_MaxTextureImageUnits           8
 const mediump int gl_MaxFragmentUniformVectors     16
 const mediump int gl_MaxDrawBuffers                 1
+
 */
 
 RenderPipe::RenderPipe():

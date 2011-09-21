@@ -1,8 +1,6 @@
 #ifndef _HW_GLES2_DECLARATION_H_
 #define _HW_GLES2_DECLARATION_H_
 
-#include "../../GLES1/emul/declarations.h"
-
 #ifdef __cplusplus
 extern "C"
 {
@@ -40,13 +38,14 @@ void glDrawPixels(
 void glEnableClientState(GLenum cap);
 
 void glFogf(
-	GLenum  	pname,
+	GLenum   	pname,
  	GLfloat  	param
 );
 
 void glFogfv(
-	GLenum  	pname,
- 	GLfloat*    params
+	GLenum    pname,
+	GLfloat*  params
+);
 
 void glFrustumf(
 	GLfloat  left,

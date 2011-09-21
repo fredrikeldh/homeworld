@@ -3,8 +3,6 @@
 // Add everything that's not already defined by GLES emulation
 //
 
-#include "../../GLES1/emul/defines.h"
-
 #define GL_FRONT           0x0404
 #define GL_BACK            0x0405
 #define GL_FRONT_AND_BACK  0x0408
