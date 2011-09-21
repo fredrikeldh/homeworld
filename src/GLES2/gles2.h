@@ -1,4 +1,3 @@
-#ifdef HW_ENABLE_GLES2
 #ifndef _HW_GLES2_H_
 #define _HW_GLES2_H_
 
@@ -21,4 +20,4 @@
 
 #endif //__cplusplus
 #endif //_HW_GLES2_H_
-#endif //HW_ENABLE_GLES2
+

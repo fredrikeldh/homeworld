@@ -76,7 +76,7 @@ void rgluPerspective(GLfloat fovy, GLfloat aspect, GLfloat zNear, GLfloat zFar)
     xmax = ymax * aspect;
     xmin = -xmax;
 
-#if defined HW_ENABLE_GLES || defined HW_ENABLE_GLES2
+#ifdef HW_USE_GLES
     glFrustumf(xmin, xmax, ymin, ymax, zNear, zFar);
 #else
     glFrustum(xmin, xmax, ymin, ymax, zNear, zFar);
@@ -208,7 +208,7 @@ void rgluLookAt(GLfloat eyex, GLfloat eyey, GLfloat eyez,
 
 void rgluOrtho2D(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top)
 {
-#if defined HW_ENABLE_GLES || defined HW_ENABLE_GLES2
+#ifdef HW_USE_GLES
     glOrthof(left, right, bottom, top, -1.0f, 1.0f);
 #else
     glOrtho(left, right, bottom, top, -1.0, 1.0);

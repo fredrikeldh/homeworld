@@ -1,5 +1,4 @@
 
-#ifdef HW_ENABLE_GLES
 #ifndef _HW_GLES_H_
 #define _HW_GLES_H_
 
@@ -14,4 +13,4 @@
 #include <GLES/emul/vertex.h>
 #endif //__cplusplus
 #endif //_HW_GLES_H_
-#endif //HW_ENABLE_GLES
+

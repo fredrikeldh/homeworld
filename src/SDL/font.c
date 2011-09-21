@@ -1069,7 +1069,7 @@ sdword fontPrintN(sdword x, sdword y, color c, char *string, sdword maxCharacter
         return TRUE;
     }
 
-#if defined(HW_ENABLE_GLES) || defined(HW_ENABLE_GLES2)
+#ifdef HW_USE_GLES
     fprintf(stderr, "failed to display string: %s\n", string);
 #else
 #if FONT_MANUAL_CLIP

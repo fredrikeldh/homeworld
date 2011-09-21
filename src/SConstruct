@@ -2,5 +2,18 @@
 # Import everything in global
 Import('*')
 
-descend(['llvm', 'GLES2', 'Missions', 'Game', 'ThirdParty', 'SDL', 'Ships'])
+modules = ['llvm', 'Missions', 'Game', 'ThirdParty', 'SDL', 'Ships']
+defines = env["CPPDEFINES"]
+
+if "HW_ENABLE_GLES1" in defines:
+	modules.insert(0, "GLES1")
+	env.Append(CPPDEFINES=["HW_USE_GLES", "HW_USE_GLES1"])
+elif "HW_ENABLE_GLES2" in defines:
+	modules.insert(0, "GLES2")
+	env.Append(CPPDEFINES=["HW_USE_GLES", "HW_USE_GLES2"])
+elif "HW_ENABLE_GL" in defines:
+	modules.insert(0, "GL")
+	env.Append(CPPDEFINES=["HW_USE_GL"])
+
+descend(modules)
 

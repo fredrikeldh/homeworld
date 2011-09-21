@@ -602,7 +602,7 @@ void partBindAlternate(trhandle tex)
         return;
     }
 
-#if !defined HW_ENABLE_GLES && !defined HW_ENABLE_GLES2
+#ifdef HW_USE_GL
     //check alternates
     for (i = 0; i < alternateIndex; i++)
     {
@@ -644,7 +644,7 @@ void partBindAlternate(trhandle tex)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
 
     memFree(data);
-#endif
+#endif //HW_USE_GL
 }
 
 /*-----------------------------------------------------------------------------

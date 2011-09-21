@@ -1,10 +1,20 @@
 #ifndef _HW_GLES1_INCLUDE_H_
 #define _HW_GLES1_INCLUDE_H_
 
-#include "../glinclude.h"
 
-#include "defines.h"
-#include "declarations.h"
 #include "../../GLES/include.h"
+
+#ifndef _HW_NAMESPACE_
+#define _HW_NAMESPACE_
+#ifdef __cplusplus
+// Need to declare gles1 before using it
+namespace gles1
+{
+	int dummy;
+}
+
+using namespace gles1;
+#endif //__cplusplus
+#endif //_HW_NAMESPACE_
 
 #endif //_HW_GLES1_INCLUDE_H_

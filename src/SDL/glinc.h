@@ -1,28 +1,9 @@
 #ifndef ___GLINC_H
 #define ___GLINC_H
 
-#ifdef HW_ENABLE_GLES
-
-#include "../GLES/gles.h"
-
-
-
-
-
-
-
-static GLushort gles_quad_indices[4] = { 1, 2, 0, 3 };
-
-
-
-
-
-#elif defined HW_ENABLE_GLES2
-
-#include "../GLES2/gles2.h"
-
-#else
-
+#ifdef HW_USE_GLES
+#include "../GLES/glinclude.h"
+#elif defined HW_USE_GL
 #include <SDL_opengl.h>
 
 extern PFNGLBINDBUFFERPROC glBindBuffer;
@@ -33,19 +14,19 @@ extern PFNGLBUFFERSUBDATAPROC glBufferSubData;
 
 #endif
 
-#ifdef HW_ENABLE_GLES2
+//
+// Make sure defines are present
+//
 
 #ifndef APIENTRY
 #define APIENTRY
 #endif
+
 #ifndef APIENTRYP
 #define APIENTRYP APIENTRY*
 #endif
 
 typedef void (APIENTRYP PFNGLDRAWTEXIOESPROC) (GLint x, GLint y, GLint z, GLint width, GLint height);
-#else
-typedef void (APIENTRYP PFNGLDRAWTEXIOESPROC) (GLint x, GLint y, GLint z, GLint width, GLint height);
-#endif //HW_ENABLE_GLES2
 
 extern PFNGLDRAWTEXIOESPROC glDrawTexiOES;
 
@@ -55,4 +36,4 @@ extern PFNGLDRAWTEXIOESPROC glDrawTexiOES;
 
 int glCheckExtension(const char *ext);
 
-#endif
+#endif //___GLINC_H

@@ -1,33 +1,27 @@
 #ifndef _HW_GLES_INCLUDE_H_
 #define _HW_GLES_INCLUDE_H_
 
-#if defined HW_ENABLE_GLES2
-	#include "../GLES2/glinclude.h"
-#else
-	#include "../GLES1/glinclude.h"
-#endif //HW_ENABLE_GLES2
-
 #ifndef N_ELEMENTS
 	#define N_ELEMENTS(X) (sizeof(X)/sizeof(*(X)))
 #endif //N_ELEMENTS
 
 #if defined __cplusplus
 
-#if defined HW_ENABLE_GLES2
-namespace gles2
-{
-	class IRenderState;
-}
-// use define since typedef does not work as a friend even with gcc 4.6!
-#define RENDER_PROCESSOR gles2::IRenderState
-#else
+#ifdef HW_USE_GLES1
 namespace gles1
 {
 	class IRenderState;
 }
 // use define since typedef does not work as a friend even with gcc 4.6!
 #define RENDER_PROCESSOR gles1::IRenderState
-#endif //HW_ENABLE_GLES2
+#elif defined HW_USE_GLES2
+namespace gles2
+{
+	class IRenderState;
+}
+// use define since typedef does not work as a friend even with gcc 4.6!
+#define RENDER_PROCESSOR gles2::IRenderState
+#endif
 
 #ifndef nullptr
 const                        // this is a const object...
@@ -80,6 +74,10 @@ static T clamp(T Value, T Min, T Max)
 
 template<typename T>
 static T& Get();
+
+#include "glinclude.h"
+#include "GLPart.h"
+
 #endif //__cplusplus
 #endif //_HW_GLES_INCLUDE_H_
 

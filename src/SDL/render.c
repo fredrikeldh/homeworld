@@ -76,7 +76,7 @@
 #include "Universe.h"
 #include "UnivUpdate.h"
 #include "utility.h"
-#if defined(HW_ENABLE_GLES) || defined(HW_ENABLE_GLES2)
+#ifdef HW_USE_GLES
 #include "SDL_syswm.h"
 #endif
 
@@ -140,7 +140,7 @@ renderfunction rndMainViewRender = rndMainViewRenderFunction;
 static sdword rndHint = 0;
 #endif
 
-#if defined(HW_ENABLE_GLES) || defined(HW_ENABLE_GLES2)
+#ifdef HW_USE_GLES
 static EGLDisplay *egl_display = EGL_NO_DISPLAY;
 static EGLSurface egl_surface = EGL_NO_SURFACE;
 static EGLContext egl_context = EGL_NO_CONTEXT;
@@ -856,7 +856,7 @@ bool setupPixelFormat()
 	static Uint32 lastDepth  = 0;
 	static bool   lastFull   = FALSE;
 	int FSAA = 0; //os_config_read_uint( NULL, "FSAA", 1 )
-#if defined(HW_ENABLE_GLES) || defined(HW_ENABLE_GLES2)
+#ifdef HW_USE_GLES
     SDL_SysWMinfo info;
     EGLint num_config = 1;
     EGLint attribs[] = {
@@ -909,7 +909,7 @@ bool setupPixelFormat()
 		MAIN_WindowDepth, flags))
 		return FALSE;
 
-#if defined(HW_ENABLE_GLES) || defined(HW_ENABLE_GLES2)
+#ifdef HW_USE_GLES
     SDL_VERSION(&info.version);
     if (SDL_GetWMInfo(&info) != 1) {
         fprintf(stderr, "EGL cannot use this SDL version\n");
@@ -956,7 +956,7 @@ bool setupPixelFormat()
     }
     egl_context = new_context;
     egl_surface = new_surface;
-#else
+#elif defined HW_USE_GL
 	if ( FSAA ) {
 	    SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 1 );
 	    SDL_GL_SetAttribute( SDL_GL_MULTISAMPLESAMPLES, FSAA );
@@ -991,9 +991,9 @@ bool setupPixelFormat()
 	lastDepth  = MAIN_WindowDepth;
 	lastFull   = fullScreen;
 
-#if defined(HW_ENABLE_GLES) || defined(HW_ENABLE_GLES2)
+#ifdef HW_USE_GLES
     glDrawTexiOES = eglGetProcAddress("glDrawTexiOES");
-#else
+#elif defined HW_USE_GL
     glBindBuffer = SDL_GL_GetProcAddress("glBindBuffer");
     glDeleteBuffers = SDL_GL_GetProcAddress("glDeleteBuffers");
     glGenBuffers = SDL_GL_GetProcAddress("glGenBuffers");
@@ -1012,10 +1012,10 @@ bool setupPixelFormat()
 int glCheckExtension(const char *ext) {
     bool gotext = gl_extensions ? strstr(gl_extensions, ext) != NULL : gl_extensions;
     if (strcmp(ext, "GL_ARB_vertex_buffer_object") == 0) {
-#if defined(HW_ENABLE_GLES) || defined(HW_ENABLE_GLES2)
+#ifdef HW_USE_GLES
         /* part of the standard in GLES */
         return 1;
-#else
+#elif HW_USE_GL
         return gotext && glBindBuffer && glDeleteBuffers && glGenBuffers && glBufferData && glBufferSubData;
 #endif
     } else if (strcmp(ext, "GL_OES_draw_texture") == 0) {
@@ -1065,7 +1065,7 @@ sdword rndSmallInit(rndinitdata* initData, bool GL)
     {
         /* Kill the window we created. */
         flags = SDL_WasInit(SDL_INIT_EVERYTHING);
-#if defined(HW_ENABLE_GLES) || defined(HW_ENABLE_GLES2)
+#ifdef HW_USE_GLES
         eglMakeCurrent(egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
         eglDestroyContext(egl_display, egl_context);
         egl_config = EGL_NO_CONTEXT;
@@ -1073,7 +1073,7 @@ sdword rndSmallInit(rndinitdata* initData, bool GL)
         egl_surface = EGL_NO_SURFACE;
         eglTerminate(egl_display);
         egl_display = EGL_NO_DISPLAY;
-#endif
+#endif //HW_USE_GLES
         if (flags & ~SDL_INIT_VIDEO)
             SDL_QuitSubSystem(SDL_INIT_VIDEO);
         else
@@ -1116,7 +1116,7 @@ sdword rndInit(rndinitdata *initData)
     dbgMessagef("rndInit: OpenGL Extensions :%s", glGetString(GL_EXTENSIONS));
 #endif
     rndSetClearColor(colRGBA(0,0,0,255));
-#if defined(HW_ENABLE_GLES) || defined(HW_ENABLE_GLES2)
+#ifdef HW_USE_GLES
     glClearDepthf( 1.0f );
 #else
     glClearDepth( 1.0 );
@@ -1183,7 +1183,7 @@ void rndClose(void)
         else
             memFree(stararray);
     }
-#if defined(HW_ENABLE_GLES) || defined(HW_ENABLE_GLES2)
+#ifdef HW_USE_GLES
     eglMakeCurrent(egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     eglDestroyContext(egl_display, egl_context);
     egl_config = EGL_NO_CONTEXT;
@@ -4667,9 +4667,9 @@ void rndFlush(void)
 {
     glFlush();
     primErrorMessagePrint();
-#if defined(HW_ENABLE_GLES) || defined(HW_ENABLE_GLES2)
+#ifdef HW_USE_GLES
     eglSwapBuffers(egl_display, egl_surface);
-#else
+#elif defined HW_USE_GL
     SDL_GL_SwapBuffers();
 #endif
     SDL_Delay(1);
