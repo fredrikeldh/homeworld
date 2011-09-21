@@ -297,6 +297,44 @@ void glRotatef(
 	glMultMatrixf(matrix);
 }
 
+void glFrustumf(
+	GLfloat  left,
+	GLfloat  right,
+	GLfloat  bottom,
+	GLfloat  top,
+	GLfloat  nearVal,
+	GLfloat  farVal
+)
+{
+	if
+	(
+		farVal < 0
+		|| nearVal < 0
+		|| left == right
+		|| bottom == top
+		|| farVal == nearVal
+	)
+	{
+		GLPart::SetError<GL_INVALID_VALUE>();
+		return;
+	}
+
+	const float A = (right + left) / (right - left);
+	const float B = (top + bottom) / (top - bottom);
+	const float C = -(farVal + nearVal) / (farVal - nearVal);
+	const float D = -2 * farVal * nearVal / (farVal - nearVal);
+
+	const glFloat matrix[] =
+	{
+		2 * ⁢nearVal / (right - left), 0, A, 0,
+		0, 2  * nearVal / (top - bottom), B, 0, 
+		0, 0, C, D, 
+		0, 0, -1, 0
+	};
+	
+	glMultMatrixf(matrix);
+}
+
 void MatrixSetup::Push()
 {
 	// Save reference to previous stack entry

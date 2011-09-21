@@ -47,6 +47,14 @@ void glFogf(
 void glFogfv(
 	GLenum  	pname,
  	GLfloat*    params
+
+void glFrustumf(
+	GLfloat  left,
+	GLfloat  right,
+	GLfloat  bottom,
+	GLfloat  top,
+	GLfloat  nearVal,
+	GLfloat  farVal
 );
 
 void glGetFloatv(GLenum pname, GLfloat* params);
