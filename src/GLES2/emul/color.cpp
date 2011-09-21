@@ -63,7 +63,20 @@ void ColorSetup::SetPointer(
 		return;
 	}
 
-	if( !Evaluate(type) )
+	if
+	(
+		!Evaluate
+		<
+			GL_BYTE,
+			GL_UNSIGNED_BYTE,
+			GL_SHORT,
+			GL_UNSIGNED_SHORT,
+			GL_INT,
+			GL_UNSIGNED_INT,
+			GL_FLOAT,
+			GL_DOUBLE
+		>(type)
+	)
 		return;
 
 	this->size = size;

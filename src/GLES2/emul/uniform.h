@@ -11,7 +11,7 @@
 #include <string>
 
 template<typename T, GLubyte NUMBER>
-class BaseUniform : public GLPart<>, public IUniform<T, NUMBER>
+class BaseUniform : public GLPart, public IUniform<T, NUMBER>
 {
 protected:
 	std::vector<T> _array;
@@ -38,7 +38,7 @@ public:
 #if HAS_MOVE_ASSIGN_BUG
 	BaseUniform& operator=(BaseUniform&& other)
 	{
-		GLPart<>::operator=(std::move(other));
+		GLPart::operator=(std::move(other));
 		IUniform<T, NUMBER>::operator=(std::move(other));
 		_array = std::move(other._array);
 		return *this;

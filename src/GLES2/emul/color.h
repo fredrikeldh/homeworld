@@ -4,15 +4,7 @@
 
 #include "include.h"
 
-class ColorSetup : public GLPart<
-	GL_BYTE,
-	GL_UNSIGNED_BYTE,
-	GL_SHORT,
-	GL_UNSIGNED_SHORT,
-	GL_INT,
-	GL_UNSIGNED_INT,
-	GL_FLOAT,
-	GL_DOUBLE>
+class ColorSetup : public GLPart
 {
 public:
 	ColorSetup();

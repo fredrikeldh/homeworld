@@ -6,7 +6,7 @@
 
 namespace gles2
 {
-	class StateSetup : public GLPart<>, public IRenderComponent
+	class StateSetup : public GLPart, public IRenderComponent
 	{
 	public:
 		StateSetup();

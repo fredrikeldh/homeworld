@@ -1,7 +1,7 @@
 
 namespace gles1
 {
-	class NormalSetup : public GLPart<>
+	class NormalSetup : public GLPart
 	{
 	public:
 		NormalSetup();

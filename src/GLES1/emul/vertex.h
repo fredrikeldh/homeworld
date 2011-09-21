@@ -6,7 +6,7 @@
 
 namespace gles1
 {
-	class VertexSetup : public GLPart<>
+	class VertexSetup : public GLPart
 	{
 	public:
 		VertexSetup();

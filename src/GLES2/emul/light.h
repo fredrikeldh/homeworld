@@ -6,7 +6,7 @@
 #include "../../GLES/render_component.h"
 #include "uniform.h"
 
-class LightSetup : public GLPart<>, public IRenderComponent
+class LightSetup : public GLPart, public IRenderComponent
 {
 public:
 	LightSetup();
@@ -28,7 +28,7 @@ public:
 	virtual void ApplyTo(RENDER_PROCESSOR* renderer);
 	
 protected:
-	class Light : public GLPart<>, public IRenderComponent
+	class Light : public GLPart, public IRenderComponent
 	{
 	public:
 		Light(GLubyte index);

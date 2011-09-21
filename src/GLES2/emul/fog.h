@@ -4,14 +4,7 @@
 
 #include "include.h"
 
-class FogSetup : public GLPart<
-	GL_FOG_MODE,
-	GL_FOG_DENSITY,
-	GL_FOG_START,
-	GL_FOG_END,
-	GL_FOG_INDEX,
-	GL_FOG_COLOR,
-	GL_FOG_COORD_SRC>
+class FogSetup : public GLPart
 {
 public:
 	FogSetup();

@@ -6,8 +6,7 @@
 
 namespace gles1
 {
-	class TextureSetup : public GLPart<
-	>
+	class TextureSetup : public GLPart
 	{
 	public:
 		TextureSetup();

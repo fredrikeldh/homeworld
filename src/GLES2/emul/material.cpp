@@ -61,7 +61,19 @@ void MaterialSetup::Set(
 	if( GetError() != GL_NO_ERROR )
 		return;
 
-	if( !Evaluate(pname) )
+	if
+	(
+		!Evaluate
+		<
+			GL_AMBIENT,
+			GL_DIFFUSE,
+			GL_SPECULAR,
+			GL_EMISSION,
+			GL_SHININESS,
+			GL_AMBIENT_AND_DIFFUSE,
+			GL_COLOR_INDEX
+		>(pname)
+	)
 		return;
 	
 	switch( pname )
@@ -128,3 +140,4 @@ void glMaterialfv(
 {
 	Get<MaterialSetup>().Set(face, pname, params);
 }
+

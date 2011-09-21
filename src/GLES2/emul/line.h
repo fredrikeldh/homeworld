@@ -3,7 +3,7 @@
 
 #include "include.h"
 
-class LineSetup : public GLPart<>
+class LineSetup : public GLPart
 {
 public:
 	LineSetup();

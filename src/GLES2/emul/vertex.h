@@ -20,12 +20,7 @@ namespace gles2
 		);
 	private:
 	
-		class Pointer : public GLPart<
-			GL_SHORT,
-			GL_INT,
-			GL_FLOAT,
-			GL_DOUBLE
-		>
+		class Pointer : public GLPart
 		{
 		public:
 			Pointer();

@@ -39,7 +39,16 @@ void VertexSetup::Pointer::Set(
 		return;
 	}
 	
-	if( !Evaluate(type) )
+	if
+	(
+		!Evaluate
+		<
+			GL_SHORT,
+			GL_INT,
+			GL_FLOAT,
+			GL_DOUBLE
+		>(type)
+	)
 		return;
 	
 	this->size = size;

@@ -47,7 +47,16 @@ void TextureSetup::Pointer::Set(
 		return;
 	}
 	
-	if( !Evaluate(type) )
+	if
+	(
+		!Evaluate
+		<
+			GL_SHORT,
+			GL_INT,
+			GL_FLOAT,
+			GL_DOUBLE
+		>(type)
+	)
 		return;
 
 	this->size = size;
@@ -67,7 +76,15 @@ void TextureSetup::Environment::Set(
 	GLint param
 )
 {
-	if( !Evaluate(target) )
+	if
+	(
+		!Evaluate
+		<
+			GL_TEXTURE_ENV,
+			GL_TEXTURE_FILTER_CONTROL,
+			GL_POINT_SPRITE
+		>(target)
+	)
 		return;
 		
 	if( !Evaluate<

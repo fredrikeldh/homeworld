@@ -3,8 +3,7 @@
 
 namespace gles2
 {
-	class RasterSetup : public GLPart<
-	>
+	class RasterSetup : public GLPart
 	{
 	public:
 		RasterSetup();

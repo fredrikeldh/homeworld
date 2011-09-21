@@ -4,8 +4,7 @@
 
 #include "include.h"
 
-class PointSetup : public GLPart<
->
+class PointSetup : public GLPart
 {
 public:
 	PointSetup();

@@ -7,7 +7,7 @@
 
 namespace gles2
 {
-	class MatrixSetup : public GLPart<>
+	class MatrixSetup : public GLPart
 	{
 	public:
 #define MATRIX_SIZE 16

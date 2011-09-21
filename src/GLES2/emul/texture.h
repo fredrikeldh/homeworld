@@ -31,12 +31,7 @@ namespace gles2
 			GLint param
 		);
 	
-		class Pointer : public GLPart<
-			GL_SHORT,
-			GL_INT,
-			GL_FLOAT,
-			GL_DOUBLE
-		>
+		class Pointer : public GLPart
 		{
 		public:
 			Pointer();
@@ -57,11 +52,7 @@ namespace gles2
 			const GLvoid*  pointer;
 		};
 	
-		class Environment : public GLPart<
-			GL_TEXTURE_ENV,
-			GL_TEXTURE_FILTER_CONTROL,
-			GL_POINT_SPRITE
-		>
+		class Environment : public GLPart
 		{
 		public:
 			Environment();

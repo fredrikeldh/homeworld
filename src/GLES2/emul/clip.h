@@ -6,7 +6,7 @@
 
 namespace gles2
 {
-	class ClipSetup : public GLPart<>
+	class ClipSetup : public GLPart
 	{
 	#define MAX_PLANE_COUNT 6
 	public:

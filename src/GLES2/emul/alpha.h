@@ -3,7 +3,7 @@
 
 #include "include.h"
 
-class AlphaSetup : public GLPart<>
+class AlphaSetup : public GLPart
 {
 private:
 	AlphaSetup();

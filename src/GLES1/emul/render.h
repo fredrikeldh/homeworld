@@ -5,7 +5,7 @@
 
 namespace gles1
 {
-	class RenderPipe : public GLPart<>
+	class RenderPipe : public GLPart
 	{
 	public:
 		virtual void Render();

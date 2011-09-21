@@ -94,3 +94,14 @@ void glFogf(
 	const GLfloat value = param;
 	glFogfv(pname, &value);
 }
+
+/*
+<
+	GL_FOG_MODE,
+	GL_FOG_DENSITY,
+	GL_FOG_START,
+	GL_FOG_END,
+	GL_FOG_INDEX,
+	GL_FOG_COLOR,
+	GL_FOG_COORD_SRC>
+*/

@@ -4,14 +4,7 @@
 
 #include "include.h"
 
-class MaterialSetup : public GLPart<
-	GL_AMBIENT,
-	GL_DIFFUSE,
-	GL_SPECULAR,
-	GL_EMISSION,
-	GL_SHININESS,
-	GL_AMBIENT_AND_DIFFUSE,
-	GL_COLOR_INDEX>
+class MaterialSetup : public GLPart
 {
 public:
 	template<typename T>

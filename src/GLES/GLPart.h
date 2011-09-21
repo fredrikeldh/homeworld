@@ -79,7 +79,6 @@ public:
 	}
 };
 
-template<GLenum... ValidEnums>
 class GLPart
 {
 public:
@@ -138,23 +137,6 @@ protected:
 	{
 		errno = error;
 	}
-	
-	short GetIndex(GLenum value)
-	{
-		return IndexSlow<GLenum>::Get<ValidEnums...>(value);
-	}
-	
-	bool Evaluate(GLenum value)
-	{
-		short index = GetIndex(value);
-
-		bool isValid = (index >= 0);
-
-		if( !isValid )
-			SetError(GL_INVALID_ENUM);
-	
-		return isValid;
-	};
 	
 	template<GLenum ONE, GLenum...VALIDS>
 	bool Evaluate(GLenum value)
