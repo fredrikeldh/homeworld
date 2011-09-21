@@ -894,7 +894,7 @@ bool setupPixelFormat()
     /* Create OpenGL window. */
     flags = SDL_SWSURFACE;
     
-#if !defined(HW_ENABLE_GLES) && !defined(HW_ENABLE_GLES2)
+#ifdef HW_USE_GL
     flags |= SDL_OPENGL;
 
     /* Set attributes. */
@@ -902,7 +902,7 @@ bool setupPixelFormat()
     SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE,   16);
     SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 0);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-#endif
+#endif //HW_USE_GL
 
     if (/* main */ fullScreen) flags |= SDL_FULLSCREEN;
 	if (!SDL_SetVideoMode(MAIN_WindowWidth, MAIN_WindowHeight,
@@ -1029,13 +1029,13 @@ bool setupPalette()
 {
 	int pix_size;
 
-#if !defined(HW_ENABLE_GLES) && !defined(HW_ENABLE_GLES2)
+#ifdef HW_USE_GL
 	if (SDL_GL_GetAttribute(SDL_GL_BUFFER_SIZE, &pix_size) == -1)
 	{
 #endif
 		/* Hoping it will work... */
 		pix_size = MAIN_WindowDepth;
-#if !defined(HW_ENABLE_GLES) && !defined(HW_ENABLE_GLES2)
+#ifdef HW_USE_GL
 	}
 #endif
 	if (pix_size >= 15)
