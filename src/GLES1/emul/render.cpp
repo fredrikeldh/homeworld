@@ -1,99 +1,196 @@
 
 #include "render.h"
-#include "mutex.h"
+#include <mutex>
 
 // There can be only one - Renderer
-static Mutex _renderMutex;
+static std::recursive_mutex _renderMutex;
 
 RenderPipe::RenderPipe() :
 	GLPart(),
 	_immediate(false),
-	mode(GL_TRIANGLES)
+	_mode(GL_TRIANGLES)
 {
 }
 
+template<GLenum STATE>
+class ClientState
+{
+private:
+	bool _enabled;
+public:
+	bool IsEnabled() const
+	{
+		return _enabled;
+	}
+protected:
+	ClientState(bool enabled):
+		_enabled(enabled)
+	{
+		if( IsEnabled() )
+			glEnableClientState(STATE);
+	}
+public:
+	~ClientState()
+	{
+		if( IsEnabled() )
+			glDisableClientState(STATE);
+	}
+};
+
+bool RenderPipe::is_texture_enabled(const VertexSetup& vertexData) const
+{
+	return vertexData._texCoords.size() && _mode >= GL_TRIANGLES;
+}
+
+bool RenderPipe::is_color_enabled(const VertexSetup& vertexData) const
+{
+	return vertexData._colors.size();
+}
+
+bool RenderPipe::is_normal_enabled(const VertexSetup& vertexData) const
+{
+	return vertexData._normals.size() && _mode >= GL_TRIANGLES;
+}
+
+class VertexClientState : public ClientState<GL_VERTEX_ARRAY>
+{
+public:
+	VertexClientState(const VertexSetup&, const RenderPipe&) :
+		ClientState<GL_VERTEX_ARRAY>(true)
+	{
+	}
+};
+
+class TextureClientState : public ClientState<GL_TEXTURE_COORD_ARRAY>
+{
+public:
+	TextureClientState(const VertexSetup& vertexData, const RenderPipe& renderer) :
+		ClientState<GL_TEXTURE_COORD_ARRAY>(renderer.is_texture_enabled(vertexData))
+	{
+	}
+};
+
+class ColorClientState : public ClientState<GL_COLOR_ARRAY>
+{
+public:
+	ColorClientState(const VertexSetup& vertexData, const RenderPipe& renderer) :
+		ClientState<GL_COLOR_ARRAY>(renderer.is_color_enabled(vertexData))
+	{
+	}
+};
+
+class NormalClientState : public ClientState<GL_NORMAL_ARRAY>
+{
+public:
+	NormalClientState(const VertexSetup& vertexData, const RenderPipe& renderer) :
+		ClientState<GL_NORMAL_ARRAY>(renderer.is_normal_enabled(vertexData))
+	{
+	}
+};
+
+static const GLushort gles_quad_indices[4] = { 1, 2, 0, 3 };
+
 void RenderPipe::Render()
 {
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(gles_vertex_dimensions, GL_FLOAT, 0, gles_vertex);
+	VertexSetup& vertexData = Get<VertexSetup>();
 	
+	VertexSetup::Array<GLfloat, 16384>& vertices = vertexData._vertices;
+	unsigned int vertex_dimensions = vertexData._vertex_dimensions;
 	
-    if (gles_texcoord_count && gles_mode >= GL_TRIANGLES) {
-        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
-        glTexCoordPointer(2, GL_FLOAT, 0, gles_texcoord);
-    }
-    if (gles_color_count) {
-        glEnableClientState(GL_COLOR_ARRAY);
-        glColorPointer(4, GL_FLOAT, 0, gles_colors);
-    }
-    if (gles_normal_count && gles_mode >= GL_TRIANGLES) {
-        glEnableClientState(GL_NORMAL_ARRAY);
-        glNormalPointer(GL_FLOAT, 0, gles_normals);
-    }
-    switch (gles_mode) {
-        case GL_POINTS:
-        case GL_LINES:
-        case GL_LINE_LOOP:
-        case GL_LINE_STRIP:
-        case GL_TRIANGLES:
-        case GL_TRIANGLE_STRIP:
-        case GL_TRIANGLE_FAN:
-            glDrawArraysEx(gles_mode, 0, gles_vertex_count / gles_vertex_dimensions);
-            break;
-        case GL_QUADS:
-            glDrawElements(GL_TRIANGLE_STRIP, gles_vertex_count / gles_vertex_dimensions, GL_UNSIGNED_SHORT, gles_quad_indices);
-            break;
-        case GL_POLYGON: {
-            unsigned int i;
-            GLfloat center_x = 0.0f, center_y = 0.0f;
-            gles_vertex[gles_vertex_count++] = gles_vertex[0];
-            gles_vertex[gles_vertex_count++] = gles_vertex[1];
-            GLushort poly_indices[(gles_vertex_count / gles_vertex_dimensions) + 1];
-            poly_indices[0] = gles_vertex_count / gles_vertex_dimensions;
-            for (i = 0; i < gles_vertex_count / gles_vertex_dimensions; i++) {
-                poly_indices[i + 1] = i;
-                center_x += gles_vertex[i * 2] / (gles_vertex_count / gles_vertex_dimensions);
-                center_y += gles_vertex[(i * 2) + 1] / (gles_vertex_count / gles_vertex_dimensions);
-            }
-            gles_vertex[gles_vertex_count++] = center_x;
-            gles_vertex[gles_vertex_count++] = center_y;
-            gles_vertex_data();
-            glDrawElements(GL_TRIANGLE_FAN, gles_vertex_count / gles_vertex_dimensions, GL_UNSIGNED_SHORT, poly_indices);
-            break;
-        }
-        default:
-            printf("gles_render_current: unsupported mode: 0x%x\n", gles_mode);
-            break;
-    }
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-    glDisableClientState(GL_COLOR_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-    gles_vertex_count = 0;
-    gles_texcoord_count = 0;
-    if (gles_color_count) {
-        gles_colors[0] = gles_colors[gles_color_count - 4];
-        gles_colors[1] = gles_colors[gles_color_count - 3];
-        gles_colors[2] = gles_colors[gles_color_count - 2];
-        gles_colors[3] = gles_colors[gles_color_count - 1];
-    }
-    gles_color_count = 0;
-    if (gles_normal_count) {
-        gles_normals[0] = gles_normals[gles_normal_count - 3];
-        gles_normals[1] = gles_normals[gles_normal_count - 2];
-        gles_normals[2] = gles_normals[gles_normal_count - 1];
-    }
-    gles_normal_count = 0;
+	GLenum& mode = _mode;
+	
+	VertexClientState vertexState(vertexData, *this);
+	glVertexPointer(vertex_dimensions, GL_FLOAT, 0, vertices);
+	
+	TextureClientState textureState(vertexData, *this);
+	if( textureState.IsEnabled() )
+		glTexCoordPointer(2, GL_FLOAT, 0, vertexData._texCoords);
+	
+	VertexSetup::Array<GLfloat, 16384>& colors = vertexData._colors;
+	ColorClientState colorState(vertexData, *this);
+	if( colorState.IsEnabled() )
+		glColorPointer(4, GL_FLOAT, 0, colors);
+	
+	VertexSetup::Array<GLfloat, 16384>& normals = vertexData._normals;
+	NormalClientState normalState(vertexData, *this);
+	if( normalState.IsEnabled() )
+		glNormalPointer(GL_FLOAT, 0, normals);
+
+	GLuint vertex_count = vertices.size();
+
+	switch( mode )
+	{
+		case GL_POINTS:
+		case GL_LINES:
+		case GL_LINE_LOOP:
+		case GL_LINE_STRIP:
+		case GL_TRIANGLES:
+		case GL_TRIANGLE_STRIP:
+		case GL_TRIANGLE_FAN:
+			glDrawArraysEx(mode, 0, vertex_count / vertex_dimensions);
+			break;
+		case GL_QUADS:
+			glDrawElements(GL_TRIANGLE_STRIP, vertex_count / vertex_dimensions, GL_UNSIGNED_SHORT, gles_quad_indices);
+			break;
+		case GL_POLYGON:
+		{
+			GLfloat center_x = 0.0f, center_y = 0.0f;
+			vertices[vertex_count++] = vertices[0];
+			vertices[vertex_count++] = vertices[1];
+
+			GLushort poly_indices[(vertex_count / vertex_dimensions) + 1];
+			poly_indices[0] = vertex_count / vertex_dimensions;
+			
+			for( GLuint i = 0; i < vertex_count / vertex_dimensions; i++ )
+			{
+				poly_indices[i + 1] = i;
+				center_x += vertices[i * 2] / (vertex_count / vertex_dimensions);
+				center_y += vertices[(i * 2) + 1] / (vertex_count / vertex_dimensions);
+			}
+
+			vertices[vertex_count++] = center_x;
+			vertices[vertex_count++] = center_y;
+			glDrawElements(GL_TRIANGLE_FAN, vertex_count / vertex_dimensions, GL_UNSIGNED_SHORT, poly_indices);
+			break;
+		}
+		default:
+			printf("gles_render_current: unsupported mode: 0x%x\n", mode);
+			break;
+	}
+
+	vertices.clear();
+	vertexData._texCoords.clear();
+	
+	unsigned int color_count = vertexData._colors.size();
+	
+	if( color_count )
+	{
+		colors[0] = colors[color_count - 4];
+		colors[1] = colors[color_count - 3];
+		colors[2] = colors[color_count - 2];
+		colors[3] = colors[color_count - 1];
+		vertexData._colors.clear();
+	}
+	
+	unsigned int normal_count = vertexData._normals.size();
+
+	if( normal_count )
+	{
+		normals[0] = normals[normal_count - 3];
+		normals[1] = normals[normal_count - 2];
+		normals[2] = normals[normal_count - 1];
+		vertexData._normals.clear();
+	}
 }
 
 void glBegin(GLenum mode)
 {
-	Get<RenderPipe>.Start(mode);
+	Get<RenderPipe>().Start(mode);
 }
 
 void glEnd(void)
 {
-	Get<RenderPipe>.End();
+	Get<RenderPipe>().End();
 }
 
 void RenderPipe::Start(GLenum mode)
@@ -106,21 +203,21 @@ void RenderPipe::Start(GLenum mode)
 			GL_LINE_LOOP   , GL_TRIANGLES, GL_TRIANGLE_STRIP,
 			GL_TRIANGLE_FAN, GL_QUADS    ,
 			GL_POLYGON
-		>(mode);
+		>(mode)
 	)
 		return;
 	
-	_renderMutex.Lock();
+	_renderMutex.lock();
 
 	if( _immediate )
 	{ // Start was already called
-		_renderMutex.Unlock();
+		_renderMutex.unlock();
 		SetError<GL_INVALID_OPERATION>();
 		return;
 	}
 	
 	_immediate = true;
-	this->mode = mode;
+	_mode = mode;
 }
 
 void RenderPipe::End()
@@ -131,11 +228,10 @@ void RenderPipe::End()
 		return;
 	}
 	
-	if( vertex_count )
-		Render(this->mode);
+	Render();
 	
 	_immediate = false;
-	_renderMutex.Unlock();
+	_renderMutex.unlock();
 }
 
 void RenderPipe::Render(GLenum  mode, GLint  first, GLsizei  count)
@@ -152,15 +248,15 @@ void RenderPipe::Render(GLenum  mode, GLint  first, GLsizei  count)
 	)
 		return;
 	
-	if( !_renderMutex.TryLock() )
+	if( !_renderMutex.try_lock() )
 	{
 		SetError<GL_INVALID_OPERATION>();
 		return;
 	}
 	
-	glDrawArraysEx(mode, first, count);
+	glDrawArrays(mode, first, count);
 	
-	_renderMutex.Unlock();
+	_renderMutex.unlock();
 }
 
 void glDrawArraysEx
