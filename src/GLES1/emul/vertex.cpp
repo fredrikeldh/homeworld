@@ -1,5 +1,12 @@
 
 #include "vertex.h"
+#include "render.h"
+#include "color.h"
+#include "normal.h"
+
+const unsigned int VERTEX_ELEMENT_COUNT = 4;
+const unsigned int COLOR_ELEMENT_COUNT  = 4;
+const unsigned int NORMAL_ELEMENT_COUNT = 3;
 
 VertexSetup::VertexSetup() :
 	GLPart()
@@ -36,22 +43,19 @@ void VertexSetup::vertex_data()
 
 void VertexSetup::Set(GLfloat x, GLfloat y, GLfloat z)
 {
+	RenderPipe::BeginRequirement requirement;
 /*
 	if (mode == GL_QUADS && dimensions && count / dimensions == 4)
 		render_current();
 */
-	GLfloat* target = _vertices[_count * VERTEX_ELEMENT_COUNT];
-	Copy(x, target++);
-	Copy(y, target++);
-	Copy(z, target  );
+	_vertices.push_back(x, y, z);
 	
-	target = _colors[_count * COLOR_ELEMENT_COUNT];
-	Get<ColorSetup>.GetCurrent(target);
+	GLfloat target[4];
+	Get<ColorSetup>().GetCurrent(target);
+	_colors.push_back(target[0], target[1], target[2], target[3]);
 	
-	target = _normals[_count * NORMAL_ELEMENT_COUNT];
-	Get<NormalSetup>.GetCurrent(target);
-
-	_count++;
+	Get<NormalSetup>().GetCurrent(target);
+	_normals.push_back(target[0], target[1], target[2]);
 /*
 	vertex_data();
 */
@@ -63,7 +67,7 @@ void glVertex2f(GLfloat x, GLfloat y)
 }
 
 void glVertex3f(GLfloat x, GLfloat y, GLfloat z) {
-	Get<VertexSetup>.Set(x, y, z);
+	Get<VertexSetup>().Set(x, y, z);
 }
 
 void glVertex3fv(const GLfloat *v) {

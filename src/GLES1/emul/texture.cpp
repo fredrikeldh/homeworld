@@ -2,15 +2,18 @@
 #include "texture.h"
 
 TextureSetup::TextureSetup() :
-	GLPart(),
-	texcoord_count(0)
+	GLPart()
 {
+}
+
+void TextureSetup::GetCoord(GLfloat* buffer)
+{
+	Copy(_current.data(), buffer, 2);
 }
 
 void TextureSetup::SetCoord(GLfloat s, GLfloat t)
 {
-	texcoord[texcoord_count++] = s;
-	texcoord[texcoord_count++] = t;
+	_current.push_back(0, 1);
 }
 
 void glTexCoord2f(GLfloat s, GLfloat t) {

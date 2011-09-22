@@ -3,6 +3,7 @@
 #define _HW_GLES1_TEXTURE_H_
 
 #include "include.h"
+#include "array.h"
 
 namespace gles1
 {
@@ -10,10 +11,10 @@ namespace gles1
 	{
 	public:
 		TextureSetup();
+		void SetCoord(GLfloat s, GLfloat t);
+		void GetCoord(GLfloat*);
 	private:
-		friend class RENDER_PROCESSOR;
-		GLfloat texcoord[16384];
-		GLuint texcoord_count;
+		Array<GLfloat, 2> _current;
 	};
 }
 

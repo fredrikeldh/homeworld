@@ -2,7 +2,7 @@
 #include "color.h"
 
 void glColor4f(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
-	Get<ColorSetup>().Set(read, green, blue, alpha);
+	Get<ColorSetup>().SetCurrent(red, green, blue, alpha);
 }
 
 void glColor3f(GLfloat red, GLfloat green, GLfloat blue) {
@@ -13,29 +13,27 @@ void glColor4ub(GLubyte red, GLubyte green, GLubyte blue, GLubyte alpha) {
     glColor4f((GLfloat)red / 255.0f, (GLfloat)green / 255.0f, (GLfloat)blue / 255.0f, (GLfloat)alpha / 255.0f);
 }
 
-static inline void glColor3ub(GLubyte red, GLubyte green, GLubyte blue) {
+void glColor3ub(GLubyte red, GLubyte green, GLubyte blue) {
     glColor4ub(red, green, blue, 255);
 }
 
 ColorSetup::ColorSetup() :
 	GLPart(),
-	_current({1, 1, 1, 1})
+	_current({1.0f, 1.0f, 1.0f, 1.0f})
 {
 }
 
-void ColorSetup::Get(GLfloat* result)
+void ColorSetup::GetCurrent(GLfloat* result)
 {
-	Copy(_current, result, 4);
+	Copy(_current.data(), result, 4);
 }
 
-void ColorSetup::Set(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
+void ColorSetup::SetCurrent(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha)
 {
-	GLfloat* target = _current;
-	
-	*(  target) = red;
-	*(++target) = green;
-	*(++target) = blue;
-	*(++target) = alpha;
+	_current[0] = red;
+	_current[1] = green;
+	_current[2] = blue;
+	_current[3] = alpha;
 /*
 	if (gles_immediate) {
 		if (color_count / 4 <= gles_vertex_count / gles_vertex_dimensions) {

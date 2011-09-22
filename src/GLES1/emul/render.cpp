@@ -4,10 +4,10 @@
 
 // There can be only one - Renderer
 static std::recursive_mutex _renderMutex;
+static bool _immediate = false;
 
 RenderPipe::RenderPipe() :
 	GLPart(),
-	_immediate(false),
 	_mode(GL_TRIANGLES)
 {
 }
@@ -94,27 +94,27 @@ void RenderPipe::Render()
 {
 	VertexSetup& vertexData = Get<VertexSetup>();
 	
-	VertexSetup::Array<GLfloat, 16384>& vertices = vertexData._vertices;
+	Array<GLfloat, 16384>& vertices = vertexData._vertices;
 	unsigned int vertex_dimensions = vertexData._vertex_dimensions;
 	
 	GLenum& mode = _mode;
 	
 	VertexClientState vertexState(vertexData, *this);
-	glVertexPointer(vertex_dimensions, GL_FLOAT, 0, vertices);
+	glVertexPointer(vertex_dimensions, GL_FLOAT, 0, vertices.data());
 	
 	TextureClientState textureState(vertexData, *this);
 	if( textureState.IsEnabled() )
-		glTexCoordPointer(2, GL_FLOAT, 0, vertexData._texCoords);
+		glTexCoordPointer(2, GL_FLOAT, 0, vertexData._texCoords.data());
 	
-	VertexSetup::Array<GLfloat, 16384>& colors = vertexData._colors;
+	Array<GLfloat, 16384>& colors = vertexData._colors;
 	ColorClientState colorState(vertexData, *this);
 	if( colorState.IsEnabled() )
-		glColorPointer(4, GL_FLOAT, 0, colors);
+		glColorPointer(4, GL_FLOAT, 0, colors.data());
 	
-	VertexSetup::Array<GLfloat, 16384>& normals = vertexData._normals;
+	Array<GLfloat, 16384>& normals = vertexData._normals;
 	NormalClientState normalState(vertexData, *this);
 	if( normalState.IsEnabled() )
-		glNormalPointer(GL_FLOAT, 0, normals);
+		glNormalPointer(GL_FLOAT, 0, normals.data());
 
 	GLuint vertex_count = vertices.size();
 
@@ -258,6 +258,22 @@ void RenderPipe::Render(GLenum  mode, GLint  first, GLsizei  count)
 	
 	_renderMutex.unlock();
 }
+
+RenderPipe::BeginRequirement::BeginRequirement():
+	IRequirement()
+{
+	//TODO: lock
+	_renderMutex.lock();
+
+	if( !_immediate )
+		throw -1;
+}
+
+RenderPipe::BeginRequirement::~BeginRequirement()
+{
+	_renderMutex.unlock();
+}
+
 
 void glDrawArraysEx
 (

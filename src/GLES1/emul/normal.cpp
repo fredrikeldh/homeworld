@@ -7,22 +7,20 @@ NormalSetup::NormalSetup():
 {
 }
 
-void NormalSetup::Get(const GLfloat* result)
+void NormalSetup::GetCurrent(GLfloat* result)
 {
-	Copy(_current, result, 3);
+	Copy(_current.data(), result, 3);
 }
 
-void NormalSetup::Set(GLfloat x, GLfloat y, GLfloat z)
+void NormalSetup::SetCurrent(GLfloat x, GLfloat y, GLfloat z)
 {
-	GLfloat* target = _current;
-	
-	*(  target) = x;
-	*(++target) = y;
-	*(++target) = z;
+	_current[0] = x;
+	_current[1] = y;
+	_current[2] = z;
 }
 
 void glNormal3f(GLfloat nx, GLfloat ny, GLfloat nz) {
-	Get<NormalSetup>.Set(nx, ny, nz);
+	Get<NormalSetup>().SetCurrent(nx, ny, nz);
 /*
     if (gles_immediate) {
         if (gles_normal_count / 3 <= gles_vertex_count / gles_vertex_dimensions) {

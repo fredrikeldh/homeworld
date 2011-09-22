@@ -1,3 +1,8 @@
+#ifndef _HW_GLES1_NORMAL_H_
+#define _HW_GLES1_NORMAL_H_
+
+#include "include.h"
+#include "array.h"
 
 namespace gles1
 {
@@ -5,10 +10,12 @@ namespace gles1
 	{
 	public:
 		NormalSetup();
-		void Get(const GLfloat*);
-		void Set(GLfloat x, GLfloat y, GLfloat z);
+		void GetCurrent(GLfloat*);
+		void SetCurrent(GLfloat x, GLfloat y, GLfloat z);
 	private:
-		GLfloat _current[3];
+		Array<GLfloat,3> _current;
 	};
 };
+
+#endif //_HW_GLES1_NORMAL_H_
 
