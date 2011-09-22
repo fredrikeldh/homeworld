@@ -13,7 +13,7 @@ void TextureSetup::GetCoord(GLfloat* buffer)
 
 void TextureSetup::SetCoord(GLfloat s, GLfloat t)
 {
-	_current.push_back(0, 1);
+	_current.push_back(s, t);
 }
 
 void glTexCoord2f(GLfloat s, GLfloat t) {
