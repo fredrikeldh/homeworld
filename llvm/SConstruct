@@ -1,17 +1,20 @@
 #!/usr/bin/env python
 import os
 
-os.environ["dragonegg_disable_version_check"] = "1"
-
 tools = []
 libs = []
 
 topDir = Dir('#')
 
 env = Environment()
-env.Replace(CXX = "dragonegg_disable_version_check=1 llvm-g++")
-env.Replace(CC = "dragonegg_disable_version_check=1 llvm-gcc")
-env.Replace(LINK = "llvm-ld")
+env.Replace(CC = "python c2bc.py gcc -fplugin=./dragonegg.so -flto")
+env.Replace(CXX = "python c2bc.py g++ -fplugin=./dragonegg.so -flto")
+
+#env.Replace(CC = "gcc -fplugin=/home/andreas/Projects/dragonegg/dragonegg.so -fplugin-arg-dragonegg-emit-ir")#-fplugin-arg-dragonegg-emit-llvm
+#env.Replace(CXX = "g++ -fplugin=/home/andreas/Projects/dragonegg/dragonegg.so -fplugin-arg-dragonegg-emit-ir")
+
+env.Replace(LINK = "/home/andreas/bin/llvm-link")
+env.Replace(LD = "/home/andreas/bin/llvm-ld")
 
 def generateLibActions(source, target, env, for_signature):
 	src_string = ""
@@ -19,7 +22,7 @@ def generateLibActions(source, target, env, for_signature):
 		for ones in source:
 			src_string += os.path.relpath(ones.__str__(), topDir.abspath) + " "
 	
-	return env["LINK"] + " -link-as-library -disable-opt " + src_string + " -o " + os.path.relpath(target[0].abspath, topDir.abspath)
+	return env["LINK"] + " " + src_string + " -o " + os.path.relpath(target[0].abspath, topDir.abspath)
 	
 def generateProgActions(source, target, env, for_signature):
 	src_string = ""
@@ -33,7 +36,7 @@ def generateProgActions(source, target, env, for_signature):
 		n = ones
 		src_string += os.path.relpath(n.__str__(), topDir.abspath) + " "
 	
-	return env["LINK"] + " " + src_string + " -o " + os.path.relpath(output.abspath, topDir.abspath)
+	return env["LD"] + " " + src_string + " -o " + os.path.relpath(output.abspath, topDir.abspath)
 
 bcBuilder = Builder(
 	generator = generateLibActions,
@@ -75,11 +78,11 @@ def hwlibrary(name, sources, ignored = []):
 		
 		if valid:
 			objects.append(env.Object(s));
-		
-	bcFiles = ""
-	for bcf in objects:
-		for n in bcf:
-			bcFiles += n.__str__() + " "
+
+#	bcFiles = ""
+#	for bcf in objects:
+#		for n in bcf:
+#			bcFiles += n.__str__() + " "
 		
 	slib = env.LLVM_LIB("libhw_" + name, objects)
 
@@ -101,14 +104,15 @@ build_descriptions = ["Building debug binary for Homeworld", "Building distribut
 build_types = ["HW_BUILD_FOR_DEBUGGING", "HW_BUILD_FOR_DISTRIBUTION"]
 build_index = 0
 
-env.Append(CFLAGS="-emit-llvm -c -std=gnu99")
-env.Append(CCFLAGS="-Wall -Wstrict-aliasing -Wextra -Werror=uninitialized -Werror=trigraphs -Werror=init-self -Werror=format -Werror=format-security -Werror=implicit -Werror=sequence-point -O2")
+env.Append(CFLAGS="-std=gnu99")
+env.Append(CCFLAGS="-Wall -Wstrict-aliasing -Wextra -Werror=uninitialized -Werror=trigraphs -Werror=init-self -Werror=format -Werror=format-security -Werror=implicit -Werror=sequence-point -O2 -S")
 env.Append(CXXFLAGS="-std=gnu++0x")
 env.VariantDir('build', ['../src', '../tools'])
 
 env.ParseConfig('sdl-config --cflags --libs')
 env.ParseConfig('pkg-config libavcodec --cflags --libs')
 env.ParseConfig('pkg-config libavformat --cflags --libs')
+env.ParseConfig('pkg-config glesv2 --cflags --libs')
 #env.ParseConfig('pkg-config glesv1_cm --cflags --libs')
 
 #napath = "/home/andreas/Projects/native_client_sdk_0_5_1026/toolchain/linux_x86/x86_64-nacl/"
