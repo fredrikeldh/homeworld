@@ -10,7 +10,7 @@
 // Need to declare gles2 before using it
 namespace gles2
 {
-	int dummy;
+	enum dummy{};
 }
 
 using namespace gles2;
