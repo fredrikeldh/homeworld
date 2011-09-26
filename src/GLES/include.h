@@ -23,7 +23,11 @@ namespace gles2
 #define RENDER_PROCESSOR gles2::IRenderState
 #endif
 
-#ifndef nullptr
+#if __GNUC__ <= 4 && __GNUC_MINOR__ < 6
+	#define HAS_MOVE_ASSIGN_BUG 1
+	#define ENABLE_MOVE(CLAZZ) \
+		CLAZZ(CLAZZ&&) = default;
+// Introduce nullptr
 const                        // this is a const object...
 class {
 public:
@@ -36,12 +40,7 @@ public:
 private:
   void operator&() const;    // whose address can't be taken
 } nullptr = {};
-#endif //nullptr
 
-#if __GNUC__ <= 4 && __GNUC_MINOR__ < 6
-	#define HAS_MOVE_ASSIGN_BUG 1
-	#define ENABLE_MOVE(CLAZZ) \
-		CLAZZ(CLAZZ&&) = default;
 #else
 	#define HAS_MOVE_ASSIGN_BUG 0
 	#define ENABLE_MOVE(CLAZZ) \
