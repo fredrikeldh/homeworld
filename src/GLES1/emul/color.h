@@ -15,10 +15,6 @@ namespace gles1
 		void GetCurrent(GLfloat* buffer);
 	private:
 		Array<GLfloat, 4> _current;
-/*
-		GLfloat colors[16384];
-		GLuint color_count;
-*/
 	};
 };
 
