@@ -2564,27 +2564,35 @@ void singlePlayerGameUpdate()
                         animAviPlay(spGetCurrentMission(), spGetNextMission());
                     }
                     
+                    switch( spGetCurrentMission() )
+                    {
 // was: HW_COMPUTER_GAMING_WORLD_DEMO but the standard demo
 // had a short single player campaign surely? If not get rid of this
 #ifdef HW_GAME_DEMO
-                    if (spGetCurrentMission() == MISSION_2_OUTSKIRTS_OF_KHARAK)
-                    {
-                        universe.quittime = universe.totaltimeelapsed;
-                        utyPlugScreens = TRUE;
-                    }
+
+// MISSION_2_OUTSKIRTS_OF_KHARAK is nowhere to be defined. Not clear why not.
+// So just include it if it is actually there.
+#ifdef MISSION_2_OUTSKIRTS_OF_KHARAK
+                    	case MISSION_2_OUTSKIRTS_OF_KHARAK:
+                    		universe.quittime = universe.totaltimeelapsed;
+                    		utyPlugScreens = TRUE;
+                    		break;
+#endif //MISSION_2_OUTSKIRTS_OF_KHARAK
+
 #elif defined(HW_GAME_RAIDER_RETREAT)
-                    if (spGetCurrentMission() == MISSION_5B_TURANIC_RAIDER_PLANETOID)
-                    {
-                        universe.quittime = universe.totaltimeelapsed;
-                        utyPlugScreens = TRUE;
-                    }
+                    	case MISSION_5B_TURANIC_RAIDER_PLANETOID:
+                    		universe.quittime = universe.totaltimeelapsed;
+                    		utyPlugScreens = TRUE;
+                    		break;
 #else
-                    if (spGetCurrentMission() == MISSION_16_HIIGARA)
-                    {
-                        universe.quittime = universe.totaltimeelapsed;
-                        utyCreditsSequence = TRUE;
-                    }
+                    	case MISSION_16_HIIGARA:
+                    		universe.quittime = universe.totaltimeelapsed;
+                    		utyCreditsSequence = TRUE;
+                    		break;
 #endif
+                    	default:
+                    		break;
+                    }
                     spBinkPlay = FALSE;
                     mrWhiteOut = FALSE;
                 }
