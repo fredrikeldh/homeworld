@@ -1,0 +1,89 @@
+#!/usr/bin/env python
+# Import everything in global
+Import('*')
+
+import os, sys
+
+if is_nacl():
+	VariantDir('build', 'src')
+
+	env = defaultEnv.Clone()
+	env.Replace(LINK      = "/home/andreas/bin/llvm-link")
+	env.Replace(LD        = "/home/andreas/bin/llvm-ld")
+	env.Replace(OBJSUFFIX = ".bc")
+
+	def generateLibActions(source, target, env, for_signature):
+		src_string = ""
+		if not type(source) == str:
+			for ones in source:
+				src_string += os.path.relpath(ones.__str__(), topDir.abspath) + " "
+	
+		return env["LINK"] + " " + src_string + " -o " + os.path.relpath(target[0].abspath, topDir.abspath)
+	
+	def generateProgActions(source, target, env, for_signature):
+		src_string = ""
+		if not type(source) == str:
+			for ones in source:
+				src_string += os.path.relpath(ones.__str__(), topDir.abspath) + " "
+	
+		output = target[0]
+		for ones in env["LIBS"]:
+			Depends(output, ones)
+			n = ones
+			src_string += os.path.relpath(n.__str__(), topDir.abspath) + " "
+	
+		return env["LD"] + " " + src_string + " -o " + os.path.relpath(output.abspath, topDir.abspath)
+
+	bcBuilder = Builder(
+		generator = generateLibActions,
+		suffix = ".bc",
+		src_suffix = ".bc"
+	)
+
+	bcProgBuilder = Builder(
+		generator = generateProgActions,
+		suffix = "",
+		src_suffix = ".bc"
+	)
+
+	env["BUILDERS"].__setitem__('CFile', bcBuilder)
+	#env["BUILDERS"].__setitem__('CXXFile', bcppBuilder)
+	#env.Append(BUILDERS={"LLVM_Program" : bcProgBuilder})
+
+	def hwlibrary(name, sources, ignored = [], addPaths = []):
+		objects = []
+
+		if type(sources) is str:
+			sources = [sources]
+
+		for s in sources:
+			valid = True
+			for ign in ignored:
+				if s.name == ign:
+					valid = False
+					break;
+		
+			if valid:
+				objects.append(env.Object(s));
+
+	#	bcFiles = ""
+	#	for bcf in objects:
+	#		for n in bcf:
+	#			bcFiles += n.__str__() + " "
+	
+		newEnv["CPPPATH"].append(addPaths)
+		slib = env.LLVM_LIB("libhw_" + name, objects)
+
+		for n in slib:
+			libs.append(n)
+	
+		return slib
+	#end hwlibrary
+
+	name = 'llHomeworld'
+	#prog = env.Program(
+	#	target = name,
+	#	source = "../src/homeworld.c"
+	#)
+	#LIBS = libs
+

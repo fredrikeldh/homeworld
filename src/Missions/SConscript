@@ -1,0 +1,97 @@
+#!/usr/bin/env python
+# Import everything in global
+import os, SCons
+Import('*')
+
+alternate = "../Game"
+directory = "Generated"
+
+def preprocessOne(path, processedPath):
+	if not type(path) == str:
+		path = str(path)
+
+	rootDir = Dir('#')
+	change = os.path.relpath(".", rootDir.abspath)
+	
+	relAlternate = os.path.relpath(alternate, rootDir.abspath)
+	env = getOptionEnv().Clone()
+	env.AppendUnique(CPPPATH = relAlternate)
+	
+	newFlags = []
+	for st in env["CCFLAGS"]:
+		if not st == "-S":
+			newFlags.append(st)
+	
+	env.Replace(CCFLAGS = newFlags)
+	
+	stdEnv = Environment()
+	env['CC'] = stdEnv['CC']
+	
+	env.AppendUnique(CFLAGS = ["-E", "-xc"])
+	static_obj, shared_obj = SCons.Tool.createObjBuilders(env)
+	static_obj.add_action(".kas", SCons.Defaults.CAction)
+	shared_obj.add_action(".kas", SCons.Defaults.ShCAction)
+
+	#print "Test: " + processedPath + " " + path
+	return env.Object(processedPath, path)
+
+def preprocess(name):
+	levels = Glob(name)
+
+	processedLevels = []
+	for level in levels:
+		names = os.path.splitext(level.name)
+		filename = names[0]
+		processedLevel = filename + ".kp"
+		processedLevel = preprocessOne(level, directory + "/" + processedLevel)
+		processedLevels.append(processedLevel)
+	
+	return processedLevels
+
+generated = []
+generated.append(preprocess("SinglePlayer/Mission*.kas"))
+generated.append(preprocess("Tutorials/Tutorial*.kas"))
+
+def compileLevels(levels):
+	for levelFileL in levels:
+		for levelFileM in levelFileL:
+			for levelFile in levelFileM:
+				basename = str(levelFile)
+				names = os.path.splitext(basename)
+				filename = names[0]
+				genf = filename
+				filename = os.path.basename(filename)
+				
+				executable = ""
+		
+				kasTool = tools[0]
+		
+				for node in kasTool:
+					executable += node.__str__()
+			
+				rootDir = Dir('#')
+
+				relDirectory = os.path.relpath(directory, rootDir.abspath)
+			
+				# Use relative paths to kas2c binary
+				executable = os.path.relpath(executable, directory)
+		
+				# Use relative paths for output
+				relOutputPath = os.path.relpath(os.path.splitext(basename)[0], rootDir.abspath)
+		
+				# Use relative paths for input
+				relInputPath = os.path.relpath(basename, rootDir.abspath)
+		
+				cmd = "chdir " + relDirectory + " && " + executable + " " + filename + ".kp " + filename + ".c " + filename + ".h " + filename + ".func.c"
+
+				#Node.FS.LinkFunc()
+
+				command = getOptionEnv().Command([genf + ".c", genf + ".h", genf + ".func.c"], genf + ".kp", cmd)
+				Depends(command, kasTool)
+				Depends(command, "SinglePlayer/Swarmer.kash")
+				Depends(command, "SinglePlayer/Utilities.kash")
+
+compileLevels(generated)
+
+descend(directory)
+

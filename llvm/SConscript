@@ -1,0 +1,90 @@
+#!/usr/bin/env python
+# Import everything in global
+Import('*')
+
+import os
+
+#tools = []
+#libs = []
+
+#topDir = Dir('#')
+
+depends = ['c2bc.py', 'dragonegg.so']
+
+env = getOptionEnv()
+env.Replace(CC  = "python " + depends[0] + " gcc -fplugin=./" + depends[1] + " -flto")
+env.Replace(CXX = "python " + depends[0] + " g++ -fplugin=./" + depends[1] + " -flto")
+
+#for dep in depends:
+#	env.Local(dep)
+
+#env.Replace(CC = "gcc -fplugin=/home/andreas/Projects/dragonegg/dragonegg.so -fplugin-arg-dragonegg-emit-ir")#-fplugin-arg-dragonegg-emit-llvm
+#env.Replace(CXX = "g++ -fplugin=/home/andreas/Projects/dragonegg/dragonegg.so -fplugin-arg-dragonegg-emit-ir")
+
+env.Replace(LINK = "/home/andreas/bin/llvm-link")
+env.Replace(LD = "/home/andreas/bin/llvm-ld")
+
+#def generateLibActions(source, target, env, for_signature):
+#	src_string = ""
+#	if not type(source) == str:
+#		for ones in source:
+#			src_string += os.path.relpath(ones.__str__(), topDir.abspath) + " "
+#	
+#	return env["LINK"] + " " + src_string + " -o " + os.path.relpath(target[0].abspath, topDir.abspath)
+#	
+#def generateProgActions(source, target, env, for_signature):
+#	src_string = ""
+#	if not type(source) == str:
+#		for ones in source:
+#			src_string += os.path.relpath(ones.__str__(), topDir.abspath) + " "
+#	
+#	output = target[0]
+#	for ones in env["LIBS"]:
+#		Depends(output, ones)
+#		n = ones
+#		src_string += os.path.relpath(n.__str__(), topDir.abspath) + " "
+#	
+#	return env["LD"] + " " + src_string + " -o " + os.path.relpath(output.abspath, topDir.abspath)
+
+#bcBuilder = Builder(
+#	generator = generateLibActions,
+#	suffix = ".bc",
+#	src_suffix = ".bc"
+#)
+
+#bcProgBuilder = Builder(
+#	generator = generateProgActions,
+#	suffix = "",
+#	src_suffix = ".bc"
+#)
+
+#env.Append(BUILDERS={"LLVM_LIB" : bcBuilder})
+#env.Append(BUILDERS={"LLVM_Program" : bcProgBuilder})
+
+#conf = Configure(env)
+
+env.AppendUnique(CCFLAGS="-S")
+
+env.ParseConfig('sdl-config --cflags --libs')
+env.ParseConfig('pkg-config libavcodec --cflags --libs')
+env.ParseConfig('pkg-config libavformat --cflags --libs')
+env.ParseConfig('pkg-config glesv2 --cflags --libs')
+#env.ParseConfig('pkg-config glesv1_cm --cflags --libs')
+
+#defi = [game_types[game_index], build_types[build_index], "HW_ENABLE_MOVIES", "_LINUX_FIX_ME", "_X86_64", "_REENTRANT", "GENERIC_ETGCALLFUNCTION", "HW_ENABLE_GLES2", "LLVM", "__native_client__", "HOME_BUILD_NPAPI"]
+#env.Append(CPPDEFINES=defi)
+
+env.AppendUnique(CPPPATH=["/usr/include/GLES2"])#"/usr/include/x86_64-linux-gnu",
+env["OBJSUFFIX"] = ".bc"
+
+descend(['src'])
+
+progName = "homeworld"
+addProgram(
+	target = progName,
+	source = "src/game/homeworld.c",
+	LIBS    = ["Game", "Ships"],
+	LIBPATH = ["src/game/Game", "src", "src/game/Ships"]
+)
+
+

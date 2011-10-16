@@ -24,11 +24,13 @@ missions = [
 
 ignored = ["Matrix-mult.c", "KNITransform.c"]
 
-lib = hwlibrary("Game", Glob('*.c'), ignored)
+sources = Glob('*.c')
+
+lib = addLibrary("Game", sources , ignored)
 
 for mission in missions:
 	Depends(lib, mission)
 
-env.Command("splint_Game", "", "splint -I../SDL -I *.c")
+#option_env.Command("splint_Game", "", "splint -I../SDL -I *.c")
 
 

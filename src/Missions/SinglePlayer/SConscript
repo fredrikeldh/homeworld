@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # Import everything in global
-import os
 Import('*')
+
+import os, SCons
 
 alternate = "../../Game"
 
@@ -11,9 +12,18 @@ def preprocess(path, processedPath):
 
 	rootDir = Dir('#')
 	change = os.path.relpath(".", rootDir.abspath)
-	cmd = "chdir " + change + " && gcc -E -x c  -I" + alternate + " " + path + " > " + processedPath
+	
+	relAlternate = os.path.relpath(alternate, rootDir.abspath)
+	env = getOptionEnv().Clone()
+	env.AppendUnique(CPPPATH = relAlternate)
+	env.AppendUnique(CFLAGS = ["-E", "-xc"])
+	static_obj, shared_obj = SCons.Tool.createObjBuilders(env)
+	static_obj.add_action(".kas", SCons.Defaults.CAction)
+	shared_obj.add_action(".kas", SCons.Defaults.ShCAction)
 
-	env.Command(processedPath, path, cmd)
+	#print "Test: " + processedPath + " " + path
+	return env.Object(processedPath, path)
+
 #gcc -E -x c  -I../../../src/Game ../../../src/Missions/SinglePlayer/Mission01.kas > Mission01.kp
 
 
@@ -65,7 +75,7 @@ for level in levels:
 	names = os.path.splitext(level.name)
 	filename = names[0]
 	processedLevel = filename + ".kp"
-	preprocess(level, "../Generated/" + processedLevel)
+	processedLevel = preprocess(level, "../Generated/" + processedLevel)
 	processedLevels.append(processedLevel)
 
 Return("processedLevels")

@@ -2,5 +2,5 @@
 # Import everything in global
 Import('*')
 
-hwlibrary("LZSS", Glob("*.c"))
+#if is_android():
 

@@ -2,14 +2,15 @@
 # Import everything in global
 Import('*')
 
-flags = list(env["CCFLAGS"])
-flags.remove("-S")
+#flags = list(env["CCFLAGS"])
+#flags.remove("-S")
 
-kenv = Environment()
-kenv["CCFLAGS"] = flags
+kenv = getOptionEnv()
+#kenv["CCFLAGS"] = flags
+
 kenv.MergeFlags("CCFLAGS", ["-g", "-O2", "-malign-double"])
-kenv.MergeFlags("CPPDEFINES", ["_X86"])
-kenv["CPPPATH"] = includedirs
+#option_env.MergeFlags("CPPDEFINES", ["_X86"])
+#option_env["CPPPATH"] = includedirs
 kenv.ParseConfig('sdl-config --cflags --libs')
 kenv.Replace(YACCFLAGS = "-y -d")
 kenv.Replace(LEXFLAGS = "-i")
@@ -19,7 +20,7 @@ kenv.Replace(LEXFLAGS = "-i")
 tool = kenv.Program(
 	target = 'kas2c',
 	source = ["kas2c.c", "lexer.l", "parser.y"],
-	LIBS="libl.a"
+	LIBS = "libl.a"
 )
 
 tools.append(tool)

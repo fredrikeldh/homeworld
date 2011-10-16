@@ -2,5 +2,5 @@
 # Import everything in global
 Import('*')
 
-hwlibrary("CRC", "CRC32.c")
+addLibrary("Ships", Glob("*.c"))
 

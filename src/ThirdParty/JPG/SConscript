@@ -7,5 +7,5 @@ ignores = ["ansi2knr.c", "cjpeg.c", "ckconfig.c", "djpeg.c",
 "rdjpgcom.c", "rdjpgcom.c", "wrjpgcom.c"
 	]
 
-hwlibrary("JPG", Glob("*.c"), ignores)
+addLibrary("JPG", Glob("*.c"), ignores)
 

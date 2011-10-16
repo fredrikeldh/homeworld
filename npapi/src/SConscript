@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+# Import everything in global
+Import('*')
+
+sources = [
+	"instance.cpp",
+	"module.cpp",
+	"pp.cpp",
+	"ppp.cpp",
+	"ppapi/cpp/instance.cc",
+	"ppapi/cpp/module.cc",
+	"ppapi/lib/gl/gles2/gl2ext_ppapi.c",
+	"ppapi/lib/gl/gles2/gles2.c",
+	"ppapi/npapi/module_ppb_opengles2.cpp",
+	"ppapi/npapi/module_ppb_var_deprecated.cpp"
+]
+
+addLibrary("npapi", []
+#sources
+,
+addPaths = [".", "npapi-sdk/headers"])
+
+descend("game")
+

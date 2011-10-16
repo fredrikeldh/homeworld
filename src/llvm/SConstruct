@@ -2,5 +2,6 @@
 # Import everything in global
 Import('*')
 
-descend('kas2c')
+lib = hwlibrary("llvm", Glob('*.cpp'))
+
 

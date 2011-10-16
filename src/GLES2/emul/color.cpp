@@ -16,7 +16,7 @@ void Copy(T* target)
 	target = V1;
 }
 
-ColorSetup::ColorSetup() : GLPart(), size(4), type(GL_FLOAT), stride(0), pointer(nullptr))
+ColorSetup::ColorSetup() : gles1::ColorSetup(), size(4), type(GL_FLOAT), stride(0), pointer(nullptr)
 {
 }
 
@@ -29,7 +29,7 @@ void ColorSetup::SetPointer(
 {
 	if( (size != 3 && size != 4) || stride < 0 )
 	{
-		SetError(GL_INVALID_VALUE);
+		SetError<GL_INVALID_VALUE>();
 		return;
 	}
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import sys, subprocess
+import os, sys, subprocess
 
 #def which(cmd):
 #	return subprocess.check_output('which ' + cmd, executable='/bin/bash',shell=True).rstrip('\n\r')
@@ -56,7 +56,15 @@ stdout, stderr = ir2bcProcess.communicate()
 #	print "ERR END"
 
 compileProcess.wait()
+
+if compileProcess.returncode is not 0:
+	os.remove(outputFile)
+	sys.exit(compileProcess.returncode)
+
 ir2bcProcess.wait()
+if ir2bcProcess.returncode is not 0:
+	os.remove(outputFile)
+	sys.exit(ir2bcProcess.returncode)
 
 
 #print data

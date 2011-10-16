@@ -6,5 +6,5 @@ sources = Glob("*.c")
 
 ignored = ["debugwnd.c", "wave.c", "win32glue.c", "TitanInterfaceC.stub.c"]
 
-hwlibrary("SDL", sources, ignored)
+addLibrary("SDL", sources, ignored)
 

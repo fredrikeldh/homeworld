@@ -24,3 +24,4 @@ tools/kas2c/kas2c
 tools/kas2c/lexer.c
 tools/kas2c/parser.c
 tools/kas2c/parser.h
+build

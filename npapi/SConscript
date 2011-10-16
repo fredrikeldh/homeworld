@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+# Import everything in global
+Import('*')
+
+subdirs = ["src"]
+
+descend(subdirs)
+
+addLibrary(
+	target  = "homeworld",
+	source  = "src/game/homeworld.c", #dummy file
+	LIBS    = ["Game", "npapi", "Ships"],
+	LIBPATH = ["src/game/Game", "src", "src/game/Ships"]
+)
+
