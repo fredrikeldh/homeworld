@@ -2,18 +2,25 @@
 # Import everything in global
 Import('*')
 
-import os
+import os, shutil
 
 #tools = []
 #libs = []
 
 #topDir = Dir('#')
+#print os.getcwd()
+#print os.path.relpath(".", "llvm/emscripten/tools/shared.py")
+
+# ugly hack since python script assumes far too much
+__file__ = str(Dir('#/llvm/emscripten/dummy/dummy'))
+exec(open(str(Dir('#/llvm/emscripten/tools')) + '/shared.py', 'r').read())
 
 depends = ['c2bc.py', 'dragonegg.so']
 
 env = getOptionEnv()
 env.Replace(CC  = "python " + depends[0] + " gcc -fplugin=./" + depends[1] + " -flto")
 env.Replace(CXX = "python " + depends[0] + " g++ -fplugin=./" + depends[1] + " -flto")
+env.Append(CCFLAGS = COMPILER_OPTS)
 
 #for dep in depends:
 #	env.Local(dep)
@@ -21,8 +28,8 @@ env.Replace(CXX = "python " + depends[0] + " g++ -fplugin=./" + depends[1] + " -
 #env.Replace(CC = "gcc -fplugin=/home/andreas/Projects/dragonegg/dragonegg.so -fplugin-arg-dragonegg-emit-ir")#-fplugin-arg-dragonegg-emit-llvm
 #env.Replace(CXX = "g++ -fplugin=/home/andreas/Projects/dragonegg/dragonegg.so -fplugin-arg-dragonegg-emit-ir")
 
-env.Replace(LINK = "/home/andreas/bin/llvm-link")
-env.Replace(LD = "/home/andreas/bin/llvm-ld")
+env.Replace(LINK = LLVM_LD)
+env.Replace(LD   = LLVM_LD)
 
 #def generateLibActions(source, target, env, for_signature):
 #	src_string = ""
@@ -64,17 +71,18 @@ env.Replace(LD = "/home/andreas/bin/llvm-ld")
 #conf = Configure(env)
 
 env.AppendUnique(CCFLAGS="-S")
+env.AppendUnique(CPPPATH="emscripten/system/include")
 
-env.ParseConfig('sdl-config --cflags --libs')
-env.ParseConfig('pkg-config libavcodec --cflags --libs')
-env.ParseConfig('pkg-config libavformat --cflags --libs')
-env.ParseConfig('pkg-config glesv2 --cflags --libs')
+#env.ParseConfig('sdl-config --cflags --libs')
+#env.ParseConfig('pkg-config libavcodec --cflags --libs')
+#env.ParseConfig('pkg-config libavformat --cflags --libs')
+#env.ParseConfig('pkg-config glesv2 --cflags --libs')
 #env.ParseConfig('pkg-config glesv1_cm --cflags --libs')
 
 #defi = [game_types[game_index], build_types[build_index], "HW_ENABLE_MOVIES", "_LINUX_FIX_ME", "_X86_64", "_REENTRANT", "GENERIC_ETGCALLFUNCTION", "HW_ENABLE_GLES2", "LLVM", "__native_client__", "HOME_BUILD_NPAPI"]
 #env.Append(CPPDEFINES=defi)
 
-env.AppendUnique(CPPPATH=["/usr/include/GLES2"])#"/usr/include/x86_64-linux-gnu",
+#env.AppendUnique(CPPPATH=["/usr/include/GLES2"])#"/usr/include/x86_64-linux-gnu",
 env["OBJSUFFIX"] = ".bc"
 
 descend(['src'])
