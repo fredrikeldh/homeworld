@@ -22,7 +22,9 @@ for i in range(0, len(includedirs), 1):
 
 env.AppendUnique(CPPPATH=includedirs)
 
-env.ParseConfig('sdl-config --cflags --libs')
+#TODO: Ugly hack - fix later
+if not is_llvm():
+	env.ParseConfig('sdl-config --cflags --libs')
 
 modules = ['Missions', 'Game', 'ThirdParty', 'SDL', 'Ships']
 
