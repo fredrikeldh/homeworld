@@ -2,7 +2,7 @@
 #ifndef CPUID_H
 #define CPUID_H
 
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && defined(_USE_ASM)
 //this code could be expanded to support *nix
 
 #ifdef __cplusplus
