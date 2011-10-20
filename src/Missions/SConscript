@@ -24,6 +24,7 @@ def preprocessOne(path, processedPath):
 	
 	env.Replace(CCFLAGS = newFlags)
 	
+	# Make sure we use standard compiler
 	stdEnv = Environment()
 	env['CC'] = stdEnv['CC']
 	
@@ -92,6 +93,4 @@ def compileLevels(levels):
 				Depends(command, "SinglePlayer/Utilities.kash")
 
 compileLevels(generated)
-
-descend(directory)
 
