@@ -7,6 +7,8 @@
 #ifndef ___KEY_H
 #define ___KEY_H
 
+#include "SDL.h"
+
 #if !SDL_VERSION_ATLEAST(1,3,0)
 #include "SDL_keysym.h"
 #endif
