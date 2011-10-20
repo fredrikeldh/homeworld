@@ -7,7 +7,9 @@
 #ifndef ___KEY_H
 #define ___KEY_H
 
+#if !SDL_VERSION_ATLEAST(1,3,0)
 #include "SDL_keysym.h"
+#endif
 #include "Types.h"
 
 /*=============================================================================
@@ -24,7 +26,12 @@
 /*=============================================================================
     Definitions:
 =============================================================================*/
+#if SDL_VERSION_ATLEAST(1,3,0)
+// For now use INT_MAX - not sure what would make more sense
+#define KEY_TOTAL_KEYS          (INT_MAX)  // Use SDL keysyms
+#else
 #define KEY_TOTAL_KEYS          (SDLK_LAST+8)  // Use SDL keysyms, plus some for mouse
+#endif //SDL_VERSION_ATLEAST(1,3,0)
 #define KEY_BufferLength        16
 
 #define KEY_NUMPRESSED_BITS     5
@@ -135,6 +142,15 @@
 #define PLUSKEY                 SDLK_EQUALS
 #define BACKSLASHKEY            SDLK_BACKSLASH
 
+#if SDL_VERSION_ATLEAST(1,3,0)
+#define LMOUSE_BUTTON           SDL_BUTTON_LEFT
+#define RMOUSE_BUTTON           SDL_BUTTON_RIGHT
+#define MMOUSE_BUTTON           SDL_BUTTON_MIDDLE
+
+#define FLYWHEEL_UP             SDL_BUTTON_X1
+#define FLYWHEEL_DOWN           SDL_BUTTON_X2
+
+#else
 #define LMOUSE_BUTTON           (SDLK_LAST+0)
 #define RMOUSE_BUTTON           (SDLK_LAST+1)
 #define MMOUSE_BUTTON           (SDLK_LAST+3)
@@ -145,6 +161,8 @@
 #define LMOUSE_DOUBLE           (SDLK_LAST+5)
 #define RMOUSE_DOUBLE           (SDLK_LAST+6)
 #define MMOUSE_DOUBLE           (SDLK_LAST+7)
+
+#endif //SDL_VERSION_ATLEAST(1,3,0)
 
 /*=============================================================================
     Type definitions:
