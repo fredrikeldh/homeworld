@@ -531,10 +531,8 @@ void formationSpecificsSphere(CommandToDo *command)
                 //  Tell Bryce about this!
                 //
                 //
-#ifdef DEBUG_TACTICS
-    #ifdef bpasechn
+#if defined(DEBUG_TACTICS) && defined(bpasechn) && defined(_USE_ASM)
                 _asm int 3
-    #endif
 #endif
                 centreship = (Ship*)command->attack->TargetPtr[0];      //this can't possibly be invalid!
             }
@@ -1094,7 +1092,7 @@ void processFormationToDo(struct CommandToDo *formationtodo,bool steadyFormation
                         //  Tell Bryce about this!
                         //
                         //
-#ifdef DEBUG_TACTICS
+#if defined(DEBUG_TACTICS) && defined(_USE_ASM)
                         _asm int 3
 #endif
                         protectship = (Ship*)formationtodo->attack->TargetPtr[0];       //this can't possibly be invalid!
