@@ -1,3 +1,6 @@
+#ifndef _HW_WRAP_H_
+#define _HW_WRAP_H_
+
 #define get_EVT_Constant(n)	do_get_arg(effect, stat, opcode, n)
 #define get_EVT_ConstLabel(n)	do_get_arg(effect, stat, opcode, n)
 #define get_EVT_VarLabel(n)	do_get_arg(effect, stat, opcode, n)
@@ -269,3 +272,4 @@ udword	wrap_##func(Effect *effect, struct etgeffectstatic *stat ,etgfunctioncall
 	return func_ptr(effect, var0, var1); \
 }
 
+#endif //_HW_WRAP_H_
