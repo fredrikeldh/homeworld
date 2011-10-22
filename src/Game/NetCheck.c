@@ -23,9 +23,32 @@
 
 FILE *netlogfile;
 
+void netlogopen(const char* demLogFileNameFull, const char* mode)
+{
+	netlogfile = fopen(demLogFileNameFull, mode);
+}
+
 void netlogwrite(const void * ptr, size_t size, size_t count)
 {
+	if( netlogfile )
+		return;
+	
 	fwrite(ptr, size, count, netlogfile);
+}
+
+void netlogprintf(const char *restrict format, ...)
+{
+	if( !netlogfile )
+		return;
+	
+	//FIXME: implement properly!
+	fprintf(netlogfile, format);
+}
+
+void netlogclose()
+{
+	fclose(netlogfile);
+	netlogfile = NULL;
 }
 
 #if SYNC_CHECK

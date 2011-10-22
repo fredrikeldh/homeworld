@@ -44,7 +44,10 @@ extern udword univSyncErrFrame;
 extern udword blobSyncErrFrame;
 #endif
 
+void netlogopen(const char* demLogFileNameFull, const char* mode);
 void netlogwrite(const void * ptr, size_t size, size_t count);
+int netlogprintf(const char *restrict format, ...);
+void netlogclose();
 
 void recPackRecordInit(void);
 void recPackRecordPacket(ubyte *packet,udword sizeofPacket);

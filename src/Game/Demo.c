@@ -182,10 +182,8 @@ void demRecordStart(char *fileName, demstatesave saveFunction)
             DEM_LogFileName, FF_UserSettingsPath);
         if (fileMakeDestinationDirectory(demLogFileNameFull))
         {
-            netlogfile = fopen(demLogFileNameFull, "wb");
-            if (netlogfile)
-                fclose(netlogfile);
-            netlogfile = NULL;
+            netlogopen(demLogFileNameFull, "wb");
+            netlogclose();
         }
     }
 #endif
@@ -222,18 +220,14 @@ void demStateSave(void)
                 DEM_LogFileName, FF_UserSettingsPath);
             if (fileMakeDestinationDirectory(demLogFileNameFull))
             {
-                netlogfile = fopen(demLogFileNameFull, "at");
-                if (netlogfile)
-                {
-                    fprintf(netlogfile, "************* Demo packet #%d   Task time %.4f\n", demPacketNumber, taskTimeElapsed);
-                }
+                netlogopen(demLogFileNameFull, "at");
+                netlogprintf("************* Demo packet #%d   Task time %.4f\n", demPacketNumber, taskTimeElapsed);
             }
         }
         state.univCheckSum = univGetChecksum(&numShips);
-        if (netlogfile && logEnable == LOG_VERBOSE)
+        if ( logEnable == LOG_VERBOSE)
         {
-            fclose(netlogfile);
-            netlogfile = NULL;
+            netlogclose();
         }
 #if DEM_CAMERA_CHECKSUM
         state.cameraCRC = cameraChecksum(mrCamera);
@@ -383,10 +377,8 @@ void demPlayStart(char *fileName, demstateload loadFunction, demplayfinished fin
             DEM_LogFileName, FF_UserSettingsPath);
         if (fileMakeDestinationDirectory(demLogFileNameFull))
         {
-            netlogfile = fopen(demLogFileNameFull, "wb");
-            if (netlogfile)
-                fclose(netlogfile);
-            netlogfile = NULL;
+            netlogopen(demLogFileNameFull, "wb");
+            netlogclose();
         }
     }
 #endif
@@ -458,18 +450,14 @@ void demStateLoad(void)
                 DEM_LogFileName, FF_UserSettingsPath);
             if (fileMakeDestinationDirectory(demLogFileNameFull))
             {
-                netlogfile = fopen(demLogFileNameFull, "at");
-                if (netlogfile)
-                {
-                    fprintf(netlogfile, "************* Demo packet #%d   Task time %.4f\n", demPacketNumber, taskTimeElapsed);
-                }
+                netlogopen(demLogFileNameFull, "at");
+                netlogprintf("************* Demo packet #%d   Task time %.4f\n", demPacketNumber, taskTimeElapsed);
             }
         }
         univCheckSum = univGetChecksum(&numShips);
-        if (netlogfile && logEnable == LOG_VERBOSE)
+        if (logEnable == LOG_VERBOSE)
         {
-            fclose(netlogfile);
-            netlogfile = NULL;
+            netlogclose();
         }
         if (state.univCheckSum != univCheckSum)
         {
