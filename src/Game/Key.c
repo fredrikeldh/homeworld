@@ -22,8 +22,10 @@ keybufferchar keyBuffer[KEY_BufferLength];
 
 uword keysToNotBuffer[] = {
     SHIFTKEY, LMOUSE_BUTTON, RMOUSE_BUTTON, MMOUSE_BUTTON,
-    FLYWHEEL_UP, FLYWHEEL_DOWN, LMOUSE_DOUBLE, RMOUSE_DOUBLE,
-    MMOUSE_DOUBLE,
+    FLYWHEEL_UP, FLYWHEEL_DOWN,
+#ifndef EMSCRIPTEN
+    LMOUSE_DOUBLE, RMOUSE_DOUBLE, MMOUSE_DOUBLE,
+#endif //EMSCRIPTEN
     0};
 /*=============================================================================
     Functions:
