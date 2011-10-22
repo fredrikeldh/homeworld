@@ -22,6 +22,11 @@
 #define CB_DECL
 #endif
 
+#ifdef SDL_HAS_64BIT_TYPE
+#define SIZE_T_FORMAT "lx"
+#else
+#define SIZE_T_FORMAT "hhx"
+#endif
 
 /*=============================================================================
     Data:
@@ -2000,7 +2005,7 @@ void memAnalysisCreateForPool(mempool *pool, FILE *fpAnalysis, FILE *fpMap)
         for (index = 0, heap = (mbheap *)pool->pool; memSmallHeapInfo[index].blockSize > 0; index++, heap++)
         {                                                   //for all heaps
             //dbgAssertOrIgnore(heap->nBlocks == memSmallHeapInfo[index].nBlocks);
-            fprintf(fpAnalysis, "Heap 0x%lx, length = %d\n", (size_t)heap, heap->nBlocks * heap->blockSize);
+            fprintf(fpAnalysis, "Heap 0x%"SIZE_T_FORMAT", length = %d\n", (size_t)heap, heap->nBlocks * heap->blockSize);
 #if MEM_SMALLBLOCK_STATS
             if (heap->nAllocationAttempts == 0)
             {
@@ -2025,9 +2030,9 @@ void memAnalysisCreateForPool(mempool *pool, FILE *fpAnalysis, FILE *fpMap)
                 mbhCookieVerify(bCookie);
 #if MEM_USE_NAMES
                 // watch that last %10lx - it's percent, ten, el, ex
-                fprintf(fpAnalysis, "%20s, %10d, %10d, %10s, %10lx\n", bCookie->name, bCookie->length, heap->blockSize, "allocated", (size_t)bCookie);
+                fprintf(fpAnalysis, "%20s, %10d, %10d, %10s, %10"SIZE_T_FORMAT"\n", bCookie->name, bCookie->length, heap->blockSize, "allocated", (size_t)bCookie);
 #else
-                fprintf(fpAnalysis, "%20s, %10d, %10d, %10s, %10lx\n", "noname", bCookie->length, heap->blockSize, "allocated", (size_t)bCookie);
+                fprintf(fpAnalysis, "%20s, %10d, %10d, %10s, %10"SIZE_T_FORMAT"\n", "noname", bCookie->length, heap->blockSize, "allocated", (size_t)bCookie);
 #endif
                 MEM_MAP_CHAR('*');                          //print cookie character
                 for (block = 0; block < bCookie->length / MEM_BlockSize; block++)
@@ -2050,9 +2055,9 @@ void memAnalysisCreateForPool(mempool *pool, FILE *fpAnalysis, FILE *fpMap)
                 mbhCookieVerify(bCookie);
 #if MEM_USE_NAMES
                 // watch that last %10lx - it's percent, ten, el, ex
-                fprintf(fpAnalysis, "%20s, %10d, %10d, %10s, %10lx\n", bCookie->name, 0, heap->blockSize, "free", (size_t)bCookie);
+                fprintf(fpAnalysis, "%20s, %10d, %10d, %10s, %10"SIZE_T_FORMAT"\n", bCookie->name, 0, heap->blockSize, "free", (size_t)bCookie);
 #else
-                fprintf(fpAnalysis, "%20s, %10d, %10d, %10s, %10lx\n", "noname", 0, heap->blockSize, "free", (size_t)bCookie);
+                fprintf(fpAnalysis, "%20s, %10d, %10d, %10s, %10"SIZE_T_FORMAT"\n", "noname", 0, heap->blockSize, "free", (size_t)bCookie);
 #endif
                 MEM_MAP_CHAR('*');                          //print cookie character
                 for (block = 0; block < heap->blockSize / MEM_BlockSize; block++)
@@ -2066,7 +2071,7 @@ void memAnalysisCreateForPool(mempool *pool, FILE *fpAnalysis, FILE *fpMap)
     //print values of the small block pointers
     for (index = 0; index < MSB_NumberSizes + 1; index++)
     {
-        fprintf(fpAnalysis, "lowestFree 0x%x = 0x%lx\n", ((index) * MEM_BlockSize) + MEM_BlockSize, (size_t)pool->firstSize[index]);
+        fprintf(fpAnalysis, "lowestFree 0x%x = 0x%"SIZE_T_FORMAT"\n", ((index) * MEM_BlockSize) + MEM_BlockSize, (size_t)pool->firstSize[index]);
     }
     thisCookie = pool->first;                                  //start walk from very start of heap
 
@@ -2077,9 +2082,9 @@ void memAnalysisCreateForPool(mempool *pool, FILE *fpAnalysis, FILE *fpMap)
         memCookieVerify(thisCookie);                        //verify this cookie
 #if MEM_USE_NAMES
         // watch that last %10lx - it's percent, ten, el, ex
-        fprintf(fpAnalysis, "%20s, %10d, %10d, %10s, %10lx\n", thisCookie->name, memBlocksToBytes(thisCookie->blocksNext), memBlocksToBytes(thisCookie->blocksPrevious), bitTest(thisCookie->flags, MBF_AllocatedNext) ? "allocated" : "free", (size_t)thisCookie);
+        fprintf(fpAnalysis, "%20s, %10d, %10d, %10s, %10"SIZE_T_FORMAT"\n", thisCookie->name, memBlocksToBytes(thisCookie->blocksNext), memBlocksToBytes(thisCookie->blocksPrevious), bitTest(thisCookie->flags, MBF_AllocatedNext) ? "allocated" : "free", (size_t)thisCookie);
 #else
-        fprintf(fpAnalysis, "%20s, %10d, %10d, %10s, %10lx\n", "noname", memBlocksToBytes(thisCookie->blocksNext), memBlocksToBytes(thisCookie->blocksPrevious), bitTest(thisCookie->flags, MBF_AllocatedNext) ? "allocated" : "free", (size_t)thisCookie);
+        fprintf(fpAnalysis, "%20s, %10d, %10d, %10s, %10"SIZE_T_FORMAT"\n", "noname", memBlocksToBytes(thisCookie->blocksNext), memBlocksToBytes(thisCookie->blocksPrevious), bitTest(thisCookie->flags, MBF_AllocatedNext) ? "allocated" : "free", (size_t)thisCookie);
 #endif
         MEM_MAP_CHAR('*');
         if (bitTest(thisCookie->flags, MBF_AllocatedNext))
