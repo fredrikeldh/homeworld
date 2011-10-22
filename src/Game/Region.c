@@ -611,6 +611,7 @@ udword regRegionProcess(regionhandle reg, udword mask)
                 keyPressUp(FLYWHEEL_DOWN);
                 regFunctionCall(reg, RPE_WheelDown, 0, &mask);
             }
+#ifndef EMSCRIPTEN
             if (regFlag(RPE_DoubleLeft))
             {
                 if (keyIsStuck(LMOUSE_DOUBLE))
@@ -627,7 +628,6 @@ udword regRegionProcess(regionhandle reg, udword mask)
                         keyClearSticky(LMOUSE_DOUBLE);
                         bitClear(returnMask, RPE_DoubleLeft);
                     }
-
                 }
             }
             if (regFlag(RPE_DoubleRight))
@@ -637,7 +637,6 @@ udword regRegionProcess(regionhandle reg, udword mask)
                     regFunctionCall(reg, RPE_DoubleRight, 0, &mask);
                     keyClearSticky(RMOUSE_DOUBLE);
                     bitClear(returnMask, RPE_DoubleRight);
-
                 }
             }
             if (regFlag(RPE_DoubleCentre))
@@ -650,6 +649,7 @@ udword regRegionProcess(regionhandle reg, udword mask)
 
                 }
             }
+#endif
             if (!regInside(reg))
             {                                               //just entered region
                 if (regLeftPressed(reg))
