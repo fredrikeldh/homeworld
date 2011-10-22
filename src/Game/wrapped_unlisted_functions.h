@@ -2,6 +2,8 @@
 
 #define memsize udword
 
+#include "wrap.h"
+
 void partSetTrHandle(trhandle t, udword u0, udword v0, udword u1, udword v1);
 
 udword wrap_partSetTrHandle(Effect *effect, struct etgeffectstatic *stat ,etgfunctioncall *opcode)
