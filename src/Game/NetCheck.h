@@ -44,7 +44,7 @@ extern udword univSyncErrFrame;
 extern udword blobSyncErrFrame;
 #endif
 
-extern FILE *netlogfile;
+void netlogwrite(const void * ptr, size_t size, size_t count);
 
 void recPackRecordInit(void);
 void recPackRecordPacket(ubyte *packet,udword sizeofPacket);

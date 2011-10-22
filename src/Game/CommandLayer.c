@@ -9297,7 +9297,7 @@ void binwriteselection(udword header,SelectCommand *selection)
         }
     }
 
-    fwrite(&sel,sizeofbinnetselection(sel.numShips),1,netlogfile);
+    netlogwrite(&sel,sizeofbinnetselection(sel.numShips),1);
 }
 
 void binwriteship(Ship *ship)
@@ -9309,7 +9309,7 @@ void binwriteship(Ship *ship)
         shipid = ship->shipID.shipNumber;
     }
 
-    fwrite(&shipid,sizeof(uword),1,netlogfile);
+    netlogwrite(&shipid,sizeof(uword),1);
 }
 
 void binwriteanyselection(udword header,SelectAnyCommand *selection)
@@ -9360,7 +9360,7 @@ void binwriteanyselection(udword header,SelectAnyCommand *selection)
         }
     }
 
-    fwrite(&sel,sizeofbinnetanyselection(sel.numTargets),1,netlogfile);
+    netlogwrite(&sel,sizeofbinnetanyselection(sel.numTargets),1);
 }
 
 void clChecksum(void)
@@ -9387,14 +9387,14 @@ void clChecksum(void)
             cmd.ShipID[i] = selection->ShipPtr[i]->shipID.shipNumber;
         }
 
-        fwrite(&cmd,sizeofbinnetCmdLayerInfo(cmd.numShips),1,netlogfile);
+        netlogwrite(&cmd,sizeofbinnetCmdLayerInfo(cmd.numShips),1);
 
         if (cmd.attributes & COMMAND_MASK_FORMATION)
         {
             header = makenetcheckHeader('F','O','R','M');
-            fwrite(&header,sizeof(header),1,netlogfile);
-            fwrite(&command->formation,sizeof(TypeOfFormation)+sizeof(bool),1,netlogfile);
-            fwrite(&command->formation.tacticalState,44,1,netlogfile);
+            netlogwrite(&header,sizeof(header),1);
+            netlogwrite(&command->formation,sizeof(TypeOfFormation)+sizeof(bool),1);
+            netlogwrite(&command->formation.tacticalState,44,1);
         }
 
         if (cmd.attributes & COMMAND_MASK_PROTECTING)
@@ -9411,8 +9411,8 @@ void clChecksum(void)
         {
             case COMMAND_MOVE:
                 header = makenetcheckHeader('M','O','V','E');
-                fwrite(&header,sizeof(header),1,netlogfile);
-                fwrite(&command->move,sizeof(MoveCommand),1,netlogfile);
+                netlogwrite(&header,sizeof(header),1);
+                netlogwrite(&command->move,sizeof(MoveCommand),1);
                 break;
 
             case COMMAND_ATTACK:
@@ -9421,13 +9421,13 @@ void clChecksum(void)
 
             case COMMAND_DOCK:
                 header = makenetcheckHeader('D','O','C','K');
-                fwrite(&header,sizeof(header),1,netlogfile);
-                fwrite(&command->dock,sizeof(DockCommand),1,netlogfile);
+                netlogwrite(&header,sizeof(header),1);
+                netlogwrite(&command->dock,sizeof(DockCommand),1);
                 break;
 
             case COMMAND_LAUNCH_SHIP:
                 header = makenetcheckHeader('L','A','U','N');
-                fwrite(&header,sizeof(header),1,netlogfile);
+                netlogwrite(&header,sizeof(header),1);
                 binwriteship(command->launchship.receiverShip);
                 break;
 
@@ -9436,8 +9436,8 @@ void clChecksum(void)
 
             case COMMAND_BUILDING_SHIP:
                 header = makenetcheckHeader('B','U','L','D');
-                fwrite(&header,sizeof(header),1,netlogfile);
-                fwrite(&command->buildingship,sizeof(ShipType)+sizeof(ShipRace),1,netlogfile);
+                netlogwrite(&header,sizeof(header),1);
+                netlogwrite(&command->buildingship,sizeof(ShipType)+sizeof(ShipRace),1);
                 break;
 
             case COMMAND_SPECIAL:
@@ -9446,15 +9446,15 @@ void clChecksum(void)
 
             case COMMAND_MILITARY_PARADE:
                 header = makenetcheckHeader('M','I','L','P');
-                fwrite(&header,sizeof(header),1,netlogfile);
+                netlogwrite(&header,sizeof(header),1);
                 binwriteship(command->militaryParade->aroundShip);
-                fwrite(&command->militaryParade->paradeType,sizeof(sdword),1,netlogfile);
+                netlogwrite(&command->militaryParade->paradeType,sizeof(sdword),1);
                 break;
 
             case COMMAND_MP_HYPERSPACING:
                 header = makenetcheckHeader('M','P','H','P');
-                fwrite(&header,sizeof(header),1,netlogfile);
-                fwrite(&command->hyperspaceState,sizeof(sdword),1,netlogfile);
+                netlogwrite(&header,sizeof(header),1);
+                netlogwrite(&command->hyperspaceState,sizeof(sdword),1);
                 break;
         }
 

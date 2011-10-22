@@ -21,6 +21,13 @@
 #include "Universe.h"
 #include "UnivUpdate.h"
 
+FILE *netlogfile;
+
+void netlogwrite(const void * ptr, size_t size, size_t count)
+{
+	fwrite(ptr, size, count, netlogfile);
+}
+
 #if SYNC_CHECK
 udword randSyncErr;
 udword univSyncErr;
