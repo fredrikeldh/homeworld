@@ -2042,7 +2042,7 @@ udword statsGetStatChecksum(void)
         intCheck += universe.players[i].researchinfo.HasTechnology;
         intCheck += universe.players[i].researchinfo.listoftopics.num;
 
-        if ((netlogfile) && (logEnable == LOG_VERBOSE))
+        if (logEnable == LOG_VERBOSE)
         {
 #if BINNETLOG
             binnetlogCheatInfo bnc;
@@ -2054,9 +2054,9 @@ udword statsGetStatChecksum(void)
             bnc.classtotals = classtotals;
             bnc.hastechnology = universe.players[i].researchinfo.HasTechnology;
             bnc.listoftopicsnum = universe.players[i].researchinfo.listoftopics.num;
-            fwrite(&bnc,sizeof(bnc),1,netlogfile);
+            netlogwrite(&bnc,sizeof(bnc),1);
 #else
-            fprintf(netlogfile,"  CDET:%d %d %d %d %d %d\n",universe.players[i].totalships,universe.players[i].resourceUnits,
+            netlogprintf("  CDET:%d %d %d %d %d %d\n",universe.players[i].totalships,universe.players[i].resourceUnits,
                                 shiptotals,classtotals,universe.players[i].researchinfo.HasTechnology,universe.players[i].researchinfo.listoftopics.num);
 #endif
         }
@@ -2082,17 +2082,17 @@ udword statsGetStatChecksum(void)
 #endif
         }
 
-        if ((netlogfile) && (logEnable == LOG_VERBOSE))
+        if (logEnable == LOG_VERBOSE)
         {
 #if BINNETLOG
-            fwrite(&bnb,sizeof(bnb),1,netlogfile);
+            netlogwrite(&bnb,sizeof(bnb),1);
 #else
-            fprintf(netlogfile,"BOUNT:");
+            netlogprintf("BOUNT:");
             for (i=0;i<universe.numPlayers;i++)
             {
-                fprintf(netlogfile," %d",universe.players[i].bounty);
+                netlogprintf(" %d",universe.players[i].bounty);
             }
-            fprintf(netlogfile,"\n");
+            netlogprintf("\n");
 #endif
         }
 

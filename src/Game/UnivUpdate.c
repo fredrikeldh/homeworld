@@ -5022,7 +5022,7 @@ real32 univGetChecksum(sdword *numShipsInChecksum)
             y += ship->posinfo.position.y;
             z += ship->posinfo.position.z;
 
-            if ((netlogfile) && (logEnable == LOG_VERBOSE))
+            if (logEnable == LOG_VERBOSE)
             {
 #if BINNETLOG
                 binnetlogShipInfo bns;
@@ -5053,9 +5053,9 @@ real32 univGetChecksum(sdword *numShipsInChecksum)
                 bns.vx = ship->posinfo.velocity.x;  bns.vy = ship->posinfo.velocity.y;    bns.vz = ship->posinfo.velocity.z;
                 bns.fuel = ship->fuel;
 
-                fwrite(&bns, sizeof(bns), 1 ,netlogfile);
+                netlogwrite(&bns, sizeof(bns), 1);
 #else
-                fprintf(netlogfile,"S:%d %d %d %d (%f %f %f) %f %d %d %d %d (%d %d)\n",ship->playerowner->playerIndex,ship->shiprace,ship->shiptype,
+                netlogprintf("S:%d %d %d %d (%f %f %f) %f %d %d %d %d (%d %d)\n",ship->playerowner->playerIndex,ship->shiprace,ship->shiptype,
                         ship->shipID.shipNumber,ship->posinfo.position.x,ship->posinfo.position.y,ship->posinfo.position.z,ship->fuel,ship->tacticstype,ship->isDodging,ship->DodgeDir,ship->tactics_ordertype,
                         (ship->command == NULL) ? -1 : ship->command->ordertype.order,
                         (ship->command == NULL) ? -1 : ship->command->ordertype.attributes);
@@ -5072,9 +5072,9 @@ real32 univGetChecksum(sdword *numShipsInChecksum)
                     bnr.x = collect->resourceVolumePosition.x;
                     bnr.y = collect->resourceVolumePosition.y;
                     bnr.z = collect->resourceVolumePosition.z;
-                    fwrite(&bnr, sizeof(bnr), 1 ,netlogfile);
+                    netlogwrite(&bnr, sizeof(bnr), 1);
 #else
-                    fprintf(netlogfile,"R:%d ",(collect->resource != NULL) ? collect->resource->resourceID.resourceNumber : -1,collect->resourceVolumeSize,
+                    netlogprintf("R:%d ",(collect->resource != NULL) ? collect->resource->resourceID.resourceNumber : -1,collect->resourceVolumeSize,
                             collect->resourceVolumePosition.x,collect->resourceVolumePosition.y,collect->resourceVolumePosition.z);
 #endif
                 }
@@ -5098,14 +5098,14 @@ real32 univGetChecksum(sdword *numShipsInChecksum)
                         }
                         orflag <<= 1;
                     }
-                    fwrite(&bnd, sizeof(bnd), 1 ,netlogfile);
+                    netlogwrite(&bnd, sizeof(bnd), 1);
 #else
-                    fprintf(netlogfile,"B:%d P:",dockInfo->busyness);
+                    netlogprintf("B:%d P:",dockInfo->busyness);
                     for (i=0;i<dockInfo->numDockPoints;i++)
                     {
-                        fprintf(netlogfile," %d",dockInfo->dockpoints[i].thisDockBusy ? 1 : 0);
+                        netlogprintf(" %d",dockInfo->dockpoints[i].thisDockBusy ? 1 : 0);
                     }
-                    fprintf(netlogfile,"\n");
+                    netlogprintf("\n");
 #endif
                 }
                 if (ship->madBindings != NULL)
@@ -5122,10 +5122,10 @@ real32 univGetChecksum(sdword *numShipsInChecksum)
                     bnm.info[6] = ship->cuedAnimationType;
                     bnm.info[7] = 0;
                     bnm.info[8] = 0;
-                    fwrite(&bnm, sizeof(bnm), 1 ,netlogfile);
+                    netlogwrite(&bnm, sizeof(bnm), 1);
 #else
                     //                  flags,guns,wings,dock,special,index,type
-                    fprintf(netlogfile,"M: %df %dg %dw %dd %ds %di %dt\n", ship->madAnimationFlags,ship->madGunStatus,ship->madWingStatus, ship->madDoorStatus, ship->madSpecialStatus,ship->cuedAnimationIndex,ship->cuedAnimationType);
+                    netlogprintf("M: %df %dg %dw %dd %ds %di %dt\n", ship->madAnimationFlags,ship->madGunStatus,ship->madWingStatus, ship->madDoorStatus, ship->madSpecialStatus,ship->cuedAnimationIndex,ship->cuedAnimationType);
 #endif
                 }
             }
@@ -5138,7 +5138,7 @@ real32 univGetChecksum(sdword *numShipsInChecksum)
 #ifdef HW_BUILD_FOR_DEBUGGING
 
 #if BINNETLOG
-    if ((netlogfile) && (logEnable == LOG_VERBOSE))
+    if (logEnable == LOG_VERBOSE)
     {
         objnode = universe.BulletList.head;
         while (objnode != NULL)
@@ -5164,14 +5164,14 @@ real32 univGetChecksum(sdword *numShipsInChecksum)
                 bi.DFGFieldEntryTime = bullet->DFGFieldEntryTime;
                 bi.BulletSpeed = 0.0f;
                 bi.collBlobSortDist = (bullet->collMyBlob) ? bullet->collMyBlob->sortDistance : 0.0f;
-                fwrite(&bi,sizeof(bi),1,netlogfile);
+                netlogwrite(&bi,sizeof(bi),1);
 #else
                 if (bullet->playerowner!= NULL)
-                    fprintf(netlogfile,"B: %d %d ", universe.univUpdateCounter, bullet->playerowner->playerIndex);
+                    netlogprintf("B: %d %d ", universe.univUpdateCounter, bullet->playerowner->playerIndex);
                 else
-                    fprintf(netlogfile,"B: %d N ", universe.univUpdateCounter);
+                    netlogprintf("B: %d N ", universe.univUpdateCounter);
 
-                fprintf(netlogfile,"(%f %f %f) [%f %f] %f <%f %f> %f %f ",
+                netlogprintf("(%f %f %f) [%f %f] %f <%f %f> %f %f ",
                         bullet->posinfo.position.x,
                         bullet->posinfo.position.y,
                         bullet->posinfo.position.z,
@@ -5184,9 +5184,9 @@ real32 univGetChecksum(sdword *numShipsInChecksum)
                         bullet->BulletSpeed);
 
                 if (bullet->collMyBlob)
-                    fprintf(netlogfile, "%f\n", bullet->collMyBlob->sortDistance);
+                    netlogprintf("%f\n", bullet->collMyBlob->sortDistance);
                 else
-                    fprintf(netlogfile, "N\n");
+                    netlogprintf("N\n");
 #endif
             }
 
@@ -5196,7 +5196,7 @@ real32 univGetChecksum(sdword *numShipsInChecksum)
 #endif
 
 #if BINNETLOG
-    if ((netlogfile) && (logEnable == LOG_VERBOSE))
+    if (logEnable == LOG_VERBOSE)
     {
         clChecksum();
     }
@@ -5212,7 +5212,7 @@ real32 univGetChecksum(sdword *numShipsInChecksum)
             y += derelict->posinfo.position.y;
             z += derelict->posinfo.position.z;
 
-            if ((netlogfile) && (logEnable == LOG_VERBOSE))
+            if (logEnable == LOG_VERBOSE)
             {
 #if BINNETLOG
                 binnetDerelictInfo di;
@@ -5222,9 +5222,9 @@ real32 univGetChecksum(sdword *numShipsInChecksum)
                 di.health = derelict->health;
                 di.x = derelict->posinfo.position.x; di.y = derelict->posinfo.position.y; di.z = derelict->posinfo.position.z;
                 di.vx = derelict->posinfo.velocity.x; di.vy = derelict->posinfo.velocity.y; di.vz = derelict->posinfo.velocity.z;
-                fwrite(&di,sizeof(di),1,netlogfile);
+                netlogwrite(&di,sizeof(di),1);
 #else
-                fprintf(netlogfile,"  Derelict:%d %s (%f %f %f)\n",derelict->derelictID.derelictNumber,DerelictTypeToStr(derelict->derelicttype),
+                netlogprintf("  Derelict:%d %s (%f %f %f)\n",derelict->derelictID.derelictNumber,DerelictTypeToStr(derelict->derelicttype),
                         derelict->posinfo.position.x,derelict->posinfo.position.y,derelict->posinfo.position.z);
 #endif
             }
@@ -5244,7 +5244,7 @@ real32 univGetChecksum(sdword *numShipsInChecksum)
         z += resource->posinfo.position.z;
 
 #if BINNETLOG
-        if ((netlogfile) && (logEnable == LOG_VERBOSE))
+        if (logEnable == LOG_VERBOSE)
         {
         binnetResourceInfo ri;
         ri.header = makenetcheckHeader('R','R','R','R');
@@ -5254,7 +5254,7 @@ real32 univGetChecksum(sdword *numShipsInChecksum)
         ri.health = resource->health;
         ri.x = resource->posinfo.position.x; ri.y = resource->posinfo.position.y; ri.z = resource->posinfo.position.z;
         ri.vx = resource->posinfo.velocity.x; ri.vy = resource->posinfo.velocity.y; ri.vz = resource->posinfo.velocity.z;
-        fwrite(&ri,sizeof(ri),1,netlogfile);
+        netlogwrite(&ri,sizeof(ri),1);
         }
 #endif
 
