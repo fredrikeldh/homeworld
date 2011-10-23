@@ -45,7 +45,9 @@
 #ifdef _MACOSX_FIX_MISC
 #include "functions.h"
 #else
-#include "wrapped_functions.h"
+#include "functions.h"
+#include "wrap.h"
+#include "wrap_types.h"
 #endif
 #include "wrapped_unlisted_functions.h"
 #endif
