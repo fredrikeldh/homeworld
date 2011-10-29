@@ -137,6 +137,9 @@ void ssTakeScreenshot(void)
 #ifdef _WIN32
         (void *)VirtualAlloc(NULL, 3 * MAIN_WindowWidth * MAIN_WindowHeight,  // 3 = RGB
             MEM_COMMIT, PAGE_READWRITE);
+#elif defined(EMSCRIPTEN)
+	NULL;
+	//FIXME: find way to make screenshot
 #else
         mmap(NULL, 3 * MAIN_WindowWidth * MAIN_WindowHeight,
             PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
