@@ -141,10 +141,14 @@ static sdword rndHint = 0;
 #endif
 
 #ifdef HW_USE_GLES
+#	ifdef EMSCRIPTEN
+static WGLContext wgl_context = WGL_NO_CONTEXT;
+#	else
 static EGLDisplay *egl_display = EGL_NO_DISPLAY;
 static EGLSurface egl_surface = EGL_NO_SURFACE;
 static EGLContext egl_context = EGL_NO_CONTEXT;
 static EGLConfig egl_config;
+#	endif
 #else
 PFNGLBINDBUFFERPROC glBindBuffer = 0;
 PFNGLDELETEBUFFERSPROC glDeleteBuffers = 0;
@@ -858,6 +862,9 @@ bool setupPixelFormat()
 	int FSAA = 0; //os_config_read_uint( NULL, "FSAA", 1 )
 #ifdef HW_USE_GLES
     SDL_SysWMinfo info;
+#	ifdef EMSCRIPTEN
+	WGLContext new_context = WGL_NO_CONTEXT;
+#	else
     EGLint num_config = 1;
     EGLint attribs[] = {
         EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT,
@@ -867,6 +874,7 @@ bool setupPixelFormat()
     };
     EGLContext new_context = EGL_NO_CONTEXT;
     EGLSurface new_surface = EGL_NO_SURFACE;
+#	endif //EMSCRIPTEN
 #endif
 
     // don't bother doing anything if nothing's actually changed
@@ -915,7 +923,35 @@ bool setupPixelFormat()
         fprintf(stderr, "EGL cannot use this SDL version\n");
         return FALSE;
     }
+#	ifdef EMSCRIPTEN
+	if( !wglInitialize(NULL, NULL) )
+	{
+		fprintf(stderr, "WGL failed to initialize: code 0x%x\n", wglGetError());
+		return FALSE;
+	}
+	
+	//FIXME: get real context
+	new_context = wglGetContext(0);
+	
+	if( new_context == WGL_NO_CONTEXT )
+	{
+		fprintf(stderr, "WGL failed to create context: code 0x%x\n", wglGetError());
+		return FALSE;
+	}
+	
+	if( !wglMakeCurrent(new_context) )
+	{
+		fprintf(stderr, "WGL failed to change current surface: 0x%x\n", eglGetError());
+		return FALSE;
+	}
 
+	if( wgl_context != WGL_NO_CONTEXT )
+	{
+		wglMakeCurrent(WGL_NO_CONTEXT);
+		wglDestroyContext(wgl_context);
+	}
+	wgl_context = new_context;
+#	else
     egl_display = eglGetDisplay((EGLNativeDisplayType)info.info.x11.gfxdisplay);
     if (egl_display == EGL_NO_DISPLAY) {
         fprintf(stderr, "EGL found no available displays\n");
@@ -956,6 +992,7 @@ bool setupPixelFormat()
     }
     egl_context = new_context;
     egl_surface = new_surface;
+#	endif
 #elif defined HW_USE_GL
 	if ( FSAA ) {
 	    SDL_GL_SetAttribute( SDL_GL_MULTISAMPLEBUFFERS, 1 );
@@ -1066,6 +1103,10 @@ sdword rndSmallInit(rndinitdata* initData, bool GL)
         /* Kill the window we created. */
         flags = SDL_WasInit(SDL_INIT_EVERYTHING);
 #ifdef HW_USE_GLES
+#	ifdef EMSCRIPTEN
+	wglMakeCurrent(WGL_NO_CONTEXT);
+	wglDestroyContext(wgl_context);
+#	else
         eglMakeCurrent(egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
         eglDestroyContext(egl_display, egl_context);
         egl_config = EGL_NO_CONTEXT;
@@ -1073,6 +1114,7 @@ sdword rndSmallInit(rndinitdata* initData, bool GL)
         egl_surface = EGL_NO_SURFACE;
         eglTerminate(egl_display);
         egl_display = EGL_NO_DISPLAY;
+#	endif //EMSCRIPTEN
 #endif //HW_USE_GLES
         if (flags & ~SDL_INIT_VIDEO)
             SDL_QuitSubSystem(SDL_INIT_VIDEO);
@@ -1184,6 +1226,10 @@ void rndClose(void)
             memFree(stararray);
     }
 #ifdef HW_USE_GLES
+#ifdef EMSCRIPTEN
+	wglMakeCurrent(WGL_NO_CONTEXT);
+	wglDestroyContext(wgl_context);
+#else
     eglMakeCurrent(egl_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
     eglDestroyContext(egl_display, egl_context);
     egl_config = EGL_NO_CONTEXT;
@@ -1191,7 +1237,8 @@ void rndClose(void)
     egl_surface = EGL_NO_SURFACE;
     eglTerminate(egl_display);
     egl_display = EGL_NO_DISPLAY;
-#endif
+#endif //EMSCRIPTEN
+#endif //HW_USE_GLES
     if (flags ^ SDL_INIT_VIDEO)
         SDL_QuitSubSystem(SDL_INIT_VIDEO);
     else
@@ -4668,7 +4715,11 @@ void rndFlush(void)
     glFlush();
     primErrorMessagePrint();
 #ifdef HW_USE_GLES
+#	ifdef EMSCRIPTEN
+	//TODO: Swap not needed!?
+#	else
     eglSwapBuffers(egl_display, egl_surface);
+#	endif //EMSCRIPTEN
 #elif defined HW_USE_GL
     SDL_GL_SwapBuffers();
 #endif
