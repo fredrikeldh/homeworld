@@ -106,13 +106,12 @@ typedef struct
 
 typedef struct
 {
-    udword       HasTechnology;         // what tech this player has
+    bitflag32    HasTechnology;         // what tech this player has
     bool         CanDoResearch;         // are they allowed to do research
     TechStatics *techstat;              // statics for that technology
     LinkedList   listoftopics;          // list of topics being researched for this player
     ResearchLab  researchlabs[NUM_RESEARCHLABS];  // list of labs for this player
 } PlayerResearchInfo;
-
 
 /*=============================================================================
     Data:
