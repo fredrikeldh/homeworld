@@ -92,6 +92,9 @@ typedef uword   bitflag16;
 typedef udword  bitflag32;
 #ifdef SDL_HAS_64BIT_TYPE
 typedef uqword  bitflag64;
+#elif defined(EMSCRIPTEN)
+#	include <int64.h>
+typedef JSUint64 bitflag64;
 #endif
 
 /*-------------------------------------------------------------------------
