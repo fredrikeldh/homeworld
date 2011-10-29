@@ -47,9 +47,6 @@
 /*-------------------------------------------------------------------------
    Declare basic integer data types
 --------------------------------------------------------------------------*/
-#ifndef SDL_HAS_64BIT_TYPE
-#error 64-bit integer type not supported on this platform.
-#endif
 
 typedef Sint8   sbyte;
 typedef Uint8   ubyte;
@@ -57,8 +54,14 @@ typedef Sint16  sword;
 typedef Uint16  uword;
 typedef Sint32  sdword;
 typedef Uint32  udword;
+#ifdef SDL_HAS_64BIT_TYPE
 typedef Sint64  sqword;
 typedef Uint64  uqword;
+#else
+//
+//#error 64-bit integer type not supported on this platform.
+#endif
+
 typedef float   real32;
 typedef double  real64;
 
@@ -87,7 +90,9 @@ typedef sword   bool16;
 typedef ubyte   bitflag8;
 typedef uword   bitflag16;
 typedef udword  bitflag32;
+#ifdef SDL_HAS_64BIT_TYPE
 typedef uqword  bitflag64;
+#endif
 
 /*-------------------------------------------------------------------------
 	Functions for converting endian-specific values
