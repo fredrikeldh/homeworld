@@ -216,7 +216,10 @@ mrKeyFunction[] =
 #if MR_TEST_HPB
     {{OKEY,   0,      0,      0}, 1, RPE_KeyDown},
 #endif
+
+#if !SDL_VERSION_ATLEAST(1,3,0)
     {{PLUSMINUS,    0,      0,      0},     1,  RPE_KeyDown            },
+#endif
     {{NUMPLUSKEY,   0,      0,      0},     1,  RPE_KeyDown | RPE_KeyUp},
     {{PLUSKEY,      0,      0,      0},     1,  RPE_KeyDown | RPE_KeyUp},
     {{NUMMINUSKEY,  0,      0,      0},     1,  RPE_KeyDown | RPE_KeyUp},
