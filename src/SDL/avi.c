@@ -35,7 +35,7 @@
     #include "wave.h"
 #endif
 
-#ifdef HW_ENABLE_MOVIES
+#if defined(HW_ENABLE_MOVIES) && !defined(EMSCRIPTEN)
     #include <libavformat/avformat.h>
     #include <libavcodec/avcodec.h>
     #include <libswscale/swscale.h>
@@ -62,7 +62,7 @@ int aviHasAudio = 0;
 // Set to 1 if you want to watch the Intros.
 udword aviPlayIntros = 0;
 
-#ifdef HW_ENABLE_MOVIES
+#if defined(HW_ENABLE_MOVIES) && !defined(EMSCRIPTEN)
 AVFormatContext *pFormatCtx    = NULL;
 AVCodecContext  *pCodecCtx     = NULL;
 AVStream        *streamPointer = NULL;
@@ -165,7 +165,7 @@ void CALLBACK aviTimeProc(UINT uid, UINT msg, DWORD dwUser, DWORD dw1, DWORD dw2
 
 #endif	/* _WIN32 */
 
-#ifdef HW_ENABLE_MOVIES
+#if defined(HW_ENABLE_MOVIES) && !defined(EMSCRIPTEN)
 static GLint strtex;
 static int texinit = 0;
 
@@ -250,7 +250,7 @@ void aviPlayLoop()
 dbgMessage("aviPlayLoop:");
 #endif
 
-#ifdef HW_ENABLE_MOVIES
+#if defined(HW_ENABLE_MOVIES) && !defined(EMSCRIPTEN)
 
     int frame = 0;
     int numBytes;
@@ -349,7 +349,7 @@ dbgMessagef("aviPlayLoop: play_time=%d ", SDL_GetTicks() - start_time);
 int aviStart(char* filename)
 {
 
-#ifdef HW_ENABLE_MOVIES
+#if defined(HW_ENABLE_MOVIES) && !defined(EMSCRIPTEN)
 
     int i = 0;
     int alignDoubleSet = 1;
@@ -557,7 +557,7 @@ int aviGetSamples(void* pBuf, long* pNumSamples, long nBufSize)
 
 void aviFileExit (void){
 
-#ifdef HW_ENABLE_MOVIES
+#if defined(HW_ENABLE_MOVIES) && !defined(EMSCRIPTEN)
     av_close_input_file(pFormatCtx);
 #endif
 
@@ -580,7 +580,9 @@ int aviStop(void)
    
     SDL_Delay(500); // Give the audio time to stop
 
+#ifndef EMSCRIPTEN
     avcodec_close(pCodecCtx); 
+#endif //EMSCRIPTEN
     aviFileExit();
 #endif
     return 1;
