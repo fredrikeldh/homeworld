@@ -12,8 +12,12 @@ import os, shutil
 #print os.path.relpath(".", "llvm/emscripten/tools/shared.py")
 
 # ugly hack since python script assumes far too much
+print __file__
 __file__ = str(Dir('#/llvm/emscripten/dummy/dummy'))
-exec(open(str(Dir('#/llvm/emscripten/tools')) + '/shared.py', 'r').read())
+__rootpath__ = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+def path_from_root(*pathelems):
+  return os.path.join(__rootpath__, *pathelems)
+exec(open(path_from_root('tools', 'shared.py'), 'r').read())
 
 depends = ['c2bc.py', 'dragonegg.so']
 
@@ -71,6 +75,7 @@ env.Replace(LD   = LLVM_LD)
 #conf = Configure(env)
 
 env.AppendUnique(CCFLAGS="-S")
+# TODO: Check whether this include is still needed
 env.AppendUnique(CPPPATH="emscripten/system/include")
 
 #env.ParseConfig('sdl-config --cflags --libs')
@@ -83,7 +88,7 @@ env.AppendUnique(CPPPATH="emscripten/system/include")
 #env.Append(CPPDEFINES=defi)
 
 #env.AppendUnique(CPPPATH=["/usr/include/GLES2"])#"/usr/include/x86_64-linux-gnu",
-env["OBJSUFFIX"] = ".bc"
+env["OBJSUFFIX"] = ".js"
 
 descend(['src'])
 
