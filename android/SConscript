@@ -1,6 +1,67 @@
 #!/usr/bin/env python
 # Import everything in global
 Import('*')
+import urllib2, bz2
 
-#if is_android():
+if not is_android():
+	return
+'''
+md5 = "ftp://ftp.gwdg.de/pub/misc/gcc/releases/gcc-4.6.2/md5.sum"
+
+tools = [
+    ["ftp://ftp.gwdg.de/pub/misc/gcc/releases/gcc-4.6.2/", "gcc-4.6.2.tar.bz2"],
+    ["ftp://ftp.gwdg.de/pub/misc/gcc/releases/gcc-4.6.2/", "gcc-g++-4.6.2.tar.bz2"]
+]
+
+def buildTools():
+    for tool in tools:
+        try:
+            file = open("tools/" + tool[1], "rb")
+        except IOError:
+            file = None
+        
+        if file is None: # AKA not present
+            file = urllib2.urlopen(tool[0] + tool[1])
+            #TODO: Verify with md5
+        decomp = bz2.BZ2Decompressor
+        for chunk in file:
+            decomp.decompress(chunk)
+            
+    test = ""
+'''
+
+var = Variables(None, ARGUMENTS)
+var.AddVariables(PathVariable('ANDROID_SDK', 'Android SDK path', None))
+# Add Android build system
+env.tools.append('android', variables=var)
+
+def NDKBuild():
+    abis = []
+
+    if is_arm():
+        abis.append('armeabi')
+    
+    if is_arm7():
+        abis.append('armeabi-v7a')
+    
+    if is_32():
+        abis.append('x86')
+    
+    if len(abis) is 0:
+        return
+    
+    app_abis = " ".join(abis)
+    
+    libs = env.NdkBuild('libmyshared.so', ['jni/my_code.c'],
+                        app_abis=app_abis)
+
+
+# First we have to build a current version of android toolchain
+#buildTools()
+
+descend('jni')
+                        
+env.AndroidApp('HomeAlpha', native_folder='#libs')
+
+
 
