@@ -83,18 +83,17 @@ option_shift = [
 
 options = [
 	#FIXME: NPAPI is linux only for now!!
-	#FIXME: Android is ARM only for now!!
 	Options(
 		SHIFT        = 1 << platform_shift,
-		DESCRIPTIONS = ["NaCL"    , "LLVM"    , "NPAPI"     , "Android"    , "IOS"    ],
-		DEFINES      = ["__nacl__", "__llvm__", "__np_api__", "__android__", "__ios__"],
-		NAMES        = ["nacl"    , "llvm"    , "npapi"     , "android"    , "ios"    ]
+		DESCRIPTIONS = ["NaCL"    , "JavaScript"    , "Android"    , "IOS"    ],
+		DEFINES      = ["__nacl__", "__emscripten__", "__android__", "__ios__"],
+		NAMES        = ["nacl"    , "js"            , "android"    , "ios"    ]
 	),
 	Options(
 		SHIFT        = 1 << bits_shift,
-		DESCRIPTIONS = ["32-bit", "64-bit"  ],
-		DEFINES      = ["_X86"  , "_X86_64" ],
-		NAMES        = ["32"    , "64"      ]
+		DESCRIPTIONS = ["32-bit", "64-bit" , "ARM", "ARM v7a"],
+		DEFINES      = ["_X86"  , "_X86_64", "ARM", "ARM7"   ],
+		NAMES        = ["32"    , "64"     , "arm", "arm v7a"]
 	),
 	Options(
 		SHIFT        = 1 << build_shift,
@@ -124,10 +123,14 @@ gl_index       = 4
 
 # The configuration has to match the upper indexes!
 configurations = [
-	['llvm'   , None, 'debug', 'game', 'gles2'],
-	['npapi'  , '32', 'debug', 'game', 'gles2'],
-	['npapi'  , '64', 'debug', 'game', 'gles2'],
-	['android', '32', 'debug', 'game', 'gles2']
+	['js'     , None   , 'debug', 'game', 'gles2'],
+	['android', '32'   , 'debug', 'game', 'gles2'],
+	['android', '32'   , 'debug', 'game', 'gles2'],
+	['android', 'arm'  , 'debug', 'game', 'gles2'],
+	['android', 'armv7', 'debug', 'game', 'gles2'],
+	['android', '32'   , 'debug', 'game', 'gles1'],
+	['android', 'arm'  , 'debug', 'game', 'gles1'],
+	['android', 'armv7', 'debug', 'game', 'gles1'],
 ]
 
 def getOption(index, name):
@@ -146,6 +149,7 @@ for configuration in configurations:
 # Parse options
 #
 
+'''
 parser = argparse.ArgumentParser(description='Add build variants')
 set_options = []
 
@@ -160,7 +164,7 @@ for option in options:
 		)
 
 parser.parse_args()
-
+'''
 #
 # Check which bits were set
 #
@@ -258,6 +262,12 @@ def is_32():
 def is_64():
 	return is_bits('64')
 
+def is_arm():
+	return is_bits('arm')
+
+def is_armv7():
+	return is_arm('armv7')
+
 def is_game(NAME):
 	return is_name(current[game_index], NAME)
 
@@ -273,11 +283,8 @@ def is_platform(NAME):
 def is_nacl():
 	return is_platform("nacl")
 
-def is_llvm():
-	return is_platform("llvm")
-
-def is_npapi():
-	return is_platform("npapi")
+def is_js():
+	return is_platform("js")
 
 def is_android():
 	return is_platform("android")
@@ -290,6 +297,9 @@ def is_gl(NAME = None):
 		return is_gl('gl')
 	
 	return is_name(current[gl_index], NAME)
+
+def is_gles1():
+	return is_gl('gles1')
 
 def is_gles2():
 	return is_gl('gles2')
@@ -384,7 +394,7 @@ def addProgram(target, source, env = None, LIBS=[], LIBPATH=[]):
 	)
 #end addProgram
 
-Export('defaultEnv', 'getOptionEnv', 'descend', 'topDir', 'addProgram', 'addLibrary', 'tools', 'is_nacl', 'is_llvm', "is_npapi", "is_android", "is_gles2")
+Export('defaultEnv', 'getOptionEnv', 'descend', 'topDir', 'addProgram', 'addLibrary', 'tools', 'is_nacl', 'is_llvm', 'is_android', 'is_gles2', 'is_gles1')
 
 descend(['tools'])
 
