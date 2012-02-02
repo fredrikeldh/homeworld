@@ -266,7 +266,7 @@ def is_arm():
 	return is_bits('arm')
 
 def is_armv7():
-	return is_arm('armv7')
+	return is_bits('armv7')
 
 def is_game(NAME):
 	return is_name(current[game_index], NAME)
