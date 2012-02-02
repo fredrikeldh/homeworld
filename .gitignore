@@ -13,6 +13,7 @@ local.properties
 *.class
 *.Po
 *.a
+*.so
 
 Mac/build
 Mac/Homeworld.xcodeproj/*.mode*
