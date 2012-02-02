@@ -9,6 +9,10 @@ Makefile.in
 HomeworldSDL.big
 local.properties
 *.o
+*.o.d
+*.class
+*.Po
+*.a
 
 Mac/build
 Mac/Homeworld.xcodeproj/*.mode*
