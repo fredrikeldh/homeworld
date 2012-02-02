@@ -125,7 +125,6 @@ gl_index       = 4
 configurations = [
 	['js'     , None   , 'debug', 'game', 'gles2'],
 	['android', '32'   , 'debug', 'game', 'gles2'],
-	['android', '32'   , 'debug', 'game', 'gles2'],
 	['android', 'arm'  , 'debug', 'game', 'gles2'],
 	['android', 'armv7', 'debug', 'game', 'gles2'],
 	['android', '32'   , 'debug', 'game', 'gles1'],
