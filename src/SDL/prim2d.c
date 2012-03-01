@@ -1123,3 +1123,50 @@ real32 primPointLineIntersection(real32 xp, real32 yp, real32 x0, real32 y0, rea
     return((y0 - y1) * xp + (x1 - x0) * yp + (x0 * y1 - y0 * x1));
 }
 
+real32 primScreenToGLX(real32 x)
+{
+	return (x + 0.325f) / (real32)(MAIN_WindowWidth) * 2.0f - 1.0f;
+}
+
+real32 primScreenToGLY(real32 y)
+{
+	return 1.0f - (y + 0.325f) / (real32)(MAIN_WindowHeight) * 2.0f;
+}
+
+real32 primScreenToGLScaleX(real32 x)
+{
+	return x / (real32)(MAIN_WindowWidth) * 2.0f;
+}
+
+real32 primScreenToGLScaleY(real32 y)
+{
+	return y / (real32)(MAIN_WindowHeight) * 2.0f;
+}
+
+sdword primGLToScreenX(real32 x)
+{
+	return MAIN_WindowWidth / 2 + (sdword)(x * (real32)MAIN_WindowWidth / 2.0f);
+}
+
+sdword primGLToScreenY(real32 y)
+{
+	return MAIN_WindowHeight / 2 - (sdword)(y * (real32)MAIN_WindowHeight / 2.0f);
+}
+
+sdword primGLToScreenScaleX(real32 x)
+{
+	return (sdword)(x * (real32)MAIN_WindowWidth / 2.0f);
+}
+
+sdword primGLToScreenScaleY(real32 y)
+{
+	return (sdword)(y * (real32)MAIN_WindowHeight / 2.0f);
+}
+
+bool primPointInRectXY2(real32 r, real32 x, real32 y)
+{
+	return x >= r->x0
+			&& y >= r->y0
+			&& x < r->x1
+			&& y < r->y1;
+}

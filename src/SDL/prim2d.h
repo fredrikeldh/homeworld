@@ -74,17 +74,15 @@ extern sdword primModeEnabled;
 #define primModeSet2() if (!primModeEnabled) primModeSetFunction2();
 #define primModeClear2() if (primModeEnabled) primModeClearFunction2();
 
-#define primScreenToGLX(x) (((real32)(x)+0.325f) / (real32)(MAIN_WindowWidth) * 2.0f - 1.0f)
-#define primScreenToGLY(y) (1.0f - ((real32)(y)+0.325f) / (real32)(MAIN_WindowHeight) * 2.0f)
-#define primScreenToGLScaleX(x) ((real32)(x) / (real32)(MAIN_WindowWidth) * 2.0f)
-#define primScreenToGLScaleY(y) ((real32)(y) / (real32)(MAIN_WindowHeight) * 2.0f)
-#define primGLToScreenX(x) (MAIN_WindowWidth / 2 + (sdword)((x) * (real32)MAIN_WindowWidth / 2.0f))
-#define primGLToScreenY(y) (MAIN_WindowHeight / 2 - (sdword)((y) * (real32)MAIN_WindowHeight / 2.0f))
-#define primGLToScreenScaleX(x) ((sdword)((x) * (real32)MAIN_WindowWidth / 2.0f))
-#define primGLToScreenScaleY(y) ((sdword)((y) * (real32)MAIN_WindowHeight / 2.0f))
-
-#define primPointInRectXY2(r, x, y)   ((x) >= (r)->x0 && (y) >= (r)->y0 && \
-                                     (x) < (r)->x1 && (y) < (r)->y1)
+real32 primScreenToGLX(real32 x);
+real32 primScreenToGLY(real32 y);
+real32 primScreenToGLScaleX(real32 x);
+real32 primScreenToGLScaleY(real32 y);
+sdword primGLToScreenX(real32 x);
+sdword primGLToScreenY(real32 y);
+sdword primGLToScreenScaleX(real32 x);
+sdword primGLToScreenScaleY(real32 y);
+bool primPointInRectXY2(real32 r, real32 x, real32 y);
 
 #if PRIM_ERROR_CHECKING
 #define primErrorMessagePrint()  primErrorMessagePrintFunction(__FILE__, __LINE__)
