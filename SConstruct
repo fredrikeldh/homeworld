@@ -87,7 +87,7 @@ options = [
 		SHIFT        = 1 << platform_shift,
 		DESCRIPTIONS = ["NaCL"    , "JavaScript"    , "Android"    , "IOS"    ],
 		DEFINES      = ["__nacl__", "__emscripten__", "__android__", "__ios__"],
-		NAMES        = ["nacl"    , "js"            , "android"    , "ios"    ]
+		NAMES        = ["nacl"    , "emsc"          , "android"    , "ios"    ]
 	),
 	Options(
 		SHIFT        = 1 << bits_shift,
@@ -123,13 +123,13 @@ gl_index       = 4
 
 # The configuration has to match the upper indexes!
 configurations = [
-	['js'     , None   , 'debug', 'game', 'gles2'],
 	['android', '32'   , 'debug', 'game', 'gles2'],
 	['android', 'arm'  , 'debug', 'game', 'gles2'],
 	['android', 'armv7', 'debug', 'game', 'gles2'],
 	['android', '32'   , 'debug', 'game', 'gles1'],
 	['android', 'arm'  , 'debug', 'game', 'gles1'],
 	['android', 'armv7', 'debug', 'game', 'gles1'],
+	['emsc'   , None   , 'debug', 'game', 'gles2']
 ]
 
 def getOption(index, name):
@@ -282,7 +282,7 @@ def is_platform(NAME):
 def is_nacl():
 	return is_platform("nacl")
 
-def is_js():
+def is_emsc():
 	return is_platform("js")
 
 def is_android():
