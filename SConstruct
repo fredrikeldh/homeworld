@@ -358,6 +358,7 @@ def addLibrary(target, source, ignored = [], env = None, addPaths = [], **kw):
 	slib = env.Library(
 		target,# + getOptionString(),
 		validSources,
+		is_debug=is_debug(),
 		**kw
 	)
 	
@@ -387,6 +388,7 @@ def addProgram(target, source, env = None, **kw):
 	return env.Program(
 		target,
 		source = source,
+		is_debug=is_debug(),
 		**kw
 	)
 #end addProgram
