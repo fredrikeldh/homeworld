@@ -416,7 +416,7 @@ for configuration in configurations:
 		for opt in seq:
 			if not opt is None:
 				joinseq.append(opt.fixed)
-		return " | ".join(joinseq)
+		return seper.join(joinseq)
 
 	desc = joinFixed(" | ", tuple(current))
 	print "Configuring build [" + desc + "]"
