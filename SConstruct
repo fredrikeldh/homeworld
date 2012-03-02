@@ -329,7 +329,7 @@ def getOptionString():
 	
 	return out
 
-def addLibrary(target, source, ignored = [], env = None, addPaths = [], LIBS = [], LIBPATH = []):
+def addLibrary(target, source, ignored = [], env = None, addPaths = [], **kw):
 
 	if env is None:
 		env = getOptionEnv()
@@ -358,8 +358,7 @@ def addLibrary(target, source, ignored = [], env = None, addPaths = [], LIBS = [
 	slib = env.Library(
 		target,# + getOptionString(),
 		validSources,
-		LIBS = LIBS,
-		LIBPATH = LIBPATH
+		**kw
 	)
 	
 	for n in slib:
@@ -367,7 +366,7 @@ def addLibrary(target, source, ignored = [], env = None, addPaths = [], LIBS = [
 	
 	return slib
 
-def addProgram(target, source, env = None, LIBS=[], LIBPATH=[]):
+def addProgram(target, source, env = None, **kw):
 
 	if env is None:
 		env = getOptionEnv()
@@ -388,8 +387,7 @@ def addProgram(target, source, env = None, LIBS=[], LIBPATH=[]):
 	return env.Program(
 		target,
 		source = source,
-		LIBS = LIBS,
-		LIBPATH = LIBPATH
+		**kw
 	)
 #end addProgram
 
