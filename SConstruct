@@ -93,7 +93,7 @@ options = [
 		SHIFT        = 1 << bits_shift,
 		DESCRIPTIONS = ["32-bit", "64-bit" , "ARM", "ARM v7a"],
 		DEFINES      = ["_X86"  , "_X86_64", "ARM", "ARM7"   ],
-		NAMES        = ["32"    , "64"     , "arm", "arm v7a"]
+		NAMES        = ["32"    , "64"     , "arm", "armv7"  ]
 	),
 	Options(
 		SHIFT        = 1 << build_shift,
