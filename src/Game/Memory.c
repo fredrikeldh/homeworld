@@ -1190,21 +1190,15 @@ mempool *memNewGrowthPoolAlloc(sdword length)
     Return      : New pointer or NULL on failure.
 ----------------------------------------------------------------------------*/
 #if MEM_USE_NAMES
-void *memAllocAttemptFunction(sdword length, char *name, udword flags)
+void *memAllocAttemptFunction(size_t length, const char *name, udword flags)
 #else
-void *memAllocAttemptFunction(sdword length, udword flags)
+void *memAllocAttemptFunction(size_t length, udword flags)
 #endif
 {
     sdword iPool;
     mempool *pool;
     ubyte *newPointer = NULL;
 
-#if MEM_ERROR_CHECKING
-    if (length <= 0)
-    {
-        dbgFatalf(DBG_Loc, "Attempted to allocate %d bytes of '%s'", length, name);
-    }
-#endif
     if (!bitTest(flags, MBF_ExtendedPoolOnly))
     {
 #if MEM_USE_NAMES
@@ -1248,6 +1242,22 @@ void *memAllocAttemptFunction(sdword length, udword flags)
     return(newPointer);
 }
 
+void* memAllocAttempt(sdword length, const char* name, udword flags)
+{
+#if MEM_ERROR_CHECKING
+    if (length <= 0)
+    {
+        dbgFatalf(DBG_Loc, "Attempted to allocate %d bytes of '%s'", length, name);
+    }
+#endif
+
+#if MEM_USE_NAMES
+    return memAllocAttemptFunction(length, name, flags);
+#else
+    return memAllocAttemptFunction(length, flags);
+#endif
+}
+
 /*-----------------------------------------------------------------------------
     Name        : memAllocFunction
     Description : Allocates a block of RAM
@@ -1259,20 +1269,14 @@ void *memAllocAttemptFunction(sdword length, udword flags)
         return NULL on allocation failure, rather it will generate a fatal error.
 ----------------------------------------------------------------------------*/
 #if MEM_USE_NAMES
-void *memAllocFunction(sdword length, char *name, udword flags)
+void *memAllocFunction(size_t length, const char *name, udword flags)
 #else
-void *memAllocFunction(sdword length, udword flags)
+void *memAllocFunction(size_t length, udword flags)
 #endif
 {
     ubyte *newPointer = NULL;
     sdword iPool;
     mempool *pool;
-#if MEM_ERROR_CHECKING
-    if (length <= 0)
-    {
-        dbgFatalf(DBG_Loc, "Attempted to allocate %d bytes of '%s'", length, name);
-    }
-#endif
 
     if (!bitTest(flags, MBF_ExtendedPoolOnly))
     {
@@ -1332,6 +1336,19 @@ void *memAllocFunction(sdword length, udword flags)
         }
     }
     return(newPointer);
+}
+
+void* memAlloc(sdword length, const char* name, udword flags)
+{
+#if MEM_ERROR_CHECKING
+    if (length <= 0)
+        dbgFatalf(DBG_Loc, "Attempted to allocate %d bytes of '%s'", length, name);
+#endif
+#if MEM_USE_NAMES
+	return memAllocFunction(length, name, flags);
+#else
+	return memAllocFunction(length, flags);
+#endif
 }
 
 /*-----------------------------------------------------------------------------
