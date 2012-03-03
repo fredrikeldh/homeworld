@@ -3243,11 +3243,11 @@ void nisNewEnvironment(nisplaying *NIS, nisevent *event)
     }
     if (nisPreviousBackground == NULL)
     {
-        nisPreviousBackground = memStringDupeNV(btgLastBackground);
+        nisPreviousBackground = memStringDupe(btgLastBackground);
     }
     if (nisPreviousLighting == NULL)
     {
-        nisPreviousLighting = memStringDupeNV(lightCurrentLighting);
+        nisPreviousLighting = memStringDupe(lightCurrentLighting);
     }
 #ifdef _WIN32
     sprintf(path, "BTG\\%s.btg", env->name);                //load the background
@@ -4307,7 +4307,7 @@ void nisNewNISSet(char *directory, char *field, void *dataToFillIn)
 #endif
     strcat(fileName, nisName);
     dbgAssertOrIgnore(fileExists(fileName, 0));
-    event->param[0] = (memsize)memStringDupeNV(fileName);
+    event->param[0] = (memsize)memStringDupe(fileName);
 #ifdef _WIN32
     strcpy(fileName, "nis\\");
 #else
@@ -4315,7 +4315,7 @@ void nisNewNISSet(char *directory, char *field, void *dataToFillIn)
 #endif
     strcat(fileName, scriptName);
     dbgAssertOrIgnore(fileExists(fileName, 0));
-    event->param[1] = (memsize)memStringDupeNV(fileName);
+    event->param[1] = (memsize)memStringDupe(fileName);
 }
 void nisAttributesSet(char *directory, char *field, void *dataToFillIn)
 {

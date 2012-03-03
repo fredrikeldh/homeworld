@@ -1747,24 +1747,7 @@ foundPool:;
     Return      : newly allocated string
     Note        : Use memFree to free these strings
 ----------------------------------------------------------------------------*/
-char *memStringDupe(char *string)
-{
-    char *newString;
-
-    newString = memAlloc(strlen(string) + 1, string, MBF_String);
-    strcpy(newString, string);
-    return(newString);
-}
-
-/*-----------------------------------------------------------------------------
-    Name        : memStringDupeNV
-    Description : Duplicate a string into non-volatile RAM
-    Inputs      : string - pointer to string to duplicate
-    Outputs     : allocates and strcpy's the string
-    Return      : newly allocated string
-    Note        : Use memFree to free these strings
-----------------------------------------------------------------------------*/
-char *memStringDupeNV(char *string)
+char *memStringDupe(const char *string)
 {
     char *newString;
 

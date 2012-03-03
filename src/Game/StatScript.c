@@ -472,7 +472,7 @@ void scriptSetStringCB(char *directory,char *field,void *dataToFillIn)
 
 void scriptSetStringPtrCB(char *directory,char *field,void *dataToFillIn)
 {
-    *((char **)dataToFillIn) = memStringDupeNV(field);
+    *((char **)dataToFillIn) = memStringDupe(field);
 }
 
 void scriptSetCosAngCB(char *directory,char *field,void *dataToFillIn)

@@ -249,8 +249,7 @@ sdword memClose(memgrowthfreecallback free);
 
 //allocate/free memory blocks
 void memFree(void *pointer);
-char *memStringDupe(char *string);
-char *memStringDupeNV(char *string);
+char *memStringDupe(const char *string);
 
 //utility functions (many stubbed out in retail builds)
 #if MEM_ANALYSIS

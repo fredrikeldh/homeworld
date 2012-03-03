@@ -72,7 +72,7 @@ void trkTrackValueAddFn(char *name, real32 *number, real32 *timer, color c)
     dbgAssertOrIgnore(trkTrackIndex < TRK_NumberTracks - 1);
     trkValue[trkTrackIndex].value = number;
     trkValue[trkTrackIndex].lastValue = *number;
-    trkValue[trkTrackIndex].name = memStringDupeNV(name);
+    trkValue[trkTrackIndex].name = memStringDupe(name);
     trkValue[trkTrackIndex].timer = timer;
     trkValue[trkTrackIndex].lastTime = *timer;
     trkValue[trkTrackIndex].c = c;

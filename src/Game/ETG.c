@@ -1576,9 +1576,9 @@ void etgEffectTestKey(char *directory,char *field,void *dataToFillIn)
 #if ETG_VERBOSE_LEVEL >= 1
     dbgMessagef("Adding effect test key '%c' to test effect '%s' with vector from '%s'", key, effectName, lightName);
 #endif
-    etgTestKey[etgTestKeyIndex].type = memStringDupeNV(type);
-    etgTestKey[etgTestKeyIndex].lightName = memStringDupeNV(lightName);
-    etgTestKey[etgTestKeyIndex].effectName = memStringDupeNV(effectName);
+    etgTestKey[etgTestKeyIndex].type = memStringDupe(type);
+    etgTestKey[etgTestKeyIndex].lightName = memStringDupe(lightName);
+    etgTestKey[etgTestKeyIndex].effectName = memStringDupe(effectName);
     etgTestKey[etgTestKeyIndex].region = regKeyChildAlloc(ghMainRegion, etgTestKeyIndex, RPE_KeyDown, (regionfunction) etgEffectTest, 1, key);
     etgTestKey[etgTestKeyIndex].nTimes = 1;
     etgTestKey[etgTestKeyIndex].iTime = 0;
@@ -2745,7 +2745,7 @@ etgeffectstatic *etgEffectStaticFind(char *name, bool bRegister)
     */
 #endif
     newStatic = memAlloc(sizeof(etgeffectstatic), "EffectStatic", NonVolatile);
-    newStatic->name = memStringDupeNV(name);
+    newStatic->name = memStringDupe(name);
     newStatic->nParticleBlocks = 0xffffffff;                //mark as not yet allocated
     free->effectStatic = newStatic;                         //store the effect reference
     free->loadCount = etgEventLoadCount;                    //store the effect load counter
@@ -4238,7 +4238,7 @@ meshdata *etgMeshRegister(char *filename)
         dbgFatalf(DBG_Loc, "All %d slots in mesh registry used when loading '%s'", ETG_NumberMeshes, filename);
     }
 #endif
-    free->filename = memStringDupeNV(filename);
+    free->filename = memStringDupe(filename);
     free->mesh = meshLoad(filename);
     return(free->mesh);
 }
