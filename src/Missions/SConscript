@@ -48,6 +48,7 @@ def preprocess(name):
 		filename = names[0]
 		processedLevel = filename + ".kp"
 		processedLevel = preprocessOne(level, directory + "/" + processedLevel)
+		env.Depends(processedLevel, Glob("../Game/*.h"))
 		processedLevels.append(processedLevel)
 	
 	return processedLevels
