@@ -1789,9 +1789,9 @@ char *memStringDupeNV(char *string)
                     be optimized.
 ----------------------------------------------------------------------------*/
 #if MEM_USE_NAMES
-void *memReallocFunction(void *currentPointer, sdword newSize, char *name, udword flags)
+void *memReallocFunction(void *currentPointer, size_t newSize, char *name, udword flags)
 #else
-void *memReallocFunction(void *currentPointer, sdword newSize, udword flags)
+void *memReallocFunction(void *currentPointer, size_t newSize, udword flags)
 #endif
 {
     void *newPointer;
@@ -1820,6 +1820,14 @@ void *memReallocFunction(void *currentPointer, sdword newSize, udword flags)
     memcpy(newPointer, currentPointer, min(newSize, oldLength));
     memFree(currentPointer);
     return(newPointer);
+}
+
+void* memRealloc(void* currentPointer, sdword newSize, const char *name, udword flags)
+{
+#if MEM_USE_NAMES
+	return memReallocFunction(currentPointer, newSize, name, flags);
+#else
+	return memReallocFunction(currentPointer, newSize, flags);
 }
 
 /*-----------------------------------------------------------------------------

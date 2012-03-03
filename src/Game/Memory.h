@@ -300,16 +300,15 @@ extern mempool memMainPool;
 //name-specific stuff
 void* memAlloc(sdword l, const char* name, udword flags);
 void* memAllocAttempt(sdword l, const char* name, udword flags);
+void* memRealloc(void* currentPointer, sdword newSize, const char *name, udword flags);
 #if MEM_USE_NAMES
 #define memNameSet(c, s)    memNameSetFunction((c), (s))
 #define mbhNameSet(c, s)    mbhNameSetFunction((c), (s))
 #define memNameSetLong(c, s)    memNameSetFunction((c), (s))
-#define memRealloc(p, l, n, f) memReallocFunction((p), (l), (n), (f));
 #else
 #define memNameSet(c, s)
 #define mbhNameSet(c, s)
 #define memNameSetLong(c, s)
-#define memRealloc(p, l, n, f) memReallocFunction((p), (l), (f));
 #endif//MEM_USE_NAMES
 
 //block size macros
@@ -367,11 +366,6 @@ sdword memReset(void);
 sdword memClose(memgrowthfreecallback free);
 
 //allocate/free memory blocks
-#if MEM_USE_NAMES
-void *memReallocFunction(void *currentPointer, sdword newSize, char *name, udword flags);
-#else
-void *memReallocFunction(void *currentPointer, sdword newSize, udword flags);
-#endif
 void memFree(void *pointer);
 char *memStringDupe(char *string);
 char *memStringDupeNV(char *string);
