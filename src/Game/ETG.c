@@ -7304,11 +7304,11 @@ udword etgCos(real32 ang)
     Outputs     :
     Return      : number of effects detached
 ----------------------------------------------------------------------------*/
-sdword etgDetatchThisOwner(Effect *effect, Ship *owner, sdword nToFind)
+sdword etgDetatchThisOwner(Effect *effect, Ship *owner, size_t nToFind)
 {
     Node *fNode, *bNode;
     Effect *thisEffect;
-    sdword nDetached;
+    size_t nDetached = 0;
 #if ETG_DETATCH_STATS
     static int nDetachRequests = 0;
     static int nTotalDetached = 0;
