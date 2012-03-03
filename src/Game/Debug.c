@@ -63,6 +63,8 @@ char *dbgStackDump(void)
 #elif defined (__GNUC__) && defined (__i386__)
     __asm__ __volatile__ ( "movl %%esp, %0\n\t" : "=r" (_ESP) );
 #endif
+#else
+    _ESP = 0;
 #endif //(_USE_ASM)
 
     _ESP = _ESP & (~3);                                     //round off to dword boundary
