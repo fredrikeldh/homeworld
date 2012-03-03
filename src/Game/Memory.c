@@ -1834,10 +1834,11 @@ void* memRealloc(void* currentPointer, sdword newSize, const char *name, udword 
     Return      : available memory, in bytes
 ----------------------------------------------------------------------------*/
 #if MEM_ANALYSIS
-sdword memFreeMemGet(mempool *pool)
+size_t memFreeMemGet()
 {
+	mempool* pool = &memMainPool;
     memcookie *thisCookie, *nextCookie;
-    sdword freeMem = 0;
+    size_t freeMem = 0;
 
     thisCookie = pool->first;                                  //start walk from very start of heap
 

@@ -200,7 +200,6 @@ extern taskhandle memStatsTaskHandle;
 DECLARE_TASK(memStatsTaskFunction);
 extern memcookiename memStatsCookieNames[MS_NumberCookieNames];
 #endif
-extern mempool memMainPool;
 
 /*=============================================================================
     Macros:
@@ -271,7 +270,7 @@ sdword memClearDword(void *dest, udword pattern, sdword nDwords);
 char *memStrncpy(char *dest, char *source, sdword count);
 
 #if MEM_ANALYSIS
-sdword memFreeMemGet(mempool *pool);
+size_t memFreeMemGet();
 #endif
 
 const memsize * check_mem(const memsize * data);
