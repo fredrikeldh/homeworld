@@ -120,6 +120,21 @@ typedef struct
 memcookiename;
 #endif
 
+//block size macros
+#define memRoundUp(n)   (((n) + (MEM_BlockSize - 1)) & (~(MEM_BlockSize - 1)))
+#define memRoundDown(n) ((n) & (~(MEM_BlockSize - 1)))
+#define memBlocksCompute(s, e)  ((memRoundDown((udword)(e)) - memRoundUp((udword)(s))) / MEM_BlockSize)
+#define memBlocksToBytes(b)     ((b) * MEM_BlockSize)
+#define memBytesToBlocks(b)     ((b) / MEM_BlockSize)
+
+//small block allocation
+#define msbSizeBytes(length)    (pool->firstSize[((length) / MEM_BlockSize) - 1])
+#define msbSizeBlocks(length)   (pool->firstSize[length - 1])
+#define msbSizeIndex(length)    (((length) / MEM_BlockSize) - 1)
+#define mslSizeBytes(length)    (pool->lastSize[((length) / MEM_BlockSize) - 1])
+#define mslSizeBlocks(length)   (pool->lastSize[length - 1])
+#define mslSizeIndex(length)    (((length) / MEM_BlockSize) - 1)
+
 /*=============================================================================
     Data:
 =============================================================================*/
