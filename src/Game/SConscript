@@ -24,7 +24,7 @@ missions = [
 
 ignored = ["Matrix-mult.c", "KNITransform.c"]
 
-sources = Glob('*.c')
+sources = Glob('*.c') + Glob('*.cpp')
 
 lib = addLibrary("Game", sources , ignored)
 
