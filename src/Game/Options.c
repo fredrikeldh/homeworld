@@ -482,7 +482,7 @@ textentryhandle opAutodockHealthEntryBox   = NULL;
 
 fonthandle opResListFont = 0;
 listwindowhandle opResListWindow = NULL;
-sdword opResNumber;
+udword opResNumber;
 sdword opResCurrentSelected;
 
 typedef struct opres
