@@ -120,6 +120,9 @@ typedef struct
 memcookiename;
 #endif
 
+typedef void *(*memgrowcallback)(sdword heapSize);//callback for growing memory
+typedef void (memgrowthfreecallback)(void *heap);//callback for freeing growth heaps
+
 //block size macros
 #define memRoundUp(n)   (((n) + (MEM_BlockSize - 1)) & (~(MEM_BlockSize - 1)))
 #define memRoundDown(n) ((n) & (~(MEM_BlockSize - 1)))

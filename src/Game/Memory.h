@@ -184,9 +184,6 @@ typedef struct
 }
 memcookie;
 
-typedef void *(*memgrowcallback)(sdword heapSize);//callback for growing memory
-typedef void (memgrowthfreecallback)(void *heap);//callback for freeing growth heaps
-
 /*=============================================================================
     Macros:
 =============================================================================*/
