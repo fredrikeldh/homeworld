@@ -1012,7 +1012,6 @@ void GatherFightStatsForRaces(ShipRace racei,ShipRace racej)
                         if (memoryFree != memFreeMemGet())
                         {
                             memoryLeak = memFreeMemGet() - memoryFree;
-                            memAnalysisCreate();
                             dbgAssertOrIgnore(FALSE);
                         }
 #endif

@@ -188,9 +188,6 @@ memcookie;
     Macros:
 =============================================================================*/
 //name-specific stuff
-void* memAlloc(sdword l, const char* name, udword flags);
-void* memAllocAttempt(sdword l, const char* name, udword flags);
-void* memRealloc(void* currentPointer, sdword newSize, const char *name, udword flags);
 
 #define memCookieVerify(c)
 #define mbhCookieVerify(c)
@@ -210,16 +207,19 @@ void* memRealloc(void* currentPointer, sdword newSize, const char *name, udword 
     Functions:
 =============================================================================*/
 
-//startup/shutdown/reset memory module
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void* memAlloc(sdword l, const char* name, udword flags);
+void* memAllocAttempt(sdword l, const char* name, udword flags);
+void* memRealloc(void* currentPointer, sdword newSize, const char *name, udword flags);
 
 //allocate/free memory blocks
 void memFree(void *pointer);
 char *memStringDupe(const char *string);
 
 //utility functions (many stubbed out in retail builds)
-#if MEM_ANALYSIS
-void memAnalysisCreate(void);
-#endif
 sdword memClearDword(void *dest, udword pattern, sdword nDwords);
 char *memStrncpy(char *dest, const char *source, size_t count);
 
@@ -227,6 +227,8 @@ char *memStrncpy(char *dest, const char *source, size_t count);
 size_t memFreeMemGet();
 #endif
 
-const memsize * check_mem(const memsize * data);
+#ifdef __cplusplus
+}
+#endif
 
 #endif
