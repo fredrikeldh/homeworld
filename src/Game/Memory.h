@@ -216,18 +216,8 @@ void* memRealloc(void* currentPointer, sdword newSize, const char *name, udword 
 #define memBlocksToBytes(b)     ((b) * MEM_BlockSize)
 #define memBytesToBlocks(b)     ((b) / MEM_BlockSize)
 
-//verify that a cookie is actually a cookie
-#if MEM_ERROR_CHECKING
-#define memCookieVerify(c)\
-    if (((c)->flags & MBF_VerifyMask) != MBF_VerifyValue)\
-        dbgFatalf(DBG_Loc, "Corrupt cookie: 0x%x", (c)->flags & MBF_VerifyMask)
-#define mbhCookieVerify(c)\
-    if (((c)->flags & MBF_VerifyMask) != MBF_VerifyValue)\
-        dbgFatalf(DBG_Loc, "Corrupt small block heap cookie: 0x%x", (c)->flags & MBF_VerifyMask)
-#else
 #define memCookieVerify(c)
 #define mbhCookieVerify(c)
-#endif
 
 //if module not started properly, generate an error
 #if MEM_ERROR_CHECKING
