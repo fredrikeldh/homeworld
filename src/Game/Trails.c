@@ -1674,7 +1674,7 @@ void trailLineSequence(sdword LOD, sdword n, vector vectors[], color* segmentArr
 {
     sdword i;
     color c;
-    ubyte alpha;
+    ubyte alpha = 255;
 
     alpha = (ubyte)((real32)alpha * meshFadeAlpha);
     glEnable(GL_BLEND);
