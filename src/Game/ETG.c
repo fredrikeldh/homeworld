@@ -892,7 +892,7 @@ etglod *etgLODLoad(char *directory, char *name, etglod *oldLOD)
     }
     else
     {
-        newLOD = memAlloc(etgLODSize(oldLOD->nLevels + 1), "Realloc'dEtgLod", NonVolatile)
+        newLOD = memAlloc(etgLODSize(oldLOD->nLevels + 1), "Realloc'dEtgLod", NonVolatile);
         memcpy(newLOD, oldLOD, etgLODSize(oldLOD->nLevels));
         memFree(oldLOD);
     }
