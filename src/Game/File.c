@@ -1961,7 +1961,7 @@ bool fileUserSettingsPathSet(char *path)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void logfileClear(char *logfile)
+void logfileClear(const char *logfile)
 {
     FILE *file = NULL;
 
@@ -1978,7 +1978,7 @@ void logfileClear(char *logfile)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void logfileLog(char *logfile, char *str)
+void logfileLog(const char *logfile, const char *str)
 {
     FILE *file = NULL;
 
@@ -1996,7 +1996,7 @@ void logfileLog(char *logfile, char *str)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void logfileLogf(char *logfile, char *format, ...)
+void logfileLogf(const char *logfile, char *format, ...)
 {
     char buffer[200];
     va_list argList;
