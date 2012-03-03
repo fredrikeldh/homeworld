@@ -68,6 +68,20 @@
 
 #define MAX_FILES_OPEN          32
 
+#ifdef __cplusplus
+class LogFile
+{
+public:
+	LogFile(const char* str);
+	Clear();
+	Log(const char *str);
+private:
+	std::string _logFile;
+};
+
+extern "C" {
+#endif
+
 /*=============================================================================
     Type definitions:
 =============================================================================*/
@@ -143,8 +157,12 @@ bool fileExistsInBigFile(char *fileName);
 bool fileExists(char *fileName, udword flags);
 sdword fileSizeGet(char *fileName, udword flags);
 
-void logfileClear(char *logfile);
-void logfileLog(char *logfile,char *str);
-void logfileLogf(char *logfile,char *format, ...);
+void logfileClear(const char *logfile);
+void logfileLog(const char *logfile,const char *str);
+void logfileLogf(const char *logfile,char *format, ...);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
