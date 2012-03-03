@@ -711,7 +711,7 @@ meshdata *meshLoad(char *inFileName)
 
     mesh = memAlloc(fileLength - sizeof(header) + sizeof(meshdata) -   //allocate the memory for file
                     sizeof(polygonobject), fileName, NonVolatile);
-    memNameSetLong((memcookie*)((ubyte *)mesh - sizeof(memcookie)), fileName);
+
     //now that it is all loaded in, all pointers need to be fixed up
     offset = (memsize)mesh - sizeof(GeoFileHeader) +
         sizeof(meshdata) - sizeof(polygonobject);           //!!! add size of materials when they're in???

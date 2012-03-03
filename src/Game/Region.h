@@ -189,11 +189,8 @@ if ((r)->validationKey != REG_ValidationKey)            \
 #endif
 
 //set the name of a region for debugging
-#if MEM_USE_NAMES
-#define regNameSet(r, n) memRename((void *)(r), (n))
-#else
+//FIXME: Replace
 #define regNameSet(r, n)
-#endif
 
 //verify module started/not started
 #if REG_ERROR_CHECKING

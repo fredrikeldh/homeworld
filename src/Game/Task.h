@@ -183,7 +183,8 @@ extern real32 taskFrequency;
         return
 
 //rename the memory block associated with a task
-#define taskRename(t, n)    memRename((void *)taskData[t], (n))
+//FIXME: Replace
+#define taskRename(t, n)
 
 /*=============================================================================
     Functions:

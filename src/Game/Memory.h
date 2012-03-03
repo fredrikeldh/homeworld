@@ -301,15 +301,6 @@ extern mempool memMainPool;
 void* memAlloc(sdword l, const char* name, udword flags);
 void* memAllocAttempt(sdword l, const char* name, udword flags);
 void* memRealloc(void* currentPointer, sdword newSize, const char *name, udword flags);
-#if MEM_USE_NAMES
-#define memNameSet(c, s)    memNameSetFunction((c), (s))
-#define mbhNameSet(c, s)    mbhNameSetFunction((c), (s))
-#define memNameSetLong(c, s)    memNameSetFunction((c), (s))
-#else
-#define memNameSet(c, s)
-#define mbhNameSet(c, s)
-#define memNameSetLong(c, s)
-#endif//MEM_USE_NAMES
 
 //block size macros
 #define memRoundUp(n)   (((n) + (MEM_BlockSize - 1)) & (~(MEM_BlockSize - 1)))
@@ -374,16 +365,6 @@ char *memStringDupeNV(char *string);
 #if MEM_ANALYSIS
 void memAnalysisCreate(void);
 #endif
-#if MEM_USE_NAMES
-sdword memNameSetFunction(memcookie *cookie, char *name);
-#if MEM_SMALL_BLOCK_HEAP
-sdword mbhNameSetFunction(mbhcookie *cookie, char *name);
-#endif
-sdword memNameSetLongFunction(memcookie *cookie, char *name);
-void memRename(void *pointer, char *newName);
-#else
-#define memRename(p, n)
-#endif //MEM_USE_NAMES
 sdword memClearDword(void *dest, udword pattern, sdword nDwords);
 char *memStrncpy(char *dest, char *source, sdword count);
 
