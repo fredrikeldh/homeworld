@@ -621,7 +621,11 @@ void transSingleTotalTransform(vector* screenSpace, hmatrix* modelview, hmatrix*
     hvector cameraSpace, screen;
 
     //world -> clip
+#if defined (_USE_ASM)
     transTransformVertexList_asm(1, &cameraSpace, (vertexentry*)worldSpace, modelview);
+#else
+    transTransformVertexList(1, &cameraSpace, (vertexentry*)worldSpace, modelview);
+#endif
     cameraSpace.w = 1.0f;
 
     //clip -> screen
@@ -690,8 +694,13 @@ void transTransformCompletely(
     }
     else
     {
+#if defined (_USE_ASM)
         transTransformVertexList_asm(n, intermed, source, m0);
         transPerspectiveTransform_asm(n, dest, intermed, m1);
+#else
+        transTransformVertexList(n, intermed, source, m0);
+        transPerspectiveTransform(n, dest, intermed, m1);
+#endif
     }
 }
 
