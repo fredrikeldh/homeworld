@@ -341,12 +341,6 @@ void* memRealloc(void* currentPointer, sdword newSize, const char *name, udword 
 #define mslSizeBlocks(length)   (pool->lastSize[length - 1])
 #define mslSizeIndex(length)    (((length) / MEM_BlockSize) - 1)
 
-#if MEM_LOG_MOSTVOLATILE
-#define memVolatilityLog(c)     memVolatilityLogFuntion(c)
-#else
-#define memVolatilityLog(c)
-#endif
-
 /*=============================================================================
     Functions:
 =============================================================================*/
