@@ -990,8 +990,8 @@ void GatherFightStatsForRaces(ShipRace racei,ShipRace racej)
     sbyte *racejCalcFightStatsFor = RaceCalcFightStatsFor[racej];
     sdword racejStatIndexOffset = StatIndexRaceOffsets[racej];
 #if MEM_ERROR_CHECKING
-    sdword memoryFree = memFreeMemGet(&memMainPool);
-    sdword memoryLeak;
+    size_t memoryFree = memFreeMemGet();
+    size_t memoryLeak;
 #endif
 
     for (i=0;i<raceiNumShips;i++)
@@ -1009,9 +1009,9 @@ void GatherFightStatsForRaces(ShipRace racei,ShipRace racej)
                         GatherFightStatsFor(indexi,indexj,TRUE);
                         dbgAssertOrIgnore(FightStatsTable[indexi][indexj].numShips[0]);
 #if MEM_ERROR_CHECKING
-                        if (memoryFree != memFreeMemGet(&memMainPool))
+                        if (memoryFree != memFreeMemGet())
                         {
-                            memoryLeak = memFreeMemGet(&memMainPool) - memoryFree;
+                            memoryLeak = memFreeMemGet() - memoryFree;
                             memAnalysisCreate();
                             dbgAssertOrIgnore(FALSE);
                         }
