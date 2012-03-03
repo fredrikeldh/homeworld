@@ -1,0 +1,43 @@
+<html>
+	<head>
+		<title>Hiigara</title>
+		<script>
+			"use strict";
+			var Module = {
+				noInitialRun: true
+			};
+		
+			// implement print
+			var print = function(text) {
+				var element = document.getElementById('output')
+				element.innerHTML = text.replace('\n', '<br>', 'g') + element.innerHTML;
+			};
+		</script>
+		<script src='home.js'></script>
+		<script>
+			function onLoad() {
+				// Pass canvas and context to the generated code, and do the actual run() here
+				Module.canvas = document.getElementById('canvas');
+				Module.ctxGL = Module.canvas.getContext('webgl') || Module.canvas.getContext('experimental-webgl');
+				if (!Module.ctxGL) {
+					alert('Canvas not available :(');
+					return;
+				}
+				Module.run();
+				
+				processEvents = cwrap('processEvents', 'number', [])
+				var intervalRunner = function() {
+					// Directly into translated C code
+					var result = processEvents();
+					//TODO: Handle result
+				};
+				setInterval(intervalRunner, 1 / 120)
+			}
+		</script>
+	</head>
+	<body onload='onLoad()'>
+		<canvas id='canvas' width='320' height='200'></canvas>
+		<div id='output'></div>
+	</body>
+</html>
+
