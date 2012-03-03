@@ -228,9 +228,6 @@ void* memRealloc(void* currentPointer, sdword newSize, const char *name, udword 
 =============================================================================*/
 
 //startup/shutdown/reset memory module
-sdword memStartup(void *heapStart, sdword heapSize, memgrowcallback grow);
-sdword memReset(void);
-sdword memClose(memgrowthfreecallback free);
 
 //allocate/free memory blocks
 void memFree(void *pointer);
