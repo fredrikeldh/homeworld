@@ -2210,26 +2210,11 @@ void memAnalysisCreate(void)
     Outputs     :
     Return      : dest
 ----------------------------------------------------------------------------*/
-char *memStrncpy(char *dest, char *source, sdword count)
+char *memStrncpy(char *dest, const char *source, size_t count)
 {
-    char *destStart = dest;
-
-    while (1)
-    {
-        if (count == 1/* && *(source + 1) != 0*/)
-        {
-            *dest = 0;
-            break;
-        }
-        *dest = *source;
-        if (*source == 0/* || count == 0*/)
-        {
-            break;
-        }
-        count--;
-        dest++;
-        source++;
-    }
-    return(destStart);
+	strncpy(dest, source, count);
+	// Secure 0 termination
+	dest[count - 1] = '\0';
+	return dest;
 }
 

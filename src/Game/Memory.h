@@ -256,7 +256,7 @@ char *memStringDupe(const char *string);
 void memAnalysisCreate(void);
 #endif
 sdword memClearDword(void *dest, udword pattern, sdword nDwords);
-char *memStrncpy(char *dest, char *source, sdword count);
+char *memStrncpy(char *dest, const char *source, size_t count);
 
 #if MEM_ANALYSIS
 size_t memFreeMemGet();
