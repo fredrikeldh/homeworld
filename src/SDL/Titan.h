@@ -9,9 +9,17 @@
 #ifndef ___TITAN_H
 #define ___TITAN_H
 
-void titanDebug(char *format, ...);
-void titanLogFileOpen(void);
-void titanLogFileClose(void);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+void titanDebug(const char *format, ...);
+void titanLogFileOpen();
+void titanLogFileClose();
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 
