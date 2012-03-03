@@ -1798,12 +1798,11 @@ void *memReallocFunction(void *currentPointer, size_t newSize, udword flags)
     memcookie *cookie;
     sdword oldLength;
 
+    newPointer = memAllocFunction(newSize, name, flags);
+
     if (currentPointer == NULL)
-    {
-        newPointer = memAlloc(newSize, name, flags)
-        return(newPointer);
-    }
-    newPointer = memAlloc(newSize, name, flags);
+    	return(newPointer);
+
     cookie = (memcookie *)((ubyte *)currentPointer - sizeof(memcookie));
 #if MEM_SMALL_BLOCK_HEAP
     if (bitTest(cookie->flags, MBF_SmallBlockHeap))
