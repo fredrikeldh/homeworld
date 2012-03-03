@@ -4,7 +4,7 @@ Import('*')
 
 import os, SCons
 
-alternate = "../../Game"
+alternates = ["../../Game"]
 
 def preprocess(path, processedPath):
 	if not type(path) == str:
@@ -13,9 +13,12 @@ def preprocess(path, processedPath):
 	rootDir = Dir('#')
 	change = os.path.relpath(".", rootDir.abspath)
 	
-	relAlternate = os.path.relpath(alternate, rootDir.abspath)
 	env = getOptionEnv().Clone()
-	env.AppendUnique(CPPPATH = relAlternate)
+	
+	for alternate in alternates:
+		relAlternate = os.path.relpath(alternate, rootDir.abspath)
+		env.AppendUnique(CPPPATH = relAlternate)
+	
 	env.AppendUnique(CFLAGS = ["-E", "-xc"])
 	static_obj, shared_obj = SCons.Tool.createObjBuilders(env)
 	static_obj.add_action(".kas", SCons.Defaults.CAction)

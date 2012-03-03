@@ -3,8 +3,9 @@
 import os, SCons
 Import('*')
 
-alternate = "../Game"
+alternates = ["../Game" ]
 directory = "Generated"
+env = getOptionEnv()
 
 def preprocessOne(path, processedPath):
 	if not type(path) == str:
@@ -13,9 +14,11 @@ def preprocessOne(path, processedPath):
 	rootDir = Dir('#')
 	change = os.path.relpath(".", rootDir.abspath)
 	
-	relAlternate = os.path.relpath(alternate, rootDir.abspath)
 	env = getOptionEnv().Clone()
-	env.AppendUnique(CPPPATH = relAlternate)
+	
+	for alternate in alternates:
+		relAlternate = os.path.relpath(alternate, rootDir.abspath)
+		env.AppendUnique(CPPPATH = relAlternate)
 	
 	newFlags = []
 	for st in env["CCFLAGS"]:
@@ -87,7 +90,7 @@ def compileLevels(levels):
 
 				#Node.FS.LinkFunc()
 
-				command = getOptionEnv().Command([genf + ".c", genf + ".h", genf + ".func.c"], genf + ".kp", cmd)
+				command = env.Command([genf + ".c", genf + ".h", genf + ".func.c"], genf + ".kp", cmd)
 				Depends(command, kasTool)
 				Depends(command, "SinglePlayer/Swarmer.kash")
 				Depends(command, "SinglePlayer/Utilities.kash")
