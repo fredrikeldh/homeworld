@@ -188,20 +188,6 @@ typedef void *(*memgrowcallback)(sdword heapSize);//callback for growing memory
 typedef void (memgrowthfreecallback)(void *heap);//callback for freeing growth heaps
 
 /*=============================================================================
-    Data:
-=============================================================================*/
-//memory statistics
-#if MEM_STATISTICS
-extern sdword memNumberWalks;
-extern sdword memNumberAllocs;
-extern char memStatString[256];
-extern bool memStatsLogging;
-extern taskhandle memStatsTaskHandle;
-DECLARE_TASK(memStatsTaskFunction);
-extern memcookiename memStatsCookieNames[MS_NumberCookieNames];
-#endif
-
-/*=============================================================================
     Macros:
 =============================================================================*/
 //name-specific stuff
