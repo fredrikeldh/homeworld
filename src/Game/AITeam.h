@@ -411,6 +411,13 @@ typedef struct AITeam {
     sdword              kasOrigShipsCount; // original size of team (in mission layout file)
     TacticsType         kasTactics;  // current tactics setting, passed to certain moves
     TypeOfFormation     kasFormation; // current formation setting, passed to certain moves
+
+#ifdef __cplusplus
+    bool operator==(const AITeam& other) const
+	{
+    	return this == &other;
+	};
+#endif
 } AITeam;
 
 // all move processing functions look like this:
