@@ -95,6 +95,13 @@ void PreLoadGame(char *filename);
 
 void SaveThisChunk(SaveChunk *thischunk);
 SaveChunk *CreateChunk(TypeOfSaveChunk type,sdword contentsSize,void *contents);
+#ifdef __cplusplus
+template <typename T>
+SaveChunk *CreateChunk(TypeOfSaveChunk type, void *contents)
+{
+	return CreateChunk(type, sizeof(T), contents);
+}
+#endif
 SaveChunk *LoadNextChunk();
 
 sdword SpaceObjRegistryGetID(SpaceObj *obj);
@@ -138,7 +145,15 @@ void LoadLinkedListOfStuff(LinkedList *list,LoadStuffInLinkedListCB loadstuffCB)
 void FixLinkedListOfStuff(LinkedList *list,FixStuffInLinkedListCB fixstuffCB);
 
 void SaveStructureOfSize(void *structure,sdword size);
+//TODO: Remove
 void *LoadStructureOfSize(sdword size);
+#ifdef __cplusplus
+template <typename T>
+T* Load()
+{
+	return (T*)LoadStructureOfSize(sizeof(T));
+};
+#endif
 void LoadStructureOfSizeToAddress(void *address,sdword size);
 
 void Save_String(char *string);
