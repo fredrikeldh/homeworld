@@ -18,8 +18,8 @@
 void aieExecute(struct AITeam *team)
 {
     AITeamMove *curMove = team->curMove;
-    SelectCommand *ships = NULL;
-    ShipPtr ship = NULL;
+    SelectCommand *ships = nullptr;
+    ShipPtr ship = nullptr;
 
     if (!curMove || curMove->type == MOVE_DONE)
         return;
@@ -189,20 +189,20 @@ void aieExecute(struct AITeam *team)
 //
 void aieHandlersClear (AITeamMove *move)
 {
-    move->events.gettingRocked.handler  = NULL;
-    move->events.enemyNearby.handler    = NULL;
-    move->events.enemyNotNearby.handler = NULL;
-    move->events.firing.handler         = NULL;
-    move->events.disengage.handler      = NULL;
-    move->events.healthLow.handler      = NULL;
-    move->events.healthHigh.handler     = NULL;
-    move->events.numbersLow.handler     = NULL;
-    move->events.numbersHigh.handler    = NULL;
-    move->events.fuelLow.handler        = NULL;
-    move->events.fuelHigh.handler       = NULL;
-    move->events.shipDied.handler       = NULL;
-    move->events.teamDied.handler       = NULL;
-    move->events.interrupt.handler      = NULL;
+    move->events.gettingRocked.handler  = nullptr;
+    move->events.enemyNearby.handler    = nullptr;
+    move->events.enemyNotNearby.handler = nullptr;
+    move->events.firing.handler         = nullptr;
+    move->events.disengage.handler      = nullptr;
+    move->events.healthLow.handler      = nullptr;
+    move->events.healthHigh.handler     = nullptr;
+    move->events.numbersLow.handler     = nullptr;
+    move->events.numbersHigh.handler    = nullptr;
+    move->events.fuelLow.handler        = nullptr;
+    move->events.fuelHigh.handler       = nullptr;
+    move->events.shipDied.handler       = nullptr;
+    move->events.teamDied.handler       = nullptr;
+    move->events.interrupt.handler      = nullptr;
 }
 
 void aieHandlerSetGettingRocked (struct AITeamMove *move, bool8 oneShot, aieHandlerShips handler)
@@ -393,7 +393,7 @@ bool aieCheckEnemyNearby(AITeam *team, SelectCommand **ships)
 bool aieCheckEnemyNotNearby(AITeam *team)
 {
 //    blob *myblob;
-    SelectCommand *ships = NULL;
+    SelectCommand *ships = nullptr;
 
     if (team->shipList.selection->numShips)
     {

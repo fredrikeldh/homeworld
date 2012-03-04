@@ -83,12 +83,12 @@ bool aifShipDied(AIPlayer *aiplayer,ShipPtr ship)
         //could be a creator ship
         if (ship == aiplayer->AICreator)
         {
-            aiplayer->AICreator = NULL;
+            aiplayer->AICreator = nullptr;
             return_value = true;
         }
         else if (ship == aiplayer->ScriptCreator)
         {
-            aiplayer->ScriptCreator = NULL;
+            aiplayer->ScriptCreator = nullptr;
             return_value = true;
         }
 
@@ -282,7 +282,7 @@ ShipStaticInfo *GetSubstituteShipStatic(ShipRace race)
     if (shipstatic)
     {
         if (!bitTest(shipstatic->staticheader.infoFlags, IF_InfoLoaded))
-            shipstatic = NULL;
+            shipstatic = nullptr;
     }
 
     return shipstatic;

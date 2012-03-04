@@ -503,7 +503,7 @@ void aihPatrolEnemyNearbyHandler(AITeam *team, SelectCommand *ships)
 
     newMove = aimCreateAttackNoAdd(team, selectMemDupSelection(ships, "duppenh", 0), AIH_PATROL_ENEMYNEARBY_FORMATION, TRUE, TRUE);
     newMove->events = thisMove->events;
-    newMove->events.enemyNearby.handler = NULL;
+    newMove->events.enemyNearby.handler = nullptr;
     team->curMove->processing = false;
     aitAddmoveBeforeAndMakeCurrent(team, newMove, thisMove);
 }
@@ -593,8 +593,8 @@ void aihGravWellEnemyNotNearbyHandler(AITeam *team)
 {
     AITeamMove *thisMove = team->curMove;
 
-    aiuWrapSpecial(team->shipList.selection, NULL);
-    thisMove->events.enemyNotNearby.handler = NULL;
+    aiuWrapSpecial(team->shipList.selection, nullptr);
+    thisMove->events.enemyNotNearby.handler = nullptr;
     aieHandlerSetEnemyNearby(thisMove,
                              (((GravWellGeneratorStatics *) ((ShipStaticInfo *)(team->shipList.selection->ShipPtr[0]->staticinfo))->custstatinfo)->GravWellRadius)*0.8,
                              false, aihGravWellEnemyNearbyHandler);
@@ -666,8 +666,8 @@ void aihFastDefenseDistressHandler(AITeam *team, udword *intvar)
                 {
                     aieHandlerSetHealthLow(newMove, AIO_FIGHTER_KAMIKAZE_HEALTH, true, false, aihKamikazeHealthLowHandler);
                 }
-                newMove->events.interrupt.handler  = NULL;
-                newMove->events.numbersLow.handler = NULL;
+                newMove->events.interrupt.handler  = nullptr;
+                newMove->events.numbersLow.handler = nullptr;
                 team->curMove->processing = false;
                 aitAddmoveBeforeAndMakeCurrent(team, newMove, thisMove);
                 memFree(enemyShips);
@@ -755,8 +755,8 @@ void aihSlowDefenseDistressHandler(AITeam *team, udword *intvar)
                 )
                 	aieHandlerSetHealthLow(newMove, AIO_CORVETTE_KAMIKAZE_HEALTH, true, false, aihKamikazeHealthLowHandler);
 
-                newMove->events.interrupt.handler  = NULL;
-                newMove->events.numbersLow.handler = NULL;
+                newMove->events.interrupt.handler  = nullptr;
+                newMove->events.numbersLow.handler = nullptr;
                 team->curMove->processing = false;
                 aitAddmoveBeforeAndMakeCurrent(team, newMove, thisMove);
                 memFree(enemyShips);
