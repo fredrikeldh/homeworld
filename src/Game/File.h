@@ -73,8 +73,8 @@ class LogFile
 {
 public:
 	LogFile(const char* str);
-	Clear();
-	Log(const char *str);
+	void Clear();
+	void Log(const char *str);
 private:
 	std::string _logFile;
 };
