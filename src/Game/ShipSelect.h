@@ -330,7 +330,7 @@ sdword MothershipOrCarrierIndexInSelection(SelectCommand *selection);
 SelectCommand *selectMergeTwoSelections(SelectCommand *selection1, SelectCommand *selection2, udword dealloc);
 
 // Duplicate a selection
-SelectCommand *selectMemDupSelection(SelectCommand *selection, char *str, udword memflag);
+SelectCommand *selectMemDupSelection(SelectCommand *selection, const char *str, udword memflag);
 #define selectDupSelection(sel)     selectMemDupSelection(sel, "selDup", 0)
 
 #define ShipCanHyperspace(ship) (isCapitalShip(ship) && (ship->shiptype != CryoTray) && (ship->shiptype != Probe))

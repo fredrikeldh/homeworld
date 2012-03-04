@@ -50,16 +50,16 @@
 
 extern sdword dbgAllowInterrupts;
 
-void dbgMessage  (char *string     );
-void dbgMessagef (char *format, ...);
+void dbgMessage  (const char *string     );
+void dbgMessagef (const char *format, ...);
 
-void dbgWarning  (char *file, sdword line, char *string      );
-void dbgWarningf (char *file, sdword line, char *format, ... );
+void dbgWarning  (const char *file, sdword line, const char *string      );
+void dbgWarningf (const char *file, sdword line, const char *format, ... );
 
-void dbgFatal    (char *file, sdword line, char *string      );
-void dbgFatalf   (char *file, sdword line, char *format, ... );
+void dbgFatal    (const char *file, sdword line, const char *string      );
+void dbgFatalf   (const char *file, sdword line, const char *format, ... );
 
-void dbgNonFatal (char *file, sdword line, char *string      );
-void dbgNonFatalf(char *file, sdword line, char *format, ... );
+void dbgNonFatal (const char *file, sdword line, const char *string      );
+void dbgNonFatalf(const char *file, sdword line, const char *format, ... );
 
 #endif

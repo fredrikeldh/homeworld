@@ -182,9 +182,9 @@ void tutBuilderRestrictNone(void);
 sdword tutIsBuildShipRestricted(sdword shipType);
 sdword tutSelectedContainsShipTypes(char *pShipTypes);
 
-void tutGameMessage(char *commandName);
-bool tutGameSentMessage(char *commandName);
-bool tutGameMessageInQueue(char *commandNames);
+void tutGameMessage(const char *commandName);
+bool tutGameSentMessage(const char *commandName);
+bool tutGameMessageInQueue(const char *commandNames);
 void tutResetGameMessageQueue(void);
 sdword tutContextMenuDisplayedForShipType(char *pShipType);
 void  tutResetContextMenuShipTypeTest(void);

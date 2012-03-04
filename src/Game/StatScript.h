@@ -20,7 +20,7 @@ typedef void (*setVarCback)(char *directory,char *field,void *dataToFillIn);
 
 typedef struct
 {
-    char *name;
+    const char *name;
     setVarCback setVarCB;
     void * offset1;     // should really be 1 offset, but I can't get rid of this strange compiler error
     void * offset2;
@@ -28,7 +28,7 @@ typedef struct
 
 typedef struct
 {
-    char *name;
+    const char *name;
     setVarCback setVarCB;
     void *dataPtr;
 } scriptEntry;
