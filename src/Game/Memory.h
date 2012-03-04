@@ -228,6 +228,24 @@ size_t memFreeMemGet();
 #endif
 
 #ifdef __cplusplus
+
+
+class mem
+{
+public:
+	template <typename T, size_t COUNT>
+	static T* alloc(const char* name)
+	{
+		return (T*)memAlloc(sizeof(T) * COUNT, name, 0);
+	}
+
+	template <typename T>
+	static T* alloc(const char* name)
+	{
+		return alloc<T, 1>(name);
+	}
+};
+
 }
 #endif
 
