@@ -6,6 +6,7 @@
 //  Created 1998/05/28 by gshaw
 // =============================================================================
 
+#include <vector>
 #include "AIAttackMan.h"
 
 #include "AIFeatures.h"
@@ -227,23 +228,18 @@ void aiaArmada(void)
 ShipPtr aiaGetTakeoutTarget(void)
 {
     udword i;
-    ShipPtr targetship;
     SelectCommand *temp_sel;
-    SelectCommand *target_sel = memAlloc(sizeofSelectCommand(TOTAL_NUM_SHIPS), "tata", Pyrophoric);
 
-    target_sel->numShips = 0;
+    std::vector<Ship> target_sel(TOTAL_NUM_SHIPS);
 
     for (i=0;i<TOTAL_NUM_SHIPS;i++)
     {
         temp_sel = aiCurrentAIPlayer->primaryEnemyShipsIAmAwareOf[i].selection;
         if (temp_sel->numShips)
-        {
-            selSelectionAddSingleShip((MaxSelection *)target_sel, temp_sel->ShipPtr[0]);
-        }
+            selSelectionAddSingleShip(target_sel, *temp_sel->ShipPtr[0]);
     }
 
-    targetship = statsGetMostDangerousShipNonStatConstraints(target_sel,aiaPriorityShipsConstraints);
-    memFree(target_sel);
+    ShipPtr targetship = statsGetMostDangerousShipNonStatConstraints(target_sel,aiaPriorityShipsConstraints);
     return targetship;
 }
 

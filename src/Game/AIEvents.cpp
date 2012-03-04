@@ -335,7 +335,7 @@ sdword aieCheckGettingRocked(AITeam *team, SelectCommand **ships)
         if (selection->ShipPtr[i]->gettingrocked &&
             (selection->ShipPtr[i]->gettingrocked->playerowner != selection->ShipPtr[i]->playerowner))
         {
-            *ships = memAlloc(sizeofSelectCommand(1), "rockedby", 0);
+            *ships = mem::alloc<SelectCommand>("rockedby");
             (*ships)->numShips = 1;
             (*ships)->ShipPtr[0] = selection->ShipPtr[i]->gettingrocked;
             // an enhancement would keep checking subsequent ships
@@ -667,8 +667,8 @@ void aiePreFixAIEvents(struct AITeamMove *move)
     {
         // convert pointer to offset into AIPlayer structure
         dbgAssertOrIgnore(move->events.interrupt.intvar);
-        move->events.interrupt.intvar = ((ubyte *)move->events.interrupt.intvar) - ((ubyte *)fixingThisAIPlayer);
-        dbgAssertOrIgnore(move->events.interrupt.intvar < sizeof(AIPlayer));
+        move->events.interrupt.intvar = (udword*)(((ubyte *)move->events.interrupt.intvar) - ((ubyte *)fixingThisAIPlayer));
+        dbgAssertOrIgnore(((size_t)move->events.interrupt.intvar) < sizeof(AIPlayer));
     }
 
     move->events.gettingRocked.handler  = (aieHandlerShips)aieHandlerToNum((aieHandlerSimple)move->events.gettingRocked.handler);
@@ -706,7 +706,7 @@ void aieFixAIEvents(struct AITeamMove *move)
 
     if (move->events.interrupt.handler)
     {
-        dbgAssertOrIgnore(move->events.interrupt.intvar < sizeof(AIPlayer));
+        dbgAssertOrIgnore(((size_t)move->events.interrupt.intvar) < sizeof(AIPlayer));
         move->events.interrupt.intvar = (udword *)( ((ubyte *)fixingThisAIPlayer) + ((sdword)move->events.interrupt.intvar) );
     }
 }

@@ -4277,7 +4277,7 @@ AITeamMove *aimCreatePatrolMove(AITeam *team, Path *path, udword startIndex,
 void aimFix_PatrolMove(AITeamMove *move)
 {
     FixMoveFuncPtrs(move,aimProcessPatrolMove, NULL, aimPatrolMoveClose);
-    move->params.patrolmove.loopMove = ConvertNumToPointerInList(&savingThisAITeam->moves,(sdword)move->params.patrolmove.loopMove);
+    move->params.patrolmove.loopMove = (AITeamMove*)ConvertNumToPointerInList(&savingThisAITeam->moves,(sdword)move->params.patrolmove.loopMove);
 }
 
 void aimPreFix_PatrolMove(AITeamMove *move)
@@ -5245,8 +5245,8 @@ sdword aimProcessLaunch(AITeam *team)
     shipIAmInside = univFindShipIAmInside(ship);
     if (shipIAmInside != NULL)
     {
-        SelectCommand *selectcopy = memAlloc(sizeofSelectCommand(selection->numShips),"selectcopy",0);
-        selectcopy->numShips = 0;
+        SelectCommand selectcopy;
+        selectcopy.numShips = 0;
 
         dbgAssertOrIgnore(!thisMove->processing);
 
@@ -5254,14 +5254,13 @@ sdword aimProcessLaunch(AITeam *team)
         {
             if (univAmIInsideThisShip(selection->ShipPtr[i],shipIAmInside))
             {
-                selectcopy->ShipPtr[selectcopy->numShips++] = selection->ShipPtr[i];
+                selectcopy.ShipPtr[selectcopy.numShips++] = selection->ShipPtr[i];
             }
         }
-        dbgAssertOrIgnore(selectcopy->numShips > 0);
+        dbgAssertOrIgnore(selectcopy.numShips > 0);
 
         // Falko, don't replace this with aiuWrap because many ships in selectcopy are hidden, but this is okay in this case
-        clWrapLaunchMultipleShips(&universe.mainCommandLayer,selectcopy,shipIAmInside);
-        memFree(selectcopy);
+        clWrapLaunchMultipleShips(&universe.mainCommandLayer,&selectcopy,shipIAmInside);
 
         thisMove->processing = TRUE;
         return TRUE;

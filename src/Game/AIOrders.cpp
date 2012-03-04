@@ -1041,7 +1041,7 @@ void aioCreateTakeoutTargetWithCurrentTeam(struct AITeam *team,Ship *ship)
 
     aiplayerLog((aiIndex, "%x Issuing Takeout Target With Current Team Order", team));
 
-    selectone = memAlloc(sizeofSelectCommand(1),"takeoutsel",0);
+    selectone = mem::alloc<SelectCommand>("takeoutsel");
     selectone->numShips = 1;
     selectone->ShipPtr[0] = ship;
 
@@ -1148,7 +1148,7 @@ treatasgoodenough:;
 //    aimCreateVarWait(team, aiCurrentAIPlayer->attackVarLabel, -1, TRUE, FALSE);
     aimCreateTempGuard(team, AIO_TOUT_TARG_TGUARD_FORMATION, AIO_TOUT_TARG_TGUARD_TACTICS, TRUE, FALSE);
 
-    selectone = memAlloc(sizeofSelectCommand(1),"takeoutsel",0);
+    selectone = mem::alloc<SelectCommand>("takeoutsel");
     selectone->numShips = 1;
     selectone->ShipPtr[0] = target;
     attackmove = aimCreateAttack(team, selectone, BROAD_FORMATION, TRUE, FALSE);
@@ -1271,7 +1271,7 @@ nosecondaryteamnecessary:
 
 //        aimCreateFormation(team, BROAD_FORMATION, FALSE, FALSE);
 
-        selectone = memAlloc(sizeofSelectCommand(1),"takeoutsel",0);
+        selectone = mem::alloc<SelectCommand>("takeoutsel");
         selectone->numShips = 1;
         selectone->ShipPtr[0] = target;
         attackmove = aimCreateAttack(team, selectone, BROAD_FORMATION, TRUE, FALSE);
@@ -1364,7 +1364,7 @@ nosecondaryteamnecessary:
 
 //        aimCreateFormation(team, BROAD_FORMATION, FALSE, FALSE);
 
-        selectone = memAlloc(sizeofSelectCommand(1),"takeoutsel",0);
+        selectone = mem::alloc<SelectCommand>("takeoutsel");
         selectone->numShips = 1;
         selectone->ShipPtr[0] = target;
         move = aimCreateAttack(team, selectone, BROAD_FORMATION, TRUE, FALSE);

@@ -260,7 +260,6 @@ void aidSetupResourceDefenseTeams(void)
 {
     ShipPtr ship;
     sdword i;
-    SelectCommand *selectone;
 
     //if the difficulty level is high enough, when a certain number of resource
     //defense teams have been setup, they change to patrolling defense teams that
@@ -275,13 +274,13 @@ void aidSetupResourceDefenseTeams(void)
             {
                 if (aiCurrentAIPlayer->numGuardTeams < AIPLAYER_MAX_NUM_GUARDTEAMS)
                 {
-                    selectone = memAlloc(sizeofSelectCommand(1),"guardreser",0);
-                    selectone->numShips = 1;
-                    selectone->ShipPtr[0] = ship;
+                	SelectCommand selectone;
+                    selectone.numShips = 1;
+                    selectone.ShipPtr[0] = ship;
 
                     // create new defense team to guard ship
                     aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->numGuardTeams] = aitCreate(DefenseTeam);
-                    aioCreateGuardShips(aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->numGuardTeams],selectone);
+                    aioCreateGuardShips(aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->numGuardTeams],&selectone);
                     aiCurrentAIPlayer->numGuardTeams++;
                 }
                 else

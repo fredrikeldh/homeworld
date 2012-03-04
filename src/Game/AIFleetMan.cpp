@@ -586,7 +586,7 @@ void aifBuildRequestedShips(RequestShips *scriptrequest,RequestShips *attrequest
 void aifAttackManRequestsShipsCB(ShipType shiptype,sdword number,sdword priority)
 {
     // add requests to Q
-    RequestShips *requestShips = memAlloc(sizeof(RequestShips),"attackreqships",0);
+    RequestShips *requestShips = mem::alloc<RequestShips>("attackreqships");
 
     dbgAssertOrIgnore(number > 0);
 
@@ -608,7 +608,7 @@ void aifAttackManRequestsShipsCB(ShipType shiptype,sdword number,sdword priority
 void aifDefenseManRequestsShipsCB(ShipType shiptype,sdword number,sdword priority)
 {
     // add requests to Q
-    RequestShips *requestShips = memAlloc(sizeof(RequestShips),"defreqships",0);
+    RequestShips *requestShips = mem::alloc<RequestShips>("defreqships");
 
     dbgAssertOrIgnore(number > 0);
 
@@ -630,7 +630,7 @@ void aifDefenseManRequestsShipsCB(ShipType shiptype,sdword number,sdword priorit
 void aifScriptManRequestsShipsCB(ShipType shiptype,sdword number,sdword priority)
 {
     // add requests to Q
-    RequestShips *requestShips = memAlloc(sizeof(RequestShips),"defreqships",0);
+    RequestShips *requestShips = mem::alloc<RequestShips>("defreqships");
 
     dbgAssertOrIgnore(number > 0);
 
@@ -660,7 +660,7 @@ void aifResourceManRequestsShipsCB(ShipType shiptype,sdword number,sdword priori
 }
 
 #define constructTeamWaiting(twaiting,stype,nships,tm,dSetVar)   \
-            (twaiting) = memAlloc(sizeof(TeamWaitingForTheseShips),"teamwaitingships",0);   \
+            (twaiting) = mem::alloc<TeamWaitingForTheseShips>("teamwaitingships");   \
             (twaiting)->shiptype = (stype);                                                 \
             (twaiting)->num_ships = (nships);                                               \
             (twaiting)->team = (tm);                                                        \
