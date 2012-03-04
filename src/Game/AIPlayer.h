@@ -8,6 +8,7 @@
 #ifndef ___AIPLAYER_H
 #define ___AIPLAYER_H
 
+#include <vector>
 #include "AITeam.h"
 #include "AIVar.h"
 #include "LinkedList.h"
@@ -186,11 +187,10 @@ typedef struct AIPlayer
     sdword mothershipdefteam;
     sdword numGuardTeams;
     struct AITeam *guardTeams[AIPLAYER_MAX_NUM_GUARDTEAMS];
-
+#ifdef __cplusplus
     // team stuff
-    struct AITeam **teams;
-    sdword teamsAllocated;
-    sdword teamsUsed;
+    std::vector<AITeam> teams;
+#endif
 
 } AIPlayer;
 

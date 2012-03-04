@@ -20,27 +20,19 @@
 
 bool aitAnyTeamOfPlayerGuardingThisShip(struct AIPlayer *aiplayer,Ship *ship)
 {
-    sdword i;
-    Node *node;
-    AITeamMove *move;
-    AITeam *team;
-
-    for (i = 0; i < aiplayer->teamsUsed; ++i)
+    for( auto& team : aiplayer->teams )
     {
-        team = aiplayer->teams[i];
-        node = team->moves.head;
+        auto node = team.moves.head;
         while (node != NULL)
         {
-            move = (AITeamMove *)listGetStructOfNode(node);
+            auto move = (AITeamMove *)listGetStructOfNode(node);
 
             if (move->type == MOVE_GUARDSHIPS)
             {
                 if (move->params.guardShips.ships)
                 {
                     if (ShipInSelection(move->params.guardShips.ships,ship))
-                    {
-                        return TRUE;
-                    }
+                        return true;
                 }
             }
             node = node->next;
@@ -537,30 +529,26 @@ void aidCloakDefense(void)
 ----------------------------------------------------------------------------*/
 SelectCommand *aidAddSlackerShips(void)
 {
-    sdword i;
-    AITeam *slackteam;
     struct AITeamMove *newMove;
-    SelectCommand *slackerships = NULL;
+    SelectCommand *slackerships = nullptr;
 
-    for (i = 0; i < aiCurrentAIPlayer->teamsUsed; i++)
+    for( auto& slackteam : aiCurrentAIPlayer->teams )
     {
-        slackteam = aiCurrentAIPlayer->teams[i];
-
         //if team isn't doing anything, and the team has ships and
         //the first ship is dangerous (presumably the rest of the
         //team is dangerous if the first ship is
-        if ((slackteam->teamType != ScriptTeam) &&
-            (aitTeamIsIdle(slackteam)) &&
-            (slackteam->shipList.selection->numShips) &&
-            (aiuIsShipDangerous(slackteam->shipList.selection->ShipPtr[0])))
+        if ((slackteam.teamType != ScriptTeam) &&
+            (aitTeamIsIdle(&slackteam)) &&
+            (slackteam.shipList.selection->numShips) &&
+            (aiuIsShipDangerous(slackteam.shipList.selection->ShipPtr[0])))
         {
 
             //add a defend mothership move
-            newMove = aimCreateDefendMothershipNoAdd(slackteam, TRUE, TRUE);
-            aieHandlerSetFuelLow(newMove, AID_DEFEND_MOTHERSHIP_FUEL_LOW, TRUE, TRUE, aihGenericFuelLowHandler);
-            aimInsertMove(slackteam, newMove);
+            newMove = aimCreateDefendMothershipNoAdd(&slackteam, true, true);
+            aieHandlerSetFuelLow(newMove, AID_DEFEND_MOTHERSHIP_FUEL_LOW, true, true, aihGenericFuelLowHandler);
+            aimInsertMove(&slackteam, newMove);
 
-            slackerships = selectMergeTwoSelections(slackerships, aiCurrentAIPlayer->teams[i]->shipList.selection, DEALLOC1);
+            slackerships = selectMergeTwoSelections(slackerships, slackteam.shipList.selection, DEALLOC1);
         }
     }
     return slackerships;
@@ -576,26 +564,22 @@ SelectCommand *aidAddSlackerShips(void)
 ----------------------------------------------------------------------------*/
 SelectCommand *aidAddGuardingShips(void)
 {
-    sdword i;
-    AITeam *guardteam;
     SelectCommand *guardships = NULL;
     AITeamMove *newMove;
 
-    for (i = 0; i < aiCurrentAIPlayer->teamsUsed; i++)
+    for( auto& guardteam : aiCurrentAIPlayer->teams )
     {
-        guardteam = aiCurrentAIPlayer->teams[i];
-
-        if ((guardteam->teamType != ScriptTeam) &&
-            (aitTeamIsGuarding(guardteam)) &&
-            (guardteam->shipList.selection->numShips) &&
-            (aiuIsShipDangerous(guardteam->shipList.selection->ShipPtr[0])))
+        if ((guardteam.teamType != ScriptTeam) &&
+            (aitTeamIsGuarding(&guardteam)) &&
+            (guardteam.shipList.selection->numShips) &&
+            (aiuIsShipDangerous(guardteam.shipList.selection->ShipPtr[0])))
         {
             //add a defend mothership move
-            newMove = aimCreateDefendMothershipNoAdd(guardteam, TRUE, TRUE);
-            aieHandlerSetFuelLow(newMove, AID_DEFEND_MOTHERSHIP_FUEL_LOW, TRUE, TRUE, aihGenericFuelLowHandler);
-            aimInsertMove(guardteam, newMove);
+            newMove = aimCreateDefendMothershipNoAdd(&guardteam, true, true);
+            aieHandlerSetFuelLow(newMove, AID_DEFEND_MOTHERSHIP_FUEL_LOW, true, true, aihGenericFuelLowHandler);
+            aimInsertMove(&guardteam, newMove);
 
-            guardships = selectMergeTwoSelections(guardships, guardteam->shipList.selection, DEALLOC1);
+            guardships = selectMergeTwoSelections(guardships, guardteam.shipList.selection, DEALLOC1);
         }
     }
     return guardships;
@@ -611,29 +595,25 @@ SelectCommand *aidAddGuardingShips(void)
 ----------------------------------------------------------------------------*/
 SelectCommand *aidAddAllShips(SelectCommand *enemyships)
 {
-    sdword i;
-    AITeam *team;
     SelectCommand *newships = NULL;
     AITeamMove *newMove;
 
-    for (i = 0; i < aiCurrentAIPlayer->teamsUsed; i++)
+    for( auto& team : aiCurrentAIPlayer->teams )
     {
-        team = aiCurrentAIPlayer->teams[i];
-
-        if ((team->teamType != ScriptTeam) &&
-            (team->shipList.selection->numShips) &&
-            (team->shipList.selection->ShipPtr[0]->shiptype != Mothership) &&
-            (team->shipList.selection->ShipPtr[0]->shiptype != Carrier) &&
-            (aiuIsShipDangerous(team->shipList.selection->ShipPtr[0])) &&
-            (aitTeamIsntDefendingMothership(team, enemyships)) &&
-            (aitTeamIsInMothershipRange(team)))
+        if ((team.teamType != ScriptTeam) &&
+            (team.shipList.selection->numShips) &&
+            (team.shipList.selection->ShipPtr[0]->shiptype != Mothership) &&
+            (team.shipList.selection->ShipPtr[0]->shiptype != Carrier) &&
+            (aiuIsShipDangerous(team.shipList.selection->ShipPtr[0])) &&
+            (aitTeamIsntDefendingMothership(&team, enemyships)) &&
+            (aitTeamIsInMothershipRange(&team)))
         {
             //add a defend mothership move
-            newMove = aimCreateDefendMothershipNoAdd(team, TRUE, TRUE);
+            newMove = aimCreateDefendMothershipNoAdd(&team, TRUE, TRUE);
             aieHandlerSetFuelLow(newMove, 5, TRUE, TRUE, aihGenericFuelLowHandler);
-            aimInsertMove(team, newMove);
+            aimInsertMove(&team, newMove);
 
-            newships = selectMergeTwoSelections(newships, team->shipList.selection, DEALLOC1);
+            newships = selectMergeTwoSelections(newships, team.shipList.selection, DEALLOC1);
         }
     }
     return newships;

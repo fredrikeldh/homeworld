@@ -761,9 +761,9 @@ void aifTeamDied(AIPlayer *aiplayer,AITeam *team, bool removeAllReferencesToTeam
     }
 
     // remove any messages from team that may still be queued up
-    for (i = 0; i < aiCurrentAIPlayer->teamsUsed; ++i)
+    for( auto& msgTeam : aiCurrentAIPlayer->teams )
     {
-        msgQP = aiCurrentAIPlayer->teams[i]->msgQueue;
+        msgQP = msgTeam.msgQueue;
         if (!msgQP) continue;
         for (j = 0; j < MSG_QUEUE_MAX_MSGS; ++j)
             if (msgQP->msgSenders[j] == team)
