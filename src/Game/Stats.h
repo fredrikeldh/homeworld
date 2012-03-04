@@ -81,7 +81,35 @@ bool statShipConstraintsCarrierFightingShipsCB(ShipStaticInfo *shipstatic);
 
 real32 statsGetKillRatingAgainstFleet(ShipStaticInfo *shipstatic,SelectCommand *fleet);
 real32 statsGetRURatingAgainstFleet(ShipStaticInfo *shipstatic,SelectCommand *fleet);
+//TODO: Remove
 Ship *statsGetMostDangerousShipNonStatConstraints(SelectCommand *selection,ShipConstraintsCB constraintsCB);
+
+#ifdef __cplusplus
+template <typename T>
+Ship* statsGetMostDangerousShipNonStatConstraints(T& selection,ShipConstraintsCB constraintsCB)
+{
+    Ship *maxship = nullptr;
+    real32 maxKillratio = -1.0f;
+
+    for( auto& ship : selection)
+    {
+        dbgAssertOrIgnore(ship.objtype == OBJ_ShipType);
+
+        if (constraintsCB(&ship))
+        {
+            auto Killratio = statsGetOverallKillRating(ship.staticinfo);
+
+            if (Killratio > maxKillratio)
+            {
+                maxKillratio = Killratio;
+                maxship = &ship;
+            }
+        }
+    }
+
+    return maxship;
+}
+#endif
 #define statsGetMostDangerousShip(sel) statsGetMostDangerousShipNonStatConstraints(sel,ShipConstraintsNoneCB)
 
 real32 statsGetKillRatingAgainstFleetStatic(ShipStaticInfo *shipstatic,SelectCommandStatic *fleetStatic);
