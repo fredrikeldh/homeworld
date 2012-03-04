@@ -169,6 +169,27 @@ void selCircleCompute(hmatrix *modelView, hmatrix *projection, SpaceObjRotImpTar
 //explicit selections
 void selSelectionSetSingleShip(Ship *ship);
 void selSelectionAddSingleShip(MaxSelection *dest, Ship *ship);
+
+#ifdef __cplusplus
+template<typename T>
+void selSelectionAddSingleShip(T& dest, Ship& ship)
+{
+    if (dest.size() >= COMMAND_MAX_SHIPS)
+    {
+        dbgAssertOrIgnore(dest.size() <= COMMAND_MAX_SHIPS);
+        dbgMessage("Warning: Tried to add too many ships to selection");
+        return;
+    }
+
+    for( auto& inShip : dest )
+    {
+        if (inShip == ship)
+            return; // Already added
+    }
+    dest.push_back(ship);
+}
+#endif
+
 //void selSelectionAddSingleShip(Ship *ship);
 void selSelectionRemoveSingleShip(MaxSelection *dest, Ship *ship);
 sdword selShipInSelection(ShipPtr *shipList, sdword nShips, ShipPtr ship);
