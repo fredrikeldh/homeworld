@@ -153,12 +153,12 @@ void aihGenericFuelLowHandler(AITeam *team)
 {
     AITeamMove *thisMove = team->curMove, *newMove;
 
-    thisMove->processing = FALSE;
-    thisMove->events.fuelLow.triggered = FALSE;
+    thisMove->processing = false;
+    thisMove->events.fuelLow.triggered = false;
 
     //add a dock move before - if the ship runs out of fuel on the way, it's toast
-    newMove = aimCreateDockNoAdd(team, dockmoveFlags_Normal, NULL, TRUE, TRUE);
-    aieHandlerSetFuelLow(newMove, 0, TRUE, FALSE, aihGenericEmptyFuelHandler);
+    newMove = aimCreateDockNoAdd(team, dockmoveFlags_Normal, nullptr, true, true);
+    aieHandlerSetFuelLow(newMove, 0, true, false, aihGenericEmptyFuelHandler);
     aitAddmoveBeforeAndMakeCurrent(team, newMove, thisMove);
 }
 
@@ -210,13 +210,9 @@ void aihHarassNumbersLowHandler(AITeam *team)
     while ((thisMove->type == MOVE_ATTACK) || (thisMove->type == MOVE_ADVANCEDATTACK))
     {
         if (thisMove->remove)
-        {
             aitDeleteCurrentMove(team);
-        }
         else
-        {
             team->curMove = (AITeamMove *)listGetStructOfNode(team->curMove->listNode.next);
-        }
 
         thisMove = team->curMove;
 
@@ -225,11 +221,11 @@ void aihHarassNumbersLowHandler(AITeam *team)
 
     gathering_point = aiuFindRangeStandoffPoint(gathering_point,origin, AIH_HARASS_NUMLOW_STANDOFF_DIST);
 
-    thisMove->processing = FALSE;
-    thisMove->events.numbersLow.triggered = FALSE;
+    thisMove->processing = false;
+    thisMove->events.numbersLow.triggered = false;
 
     //add a move, getships, formation
-    newMove = aimCreateMoveTeamNoAdd(team, gathering_point, AIH_HARASS_NUMLOW_FORMATION, FALSE, TRUE);
+    newMove = aimCreateMoveTeamNoAdd(team, gathering_point, AIH_HARASS_NUMLOW_FORMATION, false, true);
 //band-aid solution... change moveteam move so that tactics are there...
     newMove->tactics = Evasive;
     aitAddmoveBeforeAndMakeCurrent(team, newMove, thisMove);
@@ -269,7 +265,7 @@ void aihHarassFiringSingleShipHandler(AITeam *team)
 void aihHarassDisengageSingleShipHandler(AITeam *team)
 {
     aiuWrapFormation(team->shipList.selection, team->curMove->formation);
-    team->curMove->events.firing.triggered = FALSE;
+    team->curMove->events.firing.triggered = false;
 }
 
 
@@ -338,8 +334,8 @@ void aihFastDefenseNumbersLowHandler(AITeam *team)
 
     gathering_point = aiuFindRangeStandoffPoint(gathering_point,origin, AIH_FASTDEF_NUMLOW_STANDOFF_DIST);
 
-    thisMove->processing = FALSE;
-    thisMove->events.numbersLow.triggered = FALSE;
+    thisMove->processing = false;
+    thisMove->events.numbersLow.triggered = false;
 
     //add a move, getships, formation
     newMove = aimCreateMoveTeamNoAdd(team, gathering_point, AIH_FASTDEF_NUMLOW_FORMATION, FALSE, TRUE);
@@ -348,15 +344,10 @@ void aihFastDefenseNumbersLowHandler(AITeam *team)
     if (teamsel->numShips)
     {
         if (teamsel->numShips < original_number)
-        {
             newMove = aimCreateGetShipsNoAdd(team, teamsel->ShipPtr[0]->shiptype, (sbyte)(original_number - teamsel->numShips), 0, TRUE, TRUE);
-        }
         else
-        {
             //just add one ship (to prevent infinite loops)
-            newMove = aimCreateGetShipsNoAdd(team, teamsel->ShipPtr[0]->shiptype, 1, 0, TRUE, TRUE);
-        }
-
+            newMove = aimCreateGetShipsNoAdd(team, teamsel->ShipPtr[0]->shiptype, 1, 0, true, true);
     }
     else
     {
@@ -369,7 +360,7 @@ void aihFastDefenseNumbersLowHandler(AITeam *team)
     }
 
     thisMove->events.numbersLow.watchBaseCount = 0;
-    thisMove->processing = FALSE;
+    thisMove->processing = false;
 
     listAddNodeBefore(&(thisMove->listNode), &(newMove->listNode), newMove);
 
@@ -397,33 +388,25 @@ void aihSlowDefenseNumbersLowHandler(AITeam *team)
     //later maybe change to "reinforce" move, maybe along with harass team getting out
     //of there to attack someone else.
     if (aiCurrentAIPlayer->player->PlayerMothership)
-    {
         gathering_point = aiCurrentAIPlayer->player->PlayerMothership->posinfo.position;
-    }
     else
-    {
         vecZeroVector(gathering_point);
-    }
 
     gathering_point = aiuFindRangeStandoffPoint(gathering_point,origin, AIH_SLOWDEF_NUMLOW_STANDOFF_DIST);
 
-    thisMove->processing = FALSE;
-    thisMove->events.numbersLow.triggered = FALSE;
+    thisMove->processing = false;
+    thisMove->events.numbersLow.triggered = false;
 
     //add a move, getships, formation
-    newMove = aimCreateMoveTeamNoAdd(team, gathering_point,AIH_SLOWDEF_NUMLOW_FORMATION, FALSE, TRUE);
+    newMove = aimCreateMoveTeamNoAdd(team, gathering_point,AIH_SLOWDEF_NUMLOW_FORMATION, false, true);
     aitAddmoveBeforeAndMakeCurrent(team, newMove, thisMove);
 
     if (teamsel->numShips)
     {
         if (teamsel->numShips < original_number)
-        {
             newMove = aimCreateGetShipsNoAdd(team, teamsel->ShipPtr[0]->shiptype, (sbyte)(original_number - teamsel->numShips), 0, TRUE, TRUE);
-        }
         else
-        {
-            newMove = aimCreateGetShipsNoAdd(team, teamsel->ShipPtr[0]->shiptype, 1, 0, TRUE, TRUE);
-        }
+            newMove = aimCreateGetShipsNoAdd(team, teamsel->ShipPtr[0]->shiptype, 1, 0, true, true);
     }
     else
     {
@@ -433,11 +416,11 @@ void aihSlowDefenseNumbersLowHandler(AITeam *team)
         SetAlternative(alternatives,2,StandardFrigate,30);
         SetAlternative(alternatives,3,DDDFrigate,30);
 
-        newMove = aimCreateFancyGetShipsNoAdd(team, MultiGunCorvette, 3, &alternatives, 0, TRUE, FALSE);
+        newMove = aimCreateFancyGetShipsNoAdd(team, MultiGunCorvette, 3, &alternatives, 0, true, false);
     }
 
     thisMove->events.numbersLow.watchBaseCount = 0;
-    thisMove->processing = FALSE;
+    thisMove->processing = false;
 
     listAddNodeBefore(&(thisMove->listNode), &(newMove->listNode), newMove);
 }
@@ -474,7 +457,7 @@ void aihGenericGettingRockedHandler(AITeam *team, SelectCommand *ships)
         }
     }
 
-    thisMove->events.gettingRocked.triggered = FALSE;
+    thisMove->events.gettingRocked.triggered = false;
 
     attacktargets = getShipAndItsFormation(&universe.mainCommandLayer,ships->ShipPtr[0]);
 
@@ -491,7 +474,7 @@ void aihGenericGettingRockedHandler(AITeam *team, SelectCommand *ships)
         return;
     }
 
-    thisMove->processing = FALSE;
+    thisMove->processing = false;
 
     //add a attack move before
     newMove = aimCreateAttackNoAdd(team, attacktargets,AIH_GENERIC_GETTINGROCKED_FORMATION, TRUE, TRUE);
@@ -521,7 +504,7 @@ void aihPatrolEnemyNearbyHandler(AITeam *team, SelectCommand *ships)
     newMove = aimCreateAttackNoAdd(team, selectMemDupSelection(ships, "duppenh", 0), AIH_PATROL_ENEMYNEARBY_FORMATION, TRUE, TRUE);
     newMove->events = thisMove->events;
     newMove->events.enemyNearby.handler = NULL;
-    team->curMove->processing = FALSE;
+    team->curMove->processing = false;
     aitAddmoveBeforeAndMakeCurrent(team, newMove, thisMove);
 }
 
@@ -614,7 +597,7 @@ void aihGravWellEnemyNotNearbyHandler(AITeam *team)
     thisMove->events.enemyNotNearby.handler = NULL;
     aieHandlerSetEnemyNearby(thisMove,
                              (((GravWellGeneratorStatics *) ((ShipStaticInfo *)(team->shipList.selection->ShipPtr[0]->staticinfo))->custstatinfo)->GravWellRadius)*0.8,
-                             FALSE, aihGravWellEnemyNearbyHandler);
+                             false, aihGravWellEnemyNearbyHandler);
     //later cancel attack move on cooperating team???
 }
 
@@ -681,11 +664,11 @@ void aihFastDefenseDistressHandler(AITeam *team, udword *intvar)
                 newMove->events = thisMove->events;
                 if (aiuAttackFeatureEnabled(AIA_KAMIKAZE))
                 {
-                    aieHandlerSetHealthLow(newMove, AIO_FIGHTER_KAMIKAZE_HEALTH, TRUE, FALSE, aihKamikazeHealthLowHandler);
+                    aieHandlerSetHealthLow(newMove, AIO_FIGHTER_KAMIKAZE_HEALTH, true, false, aihKamikazeHealthLowHandler);
                 }
                 newMove->events.interrupt.handler  = NULL;
                 newMove->events.numbersLow.handler = NULL;
-                team->curMove->processing = FALSE;
+                team->curMove->processing = false;
                 aitAddmoveBeforeAndMakeCurrent(team, newMove, thisMove);
                 memFree(enemyShips);
                 return;
@@ -694,13 +677,12 @@ void aihFastDefenseDistressHandler(AITeam *team, udword *intvar)
         }
     }
 
-    if ((aiCurrentAIPlayer->aidDistressShips) && (distressShips.numShips))
-    {
-        if (aiuRescueShipType((SelectCommand *)&distressShips, team, ResourceCollector))
-        {
+    if(
+        aiCurrentAIPlayer->aidDistressShips
+        && distressShips.numShips
+        && aiuRescueShipType((SelectCommand *)&distressShips, team, ResourceCollector)
+    )
             return;
-        }
-    }
 }
 
 
@@ -760,26 +742,22 @@ void aihSlowDefenseDistressHandler(AITeam *team, udword *intvar)
                 (distsq_to_ships < AIH_SLOWDEF_RESPONSE_MAXDISTSQ))
             {
                 if (enemyShips->numShips > AIH_SLOWDEF_INVADER_LOTSFEW_LIMIT)
-                {
                     formation = AIH_SLOWDEF_INVADER_LOTS_FORMATION;
-                }
                 else
-                {
                     formation = AIH_SLOWDEF_INVADER_FEW_FORMATION;
-                }
 
                 newMove         = aimCreateAdvancedAttackNoAdd(team, selectMemDupSelection(enemyShips, "sddh", 0), formation,Aggressive,TRUE, TRUE);
                 newMove->events = thisMove->events;
-                if (aiuAttackFeatureEnabled(AIA_KAMIKAZE))
-                {
-                    if (aitTeamShipClassIs(CLASS_Corvette, team))
-                    {
-                        aieHandlerSetHealthLow(newMove, AIO_CORVETTE_KAMIKAZE_HEALTH, TRUE, FALSE, aihKamikazeHealthLowHandler);
-                    }
-                }
+                if
+                (
+                	aiuAttackFeatureEnabled(AIA_KAMIKAZE)
+                	&& aitTeamShipClassIs(CLASS_Corvette, team)
+                )
+                	aieHandlerSetHealthLow(newMove, AIO_CORVETTE_KAMIKAZE_HEALTH, true, false, aihKamikazeHealthLowHandler);
+
                 newMove->events.interrupt.handler  = NULL;
                 newMove->events.numbersLow.handler = NULL;
-                team->curMove->processing = FALSE;
+                team->curMove->processing = false;
                 aitAddmoveBeforeAndMakeCurrent(team, newMove, thisMove);
                 memFree(enemyShips);
                 return;
@@ -879,15 +857,11 @@ void  aihReconShipTeamDiedHandler(AITeam *team)
 void aihHarassTeamDiedHandler(AITeam *team)
 {
 	if (!bitTest(team->teamFlags, AIT_Reissue01))
-	{
 		bitSet(team->teamFlags, AIT_Reissue01);
-	}
 	else
 	{
 		if (!bitTest(team->teamFlags, AIT_Reissue10))
-		{
 			bitSet(team->teamFlags, AIT_Reissue10);
-		}
 		else
 		{
 			// if we've tried harass teams twice, destroy the team
@@ -903,9 +877,7 @@ void aihHarassTeamDiedHandler(AITeam *team)
 		aioCreateHarass(team);
 	}
 	else
-	{
 		bitSet(team->teamFlags, AIT_DestroyTeam);
-	}
 }
 
 

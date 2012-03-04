@@ -137,20 +137,20 @@ typedef struct {
 
 } AIEvents;
 
-sdword aieCheckGettingRocked(struct AITeam *team, SelectCommand **ships);
-sdword aieCheckEnemyNearby(struct AITeam *team, SelectCommand **ships);
-sdword aieCheckEnemyNotNearby(struct AITeam *team);
-sdword aieCheckFiring(struct AITeam *team);
-sdword aieCheckDisengage(struct AITeam *team);
-sdword aieCheckHealthLow(struct AITeam *team);
-sdword aieCheckHealthHigh(struct AITeam *team);
-sdword aieCheckNumbersLow(struct AITeam *team);
-sdword aieCheckNumbersHigh(struct AITeam *team);
-sdword aieCheckFuelLow(struct AITeam *team);
-sdword aieCheckFuelHigh(struct AITeam *team);
-sdword aieCheckShipDied(void);
-sdword aieCheckTeamDied(struct AITeam *team);
-sdword aieCheckInterrupt(struct AITeam *team);
+bool aieCheckGettingRocked(struct AITeam *team, SelectCommand **ships);
+bool aieCheckEnemyNearby(struct AITeam *team, SelectCommand **ships);
+bool aieCheckEnemyNotNearby(struct AITeam *team);
+bool aieCheckFiring(struct AITeam *team);
+bool aieCheckDisengage(struct AITeam *team);
+bool aieCheckHealthLow(struct AITeam *team);
+bool aieCheckHealthHigh(struct AITeam *team);
+bool aieCheckNumbersLow(struct AITeam *team);
+bool aieCheckNumbersHigh(struct AITeam *team);
+bool aieCheckFuelLow(struct AITeam *team);
+bool aieCheckFuelHigh(struct AITeam *team);
+bool aieCheckShipDied(void);
+bool aieCheckTeamDied(struct AITeam *team);
+bool aieCheckInterrupt(struct AITeam *team);
 
 struct AITeamMove;
 

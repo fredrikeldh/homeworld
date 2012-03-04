@@ -34,7 +34,7 @@
 static bool aiaPriorityShipsConstraints(Ship *ship)
 {
     ShipStaticInfo *shipstatic = ship->staticinfo;
-    bool dangerous = FALSE;
+    bool dangerous = false;
 
     if (aiuShipIsntAnEnemyMothership(ship))
     {
@@ -64,20 +64,9 @@ static bool aiaPriorityShipsConstraints(Ship *ship)
     }
 
     if (dangerous)
-    {
-        if (aitAnyTeamOfPlayerAttackingThisShip(aiCurrentAIPlayer,ship))
-        {
-            return FALSE;
-        }
-        else
-        {
-            return TRUE;
-        }
-    }
+        return !aitAnyTeamOfPlayerAttackingThisShip(aiCurrentAIPlayer,ship);
     else
-    {
-        return FALSE;
-    }
+        return false;
 }
 
 
@@ -257,7 +246,7 @@ ShipPtr aiaGetTakeoutTarget(void)
 bool aiaGenerateAttackType(AITeam *newteam, AttackType attacktype, bool ForceBig)
 {
     ShipPtr ship;
-    bool return_value = FALSE;
+    bool return_value = false;
 
     switch (attacktype)
     {
@@ -411,16 +400,13 @@ bool aiaGenerateNewAttackOrder(AttackType attacktype)
     sdword index = aiCurrentAIPlayer->numAttackTeams;
     aiCurrentAIPlayer->attackTeam[aiCurrentAIPlayer->numAttackTeams++] = aitCreate(AttackTeam);
 
-    if (!aiaGenerateAttackType(aiCurrentAIPlayer->attackTeam[index], attacktype, TRUE))
+    if (!aiaGenerateAttackType(aiCurrentAIPlayer->attackTeam[index], attacktype, true))
     {
-        aitDestroy(aiCurrentAIPlayer, aiCurrentAIPlayer->attackTeam[index], TRUE);
-        return FALSE;
+        aitDestroy(aiCurrentAIPlayer, aiCurrentAIPlayer->attackTeam[index], true);
+        return false;
     }
     else
-    {
-        return TRUE;
-    }
-
+    	return true;
 }
 
 
@@ -436,7 +422,7 @@ void aiaGenerateNewAttackTeam(sdword AttackTeamNumber)
 {
     AttackType randomAttack;
     udword probability_of_attack;
-    bool attack_type_found = FALSE;
+    bool attack_type_found = false;
     udword i=0;
 
     aiCurrentAIPlayer->attackTeam[AttackTeamNumber] = aitCreate(AttackTeam);
@@ -451,7 +437,7 @@ void aiaGenerateNewAttackTeam(sdword AttackTeamNumber)
 
         if (probability_of_attack < aiCurrentAIPlayer->aiaAttackProbability[randomAttack])
         {
-            attack_type_found = aiaGenerateAttackType(aiCurrentAIPlayer->attackTeam[AttackTeamNumber], randomAttack, FALSE);
+            attack_type_found = aiaGenerateAttackType(aiCurrentAIPlayer->attackTeam[AttackTeamNumber], randomAttack, false);
         }
         else
         {
@@ -725,7 +711,7 @@ void aiaProcessHarassTeams(void)
                 //clear moves until "harass attack"
                 aitDeleteMovesUntilMoveType(harassTeams[i], MOVE_HARASSATTACK);
 
-                move = aimCreateMoveTeamNoAdd(harassTeams[i], destination, SAME_FORMATION, TRUE, FALSE);
+                move = aimCreateMoveTeamNoAdd(harassTeams[i], destination, SAME_FORMATION, true, false);
                 move->tactics = Evasive;    //temporary
 
                 aimInsertMove(harassTeams[i], move);
@@ -772,7 +758,7 @@ bool aiaDivideNewShips(void)
     SelectCommand *NewShips = aiCurrentAIPlayer->newships.selection;
     udword numShipType[TOTAL_NUM_SHIPS];
     sdword i;
-    bool done = FALSE, newteam = FALSE;
+    bool done = false, newteam = false;
 
     for (i=0;i<TOTAL_NUM_SHIPS;i++)
     {
@@ -875,7 +861,7 @@ void aiaCleanupTeams(void)
 ----------------------------------------------------------------------------*/
 void aiaAttackManager(void)
 {
-    bool newteams = FALSE;
+    bool newteams = false;
 
     aiaCleanupTeams();
 
@@ -957,7 +943,7 @@ void aiaProcessSwarm(void)
         numNewAttackTeams, numSwarmersPerTeam, numExtraSwarmers, newTeamNum,
         numNewSwarmGroups, numAdvPerTeam, numExtraAdv, numPodsPerTeam,
         numExtraPods, i, j, k, l, m;
-    bool fuelpod = FALSE, mothership = FALSE;
+    bool fuelpod = false, mothership = false;
     ShipPtr ship;
 
     if (aiCurrentAIPlayer->newships.selection->numShips)
@@ -1204,21 +1190,17 @@ bool aiaPlayerCanBuildShipType(ShipType shiptype, AIPlayer *aiplayer)
     if ((RacesAllowedForGivenShip[shiptype] & RaceToRaceBits(race)) == 0)
     {
         // Can't build this shiptype for this race
-        return FALSE;
+        return false;
     }
 
     teststatic = GetShipStaticInfo(shiptype,race);
     if (!bitTest(teststatic->staticheader.infoFlags, IF_InfoLoaded))
-    {
-        return FALSE;       // this ship static info not loaded, so can't build
-    }
+        return false;       // this ship static info not loaded, so can't build
 
     if ((shiptype == ResourceCollector) && (!singlePlayerGame) && (!bitTest(tpGameCreated.flag,MG_HarvestinEnabled)))
-    {
-        return FALSE;
-    }
+        return false;
 
-    return TRUE;     // later set to TRUE to take into account research
+    return true;     // later set to TRUE to take into account research
 }
 
 
@@ -1280,11 +1262,9 @@ bool aiaShipDied(struct AIPlayer *aiplayer, ShipPtr ship)
         aiplayerLog((aiplayer->player->playerIndex, "Ship removed from Swarm Targets"));
 
         if (!aiplayer->Targets->numShips)
-        {
             aiumemFree(aiplayer->Targets);
-        }
     }
-    return FALSE;
+    return false;
 }
 
 void aiaInit(struct AIPlayer *aiplayer)
@@ -1407,7 +1387,7 @@ void aiaInit(struct AIPlayer *aiplayer)
             }
             break;
         default:
-            dbgAssertOrIgnore(FALSE);
+            dbgAssertOrIgnore(false);
     }
 
     if (randyrandombetween(RANDOM_AI_PLAYER, 0, 100) < aiuRandomRange(AIA_KAMIKAZE_PROB[aiplayer->aiplayerDifficultyLevel], AIA_KAMIKAZE_RANGE[aiplayer->aiplayerDifficultyLevel]))
@@ -1425,13 +1405,13 @@ void aiaClose(struct AIPlayer *aiplayer)
     {
         if (aiplayer->reconTeam[i] != NULL)
         {
-            aitDestroy(aiplayer, aiplayer->reconTeam[i],FALSE);
+            aitDestroy(aiplayer, aiplayer->reconTeam[i],false);
             aiplayer->reconTeam[i] = NULL;
         }
     }
     if (aiplayer->harassTeam != NULL)
     {
-        aitDestroy(aiplayer, aiplayer->harassTeam,FALSE);
+        aitDestroy(aiplayer, aiplayer->harassTeam,false);
         aiplayer->harassTeam = NULL;
     }
 
@@ -1439,7 +1419,7 @@ void aiaClose(struct AIPlayer *aiplayer)
     {
         if (aiplayer->attackTeam[i] != NULL)
         {
-            aitDestroy(aiplayer, aiplayer->attackTeam[i],FALSE);
+            aitDestroy(aiplayer, aiplayer->attackTeam[i],false);
             aiplayer->attackTeam[i] = NULL;
         }
     }

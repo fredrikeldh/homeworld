@@ -45,7 +45,7 @@ void aieExecute(struct AITeam *team)
              aieCheckShipDied())
     {
         aiplayerLog((aiIndex,"eventhandler: shipDied"));
-        curMove->events.shipDied.triggered = TRUE;
+        curMove->events.shipDied.triggered = true;
         curMove->events.shipDied.handler(team, ship);
     }
     // gettingRocked
@@ -65,7 +65,7 @@ void aieExecute(struct AITeam *team)
              aieCheckEnemyNearby(team, &ships))
     {
         aiplayerLog((aiIndex,"eventhandler: enemyNearby"));
-        curMove->events.enemyNearby.triggered = TRUE;
+        curMove->events.enemyNearby.triggered = true;
         curMove->events.enemyNearby.handler(team, ships);
     }
     // enemy not nearby
@@ -75,7 +75,7 @@ void aieExecute(struct AITeam *team)
              aieCheckEnemyNotNearby(team))
     {
         aiplayerLog((aiIndex,"eventhandler: enemyNotNearby"));
-        curMove->events.enemyNotNearby.triggered = TRUE;
+        curMove->events.enemyNotNearby.triggered = true;
         curMove->events.enemyNotNearby.handler(team);
     }
     // firing
@@ -85,7 +85,7 @@ void aieExecute(struct AITeam *team)
              aieCheckFiring(team))
     {
         aiplayerLog((aiIndex,"eventhandler: firing"));
-        curMove->events.firing.triggered = TRUE;
+        curMove->events.firing.triggered = true;
         curMove->events.firing.handler(team);
     }
     // disengaging
@@ -96,7 +96,7 @@ void aieExecute(struct AITeam *team)
              aieCheckDisengage(team))
     {
         aiplayerLog((aiIndex,"eventhandler: disengaging"));
-        curMove->events.disengage.triggered = TRUE;
+        curMove->events.disengage.triggered = true;
         curMove->events.disengage.handler(team);
     }
     // health low
@@ -106,7 +106,7 @@ void aieExecute(struct AITeam *team)
              aieCheckHealthLow(team))
     {
         aiplayerLog((aiIndex,"eventhandler: healthLow"));
-        curMove->events.healthLow.triggered = TRUE;
+        curMove->events.healthLow.triggered = true;
         curMove->events.healthLow.handler(team);
     }
     // health high
@@ -116,7 +116,7 @@ void aieExecute(struct AITeam *team)
              aieCheckHealthHigh(team))
     {
         aiplayerLog((aiIndex,"eventhandler: healthHigh"));
-        curMove->events.healthHigh.triggered = TRUE;
+        curMove->events.healthHigh.triggered = true;
         curMove->events.healthHigh.handler(team);
     }
     // numbers low
@@ -126,7 +126,7 @@ void aieExecute(struct AITeam *team)
              aieCheckNumbersLow(team))
     {
         aiplayerLog((aiIndex,"eventhandler: numbersLow"));
-        curMove->events.numbersLow.triggered = TRUE;
+        curMove->events.numbersLow.triggered = true;
         curMove->events.numbersLow.handler(team);
     }
     // numbers high
@@ -136,7 +136,7 @@ void aieExecute(struct AITeam *team)
              aieCheckNumbersHigh(team))
     {
         aiplayerLog((aiIndex,"eventhandler: numbersHigh"));
-        curMove->events.numbersHigh.triggered = TRUE;
+        curMove->events.numbersHigh.triggered = true;
         curMove->events.numbersHigh.handler(team);
     }
     // fuel low
@@ -146,7 +146,7 @@ void aieExecute(struct AITeam *team)
              aieCheckFuelLow(team))
     {
         aiplayerLog((aiIndex,"eventhandler: fuelLow"));
-        curMove->events.fuelLow.triggered = TRUE;
+        curMove->events.fuelLow.triggered = true;
         curMove->events.fuelLow.handler(team);
     }
     // fuel high
@@ -156,7 +156,7 @@ void aieExecute(struct AITeam *team)
              aieCheckFuelHigh(team))
     {
         aiplayerLog((aiIndex,"eventhandler: fuelHigh"));
-        curMove->events.fuelHigh.triggered = TRUE;
+        curMove->events.fuelHigh.triggered = true;
         curMove->events.fuelHigh.handler(team);
     }
     //interrupt
@@ -169,7 +169,7 @@ void aieExecute(struct AITeam *team)
             ((curMove->events.interrupt.interval) && (!curMove->events.interrupt.intervalcnt)))
         {
 //            aiplayerLog((aiIndex,"eventhandler: interrupt"));
-            curMove->events.interrupt.triggered = TRUE;
+            curMove->events.interrupt.triggered = true;
             curMove->events.interrupt.handler(team, curMove->events.interrupt.intvar);
             curMove->events.interrupt.intervalcnt = curMove->events.interrupt.interval;
         }
@@ -326,7 +326,7 @@ void aieHandlerSetInterrupt (AITeamMove *move, udword *intvar, udword interval, 
 //  return true iff someone in the team is getting rocked.
 //  NOTE: this will allocate memory for ships iff true.
 //
-sdword aieCheckGettingRocked(AITeam *team, SelectCommand **ships)
+bool aieCheckGettingRocked(AITeam *team, SelectCommand **ships)
 {
     sdword i;
     SelectCommand *selection = team->shipList.selection;
@@ -340,9 +340,9 @@ sdword aieCheckGettingRocked(AITeam *team, SelectCommand **ships)
             (*ships)->ShipPtr[0] = selection->ShipPtr[i]->gettingrocked;
             // an enhancement would keep checking subsequent ships
             // in the team, adding their rockers to this selection
-            return TRUE;
+            return true;
         }
-    return FALSE;
+    return false;
 }
 
 //
@@ -350,7 +350,7 @@ sdword aieCheckGettingRocked(AITeam *team, SelectCommand **ships)
 //  the given team's ships.
 //  NOTE: this will allocate memory for ships iff true.
 //
-sdword aieCheckEnemyNearby(AITeam *team, SelectCommand **ships)
+bool aieCheckEnemyNearby(AITeam *team, SelectCommand **ships)
 {
 //    blob *myblob;
 
@@ -377,20 +377,20 @@ sdword aieCheckEnemyNearby(AITeam *team, SelectCommand **ships)
             {
                 goto end;
             }
-            return TRUE;
+            return true;
         }
     }
 
   end:
     aiumemFree(*ships);
-    return FALSE;
+    return false;
 }
 
 //
 //  return true iff there are no enemy ships within a certain radius of any of
 //  the given team's ships.
 //
-sdword aieCheckEnemyNotNearby(AITeam *team)
+bool aieCheckEnemyNotNearby(AITeam *team)
 {
 //    blob *myblob;
     SelectCommand *ships = NULL;
@@ -414,20 +414,20 @@ sdword aieCheckEnemyNotNearby(AITeam *team)
         if (ships->numShips)
         {
             aiumemFree(ships);
-            return FALSE;
+            return false;
         }
     }
 
 //  end:
     aiumemFree(ships);
-    return TRUE;
+    return true;
 }
 
 //
 // return true iff one of the ships is firing (indicated by the shipisattacking
 // boolean variable
 //
-sdword aieCheckFiring(AITeam *team)
+bool aieCheckFiring(AITeam *team)
 {
     sdword i;
     SelectCommand *selection = team->shipList.selection;
@@ -435,11 +435,9 @@ sdword aieCheckFiring(AITeam *team)
     for (i=0;i < selection->numShips; ++i)
     {
         if (selection->ShipPtr[i]->shipisattacking)
-        {
-            return TRUE;
-        }
+            return true;
     }
-    return FALSE;
+    return false;
 }
 
 
@@ -447,7 +445,7 @@ sdword aieCheckFiring(AITeam *team)
 // returns true iff all the ships stop firing (indicated by the shipisattacking
 // boolean variable
 //
-sdword aieCheckDisengage(AITeam *team)
+bool aieCheckDisengage(AITeam *team)
 {
     sdword i;
     SelectCommand *selection = team->shipList.selection;
@@ -455,18 +453,16 @@ sdword aieCheckDisengage(AITeam *team)
     for (i=0;i < selection->numShips; ++i)
     {
         if (selection->ShipPtr[i]->shipisattacking)
-        {
-            return FALSE;
-        }
+            return false;
     }
-    return TRUE;
+    return true;
 }
 
 //
 //  return true iff the entire group (or one individual, if specified)
 //  is below a certain level of health
 //
-sdword aieCheckHealthLow(AITeam *team)
+bool aieCheckHealthLow(AITeam *team)
 {
     sdword i;
     real32 maxHealth = 0.0;
@@ -491,16 +487,16 @@ sdword aieCheckHealthLow(AITeam *team)
     if (!watchIndividual)
     {
         if ((100 * actualHealth) < (team->curMove->events.healthLow.watchPercentage * maxHealth))
-            return TRUE;
+            return true;
     }
-    return FALSE;
+    return false;
 }
 
 //
 //  return true iff the entire group (or one individual, if specified)
 //  is above a certain level of health
 //
-sdword aieCheckHealthHigh(AITeam *team)
+bool aieCheckHealthHigh(AITeam *team)
 {
     sdword i;
     real32 maxHealth = 0;
@@ -514,7 +510,7 @@ sdword aieCheckHealthHigh(AITeam *team)
             if ((100 * team->shipList.selection->ShipPtr[i]->health) >
                 (team->curMove->events.healthHigh.watchPercentage *
                  team->shipList.selection->ShipPtr[i]->staticinfo->maxhealth))
-                return TRUE;
+                return true;
         }
         else // accummulate
         {
@@ -525,21 +521,21 @@ sdword aieCheckHealthHigh(AITeam *team)
     if (!watchIndividual)
     {
         if ((100 * actualHealth) > (team->curMove->events.healthHigh.watchPercentage * maxHealth))
-            return TRUE;
+            return true;
     }
-    return FALSE;
+    return false;
 }
 
 //
 //  return true iff the size of the team is below a certain number of ships
 //  (expressed as a % of original team size)
 //
-sdword aieCheckNumbersLow(AITeam *team)
+bool aieCheckNumbersLow(AITeam *team)
 {
     if (!team->curMove->events.numbersLow.watchBaseCount)
     {
         team->curMove->events.numbersLow.watchBaseCount = team->shipList.selection->numShips;
-        return FALSE;
+        return false;
     }
     return ((100 * team->shipList.selection->numShips)
              < (team->curMove->events.numbersLow.watchPercentage *
@@ -550,12 +546,12 @@ sdword aieCheckNumbersLow(AITeam *team)
 //  return true iff the size of the team is above a certain number of ships
 //  (expressed as a % of original team size)
 //
-sdword aieCheckNumbersHigh(AITeam *team)
+bool aieCheckNumbersHigh(AITeam *team)
 {
     if (!team->curMove->events.numbersHigh.watchBaseCount)
     {
         team->curMove->events.numbersHigh.watchBaseCount = team->shipList.selection->numShips;
-        return FALSE;
+        return false;
     }
     return ((100 * team->shipList.selection->numShips)
              > (team->curMove->events.numbersHigh.watchPercentage *
@@ -566,7 +562,7 @@ sdword aieCheckNumbersHigh(AITeam *team)
 //  return true iff the entire group (or one individual, if specified)
 //  is below a certain level of fuel
 //
-sdword aieCheckFuelLow(AITeam *team)
+bool aieCheckFuelLow(AITeam *team)
 {
     sdword i;
     real32 maxFuel = 0.0;
@@ -580,7 +576,7 @@ sdword aieCheckFuelLow(AITeam *team)
             if ((100.0 * team->shipList.selection->ShipPtr[i]->fuel) <
                 (team->curMove->events.fuelLow.watchPercentage *
                  team->shipList.selection->ShipPtr[i]->staticinfo->maxfuel))
-                return TRUE;
+                return true;
         }
         else // accummulate
         {
@@ -591,16 +587,16 @@ sdword aieCheckFuelLow(AITeam *team)
     if (!watchIndividual)
     {
         if ((100.0 * actualFuel) < (team->curMove->events.fuelLow.watchPercentage * maxFuel))
-            return TRUE;
+            return true;
     }
-    return FALSE;
+    return false;
 }
 
 //
 //  return true iff the entire group (or one individual, if specified)
 //  is below a certain level of fuel
 //
-sdword aieCheckFuelHigh(AITeam *team)
+bool aieCheckFuelHigh(AITeam *team)
 {
     sdword i;
     real32 maxFuel = 0.0;
@@ -614,7 +610,7 @@ sdword aieCheckFuelHigh(AITeam *team)
             if ((100.0 * team->shipList.selection->ShipPtr[i]->fuel) >
                 (team->curMove->events.fuelHigh.watchPercentage *
                  team->shipList.selection->ShipPtr[i]->staticinfo->maxfuel))
-                return TRUE;
+                return true;
         }
         else // accummulate
         {
@@ -625,32 +621,27 @@ sdword aieCheckFuelHigh(AITeam *team)
     if (!watchIndividual)
     {
         if ((100.0 * actualFuel) > (team->curMove->events.fuelHigh.watchPercentage * maxFuel))
-            return TRUE;
+            return true;
     }
-    return FALSE;
+    return false;
 }
 
-sdword aieCheckShipDied(void)
+bool aieCheckShipDied(void)
 {
-    return FALSE;
+    return false;
 }
 
-sdword aieCheckTeamDied(AITeam *team)
+bool aieCheckTeamDied(AITeam *team)
 {
-    if (team->shipList.selection->numShips)
-    {
-        return FALSE;
-    }
-    return TRUE;
+    return team->shipList.selection->numShips == 0;
 }
 
-sdword aieCheckInterrupt(AITeam *team)
+bool aieCheckInterrupt(AITeam *team)
 {
     if (*(team->curMove->events.interrupt.intvar))
-    {
-        return TRUE;
-    }
-    return FALSE;
+        return true;
+
+    return false;
 }
 
 /*=============================================================================

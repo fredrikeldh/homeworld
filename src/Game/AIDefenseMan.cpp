@@ -46,7 +46,7 @@ bool aitAnyTeamOfPlayerGuardingThisShip(struct AIPlayer *aiplayer,Ship *ship)
             node = node->next;
         }
     }
-    return FALSE;
+    return false;
 }
 
 
@@ -863,40 +863,31 @@ void aidTeamDied(AIPlayer *aiplayer, AITeam *team)
 
 bool aidShipDied(AIPlayer *aiplayer, ShipPtr ship)
 {
-    bool return_value = FALSE;
+    bool return_value = false;
 
     if ((aiplayer->aidProximitySensors) &&
         (clRemoveShipFromSelection(aiplayer->aidProximitySensors, ship)))
     {
         if (aiplayer->NumProxSensorsRequested)
-        {
             aiplayer->NumProxSensorsRequested--;
-        }
-        return_value = TRUE;
+
+        return_value = true;
     }
     if ((aiplayer->aidDefenseTargets) &&
         (clRemoveShipFromSelection(aiplayer->aidDefenseTargets, ship)))
-    {
-        return_value = TRUE;
-    }
+        return_value = true;
 
     if ((aiplayer->aidDistressShips) &&
         (clRemoveShipFromSelection(aiplayer->aidDistressShips, ship)))
-    {
-        return_value = TRUE;
-    }
+        return_value = true;
 
     if ((aiplayer->aidInvadingShips) &&
         (clRemoveShipFromSelection(aiplayer->aidInvadingShips, ship)))
-    {
-        return_value = TRUE;
-    }
+        return_value = true;
 
     if ((aiplayer->shipsattackingmothership) &&
         (clRemoveShipFromSelection(aiplayer->shipsattackingmothership, ship)))
-    {
-        return_value = TRUE;
-    }
+        return_value = true;
 
     return return_value;
 }
@@ -930,7 +921,7 @@ void aidInit(AIPlayer *aiplayer)
         case AI_BEGINNER:
             break;
         default:
-            dbgAssertOrIgnore(FALSE);
+            dbgAssertOrIgnore(false);
     }
 }
 
@@ -943,7 +934,7 @@ void aidClose(AIPlayer *aiplayer)
     for (i=0;i<aiplayer->numGuardTeams;i++)
     {
         dbgAssertOrIgnore(aiplayer->guardTeams[i]);
-        aitDestroy(aiplayer,aiplayer->guardTeams[i],FALSE);
+        aitDestroy(aiplayer,aiplayer->guardTeams[i],false);
     }
 
     aiumemFree(aiplayer->shipsattackingmothership);

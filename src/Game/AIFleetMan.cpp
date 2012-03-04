@@ -46,7 +46,7 @@ void aifInit(AIPlayer *aiplayer)
         case AI_BEGINNER:
             break;
         default:
-            dbgAssertOrIgnore(FALSE);
+            dbgAssertOrIgnore(false);
     }
 
 }
@@ -72,7 +72,7 @@ void aifClose(void)
 ----------------------------------------------------------------------------*/
 bool aifShipDied(AIPlayer *aiplayer,ShipPtr ship)
 {
-    bool return_value = FALSE;
+    bool return_value = false;
 
     if (ship->playerowner == aiplayer->player &&
         (ship->shiptype == Carrier || ship->shiptype == Mothership))
@@ -84,12 +84,12 @@ bool aifShipDied(AIPlayer *aiplayer,ShipPtr ship)
         if (ship == aiplayer->AICreator)
         {
             aiplayer->AICreator = NULL;
-            return_value = TRUE;
+            return_value = true;
         }
         else if (ship == aiplayer->ScriptCreator)
         {
             aiplayer->ScriptCreator = NULL;
-            return_value = TRUE;
+            return_value = true;
         }
 
         //now go through all the requests to make sure
@@ -276,15 +276,13 @@ ShipStaticInfo *GetSubstituteShipStatic(ShipRace race)
             break;
 
         default:
-            dbgAssertOrIgnore(FALSE);
+            dbgAssertOrIgnore(false);
     }
 
     if (shipstatic)
     {
         if (!bitTest(shipstatic->staticheader.infoFlags, IF_InfoLoaded))
-        {
             shipstatic = NULL;
-        }
     }
 
     return shipstatic;
@@ -722,7 +720,7 @@ void aifTeamRequestsShipsCB(ShipType shiptype,sdword number,AITeam *team,char *d
 
         case ResourceTeam:
         default:
-            dbgAssertOrIgnore(FALSE);       // not supported yet
+            dbgAssertOrIgnore(false);       // not supported yet
             break;
     }
 }
@@ -816,7 +814,7 @@ bool checkAddToTeam(LinkedList *TeamWaitingQ,Ship *ship)
         node = node->next;
     }
 
-    return FALSE;
+    return false;
 }
 
 
@@ -1207,7 +1205,7 @@ void aifFindAllies(void)
             }
         }
     }
-    aiCurrentAIPlayer->recalculateAllies = FALSE;
+    aiCurrentAIPlayer->recalculateAllies = false;
 }
 
 
@@ -1281,7 +1279,7 @@ void aifFleetCommand(void)
             aiaProcessSpecialTeams();
 //        airProcessSpecialTeams();
         }
-        aiCurrentAIPlayer->firstTurn = FALSE;
+        aiCurrentAIPlayer->firstTurn = false;
     }
     else
     {
