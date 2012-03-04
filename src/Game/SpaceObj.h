@@ -1453,6 +1453,12 @@ typedef struct Ship         // Ship object
     void* lightning[2];             //lightning effect stuff
     udword sizeofShipSpecifics;
     udword ShipSpecifics[1];        //this member must go last
+#ifdef __cplusplus
+    bool operator==(const Ship& other) const
+	{
+    	return this == &other;
+	};
+#endif
 } Ship;
 
 typedef Ship *ShipPtr;
