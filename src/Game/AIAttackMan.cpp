@@ -1196,7 +1196,7 @@ void aiaTeamDied(struct AIPlayer *aiplayer,struct AITeam *team)
     	(
     		aiplayer->attackTeam.begin(),
     		aiplayer->attackTeam.end(),
-    		*team
+    		team
     	);
 
     	if( it != aiplayer->attackTeam.end() )
@@ -1348,8 +1348,6 @@ void aiaInit(struct AIPlayer *aiplayer)
 
 void aiaClose(struct AIPlayer *aiplayer)
 {
-    sdword i;
-
 //    growSelectClose(&aiplayer->newattackships);
     for( auto& team : aiplayer->reconTeam )
     {
@@ -1361,13 +1359,9 @@ void aiaClose(struct AIPlayer *aiplayer)
         aiplayer->harassTeam = nullptr;
     }
 
-    for (i=0;i<AIPLAYER_NUM_ATTACKTEAMS;i++)
+    for( auto& team : aiplayer->attackTeam )
     {
-        if (aiplayer->attackTeam[i] != NULL)
-        {
-            aitDestroy(aiplayer, aiplayer->attackTeam[i],false);
-            aiplayer->attackTeam[i] = NULL;
-        }
+    	aitDestroy(aiplayer, team, false);
     }
 
     aiumemFree(aiplayer->aiaArmada.targets);
