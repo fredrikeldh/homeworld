@@ -914,7 +914,7 @@ void aiaProcessSwarm(void)
     udword
         numNewAttackTeams, numSwarmersPerTeam, numExtraSwarmers,
         numNewSwarmGroups, numAdvPerTeam, numExtraAdv, numPodsPerTeam,
-        numExtraPods, i, j, k, l, m;
+        numExtraPods, i, k, l, m;
     bool fuelpod = false, mothership = false;
     ShipPtr ship;
 
