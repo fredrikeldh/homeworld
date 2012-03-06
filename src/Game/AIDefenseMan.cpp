@@ -17,25 +17,19 @@
 #include "Select.h"
 #include "Stats.h"
 
-
 bool aitAnyTeamOfPlayerGuardingThisShip(struct AIPlayer *aiplayer,Ship *ship)
 {
     for( auto& team : aiplayer->teams )
     {
-        auto node = team.moves.head;
-        while (node != NULL)
+    	for( auto& move : team.moves )
         {
-            auto move = (AITeamMove *)listGetStructOfNode(node);
-
-            if (move->type == MOVE_GUARDSHIPS)
-            {
-                if (move->params.guardShips.ships)
-                {
-                    if (ShipInSelection(move->params.guardShips.ships,ship))
-                        return true;
-                }
-            }
-            node = node->next;
+            if
+            (
+            	move->type == MOVE_GUARDSHIPS
+            	&& move->params.guardShips.ships
+                && ShipInSelection(move->params.guardShips.ships,ship)
+            )
+            	return true;
         }
     }
     return false;

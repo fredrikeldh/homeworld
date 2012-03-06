@@ -57,6 +57,8 @@
 
 #define MAX_SPLIT           4
 
+void save(SaveUnion<AITeamMove*, int>& saveUnion, const std::vector<AITeamMove*>& collection);
+void load(SaveUnion<AITeamMove*, int>& saveUnion, std::vector<AITeamMove*>& collection);
 typedef enum {
     MOVE_DONE,                   //0
     MOVE_GUARDSHIPS,             //1
@@ -261,7 +263,7 @@ typedef struct
 typedef struct
 {
     Path *path;
-    struct AITeamMove *loopMove;
+    SaveUnion<AITeamMove*, int> loopMove;
     udword startIndex;
 } paramsPatrolMove;
 
@@ -392,8 +394,8 @@ typedef struct AITeam {
     udword            teamStrength;
     udword            teamValue;
     ubyte             teamDifficultyLevel;
-    LinkedList        moves;
-    struct AITeamMove *curMove;
+    std::vector<AITeamMove*> moves;
+    SaveUnion<AITeamMove*, int> curMove;
     void              *custTeamInfo;
     void (*TeamDiedCB)(struct AITeam *team);
     struct AITeam     *cooperatingTeam;

@@ -89,7 +89,7 @@ void aimCloseGuardShips(AITeam *team,AITeamMove *move)
 AITeamMove *aimCreateGuardShips(AITeam *team, SelectCommand *ships, bool8 wait, bool8 remove)
 {
     TypeOfFormation formation = SAME_FORMATION;
-    AITeamMove *newMove = (AITeamMove *)memAlloc(sizeof(AITeamMove), "guardshipsmove", 0);
+    auto newMove = mem::alloc<AITeamMove>("guardshipsmove");
 
     InitNewMove(newMove,MOVE_GUARDSHIPS,wait,remove,formation,Neutral,aimProcessGuardShips,aimShipDiedGuardShips,aimCloseGuardShips);
 
@@ -97,7 +97,7 @@ AITeamMove *aimCreateGuardShips(AITeam *team, SelectCommand *ships, bool8 wait, 
 
 //    aiplayerLog(aiIndex,"Created GuardShips Move");
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -212,7 +212,7 @@ AITeamMove *aimCreateGetShips(AITeam *team, ShipType shiptype, sbyte num_ships, 
 
     newMove = aimCreateGetShipsNoAdd(team, shiptype, num_ships, priority, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -269,7 +269,7 @@ AITeamMove *aimCreateVarWait(AITeam *team, char *varName, sdword value, bool8 wa
 
 //    aiplayerLog(aiIndex,"Created VarWait Move");
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -313,7 +313,7 @@ AITeamMove *aimCreateVarDec(AITeam *team, char *varName, bool8 wait, bool8 remov
 
 //    aiplayerLog(aiIndex,"Created VarDec Move");
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -357,7 +357,7 @@ AITeamMove *aimCreateVarInc(AITeam *team, char *varName, bool8 wait, bool8 remov
 
 //    aiplayerLog(aiIndex,"Created VarInc Move");
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -400,7 +400,7 @@ AITeamMove *aimCreateVarSet(AITeam *team, char *varName, sdword value, bool8 wai
 
 //    aiplayerLog(aiIndex,"Created VarSet Move");
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -441,7 +441,7 @@ AITeamMove *aimCreateVarDestroy(AITeam *team, char *varName, bool8 wait, bool8 r
 
 //    aiplayerLog(aiIndex,"Created VarDestroy Move");
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -474,9 +474,8 @@ void aimInsertMove(AITeam *team, struct AITeamMove *newMove)
 {
     if (team->curMove == NULL)
     {
-        listAddNode(&(team->moves), &(newMove->listNode), newMove);
-        listMoveNodeToHead(&(newMove->listNode));
-        team->curMove = (AITeamMove *)listGetStructOfNode(team->moves.head);
+    	team->moves.insert(team->moves.begin(), newMove);
+        team->curMove = newMove;
     }
     else
     {
@@ -1476,7 +1475,39 @@ sdword aimProcessCountShips(AITeam *team)
     return TRUE;
 }
 
+template <typename T, typename ET1, typename ET2>
+void listAddNodeBefore(T& collection, const ET1& after, ET2& newElement)
+{
+	auto it = std::find
+	(
+		collection.begin(),
+		collection.end(),
+		after
+	);
 
+	if( it == collection.end() )
+		return; // FAIL
+
+	collection.insert(it, newElement);
+}
+
+template <typename T, typename ET1, typename ET2>
+void listAddNodeAfter(T& collection, const ET1& before, ET2& newElement)
+{
+	auto it = std::find
+	(
+		collection.begin(),
+		collection.end(),
+		before
+	);
+
+	if( it == collection.end() )
+		return; // FAIL
+
+	++it;
+
+	collection.insert(it, newElement);
+}
 
 /*-----------------------------------------------------------------------------
     Name        : aimProcessFlankAttack
@@ -1522,7 +1553,7 @@ sdword aimProcessFlankAttack(AITeam *team)
         //create an attack move to target ships
         //previously normal attack later change to general attack
         newMove = aimCreateAdvancedAttackNoAdd(team, selectMemDupSelection(thisMove->params.flankatt.targets, "dupfla", 0), AIM_FLANK_ATTACK_FORMATION,Aggressive, TRUE, TRUE);
-        listAddNodeBefore(&(thisMove->listNode), &(newMove->listNode), newMove);
+        listAddNodeBefore(team->moves, thisMove, newMove);
 
         //remove shipdied and close callbacks
         //the attack move will take care of these
@@ -1963,7 +1994,7 @@ sdword aimProcessPatrolMove(AITeam *team)
                                                   thisMove->formation,thisMove->tactics,TRUE, FALSE);
             thisMove->params.patrolmove.loopMove = newMove;
             newMove->events = thisMove->events;
-            listAddNodeBefore(&(thisMove->listNode), &(newMove->listNode), newMove);
+            listAddNodeBefore(team->moves, thisMove, newMove);
 
             if (startIndex == 0)
             {
@@ -1976,12 +2007,10 @@ sdword aimProcessPatrolMove(AITeam *team)
                 newMove = aimCreateMoveTeamIndexNoAdd(team, thisMove->params.patrolmove.path->point[i],i,
                                                       thisMove->formation,thisMove->tactics,TRUE,FALSE);
                 newMove->events = thisMove->events;
-                listAddNodeBefore(&(thisMove->listNode), &(newMove->listNode), newMove);
+                listAddNodeBefore(team->moves, thisMove, newMove);
 
                 if (startIndex == i)
-                {
                     tempMove = newMove;
-                }
             }
         }
         else
@@ -1993,7 +2022,7 @@ sdword aimProcessPatrolMove(AITeam *team)
                 newMove = aimCreateMoveTeamIndexNoAdd(team, thisMove->params.patrolmove.path->point[i],i,
                                                       thisMove->formation,thisMove->tactics,TRUE,TRUE);
                 newMove->events = thisMove->events;
-                listAddNodeBefore(&(thisMove->listNode), &(newMove->listNode), newMove);
+                listAddNodeBefore(team->moves, thisMove, newMove);
 
                 if (startIndex == i)
                 {
@@ -2436,7 +2465,7 @@ sdword aimProcessActiveRecon(AITeam *team)
 
 //        newMove = aimCreateCountShipsNoAdd(team, TRUE, TRUE);
 //        newMove->events = thisMove->events;
-//        listAddNodeAfter(&(team->curMove->listNode), &(newMove->listNode), newMove);
+//        listAddNodeAfter(team->moves, team->curMove, newMove);
 
         return FALSE;
     }
@@ -2496,7 +2525,7 @@ sdword aimProcessShipRecon(AITeam *team)
 
         newMove = aimCreateInterceptNoAdd(team, target, 5, NO_FORMATION, Evasive, TRUE, TRUE);
         newMove->events = thisMove->events;
-        listAddNodeAfter(&(team->curMove->listNode), &(newMove->listNode), newMove);
+        listAddNodeAfter(team->moves, team->curMove, newMove);
 
         thisMove->processing = TRUE;
 
@@ -3452,7 +3481,7 @@ sdword aimProcessMineVolume(AITeam *team)
             newMove = aimCreateMoveTeamSplitNoAdd(team, selectMemDupSelection(team->shipList.selection, "mv1", 0),
                                                   minepoints, Evasive, TRUE, TRUE);
             newMove->events = thisMove->events;
-            listAddNodeBefore(&(thisMove->listNode), &(newMove->listNode), newMove);
+            listAddNodeBefore(team->moves, thisMove, newMove);
             tempMove = newMove;
 
             //move in a little - points the minelayers in the correct direction
@@ -3462,13 +3491,13 @@ sdword aimProcessMineVolume(AITeam *team)
             newMove = aimCreateMoveTeamSplitNoAdd(team, selectMemDupSelection(team->shipList.selection, "mv1", 0),
                                                   minepoints, Evasive, TRUE, TRUE);
             newMove->events = thisMove->events;
-            listAddNodeBefore(&(thisMove->listNode), &(newMove->listNode), newMove);
+            listAddNodeBefore(team->moves, thisMove, newMove);
 
 
             //actual mine move
             newMove = aimCreateSpecialNoAdd(team, NULL, NO_FORMATION, Evasive, TRUE, TRUE);
             newMove->events = thisMove->events;
-            listAddNodeBefore(&(thisMove->listNode), &(newMove->listNode), newMove);
+            listAddNodeBefore(team->moves, thisMove, newMove);
 
             team->curMove = tempMove;
         }
@@ -3587,7 +3616,7 @@ AITeamMove *aimCreateMoveTeam(AITeam *team, vector destination, TypeOfFormation 
 
     newMove = aimCreateMoveTeamNoAdd(team, destination, formation, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -3634,7 +3663,7 @@ AITeamMove *aimCreateMoveTeamIndex(AITeam *team, vector destination, udword inde
 
     newMove = aimCreateMoveTeamIndexNoAdd(team, destination, index, formation, tactics, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -3677,7 +3706,7 @@ AITeamMove *aimCreateMoveTeamSplit(AITeam *team, SelectCommand *ships,
 
     newMove = aimCreateMoveTeamSplitNoAdd(team, ships, destinations, tactics, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -3728,7 +3757,7 @@ AITeamMove *aimCreateHyperspace(AITeam *team, vector destination, TypeOfFormatio
 
     newMove = aimCreateHyperspaceNoAdd(team, destination, formation, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -3773,7 +3802,7 @@ AITeamMove *aimCreateIntercept(AITeam *team, ShipPtr ship, real32 interval, Type
 
     newMove = aimCreateInterceptNoAdd(team, ship, interval, formation, tactics, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -3833,7 +3862,7 @@ AITeamMove *aimCreateMoveTo(AITeam *team, vector destination, real32 limiter, ud
 
     newMove = aimCreateMoveToNoAdd(team, destination, limiter, type, formation, tactics, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -3870,7 +3899,7 @@ AITeamMove *aimCreateCountShips(AITeam *team, bool8 wait, bool8 remove)
 
     newMove = aimCreateCountShipsNoAdd(team, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -3918,7 +3947,7 @@ AITeamMove *aimCreateFlankAttack(AITeam *team, SelectCommand *targets, bool8 hyp
 
     newMove = aimCreateFlankAttackNoAdd(team, targets, hyperspace, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -3974,7 +4003,7 @@ AITeamMove *aimCreateAdvancedAttack(AITeam *team, SelectCommand *target, TypeOfF
 
     newMove = aimCreateAdvancedAttackNoAdd(team,target,formation,tactics,wait,remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4040,7 +4069,7 @@ AITeamMove *aimCreateMoveAttack(AITeam *team, SelectCommand *targets, bool Advan
 
     newMove = aimCreateMoveAttackNoAdd(team, targets, Advanced, formation, tactics, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4095,7 +4124,7 @@ AITeamMove *aimCreateHarassAttack(AITeam *team, bool8 wait, bool8 remove)
 
 //    aiplayerLog(aiIndex,"Created Harass Attack Move");
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4149,7 +4178,7 @@ AITeamMove *aimCreateDock(AITeam *team, sdword dockmoveFlags, ShipPtr dockAt, bo
 
     newMove = aimCreateDockNoAdd(team, dockmoveFlags, dockAt, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4212,7 +4241,7 @@ AITeamMove *aimCreateDefendMothership(AITeam *team, bool8 wait, bool8 remove)
 
     newMove = aimCreateDefendMothershipNoAdd(team, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+	team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4265,7 +4294,7 @@ AITeamMove *aimCreatePatrolMove(AITeam *team, Path *path, udword startIndex,
 
     newMove = aimCreatePatrolMoveNoAdd(team, path, startIndex, formation, tactics, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4277,12 +4306,12 @@ AITeamMove *aimCreatePatrolMove(AITeam *team, Path *path, udword startIndex,
 void aimFix_PatrolMove(AITeamMove *move)
 {
     FixMoveFuncPtrs(move,aimProcessPatrolMove, NULL, aimPatrolMoveClose);
-    move->params.patrolmove.loopMove = (AITeamMove*)ConvertNumToPointerInList(&savingThisAITeam->moves,(sdword)move->params.patrolmove.loopMove);
+    load(move->params.patrolmove.loopMove, savingThisAITeam->moves);
 }
 
 void aimPreFix_PatrolMove(AITeamMove *move)
 {
-    move->params.patrolmove.loopMove = (AITeamMove*)ConvertPointerInListToNum(&savingThisAITeam->moves,move->params.patrolmove.loopMove);
+    save(move->params.patrolmove.loopMove, savingThisAITeam->moves);
 }
 
 #ifdef _WIN32_FIX_ME
@@ -4328,7 +4357,7 @@ AITeamMove *aimCreateActivePatrol(AITeam *team, udword patroltype, bool8 wait, b
 
     newMove = aimCreateActivePatrolNoAdd(team, patroltype, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4365,7 +4394,7 @@ AITeamMove *aimCreateTempGuard(AITeam *team, TypeOfFormation formation, TacticsT
 
     newMove = aimCreateTempGuardNoAdd(team, formation, tactics, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4403,7 +4432,7 @@ AITeamMove *aimCreateReinforce(AITeam *team, AITeam *reinforceteam, TypeOfFormat
 
     newMove = aimCreateReinforceNoAdd(team, reinforceteam, formation, tactics, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4463,7 +4492,7 @@ AITeamMove *aimCreateSupport(AITeam *team, SelectCommand *ships,
 
     newMove = aimCreateSupportNoAdd(team, ships, formation, tactics, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4516,7 +4545,7 @@ AITeamMove *aimCreateActiveRecon(AITeam *team, bool EnemyRecon, TypeOfFormation 
 
     newMove = aimCreateActiveReconNoAdd(team, EnemyRecon, formation, tactics, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4556,7 +4585,7 @@ AITeamMove *aimCreateShipRecon(AITeam *team, SelectCommand *ships, TypeOfFormati
 
     newMove = aimCreateShipReconNoAdd(team, ships, formation, tactics, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4602,7 +4631,7 @@ AITeamMove *aimCreateArmada(AITeam *team, TypeOfFormation formation, TacticsType
 
     newMove = aimCreateArmadaNoAdd(team, formation, tactics, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4644,7 +4673,7 @@ AITeamMove *aimCreateControlResources(AITeam *team, SelectCommand *ships, bool8 
 
     newMove = aimCreateControlResourcesNoAdd(team, ships, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4695,7 +4724,7 @@ AITeamMove *aimCreateSwarmAttack(AITeam *team, bool8 wait, bool8 remove)
 
     newMove = aimCreateSwarmAttackNoAdd(team, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4753,7 +4782,7 @@ AITeamMove *aimCreateSwarmDefense(AITeam *team, SelectCommand *pods, bool8 wait,
 
     newMove = aimCreateSwarmDefenseNoAdd(team, pods, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4804,7 +4833,7 @@ AITeamMove *aimCreateSwarmPod(AITeam *team, bool8 wait, bool8 remove)
 
     newMove = aimCreateSwarmPodNoAdd(team, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4849,7 +4878,7 @@ AITeamMove *aimCreateResourceVolume(AITeam *team, Volume volume, bool8 strictVol
 
     newMove = aimCreateResourceVolumeNoAdd(team, volume, strictVolume, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4898,7 +4927,7 @@ AITeamMove *aimCreateActiveResource(AITeam *team, bool8 wait, bool8 remove)
 
     newMove = aimCreateActiveResourceNoAdd(team, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4934,7 +4963,7 @@ AITeamMove *aimCreateMothershipMove(AITeam *team, bool8 wait, bool8 remove)
 
     newMove = aimCreateMothershipMoveNoAdd(team, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -4973,7 +5002,7 @@ AITeamMove *aimCreateCapture(AITeam *team, ShipPtr ship, bool8 wait, bool8 remov
 
     newMove = aimCreateCaptureNoAdd(team, ship, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -5010,7 +5039,7 @@ AITeamMove *aimCreateActiveCapture(AITeam *team, bool8 wait, bool8 remove)
 
     newMove = aimCreateActiveCaptureNoAdd(team, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -5046,7 +5075,7 @@ AITeamMove *aimCreateActiveMine(AITeam *team, bool8 wait, bool8 remove)
 
     newMove = aimCreateActiveMineNoAdd(team, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -5082,7 +5111,7 @@ AITeamMove *aimCreateMineVolume(AITeam *team, Volume volume, bool8 wait, bool8 r
 
     newMove = aimCreateMineVolumeNoAdd(team, volume, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -5117,7 +5146,7 @@ AITeamMove *aimCreateSpecialDefense(AITeam *team, bool8 wait, bool8 remove)
 
     newMove = aimCreateSpecialDefenseNoAdd(team, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -5153,7 +5182,7 @@ AITeamMove *aimCreateDeleteTeam(AITeam *team)
 
     newMove = aimCreateDeleteTeamNoAdd(team);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -5218,7 +5247,7 @@ AITeamMove *aimCreateGuardCooperatingTeam(AITeam *team, bool8 wait, bool8 remove
 {
     AITeamMove *newMove = aimCreateGuardCooperatingTeamNoAdd(team, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -5297,7 +5326,7 @@ AITeamMove *aimCreateLaunch(AITeam *team, bool8 wait, bool8 remove)
 
     newMove = aimCreateLaunchNoAdd(team, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -5361,7 +5390,7 @@ AITeamMove *aimCreateFormation(AITeam *team, TypeOfFormation formationtype, bool
 
     newMove = aimCreateFormationNoAdd(team, formationtype, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -5386,7 +5415,7 @@ AITeamMove *aimCreateMoveDone(AITeam *team, bool8 wait, bool8 remove)
 
 //    aiplayerLog(aiIndex,"Created Move Done Move");
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
@@ -5483,7 +5512,7 @@ AITeamMove *aimCreateAttack(AITeam *team, SelectCommand *targets,TypeOfFormation
 
     newMove = aimCreateAttackNoAdd(team, targets, formation, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 
@@ -5587,7 +5616,7 @@ AITeamMove *aimCreateSpecial(AITeam *team, SelectCommand *targets,TypeOfFormatio
 
     newMove = aimCreateSpecialNoAdd(team, targets, formation, tactics, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 
@@ -5699,7 +5728,7 @@ AITeamMove *aimCreateKamikaze(AITeam *team, SelectCommand *targets,TypeOfFormati
 
     newMove = aimCreateKamikazeNoAdd(team, targets, formation, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 
@@ -6019,7 +6048,7 @@ AITeamMove *aimCreateFancyGetShips(AITeam *team, ShipType shiptype, sbyte num_sh
 
     newMove = aimCreateFancyGetShipsNoAdd(team, shiptype, num_ships, alternatives, priority, wait, remove);
 
-    listAddNode(&(team->moves), &(newMove->listNode), newMove);
+    team->moves.push_back(newMove);
 
     return newMove;
 }
