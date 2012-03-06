@@ -181,12 +181,10 @@ void aidCheckSphereOfInfluence(void)
     vector mothership_pos;
     SelectCommand *enemy_invaders;
     ShipPtr mothership = aiCurrentAIPlayer->player->PlayerMothership;
-    sdword i;
 
     if (!mothership)
-    {
         return;
-    }
+
     mothership_pos = mothership->posinfo.position;
 
     //calculates sphere of influence if there isn't one,
@@ -196,9 +194,8 @@ void aidCheckSphereOfInfluence(void)
     {
         enemy_mothership = aiuFindEnemyMothership(aiCurrentAIPlayer->player);
         if (enemy_mothership == NULL)
-        {
             return;
-        }
+
         distsq = aiuFindDistanceSquared(enemy_mothership->posinfo.position, mothership_pos);
         aiCurrentAIPlayer->sphereofinfluence = distsq/4;
     }
@@ -764,30 +761,22 @@ void aidDefenseManager(void)
     if (aiuDefenseFeatureEnabled(AID_GUARDING))
     {
         if (aiuDefenseFeatureEnabled(AID_ACTIVE_GUARD))
-        {
             aidSetupRovingDefenseTeams();
-        }
         else
-        {
             aidSetupResourceDefenseTeams();
-        }
     }
 
     aidCheckSphereOfInfluence();
 
     if (aiuDefenseFeatureEnabled(AID_CLOAK_DEFENSE))
-    {
         aidCloakDefense();
-    }
 
     //sets up defense teams for support ships (ASF, Repair Corvette, etc.)
     //aidSetupSupportDefenseTeams();
 
     //sets up defense for mothership - takes priority over all if deemed necessary
     if (aiuDefenseFeatureEnabled(AID_MOTHERSHIP_DEFENSE))
-    {
         aidMothershipDefense();
-    }
 }
 
 
@@ -796,8 +785,6 @@ void aidDefenseManager(void)
 =============================================================================*/
 void aidTeamDied(AIPlayer *aiplayer, AITeam *team)
 {
-    size_t i = 0;
-
     auto it = std::find
     (
     	aiplayer->guardTeams.begin(),
