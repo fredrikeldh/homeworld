@@ -92,13 +92,9 @@ AITeam *aiaSendRecon(SelectCommand *ships)
         team = aiCurrentAIPlayer->reconTeam[i];
 
         if (team->shipList.selection->numShips)
-        {
             team_location = team->shipList.selection->ShipPtr[0]->posinfo.position;
-        }
         else
-        {
             continue;
-        }
 
 
         distsq = aiuFindDistanceSquared(ships_location, team_location);
@@ -397,16 +393,13 @@ bool aiaGenerateAttackType(AITeam *newteam, AttackType attacktype, bool ForceBig
 ----------------------------------------------------------------------------*/
 bool aiaGenerateNewAttackOrder(AttackType attacktype)
 {
-    sdword index = aiCurrentAIPlayer->numAttackTeams;
-    aiCurrentAIPlayer->attackTeam[aiCurrentAIPlayer->numAttackTeams++] = aitCreate(AttackTeam);
+    aiCurrentAIPlayer->attackTeam.emplace_back(aitCreate(AttackTeam));
 
-    if (!aiaGenerateAttackType(aiCurrentAIPlayer->attackTeam[index], attacktype, true))
-    {
-        aitDestroy(aiCurrentAIPlayer, aiCurrentAIPlayer->attackTeam[index], true);
-        return false;
-    }
-    else
+    if( aiaGenerateAttackType(aiCurrentAIPlayer->attackTeam.back(), attacktype, true) )
     	return true;
+
+    aitDestroy(aiCurrentAIPlayer, aiCurrentAIPlayer->attackTeam.back(), true);
+    return false;
 }
 
 
@@ -418,15 +411,14 @@ bool aiaGenerateNewAttackOrder(AttackType attacktype)
     Outputs     : Creates new teams
     Return      : void
 ----------------------------------------------------------------------------*/
-void aiaGenerateNewAttackTeam(sdword AttackTeamNumber)
+void aiaGenerateNewAttackTeam()
 {
     AttackType randomAttack;
     udword probability_of_attack;
     bool attack_type_found = false;
     udword i=0;
 
-    aiCurrentAIPlayer->attackTeam[AttackTeamNumber] = aitCreate(AttackTeam);
-    aiCurrentAIPlayer->numAttackTeams++;
+    aiCurrentAIPlayer->attackTeam.emplace_back(aitCreate(AttackTeam));
 
     //repeat until an attack team is found
     //upper limit to avoid weird infinite loops
@@ -436,13 +428,9 @@ void aiaGenerateNewAttackTeam(sdword AttackTeamNumber)
         probability_of_attack = ranRandom(RANDOM_AI_PLAYER)&255;
 
         if (probability_of_attack < aiCurrentAIPlayer->aiaAttackProbability[randomAttack])
-        {
-            attack_type_found = aiaGenerateAttackType(aiCurrentAIPlayer->attackTeam[AttackTeamNumber], randomAttack, false);
-        }
+            attack_type_found = aiaGenerateAttackType(aiCurrentAIPlayer->attackTeam.back(), randomAttack, false);
         else
-        {
             i++;
-        }
     }
 }
 
@@ -456,7 +444,7 @@ void aiaGenerateNewAttackTeam(sdword AttackTeamNumber)
 ----------------------------------------------------------------------------*/
 void aiaProcessAttackTeams(void)
 {
-    sdword i, num_getships;
+    sdword num_getships;
     Ship *ship;
     SelectCommand *enemyships;
 
@@ -464,54 +452,55 @@ void aiaProcessAttackTeams(void)
     //find out if they can go ahead and takeout their target.  If not, they become
     //temporary defense teams, then attack when the order is given from the attackman
 
-    for (i=0;i<AIPLAYER_NUM_ATTACKTEAMS;i++)
+    for( auto& team : aiCurrentAIPlayer->attackTeam )
     {
-        if (!aiCurrentAIPlayer->attackTeam[i])
-        {
-            num_getships = aitCountTeamsWaitingForShips(AttackTeam);
+    	if (!aitTeamIsDone(team))
+    		continue;
 
-            if ((num_getships < 4) || ((num_getships < 10) && (aiCurrentAIPlayer->player->resourceUnits > 12000)))
-            {
-                aiaGenerateNewAttackTeam(i);
-            }
-        }
-        else
-        {
-            if (aitTeamIsDone(aiCurrentAIPlayer->attackTeam[i]))
-            {
-                if (aiCurrentAIPlayer->attackTeam[i]->shipList.selection->numShips > 0)
-                {
-                    enemyships = aiuFindNearbyEnemyShips(aiCurrentAIPlayer->attackTeam[i]->shipList.selection->ShipPtr[0],3000.0f);
-                    MakeShipsOnlyFollowConstraints(enemyships,aiuShipIsntAnEnemyMothership);
-                    if (enemyships->numShips)
-                    {
-                        // raise hell
-                        aiplayerLog((aiIndex, "%x Taking Out with current team", aiCurrentAIPlayer->attackTeam[i]));
-                        aitDeleteAllTeamMoves(aiCurrentAIPlayer->attackTeam[i]);
-                        aioCreateTakeoutTargetsWithCurrentTeam(aiCurrentAIPlayer->attackTeam[i],enemyships);
-                    }
-                    else
-                    {
-                        memFree(enemyships);
-                        // no enemy ships nearby!  Let's take out mothership
-                        ship = aiuFindEnemyMothership(aiCurrentAIPlayer->player);
-                        if (ship != NULL)
-                        {
-                            aiplayerLog((aiIndex, "%x Taking Out Mothership with current team", aiCurrentAIPlayer->attackTeam[i]));
-                            aitDeleteAllTeamMoves(aiCurrentAIPlayer->attackTeam[i]);
-                            aioCreateTakeoutTargetWithCurrentTeam(aiCurrentAIPlayer->attackTeam[i],ship);
-                        }
-                    }
-                }
-                else
-                {
-                    // delete team for sure since there are no ships in it
-                    aitDestroy(aiCurrentAIPlayer,aiCurrentAIPlayer->attackTeam[i],TRUE);
-                    aiCurrentAIPlayer->attackTeam[i] = NULL;
-                    aiCurrentAIPlayer->numAttackTeams--;
-                }
-            }
-        }
+    	if (team->shipList.selection->numShips > 0)
+		{
+			enemyships = aiuFindNearbyEnemyShips(team->shipList.selection->ShipPtr[0],3000.0f);
+			MakeShipsOnlyFollowConstraints(enemyships,aiuShipIsntAnEnemyMothership);
+			if (enemyships->numShips)
+			{
+				// raise hell
+				aiplayerLog(aiIndex, "%x Taking Out with current team", (AITeam*)team);
+				aitDeleteAllTeamMoves(team);
+				aioCreateTakeoutTargetsWithCurrentTeam(team,enemyships);
+			}
+			else
+			{
+				memFree(enemyships);
+				// no enemy ships nearby!  Let's take out mothership
+				ship = aiuFindEnemyMothership(aiCurrentAIPlayer->player);
+				if (ship != NULL)
+				{
+					aiplayerLog(aiIndex, "%x Taking Out Mothership with current team", (AITeam*)team);
+					aitDeleteAllTeamMoves(team);
+					aioCreateTakeoutTargetWithCurrentTeam(team, ship);
+				}
+			}
+		}
+		else
+		{
+			// delete team for sure since there are no ships in it
+			aitDestroy(aiCurrentAIPlayer, team, true);
+			auto it = std::find
+			(
+				aiCurrentAIPlayer->attackTeam.begin(),
+				aiCurrentAIPlayer->attackTeam.end(),
+				team
+			);
+			aiCurrentAIPlayer->attackTeam.erase(it);
+		}
+    }
+
+    for( size_t i = aiCurrentAIPlayer->attackTeam.size(); i < AIPLAYER_NUM_ATTACKTEAMS; i++)
+    {
+		num_getships = aitCountTeamsWaitingForShips(AttackTeam);
+
+		if ((num_getships < 4) || ((num_getships < 10) && (aiCurrentAIPlayer->player->resourceUnits > 12000)))
+			aiaGenerateNewAttackTeam();
     }
     aiaArmada();
 }
@@ -665,7 +654,7 @@ void aiaProcessHarassTeams(void)
 {
     AITeam *harassTeams[MAX_NUM_HARASS_TEAMS], *team;
     AITeamMove *move;
-    udword i, team_num = 0, numAttTeams = aiCurrentAIPlayer->numAttackTeams, retreat_probability;
+    udword i, team_num = 0, numAttTeams = aiCurrentAIPlayer->attackTeam.size(), retreat_probability;
     ShipPtr teamShip;
     SelectCommand *shipList;
     vector destination;
@@ -824,13 +813,8 @@ bool aiaDivideNewShips(void)
 ----------------------------------------------------------------------------*/
 void aiaCleanupTeams(void)
 {
-    AITeam *team = NULL;
-    udword i;
-
-    for (i=0;i<aiCurrentAIPlayer->numAttackTeams;)
+    for( auto& team : aiCurrentAIPlayer->attackTeam )
     {
-        team = aiCurrentAIPlayer->attackTeam[i];
-
         if (aitTeamIsDone(team) && (!team->shipList.selection->numShips))
         {
 //            for (j=0;j<team->shipList.selection->numShips;j++)
@@ -840,13 +824,9 @@ void aiaCleanupTeams(void)
 
             aitDestroy(aiCurrentAIPlayer, team, TRUE);
 
-//            aiCurrentAIPlayer->numAttackTeams--;
-//            aiCurrentAIPlayer->attackTeam[i] = aiCurrentAIPlayer->attackTeam[aiCurrentAIPlayer->numAttackTeams];
-//            aiCurrentAIPlayer->attackTeam[aiCurrentAIPlayer->numAttackTeams] = NULL;
             continue;
         }
         //later figure out if we need to do something if the team still has ships
-        i++;
     }
 }
 
@@ -940,7 +920,7 @@ void aiaProcessSwarm(void)
     SelectCommand *newShips = aiCurrentAIPlayer->newships.selection, *pods;
     MaxSelection newPods, newSwarmers, newLeaders, newAdvSwarmers, newMultiBeams, newMothership;
     udword
-        numNewAttackTeams, numSwarmersPerTeam, numExtraSwarmers, newTeamNum,
+        numNewAttackTeams, numSwarmersPerTeam, numExtraSwarmers,
         numNewSwarmGroups, numAdvPerTeam, numExtraAdv, numPodsPerTeam,
         numExtraPods, i, j, k, l, m;
     bool fuelpod = false, mothership = false;
@@ -1033,15 +1013,11 @@ void aiaProcessSwarm(void)
 
     //1 team per leader, or just 1 team if there isn't a leader
     if (newLeaders.numShips)
-    {
         numNewSwarmGroups = newLeaders.numShips;
-    }
     else
-    {
         numNewSwarmGroups = 1;
-    }
 
-    numNewAttackTeams = aiCurrentAIPlayer->numAttackTeams + numNewSwarmGroups;
+    numNewAttackTeams = aiCurrentAIPlayer->attackTeam.size() + numNewSwarmGroups;
 
     dbgAssertOrIgnore(numNewSwarmGroups > 0);
 
@@ -1058,7 +1034,7 @@ void aiaProcessSwarm(void)
         return;
     }
 
-    for (i=aiCurrentAIPlayer->numAttackTeams,
+    for (i=aiCurrentAIPlayer->attackTeam.size(),
          j=aiCurrentAIPlayer->numGuardTeams,
          k=aiCurrentAIPlayer->numSupportTeams;
          i < numNewAttackTeams; i++, j++, k++)
@@ -1079,12 +1055,11 @@ void aiaProcessSwarm(void)
 
         //setup the basic teams
         //setup the swarm attack team
-        aiCurrentAIPlayer->attackTeam[i] = aitCreate(AttackTeam);
-        aioCreateSwarmAttack(aiCurrentAIPlayer->attackTeam[i]);
-        aiCurrentAIPlayer->numAttackTeams++;
+        aiCurrentAIPlayer->attackTeam.emplace_back(aitCreate(AttackTeam));
+        aioCreateSwarmAttack(aiCurrentAIPlayer->attackTeam.back());
         if (bitTest(aiCurrentAIPlayer->AlertStatus, ALERT_SWARMER_TARGETS))
         {
-            bitSet(aiCurrentAIPlayer->attackTeam[i]->teamFlags, TEAM_SwarmTarget);
+            bitSet(aiCurrentAIPlayer->attackTeam.back()->teamFlags, TEAM_SwarmTarget);
         }
         //setup the swarm defense team
         aiCurrentAIPlayer->guardTeams[j] = aitCreate(DefenseTeam);
@@ -1102,9 +1077,9 @@ void aiaProcessSwarm(void)
         }
 
         //set the cooperating teams
-        aiCurrentAIPlayer->attackTeam[i]->cooperatingTeam  = aiCurrentAIPlayer->guardTeams[j];
-        aiCurrentAIPlayer->guardTeams[j]->cooperatingTeam  = aiCurrentAIPlayer->attackTeam[i];
-        aiCurrentAIPlayer->supportTeam[k]->cooperatingTeam = aiCurrentAIPlayer->attackTeam[i];
+        aiCurrentAIPlayer->attackTeam.back()->cooperatingTeam  = aiCurrentAIPlayer->guardTeams[j];
+        aiCurrentAIPlayer->guardTeams[j]->cooperatingTeam  = aiCurrentAIPlayer->attackTeam.back();
+        aiCurrentAIPlayer->supportTeam[k]->cooperatingTeam = aiCurrentAIPlayer->attackTeam.back();
 
         //give the team a leader
         if (newLeaders.numShips)
@@ -1140,21 +1115,17 @@ void aiaProcessSwarm(void)
 
     for (i=0; (int)i < newMultiBeams.numShips;)
     {
-        newTeamNum = aiCurrentAIPlayer->numAttackTeams;
-        aiCurrentAIPlayer->attackTeam[newTeamNum] = aitCreate(AttackTeam);
-        aioCreateMultiBeamAttack(aiCurrentAIPlayer->attackTeam[newTeamNum]);
-        aitAddShip(aiCurrentAIPlayer->attackTeam[newTeamNum], newMultiBeams.ShipPtr[0]);
+        aiCurrentAIPlayer->attackTeam.emplace_back(aitCreate(AttackTeam));
+        aioCreateMultiBeamAttack(aiCurrentAIPlayer->attackTeam.back());
+        aitAddShip(aiCurrentAIPlayer->attackTeam.back(), newMultiBeams.ShipPtr[0]);
         clRemoveShipFromSelection((MaxSelection *)&newMultiBeams, newMultiBeams.ShipPtr[0]);
-        aiCurrentAIPlayer->numAttackTeams++;
     }
 
     if (newMothership.numShips)
     {
-        newTeamNum = aiCurrentAIPlayer->numAttackTeams;
-        aiCurrentAIPlayer->attackTeam[newTeamNum] = aitCreate(AttackTeam);
-        aioCreateP2MothershipAttack(aiCurrentAIPlayer->attackTeam[newTeamNum]);
-        aitAddShip(aiCurrentAIPlayer->attackTeam[newTeamNum], newMothership.ShipPtr[0]);
-        aiCurrentAIPlayer->numAttackTeams++;
+        aiCurrentAIPlayer->attackTeam.emplace_back(aitCreate(AttackTeam));
+        aioCreateP2MothershipAttack(aiCurrentAIPlayer->attackTeam.back());
+        aitAddShip(aiCurrentAIPlayer->attackTeam.back(), newMothership.ShipPtr[0]);
     }
 
     bitClear(aiCurrentAIPlayer->AlertStatus, ALERT_SWARMER_TARGETS);
@@ -1229,18 +1200,15 @@ void aiaTeamDied(struct AIPlayer *aiplayer,struct AITeam *team)
     }
     else
     {
-        sdword i;
+    	auto it = std::find
+    	(
+    		aiplayer->attackTeam.begin(),
+    		aiplayer->attackTeam.end(),
+    		*team
+    	);
 
-        for (i=0;i<AIPLAYER_NUM_ATTACKTEAMS;i++)
-        {
-            if (aiplayer->attackTeam[i] == team)
-            {
-                aiplayer->numAttackTeams--;
-                aiplayer->attackTeam[i] = aiplayer->attackTeam[aiplayer->numAttackTeams];
-                aiplayer->attackTeam[aiplayer->numAttackTeams] = NULL;
-                break;
-            }
-        }
+    	if( it != aiplayer->attackTeam.end() )
+    		aiplayer->attackTeam.erase(it);
     }
 }
 
@@ -1281,11 +1249,7 @@ void aiaInit(struct AIPlayer *aiplayer)
 
     aiplayer->harassTeam = NULL;
 
-    for (i=0;i<AIPLAYER_NUM_ATTACKTEAMS;i++)
-    {
-        aiplayer->attackTeam[i] = NULL;
-    }
-    aiplayer->numAttackTeams = 0;
+    aiplayer->attackTeam.reserve(AIPLAYER_NUM_ATTACKTEAMS);
 
     aiplayer->haveAttackedMothership = 0;
     aivarLabelGenerate(aiplayer->attackVarLabel);

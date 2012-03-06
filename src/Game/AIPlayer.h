@@ -163,8 +163,7 @@ typedef struct AIPlayer
     struct AITeam *harassTeam;
     struct AITeam *reconTeam[AIPLAYER_NUM_RECONTEAMS];
     udword         numReconTeams;
-    struct AITeam *attackTeam[AIPLAYER_NUM_ATTACKTEAMS];
-    udword         numAttackTeams;
+    std::vector<SaveUnion<AITeam*, sdword>> attackTeam;
     sdword         haveAttackedMothership;
     char           attackVarLabel[AIVAR_LABEL_MAX_LENGTH+1];
     udword         aiaAttackProbability[NUM_ATTACK_TYPES];
