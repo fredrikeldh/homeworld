@@ -366,13 +366,17 @@ typedef struct
 //
 //  teams
 //
-#define MSG_QUEUE_MAX_MSGS 32
-typedef struct {
+static const size_t MSG_QUEUE_MAX_MSGS = 32;
+struct MsgQueue{
     sdword          head;
-    char            *msgs[MSG_QUEUE_MAX_MSGS];
-    struct AITeam   *msgSenders[MSG_QUEUE_MAX_MSGS];  // team that sent the corresponding msg above
-                                                      // NOTE:  if a team dies, the message will be deleted from this queue
-} MsgQueue;
+    std::array<std::string, MSG_QUEUE_MAX_MSGS> msgs;
+    std::array<AITeam*, MSG_QUEUE_MAX_MSGS> msgSenders; // team that sent the corresponding msg above
+                                                     // NOTE:  if a team dies, the message will be deleted from this queue
+    MsgQueue() :
+    	head(0)
+    {
+    }
+};
 
 typedef enum {
     AttackTeam,
@@ -400,8 +404,8 @@ typedef struct AITeam {
     void (*TeamDiedCB)(struct AITeam *team);
     struct AITeam     *cooperatingTeam;
     void (*cooperatingTeamDiedCB)(struct AITeam *team);
-    MsgQueue          *msgQueue;
-    struct AITeam     *msgSender;
+    std::unique_ptr<MsgQueue> msgQueue;
+    SaveUnion<AITeam*, size_t> msgSender;
 
     // KAS attributes (if teamType == SCRIPT_TEAM)
     char                kasLabel[KAS_TEAM_NAME_MAX_LENGTH+1];
@@ -609,7 +613,7 @@ bool aitCheckAmIBeingWatched(AITeam *team, SelectCommand *sel);
 void aitSetAmIBeingWatched(AITeam *team, SelectCommand *sel);
 
 
-sdword aitMsgReceived(AITeam *teamp, const char *msg);
+bool aitMsgReceived(AITeam *teamp, const char *msg);
 void aitMsgSend(AITeam *fromTeamp, AITeam *teamp, const char *msg);
 void aitMsgQueueFree(AITeam *teamp);
 

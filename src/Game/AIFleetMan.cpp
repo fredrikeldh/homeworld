@@ -748,7 +748,6 @@ void RemoveTeamFromTeamWaitingQ(LinkedList *TeamWaitingQ,AITeam *team)
 void aifTeamDied(AIPlayer *aiplayer,AITeam *team, bool removeAllReferencesToTeam)
 {
     sdword i, j;
-    MsgQueue *msgQP;
 
     RemoveTeamFromTeamWaitingQ(&aiplayer->AttackManTeamsWaitingForShipsQ,team);
     RemoveTeamFromTeamWaitingQ(&aiplayer->DefenseManTeamsWaitingForShipsQ,team);
@@ -763,16 +762,21 @@ void aifTeamDied(AIPlayer *aiplayer,AITeam *team, bool removeAllReferencesToTeam
     // remove any messages from team that may still be queued up
     for( auto& msgTeam : aiCurrentAIPlayer->teams )
     {
-        msgQP = msgTeam.msgQueue;
+        auto& msgQP = msgTeam.msgQueue;
         if (!msgQP) continue;
-        for (j = 0; j < MSG_QUEUE_MAX_MSGS; ++j)
-            if (msgQP->msgSenders[j] == team)
-            {
-                if (msgQP->msgs[j])
-                    memFree(msgQP->msgs[j]);
-                msgQP->msgs[j] = NULL;
-                msgQP->msgSenders[j] = NULL;
-            }
+
+        auto it = std::find
+        (
+        	msgQP->msgSenders.begin(),
+        	msgQP->msgSenders.end(),
+        	team
+        );
+
+        if( it != msgQP->msgSenders.end() )
+        {
+        	(*it) = nullptr;
+        	msgQP->msgs[it - msgQP->msgSenders.begin()].clear();
+        }
     }
 
     if (team->teamType == AttackTeam)
