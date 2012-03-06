@@ -20,10 +20,9 @@
 #include "Stats.h"
 #include "Tweak.h"
 
+static const char* AIPLAYER_LOG_FILE_NAME = "aiplayerlog.txt";
 
-#define AIPLAYER_LOG_FILE_NAME "aiplayerlog.txt"
-
-bool aiplayerLogEnable = FALSE;
+bool aiplayerLogEnable = false;
 AIPlayer *aiCurrentAIPlayer;
 uword aiIndex;
 
@@ -453,7 +452,20 @@ scriptEntry AIPlayerTweaks[] =
     END_SCRIPT_ENTRY
 };
 
+void save(SaveUnion<AITeam*, sdword>& saveUnion)
+{
+	save(saveUnion, AITeamToTeamIndex(saveUnion));
+}
 
+void save(SaveUnion<ShipPtr, sdword>& saveUnion)
+{
+	save(saveUnion, SpaceObjRegistryGetID((SpaceObj *)(ShipPtr)saveUnion));
+}
+
+void save(SaveUnion<Player*, int>& saveUnion)
+{
+	save(saveUnion, SavePlayerToPlayerIndex(saveUnion));
+}
 
 
 /*-----------------------------------------------------------------------------
@@ -519,7 +531,7 @@ void aiplayerChooseEnemies(udword num_players, udword num_human, udword num_comp
 
         while (!done)
         {
-            if (giveup++ > 100) { aiplayerLog((0,"Warning: giving up on loop 1")); break; }
+            if (giveup++ > 100) { aiplayerLog(0,"Warning: giving up on loop 1"); break; }
             //if the player has no enemy
             if ((enemy != normcomp[i]) && (players[enemy][0] == -1))
             {
@@ -581,7 +593,7 @@ void aiplayerChooseEnemies(udword num_players, udword num_human, udword num_comp
 
         while (!done)
         {
-            if (giveup++ > 100) { aiplayerLog((0,"Warning: giving up on loop 2")); break; }
+            if (giveup++ > 100) { aiplayerLog(0,"Warning: giving up on loop 2"); break; }
             if (players[enemy][slot] == -1)
             {
                 players[enemy][slot] = bigots[i];
@@ -617,7 +629,7 @@ void aiplayerChooseEnemies(udword num_players, udword num_human, udword num_comp
 
         while (!done)
         {
-            if (giveup++ > 100) { aiplayerLog((0,"Warning: giving up on loop 3")); break; }
+            if (giveup++ > 100) { aiplayerLog(0,"Warning: giving up on loop 3"); break; }
             if (players[enemy][slot] == -1)
             {
                 players[enemy][slot] = bigots[i+(num_human*numloops)];
@@ -663,7 +675,7 @@ transfer_aiplayerEnemy:
 
     for (i=0;i<MAX_MULTIPLAYER_PLAYERS;i++)
     {
-        aiplayerLog(((uword)i, "My aiplayer Enemy = %i", universe.aiplayerEnemy[i]));
+        aiplayerLog((uword)i, "My aiplayer Enemy = %i", universe.aiplayerEnemy[i]);
     }
 }
 
@@ -672,9 +684,8 @@ transfer_aiplayerEnemy:
 void aiplayerStartup(udword num_players, udword num_human_players, udword num_comp_players)
 {
     if (aiplayerLogEnable)
-    {
         logfileClear(AIPLAYER_LOG_FILE_NAME);
-    }
+
     aivarStartup();
 
     if (!determCompPlayer)
@@ -691,29 +702,47 @@ void aiplayerShutdown()
     aivarShutdown();
 }
 
-void aiplayerDebugLog(uword playerIndex, char *format, ...)
+void _aiplayerDebugLog(uword playerIndex, const char *format, va_list argList)
 {
-    if (aiplayerLogEnable)
-    {
-        char buffer[200];
-        char buffer2[200];
-        va_list argList;
-        va_start(argList, format);                              //get first arg
-        vsprintf(buffer, format, argList);                      //prepare output string
-        va_end(argList);
+    if (!aiplayerLogEnable)
+    	return;
 
-        //find a way to put playernum in as well
-        sprintf(buffer2,"\nAI%i: %0.1f %s", playerIndex, universe.totaltimeelapsed, buffer);
+	char buffer[200];
+	char buffer2[200];
 
-        logfileLog(AIPLAYER_LOG_FILE_NAME,buffer2);
-        dbgMessage(buffer2);
-    }
+	vsprintf(buffer, format, argList);                      //prepare output string
+
+	//find a way to put playernum in as well
+	sprintf(buffer2,"\nAI%i: %0.1f %s", playerIndex, universe.totaltimeelapsed, buffer);
+
+	logfileLog(AIPLAYER_LOG_FILE_NAME,buffer2);
+	dbgMessage(buffer2);
+}
+
+void aiplayerDebugLog(uword playerIndex, const char *format, ...)
+{
+	va_list argList;
+	va_start(argList, format);                              //get first arg
+	_aiplayerDebugLog(playerIndex, format, argList);
+	va_end(argList);
+}
+
+void aiplayerLog(uword playerIndex, const char *format, ...)
+{
+#ifdef HW_BUILD_FOR_DEBUGGING
+	va_list argList;
+	va_start(argList, format);                              //get first arg
+	_aiplayerDebugLog(playerIndex, format, argList);
+	va_end(argList);
+#else
+	; // NOTHING
+#endif
 }
 
 AIPlayer *aiplayerInit(Player *player,AIPlayerLevel aiplayerLevel)
 {
     udword i;
-    AIPlayer *aiplayer = memAlloc(sizeof(AIPlayer),"AIPlayer",0);
+    AIPlayer* aiplayer = mem::alloc<AIPlayer>("AIPlayer");
     memset(aiplayer,0,sizeof(AIPlayer));
 
     aiplayer->player = player;
@@ -777,7 +806,7 @@ void aiplayerClose(AIPlayer *aiplayer)
 
     aiCurrentAIPlayer = aiplayer;
 
-    aiplayerLog((aiplayer->player->playerIndex,"Deleting AIPlayer %x",aiplayer));
+    aiplayerLog(aiplayer->player->playerIndex,"Deleting AIPlayer %x",aiplayer);
 
     growSelectClose(&aiplayer->newships);
 
@@ -1002,7 +1031,7 @@ void aiplayerPlayerDied(Player *player)
 
                 while (!done)
                 {
-                    if (giveup++ > 100) { aiplayerLog((0,"Warning: giving up on loop 4")); break; }
+                    if (giveup++ > 100) { aiplayerLog(0,"Warning: giving up on loop 4"); break; }
                     if (players[universe.aiplayerEnemy[i]][slot] == -1)
                     {
                         players[universe.aiplayerEnemy[i]][slot] = i;
@@ -1067,7 +1096,7 @@ void aiplayerPlayerDied(Player *player)
             //the computer player is a bigot
             while (!done)
             {
-                if (giveup++ > 100) { aiplayerLog((0,"Warning: giving up on loop 5")); break; }
+                if (giveup++ > 100) { aiplayerLog(0,"Warning: giving up on loop 5"); break; }
                 if ((universe.players[enemy].playerState == PLAYER_ALIVE) &&
                     (players[enemy][newslot] == -1))
                 {
@@ -1106,7 +1135,7 @@ void aiplayerPlayerDied(Player *player)
 
             while (!done)
             {
-                if (giveup++ > 100) { aiplayerLog((0,"Warning: giving up on loop 6")); break; }
+                if (giveup++ > 100) { aiplayerLog(0,"Warning: giving up on loop 6"); break; }
                 //if the player has no enemy
                 if ((universe.players[enemy].playerState == PLAYER_ALIVE) &&
                     (players[enemy][0] == -1) && (enemy != players[DeadPlayerIndex][slot]))
@@ -1190,7 +1219,7 @@ void aiplayerPlayerDied(Player *player)
                         (universe.players[j].playerState == PLAYER_ALIVE))
                     {
                         universe.players[i].aiPlayer->primaryEnemyPlayer = &universe.players[j];
-                        aiplayerLog(((uword)i, "Giving Up on this function... assigning the first living player %i as primary enemy", j));
+                        aiplayerLog((uword)i, "Giving Up on this function... assigning the first living player %i as primary enemy", j);
                     }
                 }
             }
@@ -1198,7 +1227,7 @@ void aiplayerPlayerDied(Player *player)
             {
                 //yay!  it worked properly
                 universe.players[i].aiPlayer->primaryEnemyPlayer = &universe.players[universe.aiplayerEnemy[i]];
-                aiplayerLog(((uword)i, "New Primary Enemy %i", universe.aiplayerEnemy[i]));
+                aiplayerLog((uword)i, "New Primary Enemy %i", universe.aiplayerEnemy[i]);
             }
 
             aiuChangePrimaryEnemy(universe.players[i].aiPlayer);
@@ -1222,7 +1251,7 @@ shipdiedstuff:
 
     for (i=0;i<MAX_MULTIPLAYER_PLAYERS;i++)
     {
-        aiplayerLog(((uword)i, "My aiplayer Enemy = %i", universe.aiplayerEnemy[i]));
+        aiplayerLog((uword)i, "My aiplayer Enemy = %i", universe.aiplayerEnemy[i]);
     }
 
 }
@@ -1232,19 +1261,15 @@ shipdiedstuff:
 //  return 1 if the ship isn't on any team of the aiplayer
 //  return 0 otherwise
 //
-static int ShipNotOnTeam(AIPlayer *aiplayer, Ship *ship)
+static bool ShipNotOnTeam(AIPlayer *aiplayer, Ship *ship)
 {
-    sdword i, j;
-    AITeam *teamp;
-
-    for (i = 0; i < aiplayer->teamsUsed; ++i)
+    for( auto& teamp : aiplayer->teams )
     {
-        teamp = aiplayer->teams[i];
-        for (j = 0; j < teamp->shipList.selection->numShips; ++j)
-            if (teamp->shipList.selection->ShipPtr[j] == ship)
-                return 0;
+        for (unsigned int j = 0; j < teamp.shipList.selection->numShips; ++j)
+            if (teamp.shipList.selection->ShipPtr[j] == ship)
+                return false;
     }
-    return 1;
+    return true;
 }
 
 /*-----------------------------------------------------------------------------
@@ -1313,13 +1338,13 @@ void FindEnemies(AIPlayer *aiplayer)
 #ifdef HW_BUILD_FOR_DEBUGGING
     if (primaryEnemyIndex == aiplayer->player->playerIndex)
     {
-        aiplayerLog((aiplayer->player->playerIndex, "Super Heap Big Warning!!!  CPU chose itself as primary enemy"));
+        aiplayerLog(aiplayer->player->playerIndex, "Super Heap Big Warning!!!  CPU chose itself as primary enemy");
     }
 #endif
 
     if (primaryEnemyIndex == -1)
     {
-        aiplayerLog((aiplayer->player->playerIndex, "Error: CPU Player chose -1th player, setting to 0"));
+        aiplayerLog(aiplayer->player->playerIndex, "Error: CPU Player chose -1th player, setting to 0");
         primaryEnemyIndex++;
     }
     aiplayer->primaryEnemyPlayer = &universe.players[primaryEnemyIndex];
@@ -1371,7 +1396,7 @@ void aiplayerShipDied(ShipPtr ship)
         return;
     }
 
-    aiplayerLog((ship->playerowner->playerIndex,"%s Ship died, ", ShipTypeToStr(ship->shiptype)));
+    aiplayerLog(ship->playerowner->playerIndex,"%s Ship died, ", ShipTypeToStr(ship->shiptype));
 
     for (i = 0; i < universe.numPlayers;i++)
     {
@@ -1391,34 +1416,34 @@ void aiplayerShipDied(ShipPtr ship)
                         aiplayer->numLeaders--;
                     }
 
-                    aiplayerLog((playerIndex,"removed from aiplayer newships"));
+                    aiplayerLog(playerIndex,"removed from aiplayer newships");
                 }
             }
 
             // do these checks all the time for safety (salcap's capturing ships, defectors, etc.)
             if (growSelectRemoveShip(&aiplayer->enemyShipsIAmAwareOf[ship->shiptype], ship))
             {
-//                    aiplayerLog((playerIndex,"removed from aiplayer enemyShipsIAmAwareOf"));
+//                    aiplayerLog(playerIndex,"removed from aiplayer enemyShipsIAmAwareOf");
             }
 
             if (growSelectRemoveShip(&aiplayer->primaryEnemyShipsIAmAwareOf[ship->shiptype], ship))
             {
-//                    aiplayerLog((playerIndex,"removed from aiplayer primaryEnemyShipsIAmAwareOf"));
+//                    aiplayerLog(playerIndex,"removed from aiplayer primaryEnemyShipsIAmAwareOf");
             }
 
             if (airShipDied(aiplayer,ship))
             {
-                aiplayerLog((playerIndex,"removed from Resource Manager of aiplayer %d",aiplayer->player->playerIndex));
+                aiplayerLog(playerIndex,"removed from Resource Manager of aiplayer %d",aiplayer->player->playerIndex);
             }
 
             if (aiaShipDied(aiplayer,ship))
             {
-                aiplayerLog((playerIndex,"removed from Attack Manager of aiplayer %d",aiplayer->player->playerIndex));
+                aiplayerLog(playerIndex,"removed from Attack Manager of aiplayer %d",aiplayer->player->playerIndex);
             }
 
             if (aidShipDied(aiplayer,ship))
             {
-                aiplayerLog((playerIndex,"removed from Defense Manager of aiplayer %d",aiplayer->player->playerIndex));
+                aiplayerLog(playerIndex,"removed from Defense Manager of aiplayer %d",aiplayer->player->playerIndex);
             }
 
             aitShipDied(aiplayer,ship);
@@ -1489,7 +1514,7 @@ void aiplayerAddLeader(AIPlayer *aiplayer, ShipPtr ship)
 {
     aiplayer->numLeaders++;
     bitSet(ship->attributes, ATTRIBUTES_TeamLeader);
-    aiplayerLog((aiplayer->player->playerIndex, "Added Leader to aiplayer"));
+    aiplayerLog(aiplayer->player->playerIndex, "Added Leader to aiplayer");
 }
 
 
@@ -1541,37 +1566,51 @@ struct Path *LoadPath(void)
 
 sdword AITeamToTeamIndex(struct AITeam *team)
 {
-    sdword i;
-    AIPlayer *aiplayer;
-
-    if (team == NULL)
-    {
+    if (team == nullptr)
         return -1;
-    }
 
-    aiplayer = team->aiplayerowner;
+    auto aiplayer = team->aiplayerowner;
 
-    for (i=0;i<aiplayer->teamsUsed;i++)
+    sdword i = 0;
+    for( auto& aiTeam : aiplayer->teams )
     {
-        if (aiplayer->teams[i] == team)
-        {
+        if (aiTeam == *team)
             return i;
-        }
+        ++i;
     }
 
     dbgAssertOrIgnore(FALSE);
     return -1;
 }
 
-struct AITeam *AITeamIndexToTeam(AIPlayer *aiplayer,sdword index)
+AITeam *AITeamIndexToTeam(AIPlayer *aiplayer, int index)
 {
-    if (index == -1)
-    {
-        return NULL;
-    }
+    if (index < 0)
+        return nullptr;
 
-    dbgAssertOrIgnore(index < aiplayer->teamsUsed);
-    return aiplayer->teams[index];
+    dbgAssertOrIgnore(index < aiplayer->teams.size());
+    return &aiplayer->teams[index];
+}
+
+template <typename T1, typename T2>
+void load(SaveUnion<T1, T2>& saveUnion, T1&& value)
+{
+	saveUnion.internal = value;
+}
+
+void load(SaveUnion<Player*, int>& saveUnion)
+{
+	load(saveUnion, SavePlayerIndexToPlayer(saveUnion.save));
+}
+
+void load(SaveUnion<AITeam* , int>& saveUnion, AIPlayer& player)
+{
+	load(saveUnion, AITeamIndexToTeam(&player, saveUnion.save));
+}
+
+void load(SaveUnion<ShipPtr, int>& saveUnion)
+{
+	load(saveUnion, SpaceObjRegistryGetShip(saveUnion.save));
 }
 
 void SaveRequestShipsCB(void *stuff)
@@ -1592,7 +1631,7 @@ void SaveTeamWaitingCB(void *stuff)
     chunk = CreateChunk(BASIC_STRUCTURE,sizeof(TeamWaitingForTheseShips),stuff);
     sc = (TeamWaitingForTheseShips *)chunkContents(chunk);
 
-    sc->team = (AITeam*)AITeamToTeamIndex(sc->team);
+    save(sc->team);
 
     SaveThisChunk(chunk);
     memFree(chunk);
@@ -1600,7 +1639,7 @@ void SaveTeamWaitingCB(void *stuff)
 
 void LoadRequestShipsCB(LinkedList *list)
 {
-    RequestShips *requestShips = LoadStructureOfSize(sizeof(RequestShips));
+    auto requestShips = Load<RequestShips>();
     requestShips->creator = SpaceObjRegistryGetShip((sdword)requestShips->creator);
 
     listAddNode(list,&requestShips->node,requestShips);
@@ -1608,7 +1647,7 @@ void LoadRequestShipsCB(LinkedList *list)
 
 void LoadTeamWaitingCB(LinkedList *list)
 {
-    TeamWaitingForTheseShips *teamWaiting = LoadStructureOfSize(sizeof(TeamWaitingForTheseShips));
+    auto teamWaiting = Load<TeamWaitingForTheseShips>();
 
     listAddNode(list,&teamWaiting->node,teamWaiting);
 }
@@ -1616,111 +1655,101 @@ void LoadTeamWaitingCB(LinkedList *list)
 void FixTeamWaitingCB(void *stuff)
 {
 #define teamWaiting ((TeamWaitingForTheseShips *)stuff)
-    teamWaiting->team = AITeamIndexToTeam(fixingThisAIPlayer,(sdword)teamWaiting->team);
+	load(teamWaiting->team, *fixingThisAIPlayer);
 #undef teamWaiting
+}
+
+void save(AIPlayer& aiplayer)
+{
+    sdword i;
+
+    {
+    	// Copy player to stack
+    	AIPlayer sc(aiplayer);
+
+		save(sc.player);
+		save(sc.primaryEnemyPlayer);
+
+		for (i=0;i<aiplayer.numSupportTeams;i++)
+		{
+			save(sc.supportTeam[i]);
+		}
+
+		for (i=0;i<AIPLAYER_NUM_RECONTEAMS;i++)
+		{
+			save(sc.reconTeam[i]);
+		}
+
+		save(sc.harassTeam);
+
+		for (i=0;i<AIPLAYER_NUM_ATTACKTEAMS;i++)
+		{
+			save(sc.attackTeam[i]);
+		}
+
+		save(sc.guardTeams);
+		save(sc.ScriptCreator);
+		save(sc.AICreator);
+
+		// All done save now
+		Chunk<AIPlayer> chunk(BASIC_STRUCTURE|AIPLAYER, std::move(sc));
+		chunk.Save();
+    }
+
+    SaveGrowSelection(&aiplayer.newships);
+
+    for (i=0;i<TOTAL_NUM_SHIPS;i++)
+    {
+        SaveGrowSelection(&aiplayer.enemyShipsIAmAwareOf[i]);
+        SaveGrowSelection(&aiplayer.primaryEnemyShipsIAmAwareOf[i]);
+    }
+
+    SaveLinkedListOfStuff(&aiplayer.AttackManRequestShipsQ,SaveRequestShipsCB);
+    SaveLinkedListOfStuff(&aiplayer.DefenseManRequestShipsQ,SaveRequestShipsCB);
+    SaveLinkedListOfStuff(&aiplayer.ScriptManRequestShipsQ,SaveRequestShipsCB);
+
+    SaveLinkedListOfStuff(&aiplayer.AttackManTeamsWaitingForShipsQ,SaveTeamWaitingCB);
+    SaveLinkedListOfStuff(&aiplayer.DefenseManTeamsWaitingForShipsQ,SaveTeamWaitingCB);
+    SaveLinkedListOfStuff(&aiplayer.ScriptManTeamsWaitingForShipsQ,SaveTeamWaitingCB);
+
+    SaveGrowSelection(&aiplayer.airResourceReserves);
+    SaveGrowSelection(&aiplayer.airResourceCollectors);
+
+    if (aiplayer.shipsattackingmothership) SaveSelection((SpaceObjSelection *)aiplayer.shipsattackingmothership);
+    if (aiplayer.aidProximitySensors)      SaveSelection((SpaceObjSelection *)aiplayer.aidProximitySensors);
+    if (aiplayer.aidDefenseTargets)        SaveSelection((SpaceObjSelection *)aiplayer.aidDefenseTargets);
+    if (aiplayer.aidInvadingShips)         SaveSelection((SpaceObjSelection *)aiplayer.aidInvadingShips);
+    if (aiplayer.aidDistressShips)         SaveSelection((SpaceObjSelection *)aiplayer.aidDistressShips);
+    if (aiplayer.aiaArmada.targets)        SaveSelection((SpaceObjSelection *)aiplayer.aiaArmada.targets);
+    if (aiplayer.Targets)                  SaveSelection((SpaceObjSelection *)aiplayer.Targets);
+
+    // Save all team stuff
+
+    aitSave(&aiplayer);
 }
 
 void SaveThisAIPlayer(AIPlayer *aiplayer)
 {
-    SaveChunk *chunk;
-    AIPlayer *sc;
-    sdword i;
-
-    chunk = CreateChunk(BASIC_STRUCTURE|AIPLAYER,sizeof(AIPlayer),aiplayer);
-    sc = chunkContents(chunk);
-
-    sc->player = (Player*)SavePlayerToPlayerIndex(aiplayer->player);
-    sc->primaryEnemyPlayer = (Player*)SavePlayerToPlayerIndex(aiplayer->primaryEnemyPlayer);
-
-    for (i=0;i<aiplayer->numSupportTeams;i++)
-    {
-        sc->supportTeam[i] = (AITeam*)AITeamToTeamIndex(aiplayer->supportTeam[i]);
-    }
-
-    for (i=0;i<AIPLAYER_NUM_RECONTEAMS;i++)
-    {
-        sc->reconTeam[i] = (AITeam*)AITeamToTeamIndex(aiplayer->reconTeam[i]);
-    }
-
-    sc->harassTeam = (AITeam*)AITeamToTeamIndex(aiplayer->harassTeam);
-
-    for (i=0;i<AIPLAYER_NUM_ATTACKTEAMS;i++)
-    {
-        sc->attackTeam[i] = (AITeam*)AITeamToTeamIndex(aiplayer->attackTeam[i]);
-    }
-
-    for (i=0;i<aiplayer->numGuardTeams;i++)
-    {
-        sc->guardTeams[i] = (AITeam*)AITeamToTeamIndex(aiplayer->guardTeams[i]);
-    }
-
-    sc->ScriptCreator = (ShipPtr)SpaceObjRegistryGetID((SpaceObj *)aiplayer->ScriptCreator);
-    sc->AICreator     = (ShipPtr)SpaceObjRegistryGetID((SpaceObj *)aiplayer->AICreator);
-
-    SaveThisChunk(chunk);
-    memFree(chunk);
-    sc = NULL;
-
-    SaveGrowSelection(&aiplayer->newships);
-
-    for (i=0;i<TOTAL_NUM_SHIPS;i++)
-    {
-        SaveGrowSelection(&aiplayer->enemyShipsIAmAwareOf[i]);
-        SaveGrowSelection(&aiplayer->primaryEnemyShipsIAmAwareOf[i]);
-    }
-
-    SaveLinkedListOfStuff(&aiplayer->AttackManRequestShipsQ,SaveRequestShipsCB);
-    SaveLinkedListOfStuff(&aiplayer->DefenseManRequestShipsQ,SaveRequestShipsCB);
-    SaveLinkedListOfStuff(&aiplayer->ScriptManRequestShipsQ,SaveRequestShipsCB);
-
-    SaveLinkedListOfStuff(&aiplayer->AttackManTeamsWaitingForShipsQ,SaveTeamWaitingCB);
-    SaveLinkedListOfStuff(&aiplayer->DefenseManTeamsWaitingForShipsQ,SaveTeamWaitingCB);
-    SaveLinkedListOfStuff(&aiplayer->ScriptManTeamsWaitingForShipsQ,SaveTeamWaitingCB);
-
-    SaveGrowSelection(&aiplayer->airResourceReserves);
-    SaveGrowSelection(&aiplayer->airResourceCollectors);
-
-    if (aiplayer->shipsattackingmothership) SaveSelection((SpaceObjSelection *)aiplayer->shipsattackingmothership);
-    if (aiplayer->aidProximitySensors)      SaveSelection((SpaceObjSelection *)aiplayer->aidProximitySensors);
-    if (aiplayer->aidDefenseTargets)        SaveSelection((SpaceObjSelection *)aiplayer->aidDefenseTargets);
-    if (aiplayer->aidInvadingShips)         SaveSelection((SpaceObjSelection *)aiplayer->aidInvadingShips);
-    if (aiplayer->aidDistressShips)         SaveSelection((SpaceObjSelection *)aiplayer->aidDistressShips);
-    if (aiplayer->aiaArmada.targets)        SaveSelection((SpaceObjSelection *)aiplayer->aiaArmada.targets);
-    if (aiplayer->Targets)                  SaveSelection((SpaceObjSelection *)aiplayer->Targets);
-
-    // Save all team stuff
-
-    aitSave(aiplayer);
+	save(*aiplayer);
 }
 
 void FixThisAIPlayer(AIPlayer *aiplayer)
 {
     sdword i;
 
-    aiplayer->player = SavePlayerIndexToPlayer((sdword)aiplayer->player);
-    aiplayer->primaryEnemyPlayer = SavePlayerIndexToPlayer((sdword)aiplayer->primaryEnemyPlayer);
+    load(aiplayer->player);
+    load(aiplayer->primaryEnemyPlayer);
 
     for (i=0;i<aiplayer->numSupportTeams;i++)
     {
-        aiplayer->supportTeam[i] = AITeamIndexToTeam(aiplayer,(sdword)aiplayer->supportTeam[i]);
+        load(aiplayer->supportTeam[i], *aiplayer);
     }
 
-    for (i=0;i<AIPLAYER_NUM_RECONTEAMS;i++)
-    {
-        aiplayer->reconTeam[i] = AITeamIndexToTeam(aiplayer,(sdword)aiplayer->reconTeam[i]);
-    }
+    load(aiplayer->reconTeam, *aiplayer);
+    load(aiplayer->harassTeam, *aiplayer);
 
-    aiplayer->harassTeam = AITeamIndexToTeam(aiplayer,(sdword)aiplayer->harassTeam);
-
-    for (i=0;i<AIPLAYER_NUM_ATTACKTEAMS;i++)
-    {
-        aiplayer->attackTeam[i] = AITeamIndexToTeam(aiplayer,(sdword)aiplayer->attackTeam[i]);
-    }
-
-    for (i=0;i<aiplayer->numGuardTeams;i++)
-    {
-        aiplayer->guardTeams[i] = AITeamIndexToTeam(aiplayer,(sdword)aiplayer->guardTeams[i]);
-    }
+    load(aiplayer->attackTeam, *aiplayer);
+    load(aiplayer->guardTeams, *aiplayer);
 
     //FixLinkedListOfStuff(&aiplayer->AttackManRequestShipsQ,FixRequestShipsCB);        not needed
     //FixLinkedListOfStuff(&aiplayer->DefenseManRequestShipsQ,FixRequestShipsCB);       not needed
@@ -1744,7 +1773,7 @@ AIPlayer *LoadThisAIPlayer(void)
     chunk = LoadNextChunk();
     VerifyChunk(chunk,BASIC_STRUCTURE|AIPLAYER,sizeof(AIPlayer));
 
-    aiplayer = memAlloc(sizeof(AIPlayer),"AIPlayer",0);
+    aiplayer = mem::alloc<AIPlayer>("AIPlayer");
     memcpy(aiplayer,chunkContents(chunk),sizeof(AIPlayer));
     memFree(chunk);
 
@@ -1764,8 +1793,8 @@ AIPlayer *LoadThisAIPlayer(void)
     LoadLinkedListOfStuff(&aiplayer->DefenseManTeamsWaitingForShipsQ,LoadTeamWaitingCB);
     LoadLinkedListOfStuff(&aiplayer->ScriptManTeamsWaitingForShipsQ,LoadTeamWaitingCB);
 
-    aiplayer->ScriptCreator = SpaceObjRegistryGetShip((sdword)aiplayer->ScriptCreator);
-    aiplayer->AICreator     = SpaceObjRegistryGetShip((sdword)aiplayer->AICreator);
+    load(aiplayer->ScriptCreator);
+    load(aiplayer->AICreator);
 
     LoadGrowSelectionAndFix(&aiplayer->airResourceReserves);
     LoadGrowSelectionAndFix(&aiplayer->airResourceCollectors);

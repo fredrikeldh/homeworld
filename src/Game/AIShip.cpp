@@ -444,9 +444,9 @@ real32 GetCollSizeInDirection(SpaceObjRotImp *obj,vector dir)
     matGetVectFromMatrixCol2(right,obj->rotinfo.coordsys);
     matGetVectFromMatrixCol3(heading,obj->rotinfo.coordsys);
 
-    upcomp = ABS(vecDotProduct(up,dir));
-    rightcomp = ABS(vecDotProduct(right,dir));
-    headingcomp = ABS(vecDotProduct(heading,dir));
+    upcomp = ::abs(vecDotProduct(up,dir));
+    rightcomp = ::abs(vecDotProduct(right,dir));
+    headingcomp = ::abs(vecDotProduct(heading,dir));
 
     return (upcomp*collInfo->uplength + rightcomp*collInfo->rightlength + headingcomp*collInfo->forwardlength)*0.5f;
 }
@@ -470,10 +470,8 @@ static void rowSetDetails(char *directory,char *field,void *dataToFillIn)
     sscanf(field,"%s %d %f",shipstr,&rowpri,&rowAvoidByVal);
 
     shiptype = StrToShipType(shipstr);
-    if ((shiptype < 0) || (shiptype >= TOTAL_NUM_SHIPS))
-    {
+    if( shiptype >= TOTAL_NUM_SHIPS )
         dbgFatalf(DBG_Loc,"Invalid shiptype read at line %s in aiship.script",field);
-    }
 
     rightOfWays[shiptype] = (sbyte)rowpri;
     rowAvoidBy[shiptype] = rowAvoidByVal;
@@ -967,7 +965,7 @@ udword aishipFlyToPointAvoidingObjsFunc(Ship *ship,vector *destination,udword ai
                     real32 xdistanceleft = (destination->x - ship->posinfo.position.x);
                     real32 ydistanceleft = (destination->y - ship->posinfo.position.y);
                     real32 r;
-                    zdistanceleft = ABS(destination->z - ship->posinfo.position.z);
+                    zdistanceleft = ::abs(destination->z - ship->posinfo.position.z);
                     r = fsqrt(xdistanceleft*xdistanceleft + ydistanceleft*ydistanceleft);
                     if ((zdistanceleft < MIN_DIST_FOR_FANCY_DESCEND) ||
                         (zdistanceleft < (r*MIN_ANGLE_FOR_FANCY_DESCEND)))
@@ -1222,7 +1220,7 @@ passagain:
 
                 maxdistconsider = avoidcollpad + shiprowcollpad;
 
-                if (ABS(distcheck) > maxdistconsider)
+                if (::abs(distcheck) > maxdistconsider)
                 {
                     goto nextnode;
                 }
@@ -1344,21 +1342,17 @@ passagain:
                                 asteroidrow++;      // give +1 row to asteroid3 since it's pretty big
 
                             if (shipstaticinfo->staticheader.rightOfWay <= asteroidrow)
-                            {
-                                dontBotherAvoiding = FALSE;     // we should avoid it after all
-                            }
+                                dontBotherAvoiding = false;     // we should avoid it after all
                         }
                     }
 
                     if (dontBotherAvoiding)
-                    {
                         goto nextnode;
-                    }
                 }
 
                 maxdistconsider = avoidcollpad + shipcollpad;
 
-                if (ABS(distcheck) > maxdistconsider)
+                if (::abs(distcheck) > maxdistconsider)
                 {
                     goto nextnode;
                 }
@@ -1724,16 +1718,15 @@ noavoid:
                     // calculate normalize distance left
                     if ((destination) && (ship->aidescend != 0.0f))
                     {
-                        zdistanceleft = (destination->z - ship->posinfo.position.z) * ABS(ship->aidescend);
+                        zdistanceleft = (destination->z - ship->posinfo.position.z) * ::abs(ship->aidescend);
                         pitchtodescend = getPitchToDescend(zdistanceleft,shipstaticinfo->pitchdescend);
 #if DEBUG_AISHIP
                         dbgMessagef("zdistanceleft: %f pitchtodescend: %f",zdistanceleft,pitchtodescend);
 #endif
                     }
                     else
-                    {
                         pitchtodescend = 0.0f;
-                    }
+
                     // use desiredVel for heading, because the heading does not have to be noramlized for this function
 
                     if ((destination) && (ship->aidescend < 0.0f))
@@ -2337,7 +2330,7 @@ bool aishipGuideMine(Missile *mine)
         if(!MoveReachedDestinationVariable((Ship *)mine,&mine->formation_position,10.0f))
         {
             SpaceObjRotImpTarg dest_faker;
-            dest_faker.objtype = -1;
+            dest_faker.objtype = OBJ_None;
             dest_faker.collInfo.collPosition = mine->formation_position;
             vecSet(dest_faker.posinfo.velocity, 0.0f,0.0f,0.0f);
             dest_faker.flags = 0;

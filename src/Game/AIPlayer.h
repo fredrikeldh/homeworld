@@ -41,7 +41,7 @@ typedef struct TeamWaitingForTheseShips
     Node node;
     ShipType shiptype;
     sdword num_ships;
-    struct AITeam *team;
+    SaveUnion<AITeam*, int> team;
     char doneSetVarStr[AIVAR_LABEL_MAX_LENGTH+1];
 } TeamWaitingForTheseShips;
 
@@ -91,7 +91,7 @@ typedef enum
 
 typedef struct AIPlayer
 {
-    Player *player;
+    SaveUnion<Player*, int> player;
     AIPlayerLevel aiplayerDifficultyLevel;
 
     udword ResourceFeatures;
@@ -106,7 +106,7 @@ typedef struct AIPlayer
 
     //enemy player variables
     udword enemyPlayerCount;
-    Player *primaryEnemyPlayer;
+    SaveUnion<Player*, int> primaryEnemyPlayer;
 
     GrowSelection newships;
     GrowSelection enemyShipsIAmAwareOf[TOTAL_NUM_SHIPS];
@@ -117,8 +117,8 @@ typedef struct AIPlayer
     sdword NumASFBeingBuilt;
     sdword NumResearchShipsBeingBuilt;
 
-    ShipPtr ScriptCreator;                      // construction ship for Script controlled ships
-    ShipPtr AICreator;                          // construction ship for AI controlled ships
+    SaveUnion<ShipPtr, sdword> ScriptCreator;                      // construction ship for Script controlled ships
+    SaveUnion<ShipPtr, sdword> AICreator;                          // construction ship for AI controlled ships
 
     sdword NumRUsSpentOnResourceman;
     sdword NumRUsSpentOnAttman;
@@ -156,7 +156,7 @@ typedef struct AIPlayer
     sdword airNumASF;
     sdword airNumResearchShips;
     udword numSupportTeams;
-    struct AITeam *supportTeam[AIPLAYER_NUM_SUPPORTTEAMS];
+    SaveUnion<AITeam*, sdword> supportTeam[AIPLAYER_NUM_SUPPORTTEAMS];
 
     // attackman stuff
     //GrowSelection    newattackships;

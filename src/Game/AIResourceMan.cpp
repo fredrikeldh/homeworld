@@ -704,7 +704,7 @@ bool airDumbResourcerRequests(void)
     else
     {
         aiCurrentAIPlayer->ResourcersToBuild = randyrandombetween(RANDOM_AI_PLAYER, (2 + (udword)aiCurrentAIPlayer->aiplayerDifficultyLevel), (4 + (udword)aiCurrentAIPlayer->aiplayerDifficultyLevel));
-        aiplayerLog((aiIndex, "Using Dumb Resourcing - %i Resource Ships", aiCurrentAIPlayer->ResourcersToBuild));
+        aiplayerLog(aiIndex, "Using Dumb Resourcing - %i Resource Ships", aiCurrentAIPlayer->ResourcersToBuild);
     }
     return FALSE;
 }
@@ -746,7 +746,7 @@ bool airDumbResearchRequests(bool *requestedResearch)
     {
         //later maybe add a bonehead move variable as well to build up to 6
         aiCurrentAIPlayer->ResearchersToBuild = randyrandombetween(RANDOM_AI_PLAYER, 1, 3);
-        aiplayerLog((aiIndex, "Using Dumb Research - %i Research Ships", aiCurrentAIPlayer->ResearchersToBuild));
+        aiplayerLog(aiIndex, "Using Dumb Research - %i Research Ships", aiCurrentAIPlayer->ResearchersToBuild);
     }
     return FALSE;
 }
