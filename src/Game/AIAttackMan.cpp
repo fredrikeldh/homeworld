@@ -80,22 +80,18 @@ static bool aiaPriorityShipsConstraints(Ship *ship)
 ----------------------------------------------------------------------------*/
 AITeam *aiaSendRecon(SelectCommand *ships)
 {
-    udword i = 0;
     real32 distsq = 0, min_distsq = REALlyBig, avg_size = 0;
     vector ships_location = selCentrePointComputeGeneral((MaxSelection *)ships, &avg_size), team_location;
-    AITeam *team = NULL, *best_team = NULL;
-    AITeamMove *newMove = NULL;
+    AITeam *best_team = nullptr;
+    AITeamMove *newMove = nullptr;
 
     // find the closest recon team
-    for (i=0;i < aiCurrentAIPlayer->numReconTeams;i++)
+    for( auto& team : aiCurrentAIPlayer->reconTeam )
     {
-        team = aiCurrentAIPlayer->reconTeam[i];
-
         if (team->shipList.selection->numShips)
             team_location = team->shipList.selection->ShipPtr[0]->posinfo.position;
         else
             continue;
-
 
         distsq = aiuFindDistanceSquared(ships_location, team_location);
 
@@ -108,8 +104,8 @@ AITeam *aiaSendRecon(SelectCommand *ships)
 
     if (min_distsq < REALlyBig)
     {
-        newMove = aimCreateShipReconNoAdd(best_team, ships, NO_FORMATION, Evasive, TRUE, TRUE);
-        aieHandlerSetFuelLow(newMove, 15, TRUE, TRUE, aihGenericFuelLowHandler);
+        newMove = aimCreateShipReconNoAdd(best_team, ships, NO_FORMATION, Evasive, true, true);
+        aieHandlerSetFuelLow(newMove, 15, true, true, aihGenericFuelLowHandler);
         aieHandlerSetTeamDied(newMove, aihReconShipTeamDiedHandler);
         aimInsertMove(best_team, newMove);
         return best_team;
@@ -518,24 +514,21 @@ void aiaProcessAttackTeams(void)
 ----------------------------------------------------------------------------*/
 void aiaProcessSpecialTeams(void)
 {
-    udword harass_probability, i = 0;
+    udword harass_probability;
 
-    if (!aiCurrentAIPlayer->numReconTeams)
+    if (!aiCurrentAIPlayer->reconTeam.size())
     {
         if (aiuAttackFeatureEnabled(AIA_STATIC_RECONAISSANCE))
         {
-            aiCurrentAIPlayer->reconTeam[i] = aitCreate(AttackTeam);
-            aioCreateReconaissance(aiCurrentAIPlayer->reconTeam[i], RECON_MOTHERSHIP);
-            i++;
+            aiCurrentAIPlayer->reconTeam.emplace_back(aitCreate(AttackTeam));
+            aioCreateReconaissance(aiCurrentAIPlayer->reconTeam.back(), RECON_MOTHERSHIP);
         }
 
         if (aiuAttackFeatureEnabled(AIA_ACTIVE_RECONAISSANCE))
         {
-            aiCurrentAIPlayer->reconTeam[i] = aitCreate(AttackTeam);
-            aioCreateReconaissance(aiCurrentAIPlayer->reconTeam[i], RECON_ACTIVE_ENEMY);
-            i++;
+            aiCurrentAIPlayer->reconTeam.emplace_back(aitCreate(AttackTeam));
+            aioCreateReconaissance(aiCurrentAIPlayer->reconTeam.back(), RECON_ACTIVE_ENEMY);
         }
-        aiCurrentAIPlayer->numReconTeams = i;
     }
 
     if ((!aiCurrentAIPlayer->harassTeam) && (aiuAttackFeatureEnabled(AIA_HARASS)))
@@ -724,13 +717,12 @@ void aiaProcessReconTeams(void)
 {
     udword numEnemyBlobs = aiuGetNumEnemyBlobs();
 
-    if ((!aiCurrentAIPlayer->numReconTeams) ||
-        ((aiCurrentAIPlayer->numReconTeams < AIPLAYER_NUM_RECONTEAMS) &&
-         (numEnemyBlobs/aiCurrentAIPlayer->numReconTeams > AIA_ENEMYBLOBS_PER_RECON)))
+    if ((!aiCurrentAIPlayer->reconTeam.size()) ||
+        ((aiCurrentAIPlayer->reconTeam.size() < AIPLAYER_NUM_RECONTEAMS) &&
+         (numEnemyBlobs/aiCurrentAIPlayer->reconTeam.size() > AIA_ENEMYBLOBS_PER_RECON)))
     {
-        aiCurrentAIPlayer->reconTeam[aiCurrentAIPlayer->numReconTeams] = aitCreate(AttackTeam);
-        aioCreateReconaissance(aiCurrentAIPlayer->reconTeam[aiCurrentAIPlayer->numReconTeams], RECON_ACTIVE_ENEMY);
-        aiCurrentAIPlayer->numReconTeams++;
+        aiCurrentAIPlayer->reconTeam.emplace_back(aitCreate(AttackTeam));
+        aioCreateReconaissance(aiCurrentAIPlayer->reconTeam.back(), RECON_ACTIVE_ENEMY);
     }
 }
 
@@ -1237,15 +1229,9 @@ bool aiaShipDied(struct AIPlayer *aiplayer, ShipPtr ship)
 
 void aiaInit(struct AIPlayer *aiplayer)
 {
-    sdword i;
-
 //    growSelectInit(&aiplayer->newattackships);
 
-    for (i=0;i<AIPLAYER_NUM_RECONTEAMS;i++)
-    {
-        aiplayer->reconTeam[i] = NULL;
-    }
-    aiplayer->numReconTeams = 0;
+    aiplayer->reconTeam.reserve(AIPLAYER_NUM_RECONTEAMS);
 
     aiplayer->harassTeam = NULL;
 
@@ -1365,13 +1351,9 @@ void aiaClose(struct AIPlayer *aiplayer)
     sdword i;
 
 //    growSelectClose(&aiplayer->newattackships);
-    for (i=0;i<AIPLAYER_NUM_RECONTEAMS;i++)
+    for( auto& team : aiplayer->reconTeam )
     {
-        if (aiplayer->reconTeam[i] != NULL)
-        {
-            aitDestroy(aiplayer, aiplayer->reconTeam[i],false);
-            aiplayer->reconTeam[i] = NULL;
-        }
+    	aitDestroy(aiplayer, team, false);
     }
     if (aiplayer->harassTeam != NULL)
     {

@@ -161,8 +161,7 @@ typedef struct AIPlayer
     // attackman stuff
     //GrowSelection    newattackships;
     struct AITeam *harassTeam;
-    struct AITeam *reconTeam[AIPLAYER_NUM_RECONTEAMS];
-    udword         numReconTeams;
+    std::vector<SaveUnion<AITeam*, sdword>> reconTeam;
     std::vector<SaveUnion<AITeam*, sdword>> attackTeam;
     sdword         haveAttackedMothership;
     char           attackVarLabel[AIVAR_LABEL_MAX_LENGTH+1];
