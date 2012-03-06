@@ -183,8 +183,7 @@ typedef struct AIPlayer
     SelectCommand    *aidDistressShips;
     real32           sphereofinfluence;                 //radius squared of defense sphere around mothership
     sdword mothershipdefteam;
-    sdword numGuardTeams;
-    struct AITeam *guardTeams[AIPLAYER_MAX_NUM_GUARDTEAMS];
+    std::vector<SaveUnion<AITeam*, sdword>> guardTeams; //[AIPLAYER_MAX_NUM_GUARDTEAMS];
 #ifdef __cplusplus
     // team stuff
     std::vector<AITeam> teams;

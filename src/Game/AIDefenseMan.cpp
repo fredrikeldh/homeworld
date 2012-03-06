@@ -141,14 +141,12 @@ udword aidCountDefendableShips(void)
 ----------------------------------------------------------------------------*/
 void aidCleanupUnusedTeams(void)
 {
-    sdword i;
-
-    for (i=0;i<aiCurrentAIPlayer->numGuardTeams;)
+    for( auto it = aiCurrentAIPlayer->guardTeams.begin(); it != aiCurrentAIPlayer->guardTeams.end();)
     {
-        if (aitTeamIsDone(aiCurrentAIPlayer->guardTeams[i]))
+        if (aitTeamIsDone(*it))
         {
             // return any members of team to reserves:
-            AITeam *team = aiCurrentAIPlayer->guardTeams[i];
+            AITeam *team = *it;
             sdword j;
 
             for (j=0;j<team->shipList.selection->numShips;j++)
@@ -157,14 +155,10 @@ void aidCleanupUnusedTeams(void)
             }
 
             // delete this team
-            aitDestroy(aiCurrentAIPlayer,aiCurrentAIPlayer->guardTeams[i],TRUE);
-
-//            aiCurrentAIPlayer->numGuardTeams--;
-//            aiCurrentAIPlayer->guardTeams[i] = aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->numGuardTeams];
-//            aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->numGuardTeams] = NULL;
+            aitDestroy(aiCurrentAIPlayer, team, true);
             continue;       // check same index again
         }
-        i++;
+        it++;
     }
 }
 
@@ -225,16 +219,14 @@ void aidCheckSphereOfInfluence(void)
     //recall them
     //later have a chance of no recall depending on "personality"
     spherewithextra = aiCurrentAIPlayer->sphereofinfluence * 1.4;
-    for (i=0;i<aiCurrentAIPlayer->numGuardTeams;i++)
+    for( auto& team : aiCurrentAIPlayer->guardTeams )
     {
-        if (aitNumTeamShips(aiCurrentAIPlayer->guardTeams[i]))
+        if (aitNumTeamShips(team))
         {
-            distsq = aiuFindDistanceSquared(mothership_pos, aitApproxTeamPos(aiCurrentAIPlayer->guardTeams[i]));
+            distsq = aiuFindDistanceSquared(mothership_pos, aitApproxTeamPos(team));
 
             if (distsq > spherewithextra)
-            {
-                aitRecallGuardTeam(aiCurrentAIPlayer->guardTeams[i]);
-            }
+                aitRecallGuardTeam(team);
         }
     }
 }
@@ -264,21 +256,18 @@ void aidSetupResourceDefenseTeams(void)
         {
             if (!aitAnyTeamOfPlayerGuardingThisShip(aiCurrentAIPlayer,ship))
             {
-                if (aiCurrentAIPlayer->numGuardTeams < AIPLAYER_MAX_NUM_GUARDTEAMS)
+                if (aiCurrentAIPlayer->guardTeams.size() < AIPLAYER_MAX_NUM_GUARDTEAMS)
                 {
                 	SelectCommand selectone;
                     selectone.numShips = 1;
                     selectone.ShipPtr[0] = ship;
 
                     // create new defense team to guard ship
-                    aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->numGuardTeams] = aitCreate(DefenseTeam);
-                    aioCreateGuardShips(aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->numGuardTeams],&selectone);
-                    aiCurrentAIPlayer->numGuardTeams++;
+                    aiCurrentAIPlayer->guardTeams.emplace_back(aitCreate(DefenseTeam));
+                    aioCreateGuardShips(aiCurrentAIPlayer->guardTeams.back(), &selectone);
                 }
                 else
-                {
                     aiplayerLog(aiIndex,"Warning - Defenseman can't guard resource ship");
-                }
             }
         }
     }
@@ -294,12 +283,11 @@ void aidSetupResourceDefenseTeams(void)
 ----------------------------------------------------------------------------*/
 void aidCreateFastGuardTeam(void)
 {
-    aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->numGuardTeams] = aitCreate(DefenseTeam);
+    aiCurrentAIPlayer->guardTeams.emplace_back(aitCreate(DefenseTeam));
 
     //identify team as fast roving team
-    bitSet(aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->numGuardTeams]->teamFlags, FAST_ROVING_GUARD);
-    aioCreateFastRovingDefense(aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->numGuardTeams]);
-    aiCurrentAIPlayer->numGuardTeams++;
+    bitSet(aiCurrentAIPlayer->guardTeams.back()->teamFlags, FAST_ROVING_GUARD);
+    aioCreateFastRovingDefense(aiCurrentAIPlayer->guardTeams.back());
 }
 
 
@@ -313,12 +301,11 @@ void aidCreateFastGuardTeam(void)
 ----------------------------------------------------------------------------*/
 void aidCreateSlowGuardTeam(void)
 {
-    aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->numGuardTeams] = aitCreate(DefenseTeam);
+    aiCurrentAIPlayer->guardTeams.emplace_back(aitCreate(DefenseTeam));
 
     //identify team as slow roving team
-    bitSet(aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->numGuardTeams]->teamFlags, SLOW_ROVING_GUARD);
-    aioCreateSlowRovingDefense(aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->numGuardTeams]);
-    aiCurrentAIPlayer->numGuardTeams++;
+    bitSet(aiCurrentAIPlayer->guardTeams.back()->teamFlags, SLOW_ROVING_GUARD);
+    aioCreateSlowRovingDefense(aiCurrentAIPlayer->guardTeams.back());
 }
 
 
@@ -333,30 +320,22 @@ void aidSetupRovingDefenseTeams(void)
 {
     udword numDefendableShips = aidCountDefendableShips();
 
-    if (aiCurrentAIPlayer->numGuardTeams >= AID_ROVING_DEFENSE_LOW_COUNT_CUTOFF)
+    if (aiCurrentAIPlayer->guardTeams.size() >= AID_ROVING_DEFENSE_LOW_COUNT_CUTOFF)
     {
-        if (numDefendableShips/AID_ROVING_DEFENSE_LOW_COUNT_DIVISOR > aiCurrentAIPlayer->numGuardTeams)
+        if (numDefendableShips/AID_ROVING_DEFENSE_LOW_COUNT_DIVISOR > aiCurrentAIPlayer->guardTeams.size())
         {
-            if (num_is_odd(aiCurrentAIPlayer->numGuardTeams))
-            {
+            if (num_is_odd(aiCurrentAIPlayer->guardTeams.size()))
                 aidCreateSlowGuardTeam();
-            }
             else
-            {
                 aidCreateFastGuardTeam();
-            }
         }
     }
-    else if (numDefendableShips/AID_ROVING_DEFENSE_HIGH_COUNT_DIVISOR > aiCurrentAIPlayer->numGuardTeams)
+    else if (numDefendableShips/AID_ROVING_DEFENSE_HIGH_COUNT_DIVISOR > aiCurrentAIPlayer->guardTeams.size())
     {
-        if (num_is_odd(aiCurrentAIPlayer->numGuardTeams))
-        {
+        if (num_is_odd(aiCurrentAIPlayer->guardTeams.size()))
             aidCreateSlowGuardTeam();
-        }
         else
-        {
             aidCreateFastGuardTeam();
-        }
     }
 }
 
@@ -677,18 +656,15 @@ void aidMothershipDefense(void)
                     if (aiCurrentAIPlayer->mothershipdefteam == -1)
                     {
                         //create a mothership defense team
-                        newteam = aiCurrentAIPlayer->numGuardTeams;
-                        aiCurrentAIPlayer->guardTeams[newteam] = aitCreate(DefenseTeam);
-                        mdteam = aiCurrentAIPlayer->guardTeams[newteam];
+                        newteam = aiCurrentAIPlayer->guardTeams.size();
+                        aiCurrentAIPlayer->guardTeams.emplace_back(aitCreate(DefenseTeam));
+                        mdteam = aiCurrentAIPlayer->guardTeams.back();
                         aioCreateDefendMothership(mdteam);
 
                         aiCurrentAIPlayer->mothershipdefteam = newteam;
-                        aiCurrentAIPlayer->numGuardTeams++;
                     }
                     else
-                    {
                         mdteam = aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->mothershipdefteam];
-                    }
 
                     Ship = combatreserves->ShipPtr[i];
                     growSelectRemoveShip(&aiCurrentAIPlayer->newships, Ship);
@@ -747,10 +723,10 @@ void aidMothershipDefense(void)
 
             aitDestroy(aiCurrentAIPlayer,mdteam,TRUE);
 
-            if (aiCurrentAIPlayer->mothershipdefteam != aiCurrentAIPlayer->numGuardTeams)
-            {
-                aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->mothershipdefteam] = aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->numGuardTeams];
-            }
+            if (aiCurrentAIPlayer->mothershipdefteam != aiCurrentAIPlayer->guardTeams.size())
+            	//TODO: This will not work. Check what this fucking code really does
+                aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->mothershipdefteam] = aiCurrentAIPlayer->guardTeams[aiCurrentAIPlayer->guardTeams.size()];
+
             aiCurrentAIPlayer->mothershipdefteam = -1;
         }
     }
@@ -820,24 +796,22 @@ void aidDefenseManager(void)
 =============================================================================*/
 void aidTeamDied(AIPlayer *aiplayer, AITeam *team)
 {
-    sdword i;
+    size_t i = 0;
 
-    for (i=0;i<aiplayer->numGuardTeams;i++)
+    auto it = std::find
+    (
+    	aiplayer->guardTeams.begin(),
+    	aiplayer->guardTeams.end(),
+    	team
+    );
+
+    if( it != aiplayer->guardTeams.end() )
     {
-        if (team == aiplayer->guardTeams[i])
-        {
-			aiplayer->numGuardTeams--;
-			
-			//check if the mothership defense team will replace this dead team
-			if (aiplayer->mothershipdefteam == aiplayer->numGuardTeams)
-			{
-				aiplayer->mothershipdefteam = i;
-			}
+		//check if the mothership defense team will replace this dead team
+		if (aiplayer->mothershipdefteam == aiplayer->guardTeams.size())
+			aiplayer->mothershipdefteam = it - aiplayer->guardTeams.begin();
 
-            aiplayer->guardTeams[i] = aiplayer->guardTeams[aiplayer->numGuardTeams];
-				aiplayer->guardTeams[aiplayer->numGuardTeams] = NULL;
-
-        }
+    	aiplayer->guardTeams.erase(it);
     }
 }
 
@@ -874,7 +848,6 @@ bool aidShipDied(AIPlayer *aiplayer, ShipPtr ship)
 
 void aidInit(AIPlayer *aiplayer)
 {
-    aiplayer->numGuardTeams            = 0;
     aiplayer->shipsattackingmothership = NULL;
     aiplayer->mothershipdefteam        = -1;
     aiplayer->NumProxSensorsRequested  = 0;
@@ -907,14 +880,12 @@ void aidInit(AIPlayer *aiplayer)
 
 void aidClose(AIPlayer *aiplayer)
 {
-    sdword i;
-
 //    growSelectClose(&aiplayer->newdefenseships);
 
-    for (i=0;i<aiplayer->numGuardTeams;i++)
+    for( auto& team : aiplayer->guardTeams )
     {
-        dbgAssertOrIgnore(aiplayer->guardTeams[i]);
-        aitDestroy(aiplayer,aiplayer->guardTeams[i],false);
+        dbgAssertOrIgnore(team);
+        aitDestroy(aiplayer, team, false);
     }
 
     aiumemFree(aiplayer->shipsattackingmothership);
