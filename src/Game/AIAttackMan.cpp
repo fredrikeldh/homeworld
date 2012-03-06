@@ -1233,7 +1233,7 @@ void aiaInit(struct AIPlayer *aiplayer)
 
     aiplayer->reconTeam.reserve(AIPLAYER_NUM_RECONTEAMS);
 
-    aiplayer->harassTeam = NULL;
+    aiplayer->harassTeam = nullptr;
 
     aiplayer->attackTeam.reserve(AIPLAYER_NUM_ATTACKTEAMS);
 
@@ -1355,10 +1355,10 @@ void aiaClose(struct AIPlayer *aiplayer)
     {
     	aitDestroy(aiplayer, team, false);
     }
-    if (aiplayer->harassTeam != NULL)
+    if (aiplayer->harassTeam != (AITeam*)nullptr)
     {
-        aitDestroy(aiplayer, aiplayer->harassTeam,false);
-        aiplayer->harassTeam = NULL;
+        aitDestroy(aiplayer, aiplayer->harassTeam, false);
+        aiplayer->harassTeam = nullptr;
     }
 
     for (i=0;i<AIPLAYER_NUM_ATTACKTEAMS;i++)

@@ -160,7 +160,7 @@ typedef struct AIPlayer
 
     // attackman stuff
     //GrowSelection    newattackships;
-    struct AITeam *harassTeam;
+    SaveUnion<AITeam*, sdword> harassTeam;
     std::vector<SaveUnion<AITeam*, sdword>> reconTeam;
     std::vector<SaveUnion<AITeam*, sdword>> attackTeam;
     sdword         haveAttackedMothership;
