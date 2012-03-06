@@ -2,7 +2,7 @@
 # Import everything in global
 Import('*')
 
-sources = Glob("*.c")
+sources = Glob("*.cpp") + Glob("*.c")
 
 ignored = ["debugwnd.c", "wave.c", "win32glue.c", "TitanInterfaceC.stub.c"]
 
