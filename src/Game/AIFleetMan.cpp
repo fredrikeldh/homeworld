@@ -779,17 +779,17 @@ void aifTeamDied(AIPlayer *aiplayer,AITeam *team, bool removeAllReferencesToTeam
         }
     }
 
-    if (team->teamType == AttackTeam)
+    switch( team->teamType )
     {
+    case AttackTeam:
         aiaTeamDied(aiplayer,team);
-    }
-    else if (team->teamType == DefenseTeam)
-    {
-        aidTeamDied(aiplayer,team);
-    }
-    else if (team->teamType == ResourceTeam)
-    {
+        break;
+    case DefenseTeam:
+    	aidTeamDied(aiplayer,team);
+    	break;
+    case ResourceTeam:
         airTeamDied(aiplayer,team);
+        break;
     }
 }
 
