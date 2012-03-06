@@ -43,7 +43,7 @@ sdword aimProcessGuardShips(AITeam *team)
         }
         else
         {
-            aiplayerLog((aiIndex,"Warning: no ships to guard"));
+            aiplayerLog(aiIndex,"Warning: no ships to guard");
             thisMove->processing = TRUE;
         }
         return FALSE;
@@ -95,7 +95,7 @@ AITeamMove *aimCreateGuardShips(AITeam *team, SelectCommand *ships, bool8 wait, 
 
     newMove->params.guardShips.ships  = ships;
 
-//    aiplayerLog((aiIndex,"Created GuardShips Move"));
+//    aiplayerLog(aiIndex,"Created GuardShips Move");
 
     listAddNode(&(team->moves), &(newMove->listNode), newMove);
 
@@ -157,7 +157,7 @@ sdword aimProcessGetShips(AITeam *team)
         }
         else
         {
-            aiplayerLog((aiIndex, "Get Ships - can't build shiptype %i", thisMove->params.getShips.shipType));
+            aiplayerLog(aiIndex, "Get Ships - can't build shiptype %i", thisMove->params.getShips.shipType);
         }
 
         thisMove->processing = TRUE;
@@ -199,7 +199,7 @@ AITeamMove *aimCreateGetShipsNoAdd(AITeam *team, ShipType shiptype, sbyte num_sh
     newMove->params.getShips.priority = priority;
     newMove->params.getShips.doneVar = NULL;
 
-    aiplayerLog((aiIndex,"Created GetShips Move"));
+    aiplayerLog(aiIndex,"Created GetShips Move");
 */
     return newMove;
 }
@@ -267,7 +267,7 @@ AITeamMove *aimCreateVarWait(AITeam *team, char *varName, sdword value, bool8 wa
 */
     newMove->params.varWait.value     = value;
 
-//    aiplayerLog((aiIndex,"Created VarWait Move"));
+//    aiplayerLog(aiIndex,"Created VarWait Move");
 
     listAddNode(&(team->moves), &(newMove->listNode), newMove);
 
@@ -311,7 +311,7 @@ AITeamMove *aimCreateVarDec(AITeam *team, char *varName, bool8 wait, bool8 remov
         newMove->params.varDec.varName[AIVAR_LABEL_MAX_LENGTH] = 0;
         */
 
-//    aiplayerLog((aiIndex,"Created VarDec Move"));
+//    aiplayerLog(aiIndex,"Created VarDec Move");
 
     listAddNode(&(team->moves), &(newMove->listNode), newMove);
 
@@ -355,7 +355,7 @@ AITeamMove *aimCreateVarInc(AITeam *team, char *varName, bool8 wait, bool8 remov
         newMove->params.varInc.varName[AIVAR_LABEL_MAX_LENGTH] = 0;
         */
 
-//    aiplayerLog((aiIndex,"Created VarInc Move"));
+//    aiplayerLog(aiIndex,"Created VarInc Move");
 
     listAddNode(&(team->moves), &(newMove->listNode), newMove);
 
@@ -398,7 +398,7 @@ AITeamMove *aimCreateVarSet(AITeam *team, char *varName, sdword value, bool8 wai
 */
     newMove->params.varSet.value = value;
 
-//    aiplayerLog((aiIndex,"Created VarSet Move"));
+//    aiplayerLog(aiIndex,"Created VarSet Move");
 
     listAddNode(&(team->moves), &(newMove->listNode), newMove);
 
@@ -439,7 +439,7 @@ AITeamMove *aimCreateVarDestroy(AITeam *team, char *varName, bool8 wait, bool8 r
         newMove->params.varDestroy.varName[AIVAR_LABEL_MAX_LENGTH] = 0;
         */
 
-//    aiplayerLog((aiIndex,"Created VarDestroy Move"));
+//    aiplayerLog(aiIndex,"Created VarDestroy Move");
 
     listAddNode(&(team->moves), &(newMove->listNode), newMove);
 
@@ -519,14 +519,14 @@ void aimMoveSplitShipDied(AITeam *team, AITeamMove *move, ShipPtr ship)
             if (ship == move->params.movesplit.ships->ShipPtr[i])
             {
                 found = TRUE;
-                aiplayerLog((team->aiplayerowner->player->playerIndex, "Removed Ship from move split"));
+                aiplayerLog(team->aiplayerowner->player->playerIndex, "Removed Ship from move split");
             }
         }
 
         if (found)
         {
             move->params.movesplit.ships->numShips--;
-            aiplayerLog((team->aiplayerowner->player->playerIndex, "Removed Ship from move split"));
+            aiplayerLog(team->aiplayerowner->player->playerIndex, "Removed Ship from move split");
         }
     }
     else
@@ -547,7 +547,7 @@ void aimMoveSplitClose(AITeam *team, AITeamMove *move)
 {
     aiumemFree(move->params.movesplit.ships);
     aiumemFree(move->params.movesplit.destinations);
-    aiplayerLog((team->aiplayerowner->player->playerIndex, "%x Closed Move Split Move", team));
+    aiplayerLog(team->aiplayerowner->player->playerIndex, "%x Closed Move Split Move", team);
 }
 
 
@@ -584,7 +584,7 @@ void aimInterceptShipDied(AITeam *team, AITeamMove *move, ShipPtr ship)
 void aimFlankAttackClose(AITeam *team, struct AITeamMove *move)
 {
     aiumemFree(move->params.flankatt.targets);
-    aiplayerLog((team->aiplayerowner->player->playerIndex,"%x Closed Flank Attack Move", team));
+    aiplayerLog(team->aiplayerowner->player->playerIndex,"%x Closed Flank Attack Move", team);
 }
 
 
@@ -603,7 +603,7 @@ void aimFlankAttackShipDied(AITeam *team, struct AITeamMove *move, Ship *ship)
     {
         if (clRemoveShipFromSelection(move->params.advatt.targets, ship))
         {
-            aiplayerLog((team->aiplayerowner->player->playerIndex,"Removed Ship from Flanking Attack Target"));
+            aiplayerLog(team->aiplayerowner->player->playerIndex,"Removed Ship from Flanking Attack Target");
         }
     }
 }
@@ -619,7 +619,7 @@ void aimFlankAttackShipDied(AITeam *team, struct AITeamMove *move, Ship *ship)
 void aimAdvancedAttackClose(AITeam *team, struct AITeamMove *move)
 {
     aiumemFree(move->params.advatt.targets);
-    aiplayerLog((team->aiplayerowner->player->playerIndex,"%x Closed Advanced Attack Move", team));
+    aiplayerLog(team->aiplayerowner->player->playerIndex,"%x Closed Advanced Attack Move", team);
 }
 
 
@@ -652,7 +652,7 @@ void aimAdvancedAttackShipDied(AITeam *team, struct AITeamMove *move, Ship *ship
 //                  aimProcessAdvancedAttack(team)
                 }
 //            }
-            aiplayerLog((team->aiplayerowner->player->playerIndex,"Removed Ship from Advanced Attack Target"));
+            aiplayerLog(team->aiplayerowner->player->playerIndex,"Removed Ship from Advanced Attack Target");
         }
     }
 }
@@ -675,7 +675,7 @@ void aimMoveAttackShipDied(AITeam *team, struct AITeamMove *move, ShipPtr ship)
             {
                 move->params.moveatt.target_ship = NULL;
             }
-            aiplayerLog((team->aiplayerowner->player->playerIndex,"Removed Ship from MoveAttack move"));
+            aiplayerLog(team->aiplayerowner->player->playerIndex,"Removed Ship from MoveAttack move");
         }
     }
 }
@@ -690,7 +690,7 @@ void aimMoveAttackShipDied(AITeam *team, struct AITeamMove *move, ShipPtr ship)
 void aimMoveAttackClose(AITeam *team, struct AITeamMove *move)
 {
     aiumemFree(move->params.moveatt.targets);
-    aiplayerLog((team->aiplayerowner->player->playerIndex,"%x Closed Move Attack Move", team));
+    aiplayerLog(team->aiplayerowner->player->playerIndex,"%x Closed Move Attack Move", team);
 }
 
 
@@ -727,7 +727,7 @@ void aimHarassAttackShipDied(AITeam *team, struct AITeamMove *move, Ship *ship)
         {
             move->processing = FALSE;
         }
-        aiplayerLog((team->aiplayerowner->player->playerIndex,"Removed Ship from harass target"));
+        aiplayerLog(team->aiplayerowner->player->playerIndex,"Removed Ship from harass target");
     }
 }
 
@@ -762,13 +762,13 @@ void aimDockShipDied(AITeam *team, struct AITeamMove *move, Ship *ship)
     {
         if (clRemoveShipFromSelection(move->params.dock.shipsDocking, ship))
         {
-            aiplayerLog((team->aiplayerowner->player->playerIndex,"Removed Ship from dock structure"));
+            aiplayerLog(team->aiplayerowner->player->playerIndex,"Removed Ship from dock structure");
         }
     }
     if (move->params.dock.dockAt == ship)
     {
         move->params.dock.dockAt = NULL;
-        aiplayerLog((team->aiplayerowner->player->playerIndex,"Cleared dockAt Ship from dock structure"));
+        aiplayerLog(team->aiplayerowner->player->playerIndex,"Cleared dockAt Ship from dock structure");
     }
 }
 
@@ -801,7 +801,7 @@ void aimDefendMothershipShipDied(AITeam *team, struct AITeamMove *move, Ship *sh
     {
         memFree(move->params.defmoship.targets);
         move->params.defmoship.targets = NULL;
-        aiplayerLog((team->aiplayerowner->player->playerIndex,"Removed Ship from defend mothership structure"));
+        aiplayerLog(team->aiplayerowner->player->playerIndex,"Removed Ship from defend mothership structure");
         move->processing = FALSE;
         aimProcessDefendMothership(team);
     }
@@ -834,7 +834,7 @@ void aimSupportShipDied(AITeam *team, struct AITeamMove *move, Ship *ship)
 {
     if ((move->params.support.ships) && (clRemoveShipFromSelection(move->params.support.ships, ship)))
     {
-        aiplayerLog((team->aiplayerowner->player->playerIndex,"Removed Ship from Support move structure"));
+        aiplayerLog(team->aiplayerowner->player->playerIndex,"Removed Ship from Support move structure");
     }
 }
 
@@ -866,13 +866,13 @@ void aimShipReconShipDied(AITeam *team, struct AITeamMove *move, Ship *ship)
 {
     if (clRemoveShipFromSelection(move->params.shiprecon.ships, ship))
     {
-        aiplayerLog((team->aiplayerowner->player->playerIndex, "Removed Ship from ReconShip ships"));
+        aiplayerLog(team->aiplayerowner->player->playerIndex, "Removed Ship from ReconShip ships");
     }
 
     if ((move->params.shiprecon.foundships) &&
         (clRemoveShipFromSelection(move->params.shiprecon.foundships, ship)))
     {
-        aiplayerLog((team->aiplayerowner->player->playerIndex, "Removed Ship from ReconShips shipsfound"));
+        aiplayerLog(team->aiplayerowner->player->playerIndex, "Removed Ship from ReconShips shipsfound");
 
         if (!move->params.shiprecon.foundships->numShips)
         {
@@ -926,13 +926,13 @@ void aimSwarmAttackShipDied(AITeam *team, struct AITeamMove *move, ShipPtr ship)
 
     if (growSelectRemoveShip(&move->params.swarmatt.newSwarmers, ship))
     {
-        aiplayerLog((team->aiplayerowner->player->playerIndex, "Removed Ship from swarm attack new swarmers"));
+        aiplayerLog(team->aiplayerowner->player->playerIndex, "Removed Ship from swarm attack new swarmers");
         return;
     }
 
     if ((othertargets) && clRemoveShipFromSelection(othertargets, ship))
     {
-        aiplayerLog((team->aiplayerowner->player->playerIndex, "Removed Ship from swarm attack othertargets"));
+        aiplayerLog(team->aiplayerowner->player->playerIndex, "Removed Ship from swarm attack othertargets");
         if (!othertargets->numShips)
         {
             aiumemFree(move->params.swarmatt.othertargets);
@@ -942,7 +942,7 @@ void aimSwarmAttackShipDied(AITeam *team, struct AITeamMove *move, ShipPtr ship)
     if ((targets) &&
         (clRemoveShipFromSelection(targets, ship)))
     {
-        aiplayerLog((team->aiplayerowner->player->playerIndex, "Removed Ship from swarm attack targets"));
+        aiplayerLog(team->aiplayerowner->player->playerIndex, "Removed Ship from swarm attack targets");
         if (!targets->numShips)
         {
 //            aiumemFree(move->params.swarmatt.targets);
@@ -1001,7 +1001,7 @@ void aimSwarmDefenseShipDied(AITeam *team, struct AITeamMove *move, ShipPtr ship
 {
     if (growSelectRemoveShip(&move->params.swarmdef.newSwarmers, ship))
     {
-        aiplayerLog((team->aiplayerowner->player->playerIndex, "Removed Ship from swarm defense new swarmers"));
+        aiplayerLog(team->aiplayerowner->player->playerIndex, "Removed Ship from swarm defense new swarmers");
         return;
     }
 
@@ -1013,7 +1013,7 @@ void aimSwarmDefenseShipDied(AITeam *team, struct AITeamMove *move, ShipPtr ship
         }
         if (clRemoveShipFromSelection(move->params.swarmdef.guarding, ship))
         {
-            aiplayerLog((team->aiplayerowner->player->playerIndex, "Removed Ship from swarm defense guarding"));
+            aiplayerLog(team->aiplayerowner->player->playerIndex, "Removed Ship from swarm defense guarding");
             return;
         }
     }
@@ -1021,7 +1021,7 @@ void aimSwarmDefenseShipDied(AITeam *team, struct AITeamMove *move, ShipPtr ship
     if ((move->params.swarmdef.Pods) &&
         (clRemoveShipFromSelection(move->params.swarmdef.Pods, ship)))
     {
-        aiplayerLog((team->aiplayerowner->player->playerIndex, "Swarmer Pod killed"));
+        aiplayerLog(team->aiplayerowner->player->playerIndex, "Swarmer Pod killed");
     }
 }
 
@@ -1057,7 +1057,7 @@ void aimResourceVolumeResourceDied(AITeam *team, AITeamMove *move, Resource *res
     if ((move->params.resvolume.volResources) &&
         (clRemoveTargetFromSelection((SelectAnyCommand *)move->params.resvolume.volResources, (TargetPtr)resource)))
     {
-//        aiplayerLog((team->aiplayerowner->player->playerIndex, "Resource removed from volResources"));
+//        aiplayerLog(team->aiplayerowner->player->playerIndex, "Resource removed from volResources");
 
         if (!move->params.resvolume.volResources->numResources)
         {
@@ -1067,7 +1067,7 @@ void aimResourceVolumeResourceDied(AITeam *team, AITeamMove *move, Resource *res
     if ((move->params.resvolume.takenResources) &&
         (clRemoveTargetFromSelection((SelectAnyCommand *)move->params.resvolume.takenResources, (TargetPtr)resource)))
     {
-        aiplayerLog((team->aiplayerowner->player->playerIndex, "Resource removed from takenResources"));
+        aiplayerLog(team->aiplayerowner->player->playerIndex, "Resource removed from takenResources");
 
 //        if (!move->params.resvolume.takenResources->numResources)
 //        {
@@ -1136,7 +1136,7 @@ void aimCaptureShipDied(AITeam *team, AITeamMove *move, ShipPtr ship)
     {
         move->params.capture.ship = NULL;
 
-        aiplayerLog((aiIndex, "Captured ship died"));
+        aiplayerLog(aiIndex, "Captured ship died");
     }
 }
 
@@ -1173,7 +1173,7 @@ sdword aimProcessMove(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex,"Move Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Move Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -1187,7 +1187,7 @@ sdword aimProcessMove(AITeam *team)
         }
         else
         {
-            aiplayerLog((aiIndex, "Can't Move!!!"));
+            aiplayerLog(aiIndex, "Can't Move!!!");
             return FALSE;
         }
     }
@@ -1195,7 +1195,7 @@ sdword aimProcessMove(AITeam *team)
     {
         if (aitTeamIsFinishedMoving(team, thisMove->params.move.destination, AIM_DIST_MOVE_END))
         {
-//            aiplayerLog((aiIndex,"Moving team reached destination"));
+//            aiplayerLog(aiIndex,"Moving team reached destination");
             return TRUE;
         }
     }
@@ -1226,7 +1226,7 @@ sdword aimProcessMoveSplit(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex, "Move Split Move, Zero Sized Team"));
+        aiplayerLog(aiIndex, "Move Split Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -1280,7 +1280,7 @@ sdword aimProcessHyperspace(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex, "Hyperspace Move, Zero Sized Team"));
+        aiplayerLog(aiIndex, "Hyperspace Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -1299,7 +1299,7 @@ sdword aimProcessHyperspace(AITeam *team)
             aiCurrentAIPlayer->aifHyperSavings -= (sdword)cost;
             clWrapMpHyperspace(&universe.mainCommandLayer, (SelectCommand *)&hyperspacingShips, current_location, thisMove->params.move.destination);
 
-            aiplayerLog((aiIndex, "%x Hyperspacing NOW!  Cost = %i  Savings = %i", team, (sdword)cost, aiCurrentAIPlayer->aifHyperSavings));
+            aiplayerLog(aiIndex, "%x Hyperspacing NOW!  Cost = %i  Savings = %i", team, (sdword)cost, aiCurrentAIPlayer->aifHyperSavings);
         }
 
         thisMove->processing = TRUE;
@@ -1341,7 +1341,7 @@ sdword aimProcessIntercept(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex,"Intercept Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Intercept Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -1414,7 +1414,7 @@ sdword aimProcessMoveTo(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex,"Move To Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Move To Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -1438,7 +1438,7 @@ sdword aimProcessMoveTo(AITeam *team)
                 if (universe.totaltimeelapsed - thisMove->params.moveTo.timer > thisMove->params.moveTo.limiter)
                 {
                     aiuWrapHalt(team->shipList.selection);
-//                    aiplayerLog((aiIndex,"Move To team reached timed destination"));
+//                    aiplayerLog(aiIndex,"Move To team reached timed destination");
                     return TRUE;
                 }
                 break;
@@ -1447,12 +1447,12 @@ sdword aimProcessMoveTo(AITeam *team)
                 if (fsqrt(aiuFindDistanceSquared(current_location, thisMove->params.moveTo.source)) > thisMove->params.moveTo.limiter)
                 {
                     aiuWrapHalt(team->shipList.selection);
-//                    aiplayerLog((aiIndex,"Move To team reached distance destination"));
+//                    aiplayerLog(aiIndex,"Move To team reached distance destination");
                     return TRUE;
                 }
                 break;
             default:
-                aiplayerLog((aiIndex,"Unknown Move To type"));
+                aiplayerLog(aiIndex,"Unknown Move To type");
         }
     }
     return FALSE;
@@ -1472,7 +1472,7 @@ sdword aimProcessCountShips(AITeam *team)
 {
     //just a placeholder for now
     //later maybe actually count ships nearby
-    aiplayerLog((aiIndex,"Counting Ships... 1, 2, 3, 4..."));
+    aiplayerLog(aiIndex,"Counting Ships... 1, 2, 3, 4...");
     return TRUE;
 }
 
@@ -1494,7 +1494,7 @@ sdword aimProcessFlankAttack(AITeam *team)
     if (team->shipList.selection->numShips == 0)
     {
         //no ships to do anything with, finish move
-        aiplayerLog((aiIndex,"Flank Attack Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Flank Attack Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -1555,7 +1555,7 @@ sdword aimProcessMoveAttack(AITeam *team)
     if (teamShips->numShips == 0)
     {
         //team is dead
-        aiplayerLog((aiIndex,"Move Attack Move, Zero size team"));
+        aiplayerLog(aiIndex,"Move Attack Move, Zero size team");
         return TRUE;
     }
 
@@ -1632,7 +1632,7 @@ sdword aimProcessAdvancedAttack(AITeam *team)
     if (team->shipList.selection->numShips == 0)
     {
         //no ships to do anything with, move done
-        aiplayerLog((aiIndex,"Advanced Attack Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Advanced Attack Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -1707,7 +1707,7 @@ sdword aimProcessHarassAttack(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex,"Harass Attack Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Harass Attack Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -1788,7 +1788,7 @@ sdword aimProcessHarassAttack(AITeam *team)
                 thisMove->params.harass.target = target.ShipPtr[0];
                 thisMove->processing = FALSE;
                 aitAddmoveBeforeAndMakeCurrent(team, newMove, thisMove);
-                aiplayerLog((aiIndex,"Harassing!  Boom! Boom! Bang! Bang!"));
+                aiplayerLog(aiIndex,"Harassing!  Boom! Boom! Bang! Bang!");
             }
         }
         return FALSE;
@@ -1816,7 +1816,7 @@ sdword aimProcessDock(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex,"Dock Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Dock Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -1859,7 +1859,7 @@ sdword aimProcessDock(AITeam *team)
         }
 
         aiuWrapDock(team->shipList.selection, dockType, dockAt);
-        aiplayerLog((aiIndex,"Docking for dockType %d",dockType));
+        aiplayerLog(aiIndex,"Docking for dockType %d",dockType);
 
         thisMove->params.dock.shipsDocking = selectMemDupSelection(team->shipList.selection, "dockdup", 0);
         thisMove->processing = TRUE;
@@ -1906,7 +1906,7 @@ sdword aimProcessDefendMothership(AITeam *team)
     //(later)  I hope!  :-)
     if (team->shipList.selection->numShips == 0)
     {
-//        aiplayerLog((aiIndex,"Defend Mothership Move, Zero size team"));
+//        aiplayerLog(aiIndex,"Defend Mothership Move, Zero size team");
         return FALSE;
     }
 
@@ -1946,7 +1946,7 @@ sdword aimProcessPatrolMove(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex,"Patrol Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Patrol Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -2039,7 +2039,7 @@ sdword aimProcessActivePatrol(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex,"Active Patrol Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Active Patrol Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -2079,7 +2079,7 @@ sdword aimProcessTempGuard(AITeam *team)
     if (team->shipList.selection->numShips == 0)
     {
         bitClear(team->teamFlags, TEAM_TempGuard);
-        aiplayerLog((aiIndex,"Temp Guard Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Temp Guard Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -2091,7 +2091,7 @@ sdword aimProcessTempGuard(AITeam *team)
     // if the attack order has been given
     if (aivarValueGet(aivarFind(aiCurrentAIPlayer->attackVarLabel)) <= -1)
     {
-        aiplayerLog((aiIndex,"%x, TempGuard: attackVarLabel set to -1, leaving guard", team));
+        aiplayerLog(aiIndex,"%x, TempGuard: attackVarLabel set to -1, leaving guard", team);
         bitClear(team->teamFlags, TEAM_TempGuard);
         return TRUE;
     }
@@ -2170,7 +2170,7 @@ sdword aimProcessReinforce(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex,"Dock Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Dock Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -2212,7 +2212,7 @@ sdword aimProcessReinforce(AITeam *team)
                     aiuWrapFormation(reinforceTeam->shipList.selection, reinforceTeam->kasFormation);
                 }
             }
-            aiplayerLog((aiIndex,"Reinforcing move #%i", reinforceMove->type));
+            aiplayerLog(aiIndex,"Reinforcing move #%i", reinforceMove->type);
         }
 
         //note: the reinforce move does not deal with special casees yet.
@@ -2279,7 +2279,7 @@ sdword aimProcessSupport(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex,"Support Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Support Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -2309,7 +2309,7 @@ sdword aimProcessSupport(AITeam *team)
     }
     else
     {
-        aiplayerLog((aiIndex,"AI: Random Support Standoff Point"));
+        aiplayerLog(aiIndex,"AI: Random Support Standoff Point");
 
         //generate a random standoff point and store the angle (?) to keep consistency
     }
@@ -2335,7 +2335,7 @@ sdword aimProcessActiveRecon(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex,"Active Recon Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Active Recon Move, Zero Sized Team");
         return FALSE;
     }
 
@@ -2462,7 +2462,7 @@ sdword aimProcessShipRecon(AITeam *team)
 
     if (!teamships->numShips)
     {
-        aiplayerLog((aiIndex,"Ship Recon Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Ship Recon Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -2537,7 +2537,7 @@ sdword aimProcessArmada(AITeam *team)
     if (!team->shipList.selection->numShips)
     {
         //all ships are dead.  R.I.P.
-        aiplayerLog((aiIndex,"Armada Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Armada Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -2558,12 +2558,12 @@ sdword aimProcessArmada(AITeam *team)
                 (hyperspace.numShips) &&
                 (aiCurrentAIPlayer->aifHyperSavings > 0))
             {
-                aiplayerLog((aiIndex, "%x, Armada: Creating Hyperspace Flank Attack", team));
+                aiplayerLog(aiIndex, "%x, Armada: Creating Hyperspace Flank Attack", team);
                 newMove = aimCreateFlankAttackNoAdd(team, selectMemDupSelection(aiCurrentAIPlayer->aiaArmada.targets, "duppfah", 0), TRUE, /*SAME_FORMATION, */TRUE, TRUE);
             }
             else
             {
-                aiplayerLog((aiIndex, "%x, Armada: Creating Normal Flank Attack", team));
+                aiplayerLog(aiIndex, "%x, Armada: Creating Normal Flank Attack", team);
                 newMove = aimCreateFlankAttackNoAdd(team, selectMemDupSelection(aiCurrentAIPlayer->aiaArmada.targets, "duppfan", 0), FALSE, /*SAME_FORMATION, */TRUE, TRUE);
             }
 
@@ -2577,7 +2577,7 @@ sdword aimProcessArmada(AITeam *team)
          //later must flesh this one out!!!
         if (aiCurrentAIPlayer->aiaArmada.targets)
         {
-            aiplayerLog((aiIndex, "%x, Armada: Still targets %i left, redoing processing", team, aiCurrentAIPlayer->aiaArmada.targets->numShips));
+            aiplayerLog(aiIndex, "%x, Armada: Still targets %i left, redoing processing", team, aiCurrentAIPlayer->aiaArmada.targets->numShips);
             thisMove->processing = FALSE;
         }
     }
@@ -2602,7 +2602,7 @@ sdword aimProcessControlResources(AITeam *team)
 
     if (!team->shipList.selection->numShips)
     {
-        aiplayerLog((aiIndex, "Control Resources Move, Zero ships"));
+        aiplayerLog(aiIndex, "Control Resources Move, Zero ships");
         return TRUE;
     }
 
@@ -2680,7 +2680,7 @@ sdword aimProcessSwarmAttack(AITeam *team)
             //remove the ship from the current team
             growSelectRemoveShipIndex(&team->shipList, i);
             growSelectRemoveShip(&thisMove->params.swarmatt.newSwarmers, ship);
-            //aiplayerLog((1, "Attack %x: Ship moved from offense to defense", team));
+            //aiplayerLog(1, "Attack %x: Ship moved from offense to defense", team);
 
 //            aitCheckShips(team->cooperatingTeam, ship);
         }
@@ -3110,7 +3110,7 @@ sdword aimProcessResourceVolume(AITeam *team)
         thisMove->params.resvolume.volResources = aiuFindResourcesInVolume(thisMove->params.resvolume.volume);
         thisMove->params.resvolume.takenResources = (ResourceSelection *)memAlloc(sizeofSelectCommand(10), "takeRes", 0);
         thisMove->params.resvolume.takenResources->numResources = 0;
-        aiplayerLog((aiIndex, "Resetting volResources and takenResources"));
+        aiplayerLog(aiIndex, "Resetting volResources and takenResources");
 //        thisMove->processing = TRUE;
     }
 
@@ -3135,7 +3135,7 @@ sdword aimProcessResourceVolume(AITeam *team)
                     //maybe this isn't the best way to do it... what if the resource collector gets killed?
                     selSelectionAddSingleShip((MaxSelection *)thisMove->params.resvolume.takenResources, (ShipPtr)resource);
                     bitSet(ship->specialFlags, SPECIAL_Resourcing);
-//                    aiplayerLog((aiIndex, "Resourcer %i harvesting best fit", i));
+//                    aiplayerLog(aiIndex, "Resourcer %i harvesting best fit", i);
                 }
                 else
                 {
@@ -3144,14 +3144,14 @@ sdword aimProcessResourceVolume(AITeam *team)
                     {
                         selone.ShipPtr[0] = ship;
                         aiuWrapDock(&selone, DOCK_TO_DEPOSIT_RESOURCES, NULL);
-//                        aiplayerLog((aiIndex, "Resourcer %i docking", i));
+//                        aiplayerLog(aiIndex, "Resourcer %i docking", i);
                     }
                     else if (biggestResource)
                     {
                         selone.ShipPtr[0] = ship;
                         aiuWrapCollectResource(&selone, biggestResource);
                         bitSet(ship->specialFlags, SPECIAL_Resourcing);
-//                        aiplayerLog((aiIndex, "Resourcer %i harvesting biggest", i));
+//                        aiplayerLog(aiIndex, "Resourcer %i harvesting biggest", i);
                     }
                 }
 
@@ -3166,7 +3166,7 @@ sdword aimProcessResourceVolume(AITeam *team)
                 {
                     selone.ShipPtr[0] = ship;
                     aiuWrapDock(&selone, DOCK_TO_DEPOSIT_RESOURCES, NULL);
-//                    aiplayerLog((aiIndex, "Resourcer %i docking", i));
+//                    aiplayerLog(aiIndex, "Resourcer %i docking", i);
                 }
                 bitClear(ship->specialFlags, SPECIAL_Finished_Resource);
             }
@@ -3174,7 +3174,7 @@ sdword aimProcessResourceVolume(AITeam *team)
     }
     else
     {
-//        aiplayerLog((aiIndex, "Finished Resourcing Blob"));
+//        aiplayerLog(aiIndex, "Finished Resourcing Blob");
         return TRUE;
     }
 
@@ -3237,7 +3237,7 @@ sdword aimProcessMothershipMove(AITeam *team)
 
     if (!aitNumTeamShips(team))
     {
-        aiplayerLog((aiIndex, "Closing Mothership Move"));
+        aiplayerLog(aiIndex, "Closing Mothership Move");
         return TRUE;
     }
 
@@ -3381,7 +3381,7 @@ sdword aimProcessActiveMine(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex, "Active Mine Move, Zero Sized Team"));
+        aiplayerLog(aiIndex, "Active Mine Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -3434,7 +3434,7 @@ sdword aimProcessMineVolume(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex, "Mine Move, Zero Sized Team"));
+        aiplayerLog(aiIndex, "Mine Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -3513,7 +3513,7 @@ sdword aimProcessSpecialDefense(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex, "Special Defense Move - Zero sized team"));
+        aiplayerLog(aiIndex, "Special Defense Move - Zero sized team");
         return TRUE;
     }
 
@@ -3576,7 +3576,7 @@ AITeamMove *aimCreateMoveTeamNoAdd(AITeam *team, vector destination, TypeOfForma
     InitNewMove(newMove,MOVE_MOVETEAM,wait,remove,formation,Neutral,aimProcessMove,NULL,NULL);
     newMove->params.move.destination = destination;
 
-//    aiplayerLog((aiIndex,"Created Move Team Move"));
+//    aiplayerLog(aiIndex,"Created Move Team Move");
 
     return newMove;
 }
@@ -3621,7 +3621,7 @@ AITeamMove *aimCreateMoveTeamIndexNoAdd(AITeam *team, vector destination, udword
     newMove->params.move.destination = destination;
     newMove->params.move.index       = index;
 
-//    aiplayerLog((aiIndex,"Created Move Team Index Move"));
+//    aiplayerLog(aiIndex,"Created Move Team Index Move");
 
     return newMove;
 }
@@ -3664,7 +3664,7 @@ AITeamMove *aimCreateMoveTeamSplitNoAdd(AITeam *team, SelectCommand *ships,
     newMove->params.movesplit.destinations = destinations;
     newMove->params.movesplit.ships = ships;
 
-    aiplayerLog((aiIndex,"Created Move Split Move"));
+    aiplayerLog(aiIndex,"Created Move Split Move");
 
     return newMove;
 }
@@ -3717,7 +3717,7 @@ AITeamMove *aimCreateHyperspaceNoAdd(AITeam *team, vector destination, TypeOfFor
     InitNewMove(newMove,MOVE_HYPERSPACE,wait,remove,formation,Neutral,aimProcessHyperspace,NULL,NULL);
     newMove->params.move.destination = destination;
 
-    aiplayerLog((aiIndex,"%x Created Hyperspace Move", team));
+    aiplayerLog(aiIndex,"%x Created Hyperspace Move", team);
 
     return newMove;
 }
@@ -3762,7 +3762,7 @@ AITeamMove *aimCreateInterceptNoAdd(AITeam *team, ShipPtr ship, real32 interval,
     newMove->params.intercept.interval = interval;
     newMove->params.intercept.next_int = 0.0;
 
-//    aiplayerLog((aiIndex,"Created Intercept Move"));
+//    aiplayerLog(aiIndex,"Created Intercept Move");
 
     return newMove;
 }
@@ -3822,7 +3822,7 @@ AITeamMove *aimCreateMoveToNoAdd(AITeam *team, vector destination, real32 limite
     newMove->params.moveTo.limiter     = limiter;
     newMove->params.moveTo.type        = type;
 
-//    aiplayerLog((aiIndex,"Created Moveto Move"));
+//    aiplayerLog(aiIndex,"Created Moveto Move");
 
     return newMove;
 }
@@ -3859,7 +3859,7 @@ AITeamMove *aimCreateCountShipsNoAdd(AITeam *team, bool8 wait, bool8 remove)
 
     InitNewMove(newMove,MOVE_COUNTSHIPS,wait,remove,formation,Neutral,aimProcessCountShips,NULL,NULL);
 
-//    aiplayerLog((aiIndex,"Created Count Ships Move"));
+//    aiplayerLog(aiIndex,"Created Count Ships Move");
 
     return newMove;
 }
@@ -3907,7 +3907,7 @@ AITeamMove *aimCreateFlankAttackNoAdd(AITeam *team, SelectCommand *targets, bool
     newMove->params.flankatt.targets    = targets;
     newMove->params.flankatt.hyperspace = hyperspace;
 
-    aiplayerLog((aiIndex,"%x Created Flanking Attack Move", team));
+    aiplayerLog(aiIndex,"%x Created Flanking Attack Move", team);
 
     return newMove;
 }
@@ -3963,7 +3963,7 @@ AITeamMove *aimCreateAdvancedAttackNoAdd(AITeam *team, SelectCommand *targets, T
     newMove->params.advatt.targets     = targets;
     newMove->params.advatt.target_ship = NULL;
 
-//    aiplayerLog((aiIndex,"Created Advanced Attack Move"));
+//    aiplayerLog(aiIndex,"Created Advanced Attack Move");
 
     return newMove;
 }
@@ -4093,7 +4093,7 @@ AITeamMove *aimCreateHarassAttack(AITeam *team, bool8 wait, bool8 remove)
     InitNewMove(newMove,MOVE_HARASSATTACK,wait,remove,formation,Neutral,aimProcessHarassAttack,aimHarassAttackShipDied,NULL);
     newMove->params.harass.target = NULL;
 
-//    aiplayerLog((aiIndex,"Created Harass Attack Move"));
+//    aiplayerLog(aiIndex,"Created Harass Attack Move");
 
     listAddNode(&(team->moves), &(newMove->listNode), newMove);
 
@@ -4138,7 +4138,7 @@ AITeamMove *aimCreateDockNoAdd(AITeam *team, sdword dockmoveFlags, ShipPtr dockA
     newMove->params.dock.dockmoveFlags = dockmoveFlags;
     newMove->params.dock.dockAt = dockAt;
 
-//    aiplayerLog((aiIndex,"Created Dock Move"));
+//    aiplayerLog(aiIndex,"Created Dock Move");
 
     return newMove;
 }
@@ -4201,7 +4201,7 @@ AITeamMove *aimCreateDefendMothershipNoAdd(AITeam *team, bool8 wait, bool8 remov
     InitNewMove(newMove, MOVE_DEFMOSHIP, wait, remove, formation,Neutral,aimProcessDefendMothership, aimDefendMothershipShipDied, aimDefendMothershipClose);
     newMove->params.defmoship.targets = NULL;
 
-//    aiplayerLog((aiIndex,"Created Defend Mothership Move"));
+//    aiplayerLog(aiIndex,"Created Defend Mothership Move");
 
     return newMove;
 }
@@ -4252,7 +4252,7 @@ AITeamMove *aimCreatePatrolMoveNoAdd(AITeam *team, Path *path, udword startIndex
     newMove->params.patrolmove.loopMove   = NULL;
     newMove->params.patrolmove.startIndex = startIndex;
 
-//    aiplayerLog((aiIndex,"Created Patrol Move Move"));
+//    aiplayerLog(aiIndex,"Created Patrol Move Move");
 
     return newMove;
 }
@@ -4317,7 +4317,7 @@ AITeamMove *aimCreateActivePatrolNoAdd(AITeam *team, udword patroltype, bool8 wa
     InitNewMove(newMove, MOVE_ACTIVEPATROL, wait, remove, formation,Neutral,aimProcessActivePatrol, NULL, NULL);
     newMove->params.activepatrol.patroltype = patroltype;
 
-//    aiplayerLog((aiIndex,"Created Active Patrol Move"));
+//    aiplayerLog(aiIndex,"Created Active Patrol Move");
 
     return newMove;
 }
@@ -4354,7 +4354,7 @@ AITeamMove *aimCreateTempGuardNoAdd(AITeam *team, TypeOfFormation formation, Tac
 
     InitNewMove(newMove, MOVE_TEMPGUARD, wait, remove, formation,tactics,aimProcessTempGuard, NULL, NULL);
 
-//    aiplayerLog((aiIndex,"Created Temp Guard Move"));
+//    aiplayerLog(aiIndex,"Created Temp Guard Move");
 
     return newMove;
 }
@@ -4392,7 +4392,7 @@ AITeamMove *aimCreateReinforceNoAdd(AITeam *team, AITeam *reinforceteam, TypeOfF
     InitNewMove(newMove, MOVE_REINFORCE, wait, remove, formation,tactics,aimProcessReinforce, NULL, NULL);
     newMove->params.reinforce.reinforceteam = reinforceteam;
 
-//    aiplayerLog((aiIndex,"Created Reinforce Move"));
+//    aiplayerLog(aiIndex,"Created Reinforce Move");
 
     return newMove;
 }
@@ -4450,7 +4450,7 @@ AITeamMove *aimCreateSupportNoAdd(AITeam *team, SelectCommand *ships,
                 aimProcessSupport, aimSupportShipDied, aimSupportClose);
     newMove->params.support.ships = ships;
 
-//    aiplayerLog((aiIndex,"Created Support Move"));
+//    aiplayerLog(aiIndex,"Created Support Move");
 
     return newMove;
 }
@@ -4504,7 +4504,7 @@ AITeamMove *aimCreateActiveReconNoAdd(AITeam *team, bool EnemyRecon, TypeOfForma
     newMove->params.activerecon.outwards   = TRUE;
     newMove->params.activerecon.enemyrecon = EnemyRecon;
 
-//    aiplayerLog((aiIndex,"Created Active Recon Move"));
+//    aiplayerLog(aiIndex,"Created Active Recon Move");
 
     return newMove;
 }
@@ -4544,7 +4544,7 @@ AITeamMove *aimCreateShipReconNoAdd(AITeam *team, SelectCommand *ships, TypeOfFo
     newMove->params.shiprecon.ships      = ships;
     newMove->params.shiprecon.foundships = NULL;
 
-//    aiplayerLog((aiIndex, "Created Ship Recon Move"));
+//    aiplayerLog(aiIndex, "Created Ship Recon Move");
 
     return newMove;
 }
@@ -4591,7 +4591,7 @@ AITeamMove *aimCreateArmadaNoAdd(AITeam *team, TypeOfFormation formation, Tactic
 
     InitNewMove(newMove, MOVE_ARMADA, wait, remove, formation, tactics, aimProcessArmada, NULL, NULL);
 
-    aiplayerLog((aiIndex, "%x Created Armada Move", team));
+    aiplayerLog(aiIndex, "%x Created Armada Move", team);
 
     return newMove;
 }
@@ -4633,7 +4633,7 @@ AITeamMove *aimCreateControlResourcesNoAdd(AITeam *team, SelectCommand *ships, b
 
     newMove->params.rescontrol.ships = ships;
 
-//    aiplayerLog((aiIndex, "Created Control Resources Move"));
+//    aiplayerLog(aiIndex, "Created Control Resources Move");
 
     return newMove;
 }
@@ -4684,7 +4684,7 @@ AITeamMove *aimCreateSwarmAttackNoAdd(AITeam *team, bool8 wait, bool8 remove)
     newMove->params.swarmatt.targets      = NULL;
     newMove->params.swarmatt.othertargets = NULL;
 
-//    aiplayerLog((aiIndex, "Created Swarm Attack Move"));
+//    aiplayerLog(aiIndex, "Created Swarm Attack Move");
 
     return newMove;
 }
@@ -4742,7 +4742,7 @@ AITeamMove *aimCreateSwarmDefenseNoAdd(AITeam *team, SelectCommand *pods, bool8 
     newMove->params.swarmdef.full_refuel = FALSE;
     newMove->params.swarmdef.full_attack = FALSE;
 
-//    aiplayerLog((aiIndex, "Created Swarm Defense Move"));
+//    aiplayerLog(aiIndex, "Created Swarm Defense Move");
 
     return newMove;
 }
@@ -4794,7 +4794,7 @@ AITeamMove *aimCreateSwarmPodNoAdd(AITeam *team, bool8 wait, bool8 remove)
     newMove->params.swarmpod.first_attack = FALSE;
     newMove->params.swarmpod.attack_delay = 0;
 
-//    aiplayerLog((aiIndex, "Created Swarm Pod Move"));
+//    aiplayerLog(aiIndex, "Created Swarm Pod Move");
 
     return newMove;
 }
@@ -4839,7 +4839,7 @@ AITeamMove *aimCreateResourceVolumeNoAdd(AITeam *team, Volume volume, bool8 stri
     newMove->params.resvolume.takenResources = NULL;
     newMove->params.resvolume.strictVolume   = strictVolume;
 
-//    aiplayerLog((aiIndex, "Created Resource Volume Move"));
+//    aiplayerLog(aiIndex, "Created Resource Volume Move");
 
     return newMove;
 }
@@ -4887,7 +4887,7 @@ AITeamMove *aimCreateActiveResourceNoAdd(AITeam *team, bool8 wait, bool8 remove)
     InitNewMove(newMove, MOVE_ACTIVERES, wait, remove, NO_FORMATION, Neutral,
                 aimProcessActiveResource, NULL, NULL);
 
-//    aiplayerLog((aiIndex, "Created Active Resource Move"));
+//    aiplayerLog(aiIndex, "Created Active Resource Move");
 
     return newMove;
 }
@@ -4923,7 +4923,7 @@ AITeamMove *aimCreateMothershipMoveNoAdd(AITeam *team, bool8 wait, bool8 remove)
     InitNewMove(newMove, MOVE_MOTHERSHIP, wait, remove, NO_FORMATION, Neutral,
                 aimProcessMothershipMove, aimMothershipMoveShipDied, NULL);
 
-//    aiplayerLog((aiIndex, "Created Mothership Move"));
+//    aiplayerLog(aiIndex, "Created Mothership Move");
 
     return newMove;
 }
@@ -4962,7 +4962,7 @@ AITeamMove *aimCreateCaptureNoAdd(AITeam *team, ShipPtr ship, bool8 wait, bool8 
                 aimProcessCapture, aimCaptureShipDied, NULL);
     newMove->params.capture.ship = ship;
 
-//    aiplayerLog((aiIndex, "Created Capture Move"));
+//    aiplayerLog(aiIndex, "Created Capture Move");
 
     return newMove;
 }
@@ -4999,7 +4999,7 @@ AITeamMove *aimCreateActiveCaptureNoAdd(AITeam *team, bool8 wait, bool8 remove)
     InitNewMove(newMove, MOVE_ACTIVECAPTURE, wait, remove, NO_FORMATION, Neutral,
                 aimProcessActiveCapture, NULL, NULL);
 
-//    aiplayerLog((aiIndex, "Created Active Capture"));
+//    aiplayerLog(aiIndex, "Created Active Capture");
 
     return newMove;
 }
@@ -5035,7 +5035,7 @@ AITeamMove *aimCreateActiveMineNoAdd(AITeam *team, bool8 wait, bool8 remove)
     InitNewMove(newMove, MOVE_ACTIVEMINE, wait, remove, NO_FORMATION, Neutral,
                 aimProcessActiveMine, NULL, NULL);
 
-//    aiplayerLog((aiIndex, "Created Active Mine"));
+//    aiplayerLog(aiIndex, "Created Active Mine");
 
     return newMove;
 }
@@ -5072,7 +5072,7 @@ AITeamMove *aimCreateMineVolumeNoAdd(AITeam *team, Volume volume, bool8 wait, bo
                 aimProcessMineVolume, NULL, NULL);
     newMove->params.minevolume.volume = volume;
 
-//    aiplayerLog((aiIndex, "Created Mine Volume"));
+//    aiplayerLog(aiIndex, "Created Mine Volume");
 
     return newMove;
 }
@@ -5107,7 +5107,7 @@ AITeamMove *aimCreateSpecialDefenseNoAdd(AITeam *team, bool8 wait, bool8 remove)
     InitNewMove(newMove, MOVE_SPECIALDEFENSE, wait, remove, NO_FORMATION, Neutral,
                 aimProcessSpecialDefense, NULL, NULL);
 
-//    aiplayerLog((aiIndex, "Created Special Defense"));
+//    aiplayerLog(aiIndex, "Created Special Defense");
 
     return newMove;
 }
@@ -5142,7 +5142,7 @@ AITeamMove *aimCreateDeleteTeamNoAdd(AITeam *team)
 
     InitNewMove(newMove, MOVE_DELETETEAM, TRUE, TRUE, SAME_FORMATION, Neutral, NULL, NULL, NULL);
 
-//    aiplayerLog((aiIndex, "Created Delete Team Move"));
+//    aiplayerLog(aiIndex, "Created Delete Team Move");
 
     return newMove;
 }
@@ -5195,7 +5195,7 @@ sdword aimProcessGuardCooperatingTeam(AITeam *team)
     }
     else
     {
-        aiplayerLog((aiIndex,"Warning: no ships to guard"));
+        aiplayerLog(aiIndex,"Warning: no ships to guard");
     }
     thisMove->processing = TRUE;
 
@@ -5209,7 +5209,7 @@ AITeamMove *aimCreateGuardCooperatingTeamNoAdd(AITeam *team, bool8 wait, bool8 r
 
     InitNewMove(newMove,MOVE_GUARDCOOPTEAM,wait,remove,formation,Neutral,aimProcessGuardCooperatingTeam,NULL,NULL);
 
-//    aiplayerLog((aiIndex,"Created GuardCoop Move"));
+//    aiplayerLog(aiIndex,"Created GuardCoop Move");
 
     return newMove;
 }
@@ -5286,7 +5286,7 @@ AITeamMove *aimCreateLaunchNoAdd(AITeam *team, bool8 wait, bool8 remove)
 
     InitNewMove(newMove,MOVE_LAUNCH,wait,remove,SAME_FORMATION,Neutral,aimProcessLaunch,NULL,NULL);
 
-//    aiplayerLog((aiIndex,"Created Launch Move"));
+//    aiplayerLog(aiIndex,"Created Launch Move");
 
     return newMove;
 }
@@ -5328,7 +5328,7 @@ sdword aimProcessFormation(AITeam *team)
     }
     else
     {
-        aiplayerLog((aiIndex,"Warning: no ships to put in formation"));
+        aiplayerLog(aiIndex,"Warning: no ships to put in formation");
     }
     thisMove->processing = TRUE;
 
@@ -5349,7 +5349,7 @@ AITeamMove *aimCreateFormationNoAdd(AITeam *team, TypeOfFormation formationtype,
 
     newMove->params.formation.formationtype = formationtype;
 
-//    aiplayerLog((aiIndex,"Created Formation Move"));
+//    aiplayerLog(aiIndex,"Created Formation Move");
 
     return newMove;
 }
@@ -5384,7 +5384,7 @@ AITeamMove *aimCreateMoveDone(AITeam *team, bool8 wait, bool8 remove)
 
     InitNewMove(newMove,MOVE_DONE,wait,remove,formation,Neutral,aimProcessMoveDone,NULL,NULL);
 
-//    aiplayerLog((aiIndex,"Created Move Done Move"));
+//    aiplayerLog(aiIndex,"Created Move Done Move");
 
     listAddNode(&(team->moves), &(newMove->listNode), newMove);
 
@@ -5404,7 +5404,7 @@ sdword aimProcessAttack(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex,"Attack Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Attack Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -5419,7 +5419,7 @@ sdword aimProcessAttack(AITeam *team)
         }
         else
         {
-            aiplayerLog((aiIndex,"Warning: no ships to attack"));
+            aiplayerLog(aiIndex,"Warning: no ships to attack");
             thisMove->processing = TRUE;
         }
 
@@ -5472,7 +5472,7 @@ AITeamMove *aimCreateAttackNoAdd(AITeam *team, SelectCommand *targets,TypeOfForm
     InitNewMove(newMove,MOVE_ATTACK,wait,remove,formation,Neutral,aimProcessAttack,aimShipDiedAttack,aimCloseAttack);
     newMove->params.attack.ships      = targets;
 
-//    aiplayerLog((aiIndex,"Created Attack Move"));
+//    aiplayerLog(aiIndex,"Created Attack Move");
 
     return newMove;
 }
@@ -5513,7 +5513,7 @@ sdword aimProcessSpecial(AITeam *team)
 
     if (team->shipList.selection->numShips == 0)
     {
-        aiplayerLog((aiIndex,"Special Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Special Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -5528,7 +5528,7 @@ sdword aimProcessSpecial(AITeam *team)
         }
         else
         {
-            aiplayerLog((aiIndex,"Warning: no ships to special stuff with"));
+            aiplayerLog(aiIndex,"Warning: no ships to special stuff with");
             thisMove->processing = TRUE;
         }
 
@@ -5576,7 +5576,7 @@ AITeamMove *aimCreateSpecialNoAdd(AITeam *team, SelectCommand *targets,TypeOfFor
     InitNewMove(newMove,MOVE_SPECIAL,wait,remove,formation,tactics,aimProcessSpecial,aimSpecialShipDied,aimSpecialClose);
     newMove->params.attack.ships = targets;
 
-    aiplayerLog((aiIndex,"Created Special Move"));
+    aiplayerLog(aiIndex,"Created Special Move");
 
     return newMove;
 }
@@ -5616,7 +5616,7 @@ sdword aimProcessKamikaze(AITeam *team)
 
     if (selection->numShips == 0)
     {
-        aiplayerLog((aiIndex,"Kamikaze Move, Zero Sized Team"));
+        aiplayerLog(aiIndex,"Kamikaze Move, Zero Sized Team");
         return TRUE;
     }
 
@@ -5635,7 +5635,7 @@ sdword aimProcessKamikaze(AITeam *team)
         }
         else
         {
-            aiplayerLog((aiIndex,"Warning: no ships to kamikaze into"));
+            aiplayerLog(aiIndex,"Warning: no ships to kamikaze into");
             thisMove->processing = TRUE;
         }
 
@@ -5688,7 +5688,7 @@ AITeamMove *aimCreateKamikazeNoAdd(AITeam *team, SelectCommand *targets,TypeOfFo
     InitNewMove(newMove,MOVE_KAMIKAZE,wait,remove,formation,Aggressive,aimProcessKamikaze,aimShipDiedKamikaze,aimCloseKamikaze);
     newMove->params.kamikaze.ships      = targets;
 
-//    aiplayerLog((aiIndex,"Created Kamikaze Move"));
+//    aiplayerLog(aiIndex,"Created Kamikaze Move");
 
     return newMove;
 }
@@ -5842,7 +5842,7 @@ sdword aimProcessFancyGetShips(AITeam *team)
                     j++;
                     if (j >= numAlternatives)
                     {
-//                        aiplayerLog((aiIndex,"Warning - couldn't build any secondary ships"));
+//                        aiplayerLog(aiIndex,"Warning - couldn't build any secondary ships");
                         goto buildbaseshiporfirst;
                     }
 
@@ -5950,7 +5950,7 @@ buildbaseshiporfirst:
 
                     // we couldn't build base ship, or any alternatives,
                     // destroy the team and try again.
-                    aiplayerLog((aiIndex,"Warning - couldn't build base or secondary ship %i, deleting team", shiptype));
+                    aiplayerLog(aiIndex,"Warning - couldn't build base or secondary ship %i, deleting team", shiptype);
 					aivarDestroy(doneVar);	
 					thisMove->params.fancyGetShips.doneVar = NULL;
                     bitSet(team->teamFlags, AIT_DestroyTeam);
@@ -6006,7 +6006,7 @@ AITeamMove *aimCreateFancyGetShipsNoAdd(AITeam *team, ShipType shiptype, sbyte n
     newMove->params.fancyGetShips.alternatives = *alternatives;
     newMove->params.fancyGetShips.doneVar = NULL;
 
-//    aiplayerLog((aiIndex,"Created Fancy Getships Move"));
+//    aiplayerLog(aiIndex,"Created Fancy Getships Move");
 
     return newMove;
 }

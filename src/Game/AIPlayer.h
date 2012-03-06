@@ -400,12 +400,7 @@ void aiplayerGameStart(AIPlayer *aiplayer);
 void aiplayerStartup(udword num_players, udword num_human_players, udword num_comp_players);
 void aiplayerShutdown(void);
 
-#ifdef HW_BUILD_FOR_DEBUGGING
-#define aiplayerLog(x)    aiplayerDebugLog x
-#else
-#define aiplayerLog(x)    {;}
-#endif
-
+void aiplayerLog(uword playerIndex, const char *format, ...);
 void aiplayerDebugLog(uword playerIndex, const char *format, ...);
 
 void aiplayerShipDied(ShipPtr ship);

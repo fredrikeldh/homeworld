@@ -277,7 +277,7 @@ void aidSetupResourceDefenseTeams(void)
                 }
                 else
                 {
-                    aiplayerLog((aiIndex,"Warning - Defenseman can't guard resource ship"));
+                    aiplayerLog(aiIndex,"Warning - Defenseman can't guard resource ship");
                 }
             }
         }

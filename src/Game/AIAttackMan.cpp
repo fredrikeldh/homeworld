@@ -378,7 +378,7 @@ bool aiaGenerateAttackType(AITeam *newteam, AttackType attacktype, bool ForceBig
             }
             break;
         default:
-            aiplayerLog((aiIndex,"Error - Attack Type Not Found"));
+            aiplayerLog(aiIndex,"Error - Attack Type Not Found");
     }
     return return_value;
 }
@@ -594,7 +594,7 @@ void aiaTimeAttack(void)
 
 				while (team)
 				{
-					aiplayerLog((aiIndex, "%x, Forcing out of tempguard, no resources", team));
+					aiplayerLog(aiIndex, "%x, Forcing out of tempguard, no resources", team);
 					aitDeleteMovesUntilMoveType(team, MOVE_TEMPGUARD);
 					team = aitFindNextTeamWithFlag(team, TEAM_TempGuard);
 				}
@@ -614,7 +614,7 @@ void aiaTimeAttack(void)
                 {
                     varValue = randyrandombetween(RANDOM_AI_PLAYER, 2,4);
 
-                    aiplayerLog((aiIndex, "Resetting VarValue up %i", varValue));
+                    aiplayerLog(aiIndex, "Resetting VarValue up %i", varValue);
                     aivarValueSet(aivarFind(aiCurrentAIPlayer->attackVarLabel),varValue);
                 }
                 else if (varValue < -1)
@@ -624,7 +624,7 @@ void aiaTimeAttack(void)
 
 					while (team)
 					{
-						aiplayerLog((aiIndex, "%x, Forcing out of tempguard", team));
+						aiplayerLog(aiIndex, "%x, Forcing out of tempguard", team);
 						aitDeleteMovesUntilMoveType(team, MOVE_TEMPGUARD);
 						team = aitFindNextTeamWithFlag(team, TEAM_TempGuard);
 					}
@@ -1216,7 +1216,7 @@ bool aiaShipDied(struct AIPlayer *aiplayer, ShipPtr ship)
 {
     if ((aiplayer->aiaArmada.targets) && (clRemoveShipFromSelection(aiplayer->aiaArmada.targets, ship)))
     {
-        aiplayerLog((aiplayer->player->playerIndex, "Ship removed from Armada Targets"));
+        aiplayerLog(aiplayer->player->playerIndex, "Ship removed from Armada Targets");
 
         if (!aiplayer->aiaArmada.targets->numShips)
         {
@@ -1227,7 +1227,7 @@ bool aiaShipDied(struct AIPlayer *aiplayer, ShipPtr ship)
 
     if ((aiplayer->Targets) && (clRemoveShipFromSelection(aiplayer->Targets, ship)))
     {
-        aiplayerLog((aiplayer->player->playerIndex, "Ship removed from Swarm Targets"));
+        aiplayerLog(aiplayer->player->playerIndex, "Ship removed from Swarm Targets");
 
         if (!aiplayer->Targets->numShips)
             aiumemFree(aiplayer->Targets);
@@ -1278,21 +1278,21 @@ void aiaInit(struct AIPlayer *aiplayer)
         aiplayer->aiaAttackProbability[CAPTURE] = aiuRandomRange(180, 25);
     }
 
-    aiplayerLog((aiplayer->player->playerIndex, "Attack Probability Attack Fleet Fast    = %i", aiplayer->aiaAttackProbability[ATTACK_FLEET_FAST]));
-    aiplayerLog((aiplayer->player->playerIndex, "Attack Probability Attack Fleet Guard   = %i", aiplayer->aiaAttackProbability[ATTACK_FLEET_GUARD]));
-    aiplayerLog((aiplayer->player->playerIndex, "Attack Probability Attack Fleet Big     = %i", aiplayer->aiaAttackProbability[ATTACK_FLEET_BIG]));
-    aiplayerLog((aiplayer->player->playerIndex, "Attack Probability Attack Fleet Huge    = %i", aiplayer->aiaAttackProbability[ATTACK_FLEET_HUGE]));
-    aiplayerLog((aiplayer->player->playerIndex, "Attack Probability Takeout Target       = %i", aiplayer->aiaAttackProbability[TAKEOUT_TARGET]));
-    aiplayerLog((aiplayer->player->playerIndex, "Attack Probability Fancy Takeout Target = %i", aiplayer->aiaAttackProbability[FANCY_TAKEOUT_TARGET]));
-    aiplayerLog((aiplayer->player->playerIndex, "Attack Probability Fighter Strike       = %i", aiplayer->aiaAttackProbability[FIGHTER_STRIKE]));
-    aiplayerLog((aiplayer->player->playerIndex, "Attack Probability Corvette Strike      = %i", aiplayer->aiaAttackProbability[CORVETTE_STRIKE]));
-    aiplayerLog((aiplayer->player->playerIndex, "Attack Probability Frigate Strike       = %i", aiplayer->aiaAttackProbability[FRIGATE_STRIKE]));
-    aiplayerLog((aiplayer->player->playerIndex, "Attack Probability Harass Big           = %i", aiplayer->aiaAttackProbability[HARASS_BIG]));
-    aiplayerLog((aiplayer->player->playerIndex, "Attack Probability Harass Small         = %i", aiplayer->aiaAttackProbability[HARASS_SMALL]));
-    aiplayerLog((aiplayer->player->playerIndex, "Attack Probability Capture              = %i", aiplayer->aiaAttackProbability[CAPTURE]));
-    aiplayerLog((aiplayer->player->playerIndex, "Attack Probability Mine                 = %i", aiplayer->aiaAttackProbability[MINE]));
-    aiplayerLog((aiplayer->player->playerIndex, "Attack Probability CloakGen             = %i", aiplayer->aiaAttackProbability[CLOAKGEN]));
-    aiplayerLog((aiplayer->player->playerIndex, "Attack Probability GravWell             = %i\n", aiplayer->aiaAttackProbability[GRAVWELL]));
+    aiplayerLog(aiplayer->player->playerIndex, "Attack Probability Attack Fleet Fast    = %i", aiplayer->aiaAttackProbability[ATTACK_FLEET_FAST   ]);
+    aiplayerLog(aiplayer->player->playerIndex, "Attack Probability Attack Fleet Guard   = %i", aiplayer->aiaAttackProbability[ATTACK_FLEET_GUARD  ]);
+    aiplayerLog(aiplayer->player->playerIndex, "Attack Probability Attack Fleet Big     = %i", aiplayer->aiaAttackProbability[ATTACK_FLEET_BIG    ]);
+    aiplayerLog(aiplayer->player->playerIndex, "Attack Probability Attack Fleet Huge    = %i", aiplayer->aiaAttackProbability[ATTACK_FLEET_HUGE   ]);
+    aiplayerLog(aiplayer->player->playerIndex, "Attack Probability Takeout Target       = %i", aiplayer->aiaAttackProbability[TAKEOUT_TARGET      ]);
+    aiplayerLog(aiplayer->player->playerIndex, "Attack Probability Fancy Takeout Target = %i", aiplayer->aiaAttackProbability[FANCY_TAKEOUT_TARGET]);
+    aiplayerLog(aiplayer->player->playerIndex, "Attack Probability Fighter Strike       = %i", aiplayer->aiaAttackProbability[FIGHTER_STRIKE      ]);
+    aiplayerLog(aiplayer->player->playerIndex, "Attack Probability Corvette Strike      = %i", aiplayer->aiaAttackProbability[CORVETTE_STRIKE     ]);
+    aiplayerLog(aiplayer->player->playerIndex, "Attack Probability Frigate Strike       = %i", aiplayer->aiaAttackProbability[FRIGATE_STRIKE      ]);
+    aiplayerLog(aiplayer->player->playerIndex, "Attack Probability Harass Big           = %i", aiplayer->aiaAttackProbability[HARASS_BIG          ]);
+    aiplayerLog(aiplayer->player->playerIndex, "Attack Probability Harass Small         = %i", aiplayer->aiaAttackProbability[HARASS_SMALL        ]);
+    aiplayerLog(aiplayer->player->playerIndex, "Attack Probability Capture              = %i", aiplayer->aiaAttackProbability[CAPTURE             ]);
+    aiplayerLog(aiplayer->player->playerIndex, "Attack Probability Mine                 = %i", aiplayer->aiaAttackProbability[MINE                ]);
+    aiplayerLog(aiplayer->player->playerIndex, "Attack Probability CloakGen             = %i", aiplayer->aiaAttackProbability[CLOAKGEN            ]);
+    aiplayerLog(aiplayer->player->playerIndex, "Attack Probability GravWell             = %i\n", aiplayer->aiaAttackProbability[GRAVWELL          ]);
 
     aiplayer->aiaArmada.numTeams   = AIA_NUM_ARMADA_TEAMS[aiplayer->aiplayerDifficultyLevel];
     aiplayer->aiaArmada.targets    = NULL;

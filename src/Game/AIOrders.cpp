@@ -32,7 +32,7 @@ void aioCreateGuardShips(AITeam *team, SelectCommand *ships)
     sbyte numShipsToUse;
     AITeamMove *move;
 
-    aiplayerLog((aiIndex, "%x Issuing Guard Ships Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Guard Ships Order", team);
 
     SetNumAlternativesFlags(alternatives,5, ALTERNATIVE_RANDOM)
 //    SetAlternative(alternatives,0,DefenseFighter,10);
@@ -75,7 +75,7 @@ void aioCreateReconaissance(AITeam *team, ReconType type)
     AlternativeShips alternatives;
     AITeamMove *move;
 
-    aiplayerLog((aiIndex, "%x Issuing Reconaissance Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Reconaissance Order", team);
 
     switch (type)
     {
@@ -141,7 +141,7 @@ void aioCreateHarass(AITeam *team)
     AlternativeShips alternatives;
     AITeamMove *move;
 
-    aiplayerLog((aiIndex, "%x Issuing Harass Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Harass Order", team);
 
     bitSet(team->teamFlags, HARASS_TEAM);
 
@@ -189,7 +189,7 @@ void aioCreateReconHarass(AITeam *team)
     AITeamMove *move;
     AlternativeShips alternatives;
 
-    aiplayerLog((aiIndex, "%x Issuing Recon Harass Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Recon Harass Order", team);
 
     bitSet(team->teamFlags, HARASS_TEAM);
 
@@ -236,7 +236,7 @@ void aioCreateDefendMothership(AITeam *team)
 {
     AITeamMove *move;
 
-    aiplayerLog((aiIndex, "%x Issuing Defend Mothership Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Defend Mothership Order", team);
 
     //note: ships are assigned to these teams by the defense manager
     //      so there is no getships move
@@ -260,7 +260,7 @@ void aioCreatePatrol(AITeam *team, Path *path)
 {
     AITeamMove *move;
 
-    aiplayerLog((aiIndex, "%x Issuing Patrol Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Patrol Order", team);
 
     aimCreateGetShips(team, HeavyCorvette, 3, 0, TRUE, FALSE);
 //    aimCreateFormation(team, DELTA_FORMATION, FALSE, FALSE);
@@ -285,7 +285,7 @@ void aioCreateFastRovingDefense(AITeam *team)
     AlternativeShips alternatives;
     AITeamMove *move;
 
-    aiplayerLog((aiIndex, "%x Issuing Fast Roving Defense Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Fast Roving Defense Order", team);
 
     SetNumAlternativesFlags(alternatives,6, ALTERNATIVE_RANDOM)
     SetAlternative(alternatives,0,HeavyDefender,14);
@@ -321,7 +321,7 @@ void aioCreateSlowRovingDefense(AITeam *team)
     AlternativeShips alternatives;
     AITeamMove *move;
 
-    aiplayerLog((aiIndex, "%x Issuing Slow Roving Defense Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Slow Roving Defense Order", team);
 
     SetNumAlternativesFlags(alternatives,7,ALTERNATIVE_RANDOM);
     SetAlternative(alternatives,0,HeavyCorvette,10);
@@ -362,7 +362,7 @@ void aioCreateSlowRovingDefense(AITeam *team)
 void aioCreateReinforcements(AITeam *team, AITeam *reinforceteam, ShipType shiptype,
                              sbyte num, AlternativeShips *alternatives, sdword priority)
 {
-    aiplayerLog((aiIndex, "%x Issuing Reinforcements Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Reinforcements Order", team);
 
     if (num)
     {
@@ -394,7 +394,7 @@ void aioCreateActiveSupport(AITeam *team, SelectCommand *ships, SupportType type
 {
     AlternativeShips alternatives;
 
-    aiplayerLog((aiIndex, "%x Issuing Active Support Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Active Support Order", team);
 
     if (type == SUPPORT_STRIKECRAFT)
     {
@@ -425,7 +425,7 @@ void aioCreateActiveSupport(AITeam *team, SelectCommand *ships, SupportType type
     }
     else
     {
-        aiplayerLog((aiIndex, "Error - unknown support type issued"));
+        aiplayerLog(aiIndex, "Error - unknown support type issued");
         dbgAssertOrIgnore(FALSE);
     }
 
@@ -446,7 +446,7 @@ void aioCreateFighterStrike(AITeam *team)
     AlternativeShips alternatives;
     AITeamMove *newmove;
 
-    aiplayerLog((aiIndex, "%x Issuing Fighter Strike Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Fighter Strike Order", team);
 
     SetNumAlternativesFlags(alternatives,9,ALTERNATIVE_RANDOM);
     SetAlternative(alternatives,0,LightInterceptor,12);
@@ -490,7 +490,7 @@ void aioCreateCorvetteStrike(AITeam *team)
     AlternativeShips alternatives;
     AITeamMove *newmove;
 
-    aiplayerLog((aiIndex, "%x Issuing Corvette Strike Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Corvette Strike Order", team);
 
     SetNumAlternativesFlags(alternatives,7,ALTERNATIVE_RANDOM);
     SetAlternative(alternatives,0,LightCorvette,13);
@@ -532,7 +532,7 @@ void aioCreateFrigateStrike(AITeam *team)
     AlternativeShips alternatives;
     AITeamMove *newmove;
 
-    aiplayerLog((aiIndex, "%x Issuing Frigate Strike Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Frigate Strike Order", team);
 
     SetNumAlternativesFlags(alternatives,1,ALTERNATIVE_RANDOM);
     SetAlternative(alternatives,0,IonCannonFrigate,10);
@@ -567,7 +567,7 @@ void aioCreateFrigateStrike(AITeam *team)
 ----------------------------------------------------------------------------*/
 void aioCreateResourcer(AITeam *team)
 {
-    aiplayerLog((aiIndex, "%x Issuing Resourcer Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Resourcer Order", team);
 
     //assumes that ships will be added, therefore does not request them
     aimCreateActiveResource(team, TRUE, FALSE);
@@ -584,7 +584,7 @@ void aioCreateResourcer(AITeam *team)
 ----------------------------------------------------------------------------*/
 void aioCreateCapture(AITeam *team)
 {
-    aiplayerLog((aiIndex, "%x Issuing Capture Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Capture Order", team);
 
     aimCreateGetShips(team, SalCapCorvette, (sbyte)(randyrandombetween(RANDOM_AI_PLAYER, 3, 7)), 0, TRUE, FALSE);
 
@@ -602,7 +602,7 @@ void aioCreateCapture(AITeam *team)
 ----------------------------------------------------------------------------*/
 void aioCreateMine(AITeam *team)
 {
-    aiplayerLog((aiIndex, "%x Issuing Mine Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Mine Order", team);
 
     aimCreateGetShips(team, MinelayerCorvette, (sbyte)(randyrandombetween(RANDOM_AI_PLAYER, 2, 5)), 0, TRUE, FALSE);
 
@@ -623,7 +623,7 @@ void aioCreateSpecialDefense(AITeam *team, ShipType type)
     AITeamMove *move;
     ShipStaticInfo *gravstatics;
 
-    aiplayerLog((aiIndex, "%x Issuing Special Defense Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Special Defense Order", team);
 
     aimCreateGetShips(team, type, 1, 0, TRUE, FALSE);
 
@@ -661,7 +661,7 @@ void aioCreateSwarmAttack(AITeam *team)
 {
     AITeamMove *newmove;
 
-    aiplayerLog((aiIndex, "Issuing Swarm Attack Order"));
+    aiplayerLog(aiIndex, "Issuing Swarm Attack Order");
 
     newmove = aimCreateSwarmAttack(team, TRUE, FALSE);
     aieHandlerSetFuelLow(newmove, 0, TRUE, FALSE, aihSwarmerEmptyFuelHandler);
@@ -680,7 +680,7 @@ void aioCreateSwarmDefense(AITeam *team, SelectCommand *Pod)
 {
     AITeamMove *newmove;
 
-    aiplayerLog((aiIndex, "Issuing Swarm Defense Order"));
+    aiplayerLog(aiIndex, "Issuing Swarm Defense Order");
 
     newmove = aimCreateSwarmDefense(team, Pod, TRUE, FALSE);
     aieHandlerSetFuelLow(newmove, 0, TRUE, FALSE, aihSwarmerEmptyFuelHandler);
@@ -698,7 +698,7 @@ void aioCreateSwarmDefense(AITeam *team, SelectCommand *Pod)
 ----------------------------------------------------------------------------*/
 void aioCreateSwarmSupport(AITeam *team)
 {
-    aiplayerLog((aiIndex, "Issuing Swarm Support Order"));
+    aiplayerLog(aiIndex, "Issuing Swarm Support Order");
 
     aimCreateSwarmPod(team, TRUE, FALSE);
 
@@ -754,7 +754,7 @@ void aioCreateTakeoutMothershipFast(struct AITeam *team,Ship *mothership)
 //    SelectCommand *selectone;
     AITeamMove *attackmove;
 
-    aiplayerLog((aiIndex, "%x Issuing Takeout Mothership Fast Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Takeout Mothership Fast Order", team);
 
     SetNumAlternativesFlags(alternatives,11,ALTERNATIVE_RANDOM);
     SetAlternative(alternatives,0,IonCannonFrigate,10);
@@ -802,7 +802,7 @@ void aioCreateTakeoutMothershipBig(struct AITeam *team,Ship *mothership, bool Fo
         return;
     }
 
-    aiplayerLog((aiIndex, "%x Issuing Takeout Mothership Big Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Takeout Mothership Big Order", team);
 
     if ((aiCurrentAIPlayer->player->PlayerMothership->shiptype == Mothership) || ForceBig)
     {
@@ -822,7 +822,7 @@ void aioCreateTakeoutMothershipBig(struct AITeam *team,Ship *mothership, bool Fo
     }
     else
     {
-        aiplayerLog((aiIndex, "Unknown Mothership Type"));
+        aiplayerLog(aiIndex, "Unknown Mothership Type");
         return;
     }
 
@@ -858,7 +858,7 @@ void aioCreateTakeoutMothershipHuge(struct AITeam *team,Ship *mothership)
     char label[AIVAR_LABEL_MAX_LENGTH+1];
     AITeamMove *move;
 
-    aiplayerLog((aiIndex, "%x Issuing Takeout Mothership Huge Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Takeout Mothership Huge Order", team);
 
     secondaryteam = aitCreate(team->teamType);
     secondaryteam->cooperatingTeam = team;
@@ -933,7 +933,7 @@ void aioCreateTakeoutMothershipGuard(struct AITeam *team,Ship *mothership)
         return;
     }
 
-    aiplayerLog((aiIndex, "%x Issuing Takeout Mothership Guard Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Takeout Mothership Guard Order", team);
 
     secondaryteam = aitCreate(team->teamType);
     secondaryteam->cooperatingTeam = team;
@@ -987,7 +987,7 @@ void aioCreateTakeoutMothershipGuard(struct AITeam *team,Ship *mothership)
     }
     else
     {
-        aiplayerLog((aiIndex, "Unknown Mothership Type"));
+        aiplayerLog(aiIndex, "Unknown Mothership Type");
         return;
     }
 
@@ -1024,7 +1024,7 @@ void aioCreateTakeoutTargetsWithCurrentTeam(struct AITeam *team,SelectCommand *t
 
     dbgAssertOrIgnore(team->shipList.selection->numShips > 0);
 
-    aiplayerLog((aiIndex, "%x Issuing Takeout Targets With Current Team Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Takeout Targets With Current Team Order", team);
 
     attackmove = aimCreateAttack(team, targets, AIO_TOUT_TARG_WCUR_FORMATION, /*AIO_TOUT_TARG_WCUR_TACTICS*/  TRUE, FALSE);
     aieHandlerSetGettingRocked(attackmove, TRUE, aihGenericGettingRockedHandler);
@@ -1039,7 +1039,7 @@ void aioCreateTakeoutTargetWithCurrentTeam(struct AITeam *team,Ship *ship)
 
     dbgAssertOrIgnore(team->shipList.selection->numShips > 0);
 
-    aiplayerLog((aiIndex, "%x Issuing Takeout Target With Current Team Order", team));
+    aiplayerLog(aiIndex, "%x Issuing Takeout Target With Current Team Order", team);
 
     selectone = mem::alloc<SelectCommand>("takeoutsel");
     selectone->numShips = 1;
@@ -1061,7 +1061,7 @@ void aioCreateTakeoutTarget(struct AITeam *team,Ship *target)
     // check reserves first:
     SelectCommand *useTheseShips = statsBestShipsToUseToKillTarget(aiCurrentAIPlayer->newships.selection,target->staticinfo,&goodEnough);
 
-    aiplayerLog((aiIndex, "%x Issuing Takeout Target Order - Target Type %i", target->shiptype, team));
+    aiplayerLog(aiIndex, "%x Issuing Takeout Target Order - Target Type %i", target->shiptype, team);
 
     if (goodEnough)
     {
@@ -1088,14 +1088,14 @@ treatasgoodenough:;
         ShipRace race;
         if (playerMothership == NULL)
         {
-            aiplayerLog((aiIndex, "Warning: could not build ships to takeout target"));
+            aiplayerLog(aiIndex, "Warning: could not build ships to takeout target");
             goto treatasgoodenough;
         }
 
         race = playerMothership->shiprace;
         if ((race == P3) || (race == Traders))
         {
-            aiplayerLog((aiIndex, "Warning: Pirates3Traders could not build ships to takeout target"));
+            aiplayerLog(aiIndex, "Warning: Pirates3Traders could not build ships to takeout target");
             goto treatasgoodenough;
         }
 
@@ -1132,10 +1132,10 @@ treatasgoodenough:;
                     dbgAssertOrIgnore(FALSE);
             }
             numShipsToBuy = 1;
-            aiplayerLog((aiIndex,"Taking out unknown target %d.  Guessing on ship to use",target->shiptype));
+            aiplayerLog(aiIndex,"Taking out unknown target %d.  Guessing on ship to use",target->shiptype);
         }
 
-        aiplayerLog((aiIndex,"Taking out with %i of shiptype %i", numShipsToBuy, shipsToBuy->shiptype));
+        aiplayerLog(aiIndex,"Taking out with %i of shiptype %i", numShipsToBuy, shipsToBuy->shiptype);
         aimCreateGetShips(team, shipsToBuy->shiptype, (sbyte)numShipsToBuy, 0, TRUE, FALSE);
     }
 
@@ -1170,7 +1170,7 @@ void aioCreateFancyTakeoutTarget(struct AITeam *team,Ship *target)
     // check reserves first:
     SelectCommand *useTheseShips = statsBestShipsToUseToKillTarget(aiCurrentAIPlayer->newships.selection,target->staticinfo,&goodEnough);
 
-    aiplayerLog((aiIndex, "%x Issuing Fancy Takeout Target Order - Target %i", target->shiptype, team));
+    aiplayerLog(aiIndex, "%x Issuing Fancy Takeout Target Order - Target %i", target->shiptype, team);
 
     if (goodEnough)
     {
@@ -1197,14 +1197,14 @@ treatasgoodenoughfancy:;
         ShipRace race;
         if (playerMothership == NULL)
         {
-            aiplayerLog((aiIndex, "Warning: could not build ships to takeout target"));
+            aiplayerLog(aiIndex, "Warning: could not build ships to takeout target");
             goto treatasgoodenoughfancy;
         }
 
         race = playerMothership->shiprace;
         if ((race == P3) || (race == Traders))
         {
-            aiplayerLog((aiIndex, "Warning: Pirates3Traders could not build ships to takeout target"));
+            aiplayerLog(aiIndex, "Warning: Pirates3Traders could not build ships to takeout target");
             goto treatasgoodenoughfancy;
         }
 
@@ -1241,10 +1241,10 @@ treatasgoodenoughfancy:;
                     dbgAssertOrIgnore(FALSE);
             }
             numShipsToBuy = 1;
-            aiplayerLog((aiIndex,"Taking out unknown target %d.  Guessing on ship to use",target->shiptype));
+            aiplayerLog(aiIndex,"Taking out unknown target %d.  Guessing on ship to use",target->shiptype);
         }
 
-        aiplayerLog((aiIndex,"Taking out with %i of shiptype %i", numShipsToBuy, shipsToBuy->shiptype));
+        aiplayerLog(aiIndex,"Taking out with %i of shiptype %i", numShipsToBuy, shipsToBuy->shiptype);
         aimCreateGetShips(team, shipsToBuy->shiptype, (sbyte)numShipsToBuy, 0, TRUE, FALSE);
     }
 

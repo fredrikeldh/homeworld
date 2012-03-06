@@ -35,7 +35,7 @@ void aieExecute(struct AITeam *team)
     if (curMove->events.teamDied.handler &&
         aieCheckTeamDied(team))
     {
-        aiplayerLog((aiIndex,"eventhandler: teamDied"));
+        aiplayerLog(aiIndex,"eventhandler: teamDied");
         curMove->events.teamDied.handler(team);
     }
     // ship died
@@ -44,7 +44,7 @@ void aieExecute(struct AITeam *team)
               !curMove->events.shipDied.triggered) &&
              aieCheckShipDied())
     {
-        aiplayerLog((aiIndex,"eventhandler: shipDied"));
+        aiplayerLog(aiIndex,"eventhandler: shipDied");
         curMove->events.shipDied.triggered = true;
         curMove->events.shipDied.handler(team, ship);
     }
@@ -54,7 +54,7 @@ void aieExecute(struct AITeam *team)
               !curMove->events.gettingRocked.triggered) &&
              aieCheckGettingRocked(team, &ships)) // any of the team's ships are getting rocked
     {
-        aiplayerLog((aiIndex,"eventhandler: gettingRocked"));
+        aiplayerLog(aiIndex,"eventhandler: gettingRocked");
         curMove->events.gettingRocked.triggered = TRUE;
         curMove->events.gettingRocked.handler(team, ships);
     }
@@ -64,7 +64,7 @@ void aieExecute(struct AITeam *team)
               !curMove->events.enemyNearby.triggered) &&
              aieCheckEnemyNearby(team, &ships))
     {
-        aiplayerLog((aiIndex,"eventhandler: enemyNearby"));
+        aiplayerLog(aiIndex,"eventhandler: enemyNearby");
         curMove->events.enemyNearby.triggered = true;
         curMove->events.enemyNearby.handler(team, ships);
     }
@@ -74,7 +74,7 @@ void aieExecute(struct AITeam *team)
               !curMove->events.enemyNotNearby.triggered) &&
              aieCheckEnemyNotNearby(team))
     {
-        aiplayerLog((aiIndex,"eventhandler: enemyNotNearby"));
+        aiplayerLog(aiIndex,"eventhandler: enemyNotNearby");
         curMove->events.enemyNotNearby.triggered = true;
         curMove->events.enemyNotNearby.handler(team);
     }
@@ -84,7 +84,7 @@ void aieExecute(struct AITeam *team)
               !curMove->events.firing.triggered) &&
              aieCheckFiring(team))
     {
-        aiplayerLog((aiIndex,"eventhandler: firing"));
+        aiplayerLog(aiIndex,"eventhandler: firing");
         curMove->events.firing.triggered = true;
         curMove->events.firing.handler(team);
     }
@@ -95,7 +95,7 @@ void aieExecute(struct AITeam *team)
               !curMove->events.disengage.triggered) &&
              aieCheckDisengage(team))
     {
-        aiplayerLog((aiIndex,"eventhandler: disengaging"));
+        aiplayerLog(aiIndex,"eventhandler: disengaging");
         curMove->events.disengage.triggered = true;
         curMove->events.disengage.handler(team);
     }
@@ -105,7 +105,7 @@ void aieExecute(struct AITeam *team)
               !curMove->events.healthLow.triggered) &&
              aieCheckHealthLow(team))
     {
-        aiplayerLog((aiIndex,"eventhandler: healthLow"));
+        aiplayerLog(aiIndex,"eventhandler: healthLow");
         curMove->events.healthLow.triggered = true;
         curMove->events.healthLow.handler(team);
     }
@@ -115,7 +115,7 @@ void aieExecute(struct AITeam *team)
               !curMove->events.healthHigh.triggered) &&
              aieCheckHealthHigh(team))
     {
-        aiplayerLog((aiIndex,"eventhandler: healthHigh"));
+        aiplayerLog(aiIndex,"eventhandler: healthHigh");
         curMove->events.healthHigh.triggered = true;
         curMove->events.healthHigh.handler(team);
     }
@@ -125,7 +125,7 @@ void aieExecute(struct AITeam *team)
               !curMove->events.numbersLow.triggered) &&
              aieCheckNumbersLow(team))
     {
-        aiplayerLog((aiIndex,"eventhandler: numbersLow"));
+        aiplayerLog(aiIndex,"eventhandler: numbersLow");
         curMove->events.numbersLow.triggered = true;
         curMove->events.numbersLow.handler(team);
     }
@@ -135,7 +135,7 @@ void aieExecute(struct AITeam *team)
               !curMove->events.numbersHigh.triggered) &&
              aieCheckNumbersHigh(team))
     {
-        aiplayerLog((aiIndex,"eventhandler: numbersHigh"));
+        aiplayerLog(aiIndex,"eventhandler: numbersHigh");
         curMove->events.numbersHigh.triggered = true;
         curMove->events.numbersHigh.handler(team);
     }
@@ -145,7 +145,7 @@ void aieExecute(struct AITeam *team)
               !curMove->events.fuelLow.triggered) &&
              aieCheckFuelLow(team))
     {
-        aiplayerLog((aiIndex,"eventhandler: fuelLow"));
+        aiplayerLog(aiIndex,"eventhandler: fuelLow");
         curMove->events.fuelLow.triggered = true;
         curMove->events.fuelLow.handler(team);
     }
@@ -155,7 +155,7 @@ void aieExecute(struct AITeam *team)
               !curMove->events.fuelHigh.triggered) &&
              aieCheckFuelHigh(team))
     {
-        aiplayerLog((aiIndex,"eventhandler: fuelHigh"));
+        aiplayerLog(aiIndex,"eventhandler: fuelHigh");
         curMove->events.fuelHigh.triggered = true;
         curMove->events.fuelHigh.handler(team);
     }
@@ -168,7 +168,7 @@ void aieExecute(struct AITeam *team)
         if ((!curMove->events.interrupt.interval) ||
             ((curMove->events.interrupt.interval) && (!curMove->events.interrupt.intervalcnt)))
         {
-//            aiplayerLog((aiIndex,"eventhandler: interrupt"));
+//            aiplayerLog(aiIndex,"eventhandler: interrupt");
             curMove->events.interrupt.triggered = true;
             curMove->events.interrupt.handler(team, curMove->events.interrupt.intvar);
             curMove->events.interrupt.intervalcnt = curMove->events.interrupt.interval;

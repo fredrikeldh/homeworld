@@ -168,7 +168,7 @@ void BuildShip(ShipStaticInfo *shipstatic,Player *player,sdword *incRUs,sdword *
 	ShipStaticInfo *tempstat;
 #endif
 
-    aiplayerLog((player->playerIndex,"Building ship %s; Total %i",ShipTypeToStr(shipstatic->shiptype),player->shiptotals[shipstatic->shiptype]));
+    aiplayerLog(player->playerIndex,"Building ship %s; Total %i",ShipTypeToStr(shipstatic->shiptype),player->shiptotals[shipstatic->shiptype]);
 
 	// unit caps checking code
 #if(0)	
@@ -344,7 +344,7 @@ void aifBuildRequestedShips(RequestShips *scriptrequest,RequestShips *attrequest
         }
         else
         {
-            aiplayerLog((player->playerIndex,"Warning Script could not build shiprace %d shiptype %d",race,scriptrequest->shiptype));
+            aiplayerLog(player->playerIndex,"Warning Script could not build shiprace %d shiptype %d",race,scriptrequest->shiptype);
             scriptrequest->num_ships = -1;
         }
     }
@@ -366,7 +366,7 @@ void aifBuildRequestedShips(RequestShips *scriptrequest,RequestShips *attrequest
         }
         else
         {
-            aiplayerLog((player->playerIndex,"Warning Attack could not build shiprace %d shiptype %d",race,attrequest->shiptype));
+            aiplayerLog(player->playerIndex,"Warning Attack could not build shiprace %d shiptype %d",race,attrequest->shiptype);
             attrequest->num_ships = -1;
         }
     }
@@ -388,7 +388,7 @@ void aifBuildRequestedShips(RequestShips *scriptrequest,RequestShips *attrequest
         }
         else
         {
-            aiplayerLog((player->playerIndex,"Warning Defense could not build shiprace %d shiptype %d",race,defrequest->shiptype));
+            aiplayerLog(player->playerIndex,"Warning Defense could not build shiprace %d shiptype %d",race,defrequest->shiptype);
             defrequest->num_ships = -1;
         }
     }
@@ -410,7 +410,7 @@ void aifBuildRequestedShips(RequestShips *scriptrequest,RequestShips *attrequest
         }
         else
         {
-            aiplayerLog((player->playerIndex,"Warning Resource could not build shiprace %d shiptype %d",race,resourcerequest->shiptype));
+            aiplayerLog(player->playerIndex,"Warning Resource could not build shiprace %d shiptype %d",race,resourcerequest->shiptype);
             resourcerequest->num_ships = -1;
         }
     }
@@ -669,7 +669,7 @@ void aifTeamRequestsShipsCB(ShipType shiptype,sdword number,AITeam *team,char *d
 {
     TeamWaitingForTheseShips *teamWaiting;
 
-	aiplayerLog((aiIndex, "%x Requesting %i %ss", team, number, ShipTypeToStr(shiptype)));
+	aiplayerLog(aiIndex, "%x Requesting %i %ss", team, number, ShipTypeToStr(shiptype));
 
     switch (team->teamType)
     {
@@ -858,7 +858,7 @@ void aifProcessShipBuildRequests(void)
             aiCurrentAIPlayer->TechnologyDeficit += tech;
             if ((!research_delay) && (rmResearchTechForShip(player, resourcerequest->shiptype)))
             {
-                aiplayerLog((player->playerIndex, "Researching %s for Resource", ShipTypeToStr(resourcerequest->shiptype)));
+                aiplayerLog(player->playerIndex, "Researching %s for Resource", ShipTypeToStr(resourcerequest->shiptype));
             }
             resourcerequest = NULL;
         }
@@ -874,7 +874,7 @@ void aifProcessShipBuildRequests(void)
         {
             aiCurrentAIPlayer->TechnologyDeficit += tech;
             if ((!research_delay) && (rmResearchTechForShip(player, attrequest->shiptype)))
-                aiplayerLog((player->playerIndex, "Researching %s for Offense", ShipTypeToStr(attrequest->shiptype)));
+                aiplayerLog(player->playerIndex, "Researching %s for Offense", ShipTypeToStr(attrequest->shiptype));
 
             //temporary
             attrequest = NULL;
@@ -914,7 +914,7 @@ void aifProcessShipBuildRequests(void)
         {
             aiCurrentAIPlayer->TechnologyDeficit += tech;
             if ((!research_delay) && (rmResearchTechForShip(player, defrequest->shiptype)))
-                 aiplayerLog((player->playerIndex, "Researching %s for Defense", ShipTypeToStr(defrequest->shiptype)));
+                 aiplayerLog(player->playerIndex, "Researching %s for Defense", ShipTypeToStr(defrequest->shiptype));
             //temporary
             defrequest = NULL;
 /*            tempnode = tempnode->next;
@@ -966,7 +966,7 @@ void aifProcessShipBuildRequests(void)
             {
                 if ((!research_delay) && (rmResearchTechForShip(player, temprequest->shiptype)))
                 {
-                    aiplayerLog((player->playerIndex, "Researching %s later in Attack queue", ShipTypeToStr(temprequest->shiptype)));
+                    aiplayerLog(player->playerIndex, "Researching %s later in Attack queue", ShipTypeToStr(temprequest->shiptype));
                     break;
                 }
             }
@@ -1128,13 +1128,13 @@ void aifSkimHyperspaceRUs(void)
         {
             if (player->resourceUnits < (-(aiCurrentAIPlayer->aifHyperSavings)))
             {   // the players resources do not exceed the debt.  Pay off as much as possible
-                aiplayerLog((aiIndex, "Paying off the debt.  Savings = %i, deposit = %i", aiCurrentAIPlayer->aifHyperSavings, player->resourceUnits));
+                aiplayerLog(aiIndex, "Paying off the debt.  Savings = %i, deposit = %i", aiCurrentAIPlayer->aifHyperSavings, player->resourceUnits);
                 aiCurrentAIPlayer->aifHyperSavings += player->resourceUnits;
                 player->resourceUnits = 0;
             }
             else
             {   // the players resources exceed the debt.  Pay off everything.
-                aiplayerLog((aiIndex, "Paying off the entire debt."));
+                aiplayerLog(aiIndex, "Paying off the entire debt.");
                 player->resourceUnits += aiCurrentAIPlayer->aifHyperSavings;
                 aiCurrentAIPlayer->aifHyperSavings = 0;
             }
@@ -1147,7 +1147,7 @@ void aifSkimHyperspaceRUs(void)
         aiCurrentAIPlayer->aifHyperSavings += skimResources;
         player->resourceUnits              -= skimResources;
 
-        aiplayerLog((aiIndex, "Skimming %i RUs for Hyperspacing.  Savings = %i, RUs = %i", skimResources, aiCurrentAIPlayer->aifHyperSavings, player->resourceUnits));
+        aiplayerLog(aiIndex, "Skimming %i RUs for Hyperspacing.  Savings = %i, RUs = %i", skimResources, aiCurrentAIPlayer->aifHyperSavings, player->resourceUnits);
     }
     aiCurrentAIPlayer->aifLastRUCount = player->resourceUnits;
 }
