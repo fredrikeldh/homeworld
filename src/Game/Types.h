@@ -12,6 +12,10 @@
 #ifndef ___TYPES_H
 #define ___TYPES_H
 
+#ifdef __cplusplus
+#include <cstdlib>
+#endif
+
 #include "SDL_stdinc.h"
 #include "SDL_endian.h"
 
@@ -236,18 +240,6 @@ real32 SdwordToReal32(sdword a);
    Declare basic macros
 --------------------------------------------------------------------------*/
 
-#ifndef max
-    #define max(a,b) ((a) > (b) ? (a) : (b))
-#endif
-
-#ifndef min
-    #define min(a,b) ((a) > (b) ? (b) : (a))
-#endif
-
-#if !defined(ABS)
-    #define ABS(a)   ((a) < 0 ? -(a) : (a))
-#endif
-
 #define frandyrandom(stream,n) (ranRandom(stream) * (((real32)(n)) * (1.0f/((real32)UDWORD_Max))))
 #define frandyrandombetween(stream,a,b) (frandyrandom(stream,(b)-(a)) + (a))
 
@@ -262,13 +254,6 @@ real32 SdwordToReal32(sdword a);
 
 #define capNumber(value,cap) ((value > cap) ? cap : value)
 
-//standard swap, works on any type
-#ifndef swap
-#define swap(a,b,temp) \
-        (temp) = (a);  \
-        (a) = (b);     \
-        (b) = (temp);
-#endif
 //integral swap, including pointers
 #define swapInt(a, b)   \
         (a) ^= (b);     \
