@@ -12,132 +12,135 @@
 
 // INTERFACE -------------------------------------------------------------------
 
-typedef struct vector
+struct _vector_tuple
 {
-    real32 x,y,z;
-} vector;
+	typedef real32 value_type;
+	value_type x,y,z;
 
-typedef struct hvector
+	_vector_tuple();
+	_vector_tuple(value_type xp, value_type yp, value_type zp);
+	virtual ~_vector_tuple();
+
+	void Set(value_type xp, value_type yp, value_type zp);
+
+	virtual void SetZero() = 0;
+	virtual bool IsZero() const = 0;
+
+	virtual value_type MagnitudeSquared() const = 0;
+};
+
+struct hvector;
+
+struct vector : public _vector_tuple
 {
-    real32 x,y,z,w;
-} hvector;
+	vector();
 
-#define vecSet(v,xp,yp,zp)  \
-    (v).x = (xp);         \
-    (v).y = (yp);         \
-    (v).z = (zp)
+	virtual ~vector();
 
-#define vecGrabVecFromHVec(v,h) \
-    (v).x = (h).x;          \
-    (v).y = (h).y;          \
-    (v).z = (h).z
+	vector& operator= (const hvector& h);
+	vector  operator+ (const vector& other) const;
+	vector  operator- (const vector& other) const;
+	vector  operator* (const value_type factor) const;
+	bool   operator==(const vector& other) const;
 
-#define vecMakeHVecFromVec(h,v) \
-    (h).x = (v).x;          \
-    (h).y = (v).y;          \
-    (h).z = (v).z;          \
-    (h).w = 1.0f;
+	value_type Dot(const vector& other) const;
 
-#define vecZeroVector(a) \
-    (a).x = 0.0f;     \
-    (a).y = 0.0f;     \
-    (a).z = 0.0f
+	vector& Cross(const vector& first, const vector& second);
+	vector  Cross(const vector& other) const;
 
-#define vecAdd(a,b,c) \
-    (a).x = (b).x + (c).x; \
-    (a).y = (b).y + (c).y; \
-    (a).z = (b).z + (c).z
+	vector& Negate();
+	vector  Negate() const;
 
-#define vecAddTo(a,b) \
-    (a).x += (b).x; \
-    (a).y += (b).y; \
-    (a).z += (b).z
+	value_type MagnitudeSquared() override const;
 
-#define vecSub(a,b,c) \
-    (a).x = (b).x - (c).x; \
-    (a).y = (b).y - (c).y; \
-    (a).z = (b).z - (c).z
+	void SetZero() override;
+	bool IsZero() override const;
+};
 
-#define vecSubFrom(a,b) \
-    (a).x -= (b).x; \
-    (a).y -= (b).y; \
-    (a).z -= (b).z
+struct hvector : public _vector_tuple
+{
+	value_type w;
 
-#define vecDotProduct(a,b) \
-    ( ((a).x * (b).x) + ((a).y * (b).y) + ((a).z * (b).z) )
+	hvector(value_type xp, value_type yp, value_type zp, value_type wp);
 
-#define vecCrossProduct(result,a,b) \
-    (result).x = ((a).y * (b).z) - ((a).z * (b).y); \
-    (result).y = ((a).z * (b).x) - ((a).x * (b).z); \
-    (result).z = ((a).x * (b).y) - ((a).y * (b).x)
+	void Set(value_type xp, value_type yp, value_type zp, value_type wp);
 
-#define vecAddToScalarMultiply(dstvec,vec,k) \
-    (dstvec).x += ((vec).x * (k));       \
-    (dstvec).y += ((vec).y * (k));       \
-    (dstvec).z += ((vec).z * (k))
+	hvector& operator= (const vector& v);
+	bool    operator==(const hvector& other) const;
 
-#define vecSubFromScalarMultiply(dstvec,vec,k) \
-    (dstvec).x -= ((vec).x * (k));       \
-    (dstvec).y -= ((vec).y * (k));       \
-    (dstvec).z -= ((vec).z * (k))
+	hvector& Negate() override;
+	hvector  Negate() override const;
 
-#define vecScalarMultiply(dstvec,vec,k) \
-    (dstvec).x = (vec).x * (k);       \
-    (dstvec).y = (vec).y * (k);       \
-    (dstvec).z = (vec).z * (k)
+	void SetZero() override;
+	bool IsZero() override const;
 
-#define vecMultiplyByScalar(vec,k) \
-    (vec).x *= (k);                \
-    (vec).y *= (k);                \
-    (vec).z *= (k)
+	value_type MagnitudeSquared() override const;
 
-#define vecScalarDivide(dstvec,vec,k,tmp) \
-    (tmp) = 1.0f / (k);                 \
-    (dstvec).x = (vec).x * (tmp);     \
-    (dstvec).y = (vec).y * (tmp);     \
-    (dstvec).z = (vec).z * (tmp)
+	value_type Dot(const hvector& other) const;
+};
 
-#define vecDivideByScalar(vec,k,tmp) \
-    (tmp) = 1.0f / (k);              \
-    (vec).x *= (tmp);              \
-    (vec).y *= (tmp);              \
-    (vec).z *= (tmp)
+void vecSet(vector& v, vector::value_type xp, vector::value_type yp,vector::value_type zp);
 
-#define vecNegate(vec) \
-    (vec).x = -(vec).x; \
-    (vec).y = -(vec).y; \
-    (vec).z = -(vec).z
+void vecGrabVecFromHVec(vector& v, const hvector& h);
 
-#define vecCopyAndNegate(dstvec,vec) \
-    (dstvec).x = -(vec).x; \
-    (dstvec).y = -(vec).y; \
-    (dstvec).z = -(vec).z
+void vecMakeHVecFromVec(hvector& h, const vector& v);
 
-#define vecMagnitudeSquared(a) \
-    ( ((a).x * (a).x) + ((a).y * (a).y) + ((a).z * (a).z) )
+void vecZeroVector(vector& a);
 
-#define vecAreEqual(a,b) \
-    ( ((a).x == (b).x) && ((a).y == (b).y) && ((a).z == (b).z) )
+void vecAdd(vector& a, const vector& b, const vector& c);
 
-#define vecIsZero(a) \
-    ( ((a).x == 0.0f) && ((a).y == 0.0f) && ((a).z == 0.0f) )
+void vecAddTo(vector& a, const vector& b);
+
+void vecSub(vector& a, const vector& b, const vector& c);
+
+void vecSubFrom(vector& a, const vector& b);
+
+vector::value_type vecDotProduct(const vector& a, const vector& b);
+
+void vecCrossProduct(vector& result, const vector& a, const vector& b);
+
+void vecAddToScalarMultiply(vector& dstvec, const vector& vec, vector::value_type k);
+
+void vecSubFromScalarMultiply(vector& dstvec, const vector& vec, vector::value_type k);
+
+void vecScalarMultiply(vector& dstvec, const vector& vec, vector::value_type k);
+
+void vecMultiplyByScalar(vector& vec, vector::value_type k);
+
+void vecScalarDivide(vector& dstvec, const vector& vec, vector::value_type k, vector& tmp);
+
+void vecScalarDivide(vector& dstvec, const vector& vec, vector::value_type k);
+
+void vecDivideByScalar(vector& vec, vector::value_type k, vector& tmp);
+
+void vecDivideByScalar(vector& vec, vector::value_type k);
+
+void vecNegate(vector& vec);
+
+void vecCopyAndNegate(vector& dstvec, const vector& vec);
+
+vector::value_type vecMagnitudeSquared(const vector& a);
+
+bool vecAreEqual(const vector& a, const vector& b);
+
+bool vecIsZero(const vector& a);
 
 #define VECTOR_ORIGIN  {0.0, 0.0, 0.0}
 
-void vecNormalize(vector *a);
-void vecHomogenize(vector* dst, hvector* src);
-void vecCopyAndNormalize(vector *src, vector *dst);
-void vecNormalizeToLength(vector *a, real32 length);
-void vecCapVectorSloppy(vector *vectorToCap, real32 maxMagnitude);
-void vecCapVector(vector *vectorToCap, real32 maxMagnitude);
-void vecCapVectorWithMag(vector *vectorToCap, real32 maxMagnitude, real32 actualMag);
-void vecCapMinVector(vector *vectorToCap, real32 minMagnitude);
-void vecCapMinMaxVector(vector *vectorToCap, real32 minMagnitude, real32 maxMagnitude);
-real32 getVectDistSloppy(vector diff);
-void vecLineIntersectWithXYPlane(vector *result, vector *linepoint1,vector *linepoint2, real32 zp);
-void vecLineIntersectWithYZPlane(vector *result, vector *linepoint1,vector *linepoint2, real32 xp);
-void vecLineIntersectWithXZPlane(vector *result, vector *linepoint1,vector *linepoint2, real32 yp);
-void vecLineIntersectWithPlane(vector *dest, vector *Vplane, vector *Vnormal, vector *Vline, vector *Vdirection);
-void vecVectorsBlend(vector *result, vector *start, vector *end, real32 factor);
+void vecNormalize(vector& a);
+void vecHomogenize(vector& dst, const hvector& src);
+void vecCopyAndNormalize(vector& src, const vector& dst);
+void vecNormalizeToLength(vector& a, real32 length);
+void vecCapVectorSloppy(vector& vectorToCap, real32 maxMagnitude);
+void vecCapVector(vector& vectorToCap, real32 maxMagnitude);
+void vecCapVectorWithMag(vector& vectorToCap, real32 maxMagnitude, real32 actualMag);
+void vecCapMinVector(vector& vectorToCap, real32 minMagnitude);
+void vecCapMinMaxVector(vector& vectorToCap, real32 minMagnitude, real32 maxMagnitude);
+real32 getVectDistSloppy(const vector& diff);
+void vecLineIntersectWithXYPlane(vector& result, const vector& linepoint1, const vector& linepoint2, real32 zp);
+void vecLineIntersectWithYZPlane(vector& result, const vector& linepoint1, const vector& linepoint2, real32 xp);
+void vecLineIntersectWithXZPlane(vector& result, const vector& linepoint1, const vector& linepoint2, real32 yp);
+void vecLineIntersectWithPlane(vector& dest, const vector& Vplane, const vector& Vnormal, const vector& Vline, const vector& Vdirection);
+void vecVectorsBlend(vector& result, const vector& start, const vector& end, real32 factor);
 
 #endif
