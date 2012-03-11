@@ -44,34 +44,34 @@ scriptStructEntry AttackSideStepParametersScriptTable[] =
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-bool needToGoToSameVerticalPlane(Ship *ship,SpaceObjRotImpTarg *target, real32 tolerance, real32 speedToleranceSqr)
+bool needToGoToSameVerticalPlane(Ship& ship,SpaceObjRotImpTarg& target, real32 tolerance, real32 speedToleranceSqr)
 {
     real32 ydist,speedSqr;
 
-    if ((ship->shiptype == Carrier) || (ship->shiptype == MissileDestroyer) || (ship->shiptype == P1Mothership))
+    switch( ship.shiptype )
     {
-        return TRUE;
+    case Carrier:
+    case MissileDestroyer:
+    case P1Mothership:
+    	return true;
     }
 
-    speedSqr = vecMagnitudeSquared(target->posinfo.velocity);
+    speedSqr = vecMagnitudeSquared(target.posinfo.velocity);
 
     if(speedSqr > speedToleranceSqr)
     {
-        ydist = ship->posinfo.position.z - target->posinfo.position.z;
+        ydist = ship.posinfo.position.z - target.posinfo.position.z;
 
         if(ydist < 0.0f)
-        {
             ydist = -ydist;
-        }
 
         if(ydist <= tolerance)
-            return FALSE;
+            return false;
     }
     else
-    {
-        return FALSE;
-    }
-    return TRUE;
+        return false;
+
+    return true;
 }
 
 /*-----------------------------------------------------------------------------
@@ -82,7 +82,7 @@ bool needToGoToSameVerticalPlane(Ship *ship,SpaceObjRotImpTarg *target, real32 t
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void attackPassiveRotate(Ship *ship,Ship *target)
+void attackPassiveRotate(Ship& ship,Ship& target)
 {
     vector trajectory;
     real32 range;
@@ -91,37 +91,32 @@ void attackPassiveRotate(Ship *ship,Ship *target)
 //    CommandToDo *command;
 //    sdword i;
 
-    if (ship->specialFlags & SPECIAL_Hyperspacing)
+    if (ship.specialFlags & SPECIAL_Hyperspacing)
         return;
 
-    aishipGetTrajectory(ship,(SpaceObjRotImpTarg *)target,&trajectory);
+    aishipGetTrajectory(ship, target, trajectory);
 
-    if ((ship->shiptype == Carrier) || (ship->shiptype == MissileDestroyer))
-    {
+    if( (ship.shiptype == Carrier) || (ship.shiptype == MissileDestroyer) )
         trajectory.z = 0.0f;        // don't pirouette EVER for Carrier, Missile Destroyer
-    }
-    else if (isCapitalShip(ship))
-    {
-        if (vecMagnitudeSquared(target->posinfo.velocity) > capShipLieFlatInGeneralSpeedSqrTolerance[ship->staticinfo->shipclass])
-        {
-            trajectory.z = 0.0f;
-        }
-    }
+    else if
+    (
+    	isCapitalShip(ship)
+    	&& vecMagnitudeSquared(target.posinfo.velocity) > capShipLieFlatInGeneralSpeedSqrTolerance[ship.GetStaticInfo()->shipclass]
+    )
+    	trajectory.z = 0.0f;
 
     dist = fsqrt(vecMagnitudeSquared(trajectory));
-    vecDivideByScalar(trajectory,dist,temp);
+    vecDivideByScalar(trajectory, dist);
 
     aitrackHeading(ship,&trajectory,FLYSHIP_ATTACKACCURACY);
 
-    if (ship->attackvars.multipleAttackTargets)
-    {
+    if( ship.attackvars.multipleAttackTargets )
         gunShootGunsAtMultipleTargets(ship);
-    }
     else
     {
-        range = RangeToTargetGivenDist(ship,(SpaceObjRotImpTarg *)target,dist);
+        range = RangeToTargetGivenDist(target, dist);
 
-        gunShootGunsAtTarget(ship,(SpaceObjRotImpTarg *)target,range,&trajectory);
+        gunShootGunsAtTarget(ship, &target, range, &trajectory);
     }
 
     /*
@@ -172,21 +167,21 @@ void attackPassiveRotate(Ship *ship,Ship *target)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void attackSimple(Ship *ship,SpaceObjRotImpTarg *target)
+void attackSimple(Ship& ship,SpaceObjRotImpTarg& target)
 {
     vector trajectory;
     real32 range;
     real32 dist;
     real32 temp;
 
-    aishipGetTrajectory(ship,(SpaceObjRotImpTarg *)target,&trajectory);
+    aishipGetTrajectory(ship, target, trajectory);
 
     dist = fsqrt(vecMagnitudeSquared(trajectory));
-    vecDivideByScalar(trajectory,dist,temp);
+    vecDivideByScalar(trajectory, dist);
 
-    range = RangeToTargetGivenDist(ship,(SpaceObjRotImpTarg *)target,dist);
+    range = RangeToTargetGivenDist(target, dist);
     gunShootGunsAtTarget(ship,(SpaceObjRotImpTarg *)target,range,&trajectory);
-    ship->shipisattacking = FALSE;      // we're not attacking, just blowing stuff up in our way
+    ship.shipisattacking = FALSE;      // we're not attacking, just blowing stuff up in our way
 }
 
 /*-----------------------------------------------------------------------------
@@ -197,31 +192,28 @@ void attackSimple(Ship *ship,SpaceObjRotImpTarg *target)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void attackPassive(Ship *ship,Ship *target)
+void attackPassive(Ship& ship,Ship& target)
 {
     vector trajectory;
     real32 range;
     real32 dist;
-    real32 temp;
 //    CommandToDo *command;
 //    sdword i;
 
-    if (ship->specialFlags & SPECIAL_Hyperspacing)
+    if (ship.specialFlags & SPECIAL_Hyperspacing)
         return;
 
-    if (ship->attackvars.multipleAttackTargets)
-    {
+    if (ship.attackvars.multipleAttackTargets)
         gunShootGunsAtMultipleTargets(ship);
-    }
     else
     {
-        aishipGetTrajectory(ship,(SpaceObjRotImpTarg *)target,&trajectory);
+        aishipGetTrajectory(ship, target, trajectory);
 
         dist = fsqrt(vecMagnitudeSquared(trajectory));
-        vecDivideByScalar(trajectory,dist,temp);
+        vecDivideByScalar(trajectory, dist);
 
-        range = RangeToTargetGivenDist(ship,(SpaceObjRotImpTarg *)target,dist);
-        gunShootGunsAtTarget(ship,(SpaceObjRotImpTarg *)target,range,&trajectory);
+        range = RangeToTargetGivenDist(target,dist);
+        gunShootGunsAtTarget(ship, &target, range, &trajectory);
     }
 
     /*
@@ -272,7 +264,7 @@ void attackPassive(Ship *ship,Ship *target)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void attackStraightForward(Ship *ship,SpaceObjRotImpTarg *target,real32 gunRange,real32 tooCloseRange)
+void attackStraightForward(Ship& ship, SpaceObjRotImpTarg& target,real32 gunRange,real32 tooCloseRange)
 {
     vector trajectory;
     vector destination,newHeading;
@@ -282,20 +274,21 @@ void attackStraightForward(Ship *ship,SpaceObjRotImpTarg *target,real32 gunRange
     bool shootguns = FALSE;
     CommandToDo *targetCommand;
 
-
-    aishipGetTrajectory(ship,target,&trajectory);
+    aishipGetTrajectory(ship,target, trajectory);
 
     dist = fsqrt(vecMagnitudeSquared(trajectory));
-    vecDivideByScalar(trajectory,dist,temp);
+    vecDivideByScalar(trajectory,dist);
 
-    range = RangeToTargetGivenDist(ship,target,dist);
+    range = RangeToTargetGivenDist(target, dist);
 
-    if(capShipLieFlatInGeneralSpeedSqrTolerance[ship->staticinfo->shipclass] != 0.0f
-       && needToGoToSameVerticalPlane(ship,target,capShipLieFlatInGeneralDistanceTolerance[ship->staticinfo->shipclass],capShipLieFlatInGeneralSpeedSqrTolerance[ship->staticinfo->shipclass]))
+    auto& shipclass = ship.GetStaticInfo()->shipclass;
+
+    if(capShipLieFlatInGeneralSpeedSqrTolerance[shipclass] != 0.0f
+       && needToGoToSameVerticalPlane(ship,target,capShipLieFlatInGeneralDistanceTolerance[shipclass],capShipLieFlatInGeneralSpeedSqrTolerance[shipclass]))
     {
-        destination.x = ship->posinfo.position.x;
-        destination.z = target->posinfo.position.z;
-        destination.y = ship->posinfo.position.y;
+        destination.x = ship.posinfo.position.x;
+        destination.z = target.posinfo.position.z;
+        destination.y = ship.posinfo.position.y;
 
         //aishipFlyToPointAvoidingObjs(ship,&destination,AISHIP_FastAsPossible,0.0f);
 
@@ -303,40 +296,36 @@ void attackStraightForward(Ship *ship,SpaceObjRotImpTarg *target,real32 gunRange
         if (range > tooCloseRange)
         {
             // about right range
-            vecAddTo(destination,target->posinfo.position);
+            vecAddTo(destination,target.posinfo.position);
             vecMultiplyByScalar(destination,0.5f);      // avg of target position and previous destination
         }
 
-        if(target->objtype == OBJ_ShipType)
+        if(target.objtype == OBJ_ShipType)
         {
-            if( ((Ship *)target)->staticinfo->shipclass == CLASS_Fighter ||
-                ((Ship *)target)->staticinfo->shipclass == CLASS_Corvette)
+        	auto& shipTarget = (Ship&)target;
+
+            if( (shipTarget.GetStaticInfo()->shipclass == CLASS_Fighter) ||
+                (shipTarget.GetStaticInfo()->shipclass == CLASS_Corvette) )
             {
-                targetCommand = getShipAndItsCommand(&universe.mainCommandLayer,(Ship *)target);
-                if(targetCommand != NULL)
+                targetCommand = getShipAndItsCommand(shipTarget);
+                if( targetCommand != NULL
+                 && targetCommand->ordertype.order == COMMAND_ATTACK //target is a ship and is doing something
+                 && shipTarget.attackvars.attacktarget == ship )//target is attacking something
                 {
-                    //target is a ship and is doing something
-                    if(targetCommand->ordertype.order == COMMAND_ATTACK)
-                    {
-                        //target is attacking something
-                        if( ((Ship *)((Ship *)target)->attackvars.attacktarget) == ship)
-                        {
-                            //target is attacking ship
-                            //don't move to same plane because the ship is coming back
-                            goto dontgotosameplane;
-                        }
-                    }
+					//target is attacking ship
+					//don't move to same plane because the ship is coming back
+					goto dontgotosameplane;
                 }
             }
         }
 
-        aishipFlyToPointAvoidingObjsWithVel(ship,&destination,0,0.0f,&target->posinfo.velocity);
+        aishipFlyToPointAvoidingObjsWithVel(ship, &destination, 0, 0.0f, &target.posinfo.velocity);
 dontgotosameplane:
 
         newHeading.y = trajectory.y;
         newHeading.x = trajectory.x;
         newHeading.z = 0.0f;
-        vecNormalize(&newHeading);
+        vecNormalize(newHeading);
         aitrackHeading(ship,&newHeading,FLYSHIP_ATTACKACCURACY);
 
         if (range < gunRange)
@@ -350,19 +339,19 @@ dontgotosameplane:
         {
             // too far away, so fly in
 
-            aishipFlyToShipAvoidingObjsWithVel(ship,target,0,0.0f,&target->posinfo.velocity);
+            aishipFlyToShipAvoidingObjsWithVel(ship, target, 0, 0.0f, &target.posinfo.velocity);
         }
         else if (range > tooCloseRange)
         {
             // about right range
-            aishipFlyToShipAvoidingObjsWithVel(ship,target,0,0.0f,&target->posinfo.velocity);
-            shootguns = TRUE;
+            aishipFlyToShipAvoidingObjsWithVel(ship, target, 0, 0.0f, &target.posinfo.velocity);
+            shootguns = true;
         }
         else
         {
             // too close
             aitrackZeroVelocity(ship);
-            shootguns = TRUE;
+            shootguns = true;
         }
 
         aitrackHeading(ship,&trajectory,FLYSHIP_ATTACKACCURACY);
@@ -370,14 +359,10 @@ dontgotosameplane:
 
     if (shootguns)
     {
-        if (ship->attackvars.multipleAttackTargets)
-        {
+        if (ship.attackvars.multipleAttackTargets)
             gunShootGunsAtMultipleTargets(ship);
-        }
         else
-        {
-            gunShootGunsAtTarget(ship,target,range,&trajectory);
-        }
+            gunShootGunsAtTarget(ship, &target, range, &trajectory);
     }
 }
 
@@ -407,41 +392,37 @@ void attackSideStepInit(AttackSideStep *attacksidestep)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void attackSideStep(Ship *ship,SpaceObjRotImpTarg *target,AttackSideStep *attacksidestep,AttackSideStepParameters *parameters)
+void attackSideStep(Ship& ship,SpaceObjRotImpTarg& target,AttackSideStep *attacksidestep,AttackSideStepParameters *parameters)
 {
     vector trajectory;
     real32 dist;
     real32 range;
     real32 temp;
     bool didshoot;
-    ShipStaticInfo *shipstaticinfo = (ShipStaticInfo *)ship->staticinfo;
+    ShipStaticInfo *shipstaticinfo = (ShipStaticInfo *)ship.staticinfo;
 
-    switch (ship->aistateattack)
+    switch (ship.aistateattack)
     {
         case SIDESTEP_APPROACH:
 #if DEBUG_ATTACK
             dbgMessagef("Ship %x SIDESTEP_APPROACH",(udword)ship);
 #endif
-            aishipGetTrajectory(ship,target,&trajectory);
-            aishipFlyToShipAvoidingObjs(ship,target,AISHIP_PointInDirectionFlying + AISHIP_CarTurn,0.0f);
-            range = RangeToTarget(ship,target,&trajectory);
+            aishipGetTrajectory(ship, target, trajectory);
+            aishipFlyToShipAvoidingObjs(ship, target, AISHIP_PointInDirectionFlying + AISHIP_CarTurn,0.0f);
+            range = RangeToTarget(target, trajectory);
 
-            didshoot = FALSE;
-            if (range < shipstaticinfo->bulletRange[ship->tacticstype])
+            didshoot = false;
+            if (range < shipstaticinfo->bulletRange[ship.tacticstype])
             {
-                if (ship->attackvars.multipleAttackTargets)
-                {
+                if (ship.attackvars.multipleAttackTargets)
                     didshoot = gunShootGunsAtMultipleTargets(ship);
-                }
                 else
-                {
-                    didshoot = gunShootGunsAtTarget(ship,target,range,&trajectory);
-                }
+                    didshoot = gunShootGunsAtTarget(ship, &target,range, &trajectory);
             }
 
             if (didshoot)
             {
-                ship->aistateattack = SIDESTEP_APPROACHREPOSITION;
+                ship.aistateattack = SIDESTEP_APPROACHREPOSITION;
                 attacksidestep->aitime = universe.totaltimeelapsed;
                 if (parameters->fullMovementFreedom)
                 {
@@ -449,7 +430,7 @@ void attackSideStep(Ship *ship,SpaceObjRotImpTarg *target,AttackSideStep *attack
                 }
                 else
                 {
-                    if (ship->specialFlags & SPECIAL_AttackFromAbove)
+                    if (ship.specialFlags & SPECIAL_AttackFromAbove)
                         attacksidestep->aidirection = (gamerand() & 3) ? TRANS_UP : TRANS_DOWN;
                     else
                         attacksidestep->aidirection = (gamerand() & 3) ? TRANS_RIGHT : TRANS_LEFT;
@@ -458,43 +439,36 @@ void attackSideStep(Ship *ship,SpaceObjRotImpTarg *target,AttackSideStep *attack
             }
 
             if (range < parameters->circleRange)
-            {
-                ship->aistateattack = SIDESTEP_KILL;
-            }
+                ship.aistateattack = SIDESTEP_KILL;
+
             break;
 
         case SIDESTEP_APPROACHREPOSITION:
 #if DEBUG_ATTACK
             dbgMessagef("Ship %x SIDESTEP_APPROACHREPOSITION",(udword)ship);
 #endif
-            aishipGetTrajectory(ship,target,&trajectory);
+            aishipGetTrajectory(ship, target, trajectory);
 
             dist = fsqrt(vecMagnitudeSquared(trajectory));
-            vecDivideByScalar(trajectory,dist,temp);
+            vecDivideByScalar(trajectory, dist);
             aitrackHeadingWithBank(ship,&trajectory,FLYSHIP_HEADINGACCURACY,shipstaticinfo->sinbank);
 
-            range = RangeToTargetGivenDist(ship,target,dist);
+            range = RangeToTargetGivenDist(target, dist);
 
-            physApplyForceToObj((SpaceObj *)ship,ship->nonstatvars.thruststrength[TRANS_FORWARD]*0.5f,TRANS_FORWARD);
-            physApplyForceToObj((SpaceObj *)ship,ship->nonstatvars.thruststrength[attacksidestep->aidirection],(uword)attacksidestep->aidirection);
+            physApplyForceToObj(ship, ship.nonstatvars.thruststrength[TRANS_FORWARD]*0.5f,TRANS_FORWARD);
+            physApplyForceToObj(ship, ship.nonstatvars.thruststrength[attacksidestep->aidirection],(uword)attacksidestep->aidirection);
 
-            aishipFlyToPointAvoidingObjsWithVel(ship,NULL,0,0.0f,&ship->posinfo.velocity);     // just avoid objects
+            aishipFlyToPointAvoidingObjsWithVel(ship,nullptr,0,0.0f,&ship.posinfo.velocity);     // just avoid objects
 
-            if (ship->attackvars.multipleAttackTargets)
-            {
+            if (ship.attackvars.multipleAttackTargets)
                 gunShootGunsAtMultipleTargets(ship);
-            }
 
             if ((universe.totaltimeelapsed - attacksidestep->aitime) > parameters->repositionTime)
             {
                 if (range < parameters->circleRange)
-                {
-                    ship->aistateattack = SIDESTEP_KILL;
-                }
+                    ship.aistateattack = SIDESTEP_KILL;
                 else
-                {
-                    ship->aistateattack = SIDESTEP_APPROACH;
-                }
+                    ship.aistateattack = SIDESTEP_APPROACH;
             }
             break;
 
@@ -503,41 +477,35 @@ void attackSideStep(Ship *ship,SpaceObjRotImpTarg *target,AttackSideStep *attack
             dbgMessagef("Ship %x SIDESTEP_KILL",(udword)ship);
 #endif
 
-            aishipGetTrajectory(ship,target,&trajectory);
+            aishipGetTrajectory(ship, target, trajectory);
 
             dist = fsqrt(vecMagnitudeSquared(trajectory));
-            vecDivideByScalar(trajectory,dist,temp);
+            vecDivideByScalar(trajectory, dist);
 
-            aishipFlyToPointAvoidingObjsWithVel(ship,NULL,0,0.0f,&ship->posinfo.velocity);     // just avoid objects
+            aishipFlyToPointAvoidingObjsWithVel(ship, nullptr, 0, 0.0f, &ship.posinfo.velocity);     // just avoid objects
 
-            aitrackHeadingWithBank(ship,&trajectory,FLYSHIP_ATTACKACCURACY,shipstaticinfo->sinbank);
+            aitrackHeadingWithBank(ship, &trajectory,FLYSHIP_ATTACKACCURACY,shipstaticinfo->sinbank);
 
-            range = RangeToTargetGivenDist(ship,target,dist);
+            range = RangeToTargetGivenDist(target,dist);
 
             didshoot = FALSE;
-            if (range < shipstaticinfo->bulletRange[ship->tacticstype])
+            if (range < shipstaticinfo->bulletRange[ship.tacticstype])
             {
-                if (ship->attackvars.multipleAttackTargets)
-                {
+                if (ship.attackvars.multipleAttackTargets)
                     didshoot = gunShootGunsAtMultipleTargets(ship);
-                }
                 else
-                {
-                    didshoot = gunShootGunsAtTarget(ship,target,range,&trajectory);
-                }
+                    didshoot = gunShootGunsAtTarget(ship, &target, range, &trajectory);
             }
 
             if (didshoot)
             {
-                ship->aistateattack = SIDESTEP_REPOSITION;
+                ship.aistateattack = SIDESTEP_REPOSITION;
                 attacksidestep->aitime = universe.totaltimeelapsed;
                 if (parameters->fullMovementFreedom)
-                {
                     attacksidestep->aidirection = (gamerand() & 3);
-                }
                 else
                 {
-                    if (ship->specialFlags & SPECIAL_AttackFromAbove)
+                    if (ship.specialFlags & SPECIAL_AttackFromAbove)
                         attacksidestep->aidirection = (gamerand() & 3) ? TRANS_UP : TRANS_DOWN;
                     else
                         attacksidestep->aidirection = (gamerand() & 3) ? TRANS_RIGHT : TRANS_LEFT;
@@ -546,9 +514,7 @@ void attackSideStep(Ship *ship,SpaceObjRotImpTarg *target,AttackSideStep *attack
             }
 
             if (range > parameters->circleRange)
-            {
-                ship->aistateattack = SIDESTEP_APPROACH;
-            }
+                ship.aistateattack = SIDESTEP_APPROACH;
 
             break;
 
@@ -556,40 +522,34 @@ void attackSideStep(Ship *ship,SpaceObjRotImpTarg *target,AttackSideStep *attack
 #if DEBUG_ATTACK
             dbgMessagef("Ship %x SIDESTEP_REPOSITION",(udword)ship);
 #endif
-            aishipGetTrajectory(ship,target,&trajectory);
+            aishipGetTrajectory(ship, target, trajectory);
 
             dist = fsqrt(vecMagnitudeSquared(trajectory));
-            vecDivideByScalar(trajectory,dist,temp);
-            aitrackHeadingWithBank(ship,&trajectory,FLYSHIP_HEADINGACCURACY,shipstaticinfo->sinbank);
+            vecDivideByScalar(trajectory, dist);
+            aitrackHeadingWithBank(ship, &trajectory,FLYSHIP_HEADINGACCURACY,shipstaticinfo->sinbank);
 
-            physApplyForceToObj((SpaceObj *)ship,ship->nonstatvars.thruststrength[attacksidestep->aidirection],(uword)attacksidestep->aidirection);
-            physApplyForceToObj((SpaceObj *)ship,ship->nonstatvars.thruststrength[TRANS_FORWARD]*0.5f,TRANS_FORWARD);
+            physApplyForceToObj(ship, ship.nonstatvars.thruststrength[attacksidestep->aidirection],(uword)attacksidestep->aidirection);
+            physApplyForceToObj(ship, ship.nonstatvars.thruststrength[TRANS_FORWARD]*0.5f,TRANS_FORWARD);
 
-            aishipFlyToPointAvoidingObjsWithVel(ship,NULL,0,0.0f,&ship->posinfo.velocity);     // just avoid objects
+            aishipFlyToPointAvoidingObjsWithVel(ship, nullptr, 0, 0.0f, &ship.posinfo.velocity);     // just avoid objects
 
-            range = RangeToTargetGivenDist(ship,target,dist);
+            range = RangeToTargetGivenDist(target, dist);
 
-            if (ship->attackvars.multipleAttackTargets)
-            {
+            if (ship.attackvars.multipleAttackTargets)
                 gunShootGunsAtMultipleTargets(ship);
-            }
 
             if (range > parameters->circleRange)
             {
-                ship->aistateattack = SIDESTEP_APPROACH;
+                ship.aistateattack = SIDESTEP_APPROACH;
                 break;
             }
 
             if ((universe.totaltimeelapsed - attacksidestep->aitime) > parameters->repositionTime)
             {
                 if (range < parameters->circleRange)
-                {
-                    ship->aistateattack = SIDESTEP_KILL;
-                }
+                    ship.aistateattack = SIDESTEP_KILL;
                 else
-                {
-                    ship->aistateattack = SIDESTEP_APPROACH;
-                }
+                    ship.aistateattack = SIDESTEP_APPROACH;
             }
             break;
 

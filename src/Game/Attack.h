@@ -33,7 +33,7 @@ void attackStraightForward(Ship *ship,SpaceObjRotImpTarg *target,real32 gunRange
 
 void attackPassive(Ship *ship,Ship *target);
 
-void attackSimple(Ship *ship,SpaceObjRotImpTarg *target);
+void attackSimple(Ship& ship, SpaceObjRotImpTarg& target);
 
 /*=============================================================================
     Data:
