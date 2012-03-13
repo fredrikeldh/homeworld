@@ -15,9 +15,6 @@
     Private Macros:
 =============================================================================*/
 
-#define hmatrixdot(x1,x2,x3,x4,y1,y2,y3,y4) \
-    ( ((x1)*(y1)) + ((x2)*(y2)) + ((x3)*(y3)) + ((x4)*(y4)) )
-
 #define matrixdot(x1,x2,x3,y1,y2,y3) \
     ( ((x1)*(y1)) + ((x2)*(y2)) + ((x3)*(y3)) )
 
@@ -40,21 +37,413 @@
     Public constants:
 =============================================================================*/
 
-const hmatrix IdentityHMatrix =
-{
+const hmatrix IdentityHMatrix
+(
     1.0f, 0.0f, 0.0f, 0.0f,
     0.0f, 1.0f, 0.0f, 0.0f,
     0.0f, 0.0f, 1.0f, 0.0f,
     0.0f, 0.0f, 0.0f, 1.0f
-};
+);
 
-const matrix IdentityMatrix =
-{
+const matrix IdentityMatrix(
     1.0f, 0.0f, 0.0f,
     0.0f, 1.0f, 0.0f,
     0.0f, 0.0f, 1.0f
-};
+);
 
+typedef matrix::column column;
+
+column
+matrix::GetColumn1() const
+{
+	return column
+	(
+		m11,
+		m21,
+		m31
+	);
+}
+
+column
+matrix::GetColumn2() const
+{
+	return column
+	(
+		m12,
+		m22,
+		m32
+	);
+}
+
+column
+matrix::GetColumn3() const
+{
+	return column
+	(
+		m13,
+		m23,
+		m33
+	);
+}
+
+void
+matrix::SetColumn1(const column& vec)
+{
+    m11 = (vec).x;
+    m21 = (vec).y;
+    m31 = (vec).z;
+}
+
+void
+matrix::SetColumn2(const column& vec)
+{
+    m12 = (vec).x;
+    m22 = (vec).y;
+    m32 = (vec).z;
+}
+
+void
+matrix::SetColumn3(const column& vec)
+{
+    m13 = (vec).x;
+    m23 = (vec).y;
+    m33 = (vec).z;
+}
+
+column::value_type
+matrix::Multiply(column::value_type x1, column::value_type x2,
+                   column::value_type x3,
+                   const column& col) const
+{
+	return (x1 * col.x) + (x2 * col.y) + (x3 * col.z);
+}
+
+column::value_type
+matrix::MultiplyRow1(const column& col) const
+{
+	return Multiply(m11, m12, m13, col);
+}
+
+column::value_type
+matrix::MultiplyRow2(const column& col) const
+{
+	return Multiply(m21, m22, m23, col);
+}
+
+column::value_type
+matrix::MultiplyRow3(const column& col) const
+{
+	return Multiply(m31, m32, m33, col);
+}
+
+column::value_type
+matrix::MultiplyColumn1(const column& col) const
+{
+	return Multiply(m11, m21, m31, col);
+}
+
+column::value_type
+matrix::MultiplyColumn2(const column& col) const
+{
+	return Multiply(m12, m22, m32, col);
+}
+
+column::value_type
+matrix::MultiplyColumn3(const column& col) const
+{
+	return Multiply(m13, m23, m33, col);
+}
+
+// Make our life a little easier
+typedef hmatrix::column hcolumn;
+
+hcolumn
+hmatrix::GetColumn1() const
+{
+	return hcolumn(m11, m21, m31, m41);
+}
+
+hcolumn
+hmatrix::GetColumn2() const
+{
+	return hcolumn(m12, m22, m32, m42);
+}
+
+hcolumn
+hmatrix::GetColumn3() const
+{
+	return hcolumn(	m13, m23, m33, m43);
+}
+
+hcolumn
+hmatrix::GetColumn4() const
+{
+	return hcolumn(m14, m24, m34, m44);
+}
+
+void
+hmatrix::SetColumn1(column::value_type f1, column::value_type f2,
+				       column::value_type f3, column::value_type f4)
+{
+	m11 = f1;
+	m21 = f2;
+	m31 = f3;
+	m41 = f4;
+}
+
+void
+hmatrix::SetColumn1(const column& hvec)
+{
+	SetColumn1
+	(
+		hvec.x, hvec.y,
+		hvec.z, hvec.w
+	);
+}
+
+void
+hmatrix::SetColumn2(column::value_type f1, column::value_type f2,
+				      column::value_type f3, column::value_type f4)
+{
+	m12 = f1;
+	m22 = f2;
+	m32 = f3;
+	m42 = f4;
+}
+
+void
+hmatrix::SetColumn2(const column& hvec)
+{
+	SetColumn2
+	(
+		hvec.x, hvec.y,
+		hvec.z, hvec.w
+	);
+}
+
+void
+hmatrix::SetColumn3(column::value_type f1, column::value_type f2,
+				      column::value_type f3, column::value_type f4)
+{
+	m13 = f1;
+	m23 = f2;
+	m33 = f3;
+	m43 = f4;
+}
+
+void
+hmatrix::SetColumn3(const column& hvec)
+{
+	SetColumn3
+	(
+		hvec.x, hvec.y,
+		hvec.z, hvec.w
+	);
+}
+
+void
+hmatrix::SetColumn4(column::value_type f1, column::value_type f2,
+				       column::value_type f3, column::value_type f4)
+{
+	m14 = f1;
+	m24 = f2;
+	m34 = f3;
+	m44 = f4;
+}
+
+void
+hmatrix::SetColumn4(const column& hvec)
+{
+	SetColumn4
+	(
+		hvec.x,
+		hvec.y,
+		hvec.z,
+		hvec.w
+	);
+}
+
+hcolumn::value_type
+hmatrix::Multiply(column::value_type x1, column::value_type x2,
+                    column::value_type x3, column::value_type x4,
+                    const column& col) const
+{
+	return (x1 * col.x) + (x2 * col.y) + (x3 * col.z) + (x4 * col.w);
+}
+
+hcolumn::value_type
+hmatrix::MultiplyRow1(const column& col) const
+{
+	return Multiply(m11, m12, m13, m14, col);
+}
+
+hcolumn::value_type
+hmatrix::MultiplyRow2(const column& col) const
+{
+	return Multiply(m21, m22, m23, m24, col);
+}
+
+hcolumn::value_type
+hmatrix::MultiplyRow3(const column& col) const
+{
+	return Multiply(m31, m32, m33, m34, col);
+}
+
+hcolumn::value_type
+hmatrix::MultiplyRow4(const column& col) const
+{
+	return Multiply(m41, m42, m43, m44, col);
+}
+
+hcolumn::value_type
+hmatrix::MultiplyColumn1(const column& col) const
+{
+	return Multiply(m11, m21, m31, m41, col);
+}
+
+hcolumn::value_type
+hmatrix::MultiplyColumn2(const column& col) const
+{
+	return Multiply(m12, m22, m32, m42, col);
+}
+
+hcolumn::value_type
+hmatrix::MultiplyColumn3(const column& col) const
+{
+	return Multiply(m13, m23, m33, m43, col);
+}
+
+hcolumn::value_type
+hmatrix::MultiplyColumn4(const column& col) const
+{
+	return Multiply(m14, m24, m34, m44, col);
+}
+
+void
+hmatrix::Set(const column& col1, const column& col2,
+		       const column& col3, const column& col4)
+{
+	SetColumn1(col1);
+	SetColumn2(col2);
+	SetColumn3(col3);
+	SetColumn4(col4);
+}
+
+void
+hmatrix::Set(const matrix& matrix, const vector& col,
+		       column::value_type f41 = 0.0f, column::value_type f42 = 0.0f,
+		       column::value_type f43 = 0.0f, column::value_type f44 = 1.0f)
+{
+	SetColumn1
+	(
+		matrix.m11,
+		matrix.m21,
+		matrix.m31,
+		f41
+	);
+
+	SetColumn2
+	(
+		matrix.m12,
+		matrix.m22,
+		matrix.m32,
+		f42
+	);
+
+	SetColumn3
+	(
+		matrix.m13,
+		matrix.m23,
+		matrix.m33,
+		f43
+	);
+
+	SetColumn4
+	(
+		col.x,
+		col.y,
+		col.z,
+		f44
+	);
+}
+
+void
+hmatrix::Set(const matrix& matrix,
+               column::value_type f41, column::value_type f42,
+               column::value_type f43)
+{
+	SetColumn1
+	(
+		matrix.m11,
+		matrix.m21,
+		matrix.m31,
+		f41
+	);
+
+	SetColumn2
+	(
+		matrix.m12,
+		matrix.m22,
+		matrix.m32,
+		f42
+	);
+
+	SetColumn3
+	(
+		matrix.m13,
+		matrix.m23,
+		matrix.m33,
+		f43
+	);
+
+	SetColumn4
+	(
+		hvector
+		(
+			0.0f,
+			0.0f,
+			0.0f,
+			1.0f
+		)
+	);
+}
+
+void hmatrix::Set(const matrix& matrix, const column& col,
+		            column::value_type f41, column::value_type f42,
+		            column::value_type f43)
+{
+	SetColumn1
+	(
+		matrix.m11,
+		matrix.m21,
+		matrix.m31,
+		f41
+	);
+
+	SetColumn2
+	(
+		matrix.m12,
+		matrix.m22,
+		matrix.m32,
+		f42
+	);
+
+	SetColumn3
+	(
+		matrix.m13,
+		matrix.m23,
+		matrix.m33,
+		f43
+	);
+
+	SetColumn4
+	(
+		col.x,
+		col.y,
+		col.z,
+		col.w
+	);
+}
 
 
 /*=============================================================================
@@ -68,27 +457,10 @@ const matrix IdentityMatrix =
     Outputs     : result
     Return      :
 ----------------------------------------------------------------------------*/
-void hmatMakeHMatFromMat(hmatrix *result,matrix *mat)
+void hmatMakeHMatFromMat(hmatrix& result, matrix&mat)
 {
-    result->m11 = mat->m11;
-    result->m21 = mat->m21;
-    result->m31 = mat->m31;
-    result->m41 = 0.0f;
+	result.Set(mat);
 
-    result->m12 = mat->m12;
-    result->m22 = mat->m22;
-    result->m32 = mat->m32;
-    result->m42 = 0.0f;
-
-    result->m13 = mat->m13;
-    result->m23 = mat->m23;
-    result->m33 = mat->m33;
-    result->m43 = 0.0f;
-
-    result->m14 = 0.0f;
-    result->m24 = 0.0f;
-    result->m34 = 0.0f;
-    result->m44 = 1.0f;
 }
 
 /*-----------------------------------------------------------------------------
@@ -99,27 +471,9 @@ void hmatMakeHMatFromMat(hmatrix *result,matrix *mat)
     Outputs     : result
     Return      :
 ----------------------------------------------------------------------------*/
-void hmatMakeHMatFromMatAndVec(hmatrix *result,matrix *mat, vector *pos)
+void hmatMakeHMatFromMatAndVec(hmatrix& result, const matrix& mat, const vector& pos)
 {
-    result->m11 = mat->m11;
-    result->m21 = mat->m21;
-    result->m31 = mat->m31;
-    result->m41 = 0.0f;
-
-    result->m12 = mat->m12;
-    result->m22 = mat->m22;
-    result->m32 = mat->m32;
-    result->m42 = 0.0f;
-
-    result->m13 = mat->m13;
-    result->m23 = mat->m23;
-    result->m33 = mat->m33;
-    result->m43 = 0.0f;
-
-    result->m14 = pos->x;
-    result->m24 = pos->y;
-    result->m34 = pos->z;
-    result->m44 = 1.0f;
+	result.Set(mat, pos);
 }
 
 /*-----------------------------------------------------------------------------
@@ -129,12 +483,9 @@ void hmatMakeHMatFromMatAndVec(hmatrix *result,matrix *mat, vector *pos)
     Outputs     : result
     Return      :
 ----------------------------------------------------------------------------*/
-void hmatCreateHMatFromHVecs(hmatrix *result,hvector *col1,hvector *col2,hvector *col3,hvector *col4)
+void hmatCreateHMatFromHVecs(hmatrix& result, hvector& col1, hvector& col2, hvector& col3, hvector& col4)
 {
-    hmatPutHVectIntoHMatrixCol1(*col1,*result);
-    hmatPutHVectIntoHMatrixCol2(*col2,*result);
-    hmatPutHVectIntoHMatrixCol3(*col3,*result);
-    hmatPutHVectIntoHMatrixCol4(*col4,*result);
+	result.Set(col1, col2, col3, col4);
 }
 
 /*-----------------------------------------------------------------------------
@@ -145,13 +496,13 @@ void hmatCreateHMatFromHVecs(hmatrix *result,hvector *col1,hvector *col2,hvector
     Return      :
     Warning     : result cannot be the same matrix as first or second.
 ----------------------------------------------------------------------------*/
-void hmatMultiplyHMatByHMat(hmatrix *result,hmatrix *first,hmatrix *second)
+void hmatMultiplyHMatByHMat(hmatrix&result, hmatrix& first, hmatrix&second)
 {
 	MultiplyMatrix4fByMatrix4f
 	(
-		(real32*)result,
-		(real32*)first,
-		(real32*)second
+		(real32*)&result,
+		(real32*)&first,
+		(real32*)&second
 	);
 }
 
@@ -178,6 +529,17 @@ void MultiplyMatrix4fByMatrix4f(real32* c, const real32* a, const real32* b)
 #undef P
 }
 
+hvector operator*(const hmatrix& matrix, const hvector& vector)
+{
+	return hvector
+    (
+    	matrix.MultiplyRow1(vector),
+    	matrix.MultiplyRow2(vector),
+    	matrix.MultiplyRow3(vector),
+    	matrix.MultiplyRow4(vector)
+    );
+}
+
 /*-----------------------------------------------------------------------------
     Name        : hmatMultiplyHMatByHVec
     Description : result = matrix * vector (all are homogenous)
@@ -186,12 +548,20 @@ void MultiplyMatrix4fByMatrix4f(real32* c, const real32* a, const real32* b)
     Return      :
     Warning     : hvector result cannot be the same as hvector vector.
 ----------------------------------------------------------------------------*/
-void hmatMultiplyHMatByHVec(hvector *result,hmatrix *matrix,hvector *vector)
+void hmatMultiplyHMatByHVec(hvector& result, const hmatrix& matrix, const hvector& vector)
 {
-    result->x = hmatrixdot(matrix->m11,matrix->m12,matrix->m13,matrix->m14,vector->x,vector->y,vector->z,vector->w);
-    result->y = hmatrixdot(matrix->m21,matrix->m22,matrix->m23,matrix->m24,vector->x,vector->y,vector->z,vector->w);
-    result->z = hmatrixdot(matrix->m31,matrix->m32,matrix->m33,matrix->m34,vector->x,vector->y,vector->z,vector->w);
-    result->w = hmatrixdot(matrix->m41,matrix->m42,matrix->m43,matrix->m44,vector->x,vector->y,vector->z,vector->w);
+	result = matrix * vector;
+}
+
+hvector operator*(const hvector& vector, const hmatrix& matrix)
+{
+	return hvector
+	(
+		matrix.MultiplyColumn1(vector),
+		matrix.MultiplyColumn2(vector),
+		matrix.MultiplyColumn3(vector),
+		matrix.MultiplyColumn4(vector)
+	);
 }
 
 /*-----------------------------------------------------------------------------
@@ -202,12 +572,9 @@ void hmatMultiplyHMatByHVec(hvector *result,hmatrix *matrix,hvector *vector)
     Return      :
     Warning     : hvector result cannot be the same as hvector vector.
 ----------------------------------------------------------------------------*/
-void hmatMultiplyHVecByHMat(hvector *result,hvector *vector,hmatrix *matrix)
+void hmatMultiplyHVecByHMat(hvector& result, const hvector& vector, const hmatrix& matrix)
 {
-    result->x = hmatrixdot(vector->x,vector->y,vector->z,vector->w,matrix->m11,matrix->m21,matrix->m31,matrix->m41);
-    result->y = hmatrixdot(vector->x,vector->y,vector->z,vector->w,matrix->m12,matrix->m22,matrix->m32,matrix->m42);
-    result->z = hmatrixdot(vector->x,vector->y,vector->z,vector->w,matrix->m13,matrix->m23,matrix->m33,matrix->m43);
-    result->w = hmatrixdot(vector->x,vector->y,vector->z,vector->w,matrix->m14,matrix->m24,matrix->m34,matrix->m44);
+	hvector = vector * matrix;
 }
 
 /*-----------------------------------------------------------------------------
@@ -217,31 +584,27 @@ void hmatMultiplyHVecByHMat(hvector *result,hvector *vector,hmatrix *matrix)
     Outputs     : matrix
     Return      :
 ----------------------------------------------------------------------------*/
-void hmatTranspose(hmatrix *matrix)
+void hmatTranspose(hmatrix& matrix)
 {
-    real32 temp;
-
-    swap(matrix->m12,matrix->m21,temp);
-    swap(matrix->m13,matrix->m31,temp);
-    swap(matrix->m14,matrix->m41,temp);
-    swap(matrix->m23,matrix->m32,temp);
-    swap(matrix->m24,matrix->m42,temp);
-    swap(matrix->m34,matrix->m43,temp);
+	matrix.Transpose();
 }
 
-/*-----------------------------------------------------------------------------
-    Name        : hmatCopyAndTranspose
-    Description : takes src matrix, and puts its transpose in dsttrans
-    Inputs      : src
-    Outputs     : dsttrans
-    Return      :
-----------------------------------------------------------------------------*/
-void hmatCopyAndTranspose(hmatrix *src,hmatrix *dsttrans)
+//-----------------------------------------------------------------------------
+//    Name        : hmatCopyAndTranspose
+//    Description : takes src matrix, and puts its transpose in dsttrans
+//    Inputs      : src
+//    Outputs     : dsttrans
+//    Return      :
+//----------------------------------------------------------------------------
+void hmatCopyAndTranspose(const hmatrix& src, hmatrix& dsttrans)
 {
-    dsttrans->m11 = src->m11;   dsttrans->m12 = src->m21;   dsttrans->m13 = src->m31;   dsttrans->m14 = src->m41;
-    dsttrans->m21 = src->m12;   dsttrans->m22 = src->m22;   dsttrans->m23 = src->m32;   dsttrans->m24 = src->m42;
-    dsttrans->m31 = src->m13;   dsttrans->m32 = src->m23;   dsttrans->m33 = src->m33;   dsttrans->m34 = src->m43;
-    dsttrans->m41 = src->m14;   dsttrans->m42 = src->m24;   dsttrans->m43 = src->m34;   dsttrans->m44 = src->m44;
+	dsttrans = src;
+	dsttrans.Transpose();
+
+//    dsttrans.m11 = src.m11;   dsttrans.m12 = src.m21;   dsttrans.m13 = src.m31;   dsttrans.m14 = src.m41;
+//    dsttrans.m21 = src.m12;   dsttrans.m22 = src.m22;   dsttrans.m23 = src.m32;   dsttrans.m24 = src.m42;
+//    dsttrans.m31 = src.m13;   dsttrans.m32 = src.m23;   dsttrans.m33 = src.m33;   dsttrans.m34 = src.m43;
+//    dsttrans.m41 = src.m14;   dsttrans.m42 = src.m24;   dsttrans.m43 = src.m34;   dsttrans.m44 = src.m44;
 }
 
 /*-----------------------------------------------------------------------------
@@ -251,12 +614,12 @@ void hmatCopyAndTranspose(hmatrix *src,hmatrix *dsttrans)
     Outputs     : matrix
     Return      :
 ----------------------------------------------------------------------------*/
-void hmatMakeRotAboutZ(hmatrix *matrix,real32 costheta,real32 sintheta)
+void hmatMakeRotAboutZ(hmatrix& matrix, real32 costheta, real32 sintheta)
 {
-    matrix->m11 = costheta;     matrix->m12 = -sintheta;    matrix->m13 = 0.0f;    matrix->m14 = 0.0f;
-    matrix->m21 = sintheta;     matrix->m22 = costheta;     matrix->m23 = 0.0f;    matrix->m24 = 0.0f;
-    matrix->m31 = 0.0f;         matrix->m32 = 0.0f;         matrix->m33 = 1.0f;    matrix->m34 = 0.0f;
-    matrix->m41 = 0.0f;         matrix->m42 = 0.0f;         matrix->m43 = 0.0f;    matrix->m44 = 1.0f;
+    matrix.m11 = costheta;    matrix.m12 = -sintheta;    matrix.m13 = 0.0f;    matrix.m14 = 0.0f;
+    matrix.m21 = sintheta;    matrix.m22 = costheta;     matrix.m23 = 0.0f;    matrix.m24 = 0.0f;
+    matrix.m31 = 0.0f;        matrix.m32 = 0.0f;         matrix.m33 = 1.0f;    matrix.m34 = 0.0f;
+    matrix.m41 = 0.0f;        matrix.m42 = 0.0f;         matrix.m43 = 0.0f;    matrix.m44 = 1.0f;
 }
 
 /*-----------------------------------------------------------------------------
@@ -266,12 +629,12 @@ void hmatMakeRotAboutZ(hmatrix *matrix,real32 costheta,real32 sintheta)
     Outputs     : matrix
     Return      :
 ----------------------------------------------------------------------------*/
-void hmatMakeRotAboutX(hmatrix *matrix,real32 costheta,real32 sintheta)
+void hmatMakeRotAboutX(hmatrix& matrix, real32 costheta, real32 sintheta)
 {
-    matrix->m11 = 1.0f;            matrix->m12 = 0.0f;         matrix->m13 = 0.0f;         matrix->m14 = 0.0f;
-    matrix->m21 = 0.0f;            matrix->m22 = costheta;     matrix->m23 = -sintheta;    matrix->m24 = 0.0f;
-    matrix->m31 = 0.0f;            matrix->m32 = sintheta;     matrix->m33 = costheta;     matrix->m34 = 0.0f;
-    matrix->m41 = 0.0f;            matrix->m42 = 0.0f;         matrix->m43 = 0.0f;         matrix->m44 = 1.0f;
+    matrix.m11 = 1.0f;    matrix.m12 = 0.0f;        matrix.m13 = 0.0f;         matrix.m14 = 0.0f;
+    matrix.m21 = 0.0f;    matrix.m22 = costheta;    matrix.m23 = -sintheta;    matrix.m24 = 0.0f;
+    matrix.m31 = 0.0f;    matrix.m32 = sintheta;    matrix.m33 = costheta;     matrix.m34 = 0.0f;
+    matrix.m41 = 0.0f;    matrix.m42 = 0.0f;        matrix.m43 = 0.0f;         matrix.m44 = 1.0f;
 }
 
 /*-----------------------------------------------------------------------------
@@ -281,12 +644,12 @@ void hmatMakeRotAboutX(hmatrix *matrix,real32 costheta,real32 sintheta)
     Outputs     : matrix
     Return      :
 ----------------------------------------------------------------------------*/
-void hmatMakeRotAboutY(hmatrix *matrix,real32 costheta,real32 sintheta)
+void hmatMakeRotAboutY(hmatrix& matrix, real32 costheta, real32 sintheta)
 {
-    matrix->m11 = costheta;     matrix->m12 = 0.0f;            matrix->m13 = sintheta;    matrix->m14 = 0.0f;
-    matrix->m21 = 0.0f;         matrix->m22 = 1.0f;            matrix->m23 = 0.0f;        matrix->m24 = 0.0f;
-    matrix->m31 = -sintheta;    matrix->m32 = 0.0f;            matrix->m33 = costheta;    matrix->m34 = 0.0f;
-    matrix->m41 = 0.0f;         matrix->m42 = 0.0f;            matrix->m43 = 0.0f;        matrix->m44 = 1.0f;
+    matrix.m11 = costheta;     matrix.m12 = 0.0f;            matrix.m13 = sintheta;    matrix.m14 = 0.0f;
+    matrix.m21 = 0.0f;         matrix.m22 = 1.0f;            matrix.m23 = 0.0f;        matrix.m24 = 0.0f;
+    matrix.m31 = -sintheta;    matrix.m32 = 0.0f;            matrix.m33 = costheta;    matrix.m34 = 0.0f;
+    matrix.m41 = 0.0f;         matrix.m42 = 0.0f;            matrix.m43 = 0.0f;        matrix.m44 = 1.0f;
 }
 
 /*-----------------------------------------------------------------------------
@@ -296,12 +659,12 @@ void hmatMakeRotAboutY(hmatrix *matrix,real32 costheta,real32 sintheta)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void hmatPrintHMatrix(hmatrix *a)
+void hmatPrintHMatrix(const hmatrix& a)
 {
-    printf("(%8f %8f %8f %8f)\n",a->m11,a->m12,a->m13,a->m14);
-    printf("(%8f %8f %8f %8f)\n",a->m21,a->m22,a->m23,a->m24);
-    printf("(%8f %8f %8f %8f)\n",a->m31,a->m32,a->m33,a->m34);
-    printf("(%8f %8f %8f %8f)\n",a->m41,a->m42,a->m43,a->m44);
+    printf("(%8f %8f %8f %8f)\n",a.m11, a.m12, a.m13, a.m14);
+    printf("(%8f %8f %8f %8f)\n",a.m21, a.m22, a.m23, a.m24);
+    printf("(%8f %8f %8f %8f)\n",a.m31, a.m32, a.m33, a.m34);
+    printf("(%8f %8f %8f %8f)\n",a.m41, a.m42, a.m43, a.m44);
 }
 
 
@@ -317,19 +680,9 @@ void hmatPrintHMatrix(hmatrix *a)
     Outputs     : result
     Return      :
 ----------------------------------------------------------------------------*/
-void matGetMatFromHMat(matrix *result,hmatrix *hmat)
+void matGetMatFromHMat(matrix& result, const hmatrix& hmat)
 {
-    result->m11 = hmat->m11;
-    result->m21 = hmat->m21;
-    result->m31 = hmat->m31;
-
-    result->m12 = hmat->m12;
-    result->m22 = hmat->m22;
-    result->m32 = hmat->m32;
-
-    result->m13 = hmat->m13;
-    result->m23 = hmat->m23;
-    result->m33 = hmat->m33;
+	result = hmat.GetMatrix();
 }
 
 /*-----------------------------------------------------------------------------
@@ -340,10 +693,10 @@ void matGetMatFromHMat(matrix *result,hmatrix *hmat)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void matCreateCoordSysFromHeading(matrix *result,vector *heading)
+void matCreateCoordSysFromHeading(matrix& result, const vector& heading)
 {
     vector up = {0.0f, 0.0f, 1.0f};
-    vector LOF = *heading;
+    vector LOF = heading;
     vector right;
 
     if (up.x == LOF.x && up.y == LOF.y && up.z == LOF.z)
@@ -351,14 +704,14 @@ void matCreateCoordSysFromHeading(matrix *result,vector *heading)
         up.x = 0.11914522f;                                 //point vector not quite along z
         up.z = 0.99287684f;
     }
-    vecCrossProduct(right, LOF, up);
-    vecCrossProduct(up, right, LOF);
-    vecNormalize(&right);
-    vecNormalize(&up);
+    vecCrossProduct(right, LOF  , up );
+    vecCrossProduct(up   , right, LOF);
+    vecNormalize(right);
+    vecNormalize(up);
 
-    matPutVectIntoMatrixCol1(up, *result);
-    matPutVectIntoMatrixCol2(right, *result);
-    matPutVectIntoMatrixCol3(LOF, *result);
+    matPutVectIntoMatrixCol1(up,    result);
+    matPutVectIntoMatrixCol2(right, result);
+    matPutVectIntoMatrixCol3(LOF,   result);
 }
 
 /*-----------------------------------------------------------------------------
@@ -368,11 +721,11 @@ void matCreateCoordSysFromHeading(matrix *result,vector *heading)
     Outputs     : result
     Return      :
 ----------------------------------------------------------------------------*/
-void matCreateMatFromVecs(matrix *result,vector *col1,vector *col2,vector *col3)
+void matCreateMatFromVecs(matrix& result, const vector& col1, const vector& col2, const vector& col3)
 {
-    matPutVectIntoMatrixCol1(*col1,*result);
-    matPutVectIntoMatrixCol2(*col2,*result);
-    matPutVectIntoMatrixCol3(*col3,*result);
+    matPutVectIntoMatrixCol1(col1, result);
+    matPutVectIntoMatrixCol2(col2, result);
+    matPutVectIntoMatrixCol3(col3, result);
 }
 
 /*-----------------------------------------------------------------------------
@@ -383,8 +736,9 @@ void matCreateMatFromVecs(matrix *result,vector *col1,vector *col2,vector *col3)
     Return      :
     Warning     : result cannot be the same matrix as first or second.
 ----------------------------------------------------------------------------*/
-void matMultiplyMatByMat(matrix *result,matrix *first,matrix *second)
+void matMultiplyMatByMat(matrix *result, matrix *first, matrix *second)
 {
+/*
 #if defined (_USE_ASM) && defined (_MSC_VER)
     static real32* c;
     static real32* a;
@@ -453,13 +807,13 @@ void matMultiplyMatByMat(matrix *result,matrix *first,matrix *second)
         pop       edi
     }
 #elif defined (_USE_ASM) && defined (__GNUC__) && defined (__i386__) && !defined (_MACOSX_FIX_86)
-/* This block of code is the modified version of the code above.
- * It was safe to use upto gcc 4.1, but seems to generate a 
- * problem once we use -O2 with gcc 4.3  */
+// This block of code is the modified version of the code above.
+// It was safe to use upto gcc 4.1, but seems to generate a
+// problem once we use -O2 with gcc 4.3
 
-/* This seems to be to do with the result matrix being outside this function.
- * It is bypassed by defining it locally, and copying the matrix
- * back into the result. */
+// This seems to be to do with the result matrix being outside this function.
+// It is bypassed by defining it locally, and copying the matrix
+// back into the result.
 
     matrix matResult[]={{0,0,0, 0,0,0, 0,0,0}};
  
@@ -516,11 +870,11 @@ void matMultiplyMatByMat(matrix *result,matrix *first,matrix *second)
     memcpy(result, matResult, sizeof(struct matrix));
 
 #elif defined (_USE_ASM) && defined (__GNUC__) && defined (_X86_64) 
-/* This is the AMD64 version of the above code but using the 
- * xmm 128-bit SSE registers. It looks longer but should be a 
- * lot quicker as most of the operations are in parallel.
- * Any CPU which supports SSE should be able to use these
- * operations, (Pentium3 and above) though not tested. */
+// This is the AMD64 version of the above code but using the
+// xmm 128-bit SSE registers. It looks longer but should be a
+// lot quicker as most of the operations are in parallel.
+// Any CPU which supports SSE should be able to use these
+// operations, (Pentium3 and above) though not tested.
 
     matrix matResult[]={{0,0,0, 0,0,0, 0,0,0}};
 
@@ -633,6 +987,7 @@ void matMultiplyMatByMat(matrix *result,matrix *first,matrix *second)
     memcpy(result, matResult, sizeof(struct matrix));
 
 #else
+*/
 #define A(row,col) a[3*col+row]
 #define B(row,col) b[3*col+row]
 #define P(row,col) c[3*col+row]
@@ -653,7 +1008,29 @@ void matMultiplyMatByMat(matrix *result,matrix *first,matrix *second)
 #undef A
 #undef B
 #undef P
+/*
 #endif
+*/
+}
+
+vector operator*(const matrix& matrix, const vector& vector)
+{
+	return vector
+    (
+    	matrix.MultiplyRow1(vector),
+    	matrix.MultiplyRow2(vector),
+    	matrix.MultiplyRow3(vector)
+    );
+}
+
+vector operator*(const vector& vector, const matrix& matrix)
+{
+	return hvector
+	(
+		matrix.MultiplyColumn1(vector),
+		matrix.MultiplyColumn2(vector),
+		matrix.MultiplyColumn3(vector)
+	);
 }
 
 /*-----------------------------------------------------------------------------
@@ -666,6 +1043,7 @@ void matMultiplyMatByMat(matrix *result,matrix *first,matrix *second)
 ----------------------------------------------------------------------------*/
 void matMultiplyMatByVec(vector *result,matrix *matrix,vector *vector)
 {
+/*
 #if defined (_USE_ASM) && defined (_MSC_VER)
     real32* dest = (real32*)result;
     real32* source = (real32*)vector;
@@ -733,58 +1111,59 @@ void matMultiplyMatByVec(vector *result,matrix *matrix,vector *vector)
     }
 #elif defined (_USE_ASM) && defined (__GNUC__) && defined (__i386__) && !defined (_MACOSX_FIX_86)
     __asm__ __volatile__ (
-        "    flds    0*"FSIZE_STR"("SOURCE")\n"               /*s0*/
-        "    fmuls   (0+0*3)*"FSIZE_STR"("MATRIX")\n"         /*a0*/
-        "    flds    1*"FSIZE_STR"("SOURCE")\n"               /*s1 a0*/
-        "    fmuls   (0+1*3)*"FSIZE_STR"("MATRIX")\n"         /*a1 a0*/
-        "    flds    2*"FSIZE_STR"("SOURCE")\n"               /*s2 a1 a0*/
-        "    fmuls   (0+2*3)*"FSIZE_STR"("MATRIX")\n"         /*a2 a1 a0*/
+        "    flds    0*"FSIZE_STR"("SOURCE")\n"               //s0
+        "    fmuls   (0+0*3)*"FSIZE_STR"("MATRIX")\n"         //a0
+        "    flds    1*"FSIZE_STR"("SOURCE")\n"               //s1 a0
+        "    fmuls   (0+1*3)*"FSIZE_STR"("MATRIX")\n"         //a1 a0
+        "    flds    2*"FSIZE_STR"("SOURCE")\n"               //s2 a1 a0
+        "    fmuls   (0+2*3)*"FSIZE_STR"("MATRIX")\n"         //a2 a1 a0
 
-        "    fxch    %%st(1)\n"                               /*a1 a2 a0*/
-        "    faddp   %%st, %%st(2)\n"                         /*a2 a1+a0*/
+        "    fxch    %%st(1)\n"                               //a1 a2 a0
+        "    faddp   %%st, %%st(2)\n"                         //a2 a1+a0
 
-        "    flds    0*"FSIZE_STR"("SOURCE")\n"               /*s0 a2 a1+a0*/
-        "    fmuls   (1+0*3)*"FSIZE_STR"("MATRIX")\n"         /*b0 a2 a1+a0*/
+        "    flds    0*"FSIZE_STR"("SOURCE")\n"               //s0 a2 a1+a0
+        "    fmuls   (1+0*3)*"FSIZE_STR"("MATRIX")\n"         //b0 a2 a1+a0
 
-        "    fxch    %%st(1)\n"                               /*a2 b0 a1+a0*/
-        "    faddp   %%st, %%st(2)\n"                         /*b0 d0*/
+        "    fxch    %%st(1)\n"                               //a2 b0 a1+a0
+        "    faddp   %%st, %%st(2)\n"                         //b0 d0
 
-        "    flds    1*"FSIZE_STR"("SOURCE")\n"               /*s1 b0 d0*/
-        "    fmuls   (1+1*3)*"FSIZE_STR"("MATRIX")\n"         /*b1 b0 d0*/
-        "    flds    2*"FSIZE_STR"("SOURCE")\n"               /*s2 b1 b0 d0*/
-        "    fmuls   (1+2*3)*"FSIZE_STR"("MATRIX")\n"         /*b2 b1 b0 d0*/
+        "    flds    1*"FSIZE_STR"("SOURCE")\n"               //s1 b0 d0
+        "    fmuls   (1+1*3)*"FSIZE_STR"("MATRIX")\n"         //b1 b0 d0
+        "    flds    2*"FSIZE_STR"("SOURCE")\n"               //s2 b1 b0 d0
+        "    fmuls   (1+2*3)*"FSIZE_STR"("MATRIX")\n"         //b2 b1 b0 d0
 
-        "    fxch    %%st(1)\n"                               /*b1 b2 b0 d0*/
-        "    faddp   %%st, %%st(1)\n"                         /*b1+b2 b0 d0*/
+        "    fxch    %%st(1)\n"                               //b1 b2 b0 d0
+        "    faddp   %%st, %%st(1)\n"                         //b1+b2 b0 d0
 
-        "    flds    0*"FSIZE_STR"("SOURCE")\n"               /*s0 b1+b2 b0 d0*/
-        "    fmuls   (2+0*3)*"FSIZE_STR"("MATRIX")\n"         /*c0 b1+b2 b0 d0*/
+        "    flds    0*"FSIZE_STR"("SOURCE")\n"               //s0 b1+b2 b0 d0
+        "    fmuls   (2+0*3)*"FSIZE_STR"("MATRIX")\n"         //c0 b1+b2 b0 d0
 
-        "    fxch    %%st(1)\n"                               /*b1+b2 c0 b0 d0*/
-        "    faddp   %%st, %%st(2)\n"                         /*c0 d1 d0*/
+        "    fxch    %%st(1)\n"                               //b1+b2 c0 b0 d0
+        "    faddp   %%st, %%st(2)\n"                         //c0 d1 d0
 
-        "    flds    1*"FSIZE_STR"("SOURCE")\n"               /*s1 c0 d1 d0*/
-        "    fmuls   (2+1*3)*"FSIZE_STR"("MATRIX")\n"         /*c1 c0 d1 d0*/
-        "    flds    2*"FSIZE_STR"("SOURCE")\n"               /*s2 c1 c0 d1 d0*/
-        "    fmuls   (2+2*3)*"FSIZE_STR"("MATRIX")\n"         /*c2 c1 c0 d1 d0*/
+        "    flds    1*"FSIZE_STR"("SOURCE")\n"               //s1 c0 d1 d0
+        "    fmuls   (2+1*3)*"FSIZE_STR"("MATRIX")\n"         //c1 c0 d1 d0
+        "    flds    2*"FSIZE_STR"("SOURCE")\n"               //s2 c1 c0 d1 d0
+        "    fmuls   (2+2*3)*"FSIZE_STR"("MATRIX")\n"         //c2 c1 c0 d1 d0
 
-        "    fxch    %%st(1)\n"                               /*c1 c2 c0 d1 d0*/
-        "    faddp   %%st, %%st(1)\n"                         /*c1+c2 c0 d1 d0*/
+        "    fxch    %%st(1)\n"                               //c1 c2 c0 d1 d0
+        "    faddp   %%st, %%st(1)\n"                         //c1+c2 c0 d1 d0
 
-        "    fxch    %%st(2)\n"                               /*d1 c0 c1+c2 d0*/
-        "    fstps   1*"FSIZE_STR"("DEST")\n"                 /*c0 c1+c2 d0*/
-        "    fxch    %%st(1)\n"                               /*c1+c2 c0 d0*/
-        "    faddp   %%st, %%st(1)\n"                         /*d2 d0*/
-        "    fxch    %%st(1)\n"                               /*d0 d2*/
-        "    fstps   0*"FSIZE_STR"("DEST")\n"                 /*d2*/
+        "    fxch    %%st(2)\n"                               //d1 c0 c1+c2 d0
+        "    fstps   1*"FSIZE_STR"("DEST")\n"                 //c0 c1+c2 d0
+        "    fxch    %%st(1)\n"                               //c1+c2 c0 d0
+        "    faddp   %%st, %%st(1)\n"                         //d2 d0
+        "    fxch    %%st(1)\n"                               //d0 d2
+        "    fstps   0*"FSIZE_STR"("DEST")\n"                 //d2
         "    fstps   2*"FSIZE_STR"("DEST")\n"
         :
         : "S" (vector), "b" (result), "D" (matrix) );
 #else
-    result->x = matrixdot(matrix->m11,matrix->m12,matrix->m13,vector->x,vector->y,vector->z);
-    result->y = matrixdot(matrix->m21,matrix->m22,matrix->m23,vector->x,vector->y,vector->z);
-    result->z = matrixdot(matrix->m31,matrix->m32,matrix->m33,vector->x,vector->y,vector->z);
+*/
+	*result = *matrix * *vector;
+/*
 #endif
+*/
 }
 
 /*-----------------------------------------------------------------------------
@@ -797,6 +1176,7 @@ void matMultiplyMatByVec(vector *result,matrix *matrix,vector *vector)
 ----------------------------------------------------------------------------*/
 void matMultiplyVecByMat(vector *result,vector *vector,matrix *matrix)
 {
+/*
 #if defined (_USE_ASM) && defined (_MSC_VER)
     real32* dest = (real32*)result;
     real32* source = (real32*)vector;
@@ -864,58 +1244,61 @@ void matMultiplyVecByMat(vector *result,vector *vector,matrix *matrix)
     }
 #elif defined (_USE_ASM) && defined (__GNUC__) && defined (__i386__) && !defined (_MACOSX_FIX_86)
     __asm__ __volatile__ (
-        "    flds    0*"FSIZE_STR"("SOURCE")\n"               /*s0*/
-        "    fmuls   (0+0*3)*"FSIZE_STR"("MATRIX")\n"         /*a0*/
-        "    flds    1*"FSIZE_STR"("SOURCE")\n"               /*s1 a0*/
-        "    fmuls   (1+0*3)*"FSIZE_STR"("MATRIX")\n"         /*a1 a0*/
-        "    flds    2*"FSIZE_STR"("SOURCE")\n"               /*s2 a1 a0*/
-        "    fmuls   (2+0*3)*"FSIZE_STR"("MATRIX")\n"         /*a2 a1 a0*/
+        "    flds    0*"FSIZE_STR"("SOURCE")\n"               //s0
+        "    fmuls   (0+0*3)*"FSIZE_STR"("MATRIX")\n"         //a0
+        "    flds    1*"FSIZE_STR"("SOURCE")\n"               //s1 a0
+        "    fmuls   (1+0*3)*"FSIZE_STR"("MATRIX")\n"         //a1 a0
+        "    flds    2*"FSIZE_STR"("SOURCE")\n"               //s2 a1 a0
+        "    fmuls   (2+0*3)*"FSIZE_STR"("MATRIX")\n"         //a2 a1 a0
 
-        "    fxch    %%st(1)\n"                               /*a1 a2 a0*/
-        "    faddp   %%st, %%st(2)\n"                         /*a2 a1+a0*/
+        "    fxch    %%st(1)\n"                               //a1 a2 a0
+        "    faddp   %%st, %%st(2)\n"                         //a2 a1+a0
 
-        "    flds    0*"FSIZE_STR"("SOURCE")\n"               /*s0 a2 a1+a0*/
-        "    fmuls   (0+1*3)*"FSIZE_STR"("MATRIX")\n"         /*b0 a2 a1+a0*/
+        "    flds    0*"FSIZE_STR"("SOURCE")\n"               //s0 a2 a1+a0
+        "    fmuls   (0+1*3)*"FSIZE_STR"("MATRIX")\n"         //b0 a2 a1+a0
 
-        "    fxch    %%st(1)\n"                               /*a2 b0 a1+a0*/
-        "    faddp   %%st, %%st(2)\n"                         /*b0 d0*/
+        "    fxch    %%st(1)\n"                               //a2 b0 a1+a0
+        "    faddp   %%st, %%st(2)\n"                         //b0 d0
 
-        "    flds    1*"FSIZE_STR"("SOURCE")\n"               /*s1 b0 d0*/
-        "    fmuls   (1+1*3)*"FSIZE_STR"("MATRIX")\n"         /*b1 b0 d0*/
-        "    flds    2*"FSIZE_STR"("SOURCE")\n"               /*s2 b1 b0 d0*/
-        "    fmuls   (2+1*3)*"FSIZE_STR"("MATRIX")\n"         /*b2 b1 b0 d0*/
+        "    flds    1*"FSIZE_STR"("SOURCE")\n"               //s1 b0 d0
+        "    fmuls   (1+1*3)*"FSIZE_STR"("MATRIX")\n"         //b1 b0 d0
+        "    flds    2*"FSIZE_STR"("SOURCE")\n"               //s2 b1 b0 d0
+        "    fmuls   (2+1*3)*"FSIZE_STR"("MATRIX")\n"         //b2 b1 b0 d0
 
-        "    fxch    %%st(1)\n"                               /*b1 b2 b0 d0*/
-        "    faddp   %%st, %%st(1)\n"                         /*b1+b2 b0 d0*/
+        "    fxch    %%st(1)\n"                               //b1 b2 b0 d0
+        "    faddp   %%st, %%st(1)\n"                         //b1+b2 b0 d0
 
-        "    flds    0*"FSIZE_STR"("SOURCE")\n"               /*s0 b1+b2 b0 d0*/
-        "    fmuls   (0+2*3)*"FSIZE_STR"("MATRIX")\n"         /*c0 b1+b2 b0 d0*/
+        "    flds    0*"FSIZE_STR"("SOURCE")\n"               //s0 b1+b2 b0 d0
+        "    fmuls   (0+2*3)*"FSIZE_STR"("MATRIX")\n"         //c0 b1+b2 b0 d0
 
-        "    fxch    %%st(1)\n"                               /*b1+b2 c0 b0 d0*/
-        "    faddp   %%st, %%st(2)\n"                         /*c0 d1 d0*/
+        "    fxch    %%st(1)\n"                               //b1+b2 c0 b0 d0
+        "    faddp   %%st, %%st(2)\n"                         //c0 d1 d0
 
-        "    flds    1*"FSIZE_STR"("SOURCE")\n"               /*s1 c0 d1 d0*/
-        "    fmuls   (1+2*3)*"FSIZE_STR"("MATRIX")\n"         /*c1 c0 d1 d0*/
-        "    flds    2*"FSIZE_STR"("SOURCE")\n"               /*s2 c1 c0 d1 d0*/
-        "    fmuls   (2+2*3)*"FSIZE_STR"("MATRIX")\n"         /*c2 c1 c0 d1 d0*/
+        "    flds    1*"FSIZE_STR"("SOURCE")\n"               //s1 c0 d1 d0
+        "    fmuls   (1+2*3)*"FSIZE_STR"("MATRIX")\n"         //c1 c0 d1 d0
+        "    flds    2*"FSIZE_STR"("SOURCE")\n"               //s2 c1 c0 d1 d0
+        "    fmuls   (2+2*3)*"FSIZE_STR"("MATRIX")\n"         //c2 c1 c0 d1 d0
 
-        "    fxch    %%st(1)\n"                               /*c1 c2 c0 d1 d0*/
-        "    faddp   %%st, %%st(1)\n"                         /*c1+c2 c0 d1 d0*/
+        "    fxch    %%st(1)\n"                               //c1 c2 c0 d1 d0
+        "    faddp   %%st, %%st(1)\n"                         //c1+c2 c0 d1 d0
 
-        "    fxch    %%st(2)\n"                               /*d1 c0 c1+c2 d0*/
-        "    fstps   1*"FSIZE_STR"("DEST")\n"                 /*c0 c1+c2 d0*/
-        "    fxch    %%st(1)\n"                               /*c1+c2 c0 d0*/
-        "    faddp   %%st, %%st(1)\n"                         /*d2 d0*/
-        "    fxch    %%st(1)\n"                               /*d0 d2*/
-        "    fstps   0*"FSIZE_STR"("DEST")\n"                 /*d2*/
+        "    fxch    %%st(2)\n"                               //d1 c0 c1+c2 d0
+        "    fstps   1*"FSIZE_STR"("DEST")\n"                 //c0 c1+c2 d0
+        "    fxch    %%st(1)\n"                               //c1+c2 c0 d0
+        "    faddp   %%st, %%st(1)\n"                         //d2 d0
+        "    fxch    %%st(1)\n"                               //d0 d2
+        "    fstps   0*"FSIZE_STR"("DEST")\n"                 //d2
         "    fstps   2*"FSIZE_STR"("DEST")\n"
         :
         : "S" (vector), "b" (result), "D" (matrix) );
 #else
+*/
     result->x = matrixdot(vector->x,vector->y,vector->z,matrix->m11,matrix->m21,matrix->m31);
     result->y = matrixdot(vector->x,vector->y,vector->z,matrix->m12,matrix->m22,matrix->m32);
     result->z = matrixdot(vector->x,vector->y,vector->z,matrix->m13,matrix->m23,matrix->m33);
+/*
 #endif
+*/
 }
 
 /*-----------------------------------------------------------------------------
@@ -925,13 +1308,9 @@ void matMultiplyVecByMat(vector *result,vector *vector,matrix *matrix)
     Outputs     : matrix
     Return      :
 ----------------------------------------------------------------------------*/
-void matTranspose(matrix *matrix)
+void matTranspose(matrix& matrix)
 {
-    real32 temp;
-
-    swap(matrix->m21,matrix->m12,temp);
-    swap(matrix->m31,matrix->m13,temp);
-    swap(matrix->m32,matrix->m23,temp);
+	matrix.Transpose();
 }
 
 /*-----------------------------------------------------------------------------
@@ -941,11 +1320,13 @@ void matTranspose(matrix *matrix)
     Outputs     : dsttrans
     Return      :
 ----------------------------------------------------------------------------*/
-void matCopyAndTranspose(matrix *src,matrix *dsttrans)
+void matCopyAndTranspose(const matrix& src, matrix& dsttrans)
 {
-    dsttrans->m11 = src->m11;   dsttrans->m12 = src->m21;   dsttrans->m13 = src->m31;
-    dsttrans->m21 = src->m12;   dsttrans->m22 = src->m22;   dsttrans->m23 = src->m32;
-    dsttrans->m31 = src->m13;   dsttrans->m32 = src->m23;   dsttrans->m33 = src->m33;
+	dsttrans = src;
+	dsttrans.Transpose();
+//    dsttrans.m11 = src.m11;   dsttrans.m12 = src.m21;   dsttrans.m13 = src.m31;
+//    dsttrans.m21 = src.m12;   dsttrans.m22 = src.m22;   dsttrans.m23 = src.m32;
+//    dsttrans.m31 = src.m13;   dsttrans.m32 = src.m23;   dsttrans.m33 = src.m33;
 }
 
 /*-----------------------------------------------------------------------------
@@ -955,11 +1336,11 @@ void matCopyAndTranspose(matrix *src,matrix *dsttrans)
     Outputs     : matrix
     Return      :
 ----------------------------------------------------------------------------*/
-void matMakeRotAboutZ(matrix *matrix,real32 costheta,real32 sintheta)
+void matMakeRotAboutZ(matrix& matrix, real32 costheta, real32 sintheta)
 {
-    matrix->m11 = costheta;     matrix->m12 = -sintheta;    matrix->m13 = 0.0f;
-    matrix->m21 = sintheta;     matrix->m22 = costheta;     matrix->m23 = 0.0f;
-    matrix->m31 = 0.0f;         matrix->m32 = 0.0f;         matrix->m33 = 1.0f;
+    matrix.m11 = costheta;     matrix.m12 = -sintheta;    matrix.m13 = 0.0f;
+    matrix.m21 = sintheta;     matrix.m22 = costheta;     matrix.m23 = 0.0f;
+    matrix.m31 = 0.0f;         matrix.m32 = 0.0f;         matrix.m33 = 1.0f;
 }
 
 /*-----------------------------------------------------------------------------
@@ -969,11 +1350,11 @@ void matMakeRotAboutZ(matrix *matrix,real32 costheta,real32 sintheta)
     Outputs     : matrix
     Return      :
 ----------------------------------------------------------------------------*/
-void matMakeRotAboutX(matrix *matrix,real32 costheta,real32 sintheta)
+void matMakeRotAboutX(matrix& matrix, real32 costheta, real32 sintheta)
 {
-    matrix->m11 = 1.0f;            matrix->m12 = 0.0f;         matrix->m13 = 0.0f;
-    matrix->m21 = 0.0f;            matrix->m22 = costheta;     matrix->m23 = -sintheta;
-    matrix->m31 = 0.0f;            matrix->m32 = sintheta;     matrix->m33 = costheta;
+    matrix.m11 = 1.0f;            matrix.m12 = 0.0f;         matrix.m13 = 0.0f;
+    matrix.m21 = 0.0f;            matrix.m22 = costheta;     matrix.m23 = -sintheta;
+    matrix.m31 = 0.0f;            matrix.m32 = sintheta;     matrix.m33 = costheta;
 }
 
 /*-----------------------------------------------------------------------------
@@ -983,11 +1364,11 @@ void matMakeRotAboutX(matrix *matrix,real32 costheta,real32 sintheta)
     Outputs     : matrix
     Return      :
 ----------------------------------------------------------------------------*/
-void matMakeRotAboutY(matrix *matrix,real32 costheta,real32 sintheta)
+void matMakeRotAboutY(matrix& matrix, real32 costheta, real32 sintheta)
 {
-    matrix->m11 = costheta;     matrix->m12 = 0.0f;            matrix->m13 = sintheta;
-    matrix->m21 = 0.0f;         matrix->m22 = 1.0f;            matrix->m23 = 0.0f;
-    matrix->m31 = -sintheta;    matrix->m32 = 0.0f;            matrix->m33 = costheta;
+    matrix.m11 = costheta;     matrix.m12 = 0.0f;            matrix.m13 = sintheta;
+    matrix.m21 = 0.0f;         matrix.m22 = 1.0f;            matrix.m23 = 0.0f;
+    matrix.m31 = -sintheta;    matrix.m32 = 0.0f;            matrix.m33 = costheta;
 }
 
 /*-----------------------------------------------------------------------------
@@ -997,11 +1378,11 @@ void matMakeRotAboutY(matrix *matrix,real32 costheta,real32 sintheta)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void matPrintmatrix(matrix *a)
+void matPrintmatrix(const matrix& a)
 {
-    printf("(%8f %8f %8f)\n",a->m11,a->m12,a->m13);
-    printf("(%8f %8f %8f)\n",a->m21,a->m22,a->m23);
-    printf("(%8f %8f %8f)\n",a->m31,a->m32,a->m33);
+    printf("(%8f %8f %8f)\n",a.m11, a.m12, a.m13);
+    printf("(%8f %8f %8f)\n",a.m21, a.m22, a.m23);
+    printf("(%8f %8f %8f)\n",a.m31, a.m32, a.m33);
 }
 
 /*-----------------------------------------------------------------------------
@@ -1012,13 +1393,143 @@ void matPrintmatrix(matrix *a)
     Outputs     : out - copied/scaled matrix
     Return      :
 ----------------------------------------------------------------------------*/
-void matCopyAndScale(matrix *out, matrix *in, real32 scale)
+void matCopyAndScale(matrix& out, const matrix& in, real32 scale)
 {
-    matrix scaleMatrix = IdentityMatrix;
-    out->m11 = in->m11 * scale; out->m21 = in->m21 * scale; out->m31 = in->m31 * scale;
-    out->m12 = in->m12 * scale; out->m22 = in->m22 * scale; out->m32 = in->m32 * scale;
-    out->m13 = in->m13 * scale; out->m23 = in->m23 * scale; out->m33 = in->m33 * scale;
+	out = in;
+	out *= scale;
+//    matrix scaleMatrix = IdentityMatrix;
+//    out->m11 = in->m11 * scale; out->m21 = in->m21 * scale; out->m31 = in->m31 * scale;
+//    out->m12 = in->m12 * scale; out->m22 = in->m22 * scale; out->m32 = in->m32 * scale;
+//    out->m13 = in->m13 * scale; out->m23 = in->m23 * scale; out->m33 = in->m33 * scale;
+//
+//    scaleMatrix.m11 *= scale; scaleMatrix.m22 *= scale; scaleMatrix.m33 *= scale;
+//    matMultiplyMatByMat(out, in, &scaleMatrix);
+}
 
-    scaleMatrix.m11 *= scale; scaleMatrix.m22 *= scale; scaleMatrix.m33 *= scale;
-    matMultiplyMatByMat(out, in, &scaleMatrix);
+void hmatGetHVectFromHMatrixCol1(hvector& hvec, const hmatrix& hmat)
+{
+	hvec = hmat.GetColumn1();
+}
+
+void hmatGetHVectFromHMatrixCol2(hvector& hvec, const hmatrix& hmat)
+{
+	hvec = hmat.GetColumn2();
+}
+
+void hmatGetHVectFromHMatrixCol3(hvector& hvec, const hmatrix& hmat)
+{
+	hvec = hmat.GetColumn3();
+}
+
+void hmatGetHVectFromHMatrixCol4(hvector& hvec, const hmatrix& hmat)
+{
+	hvec = hmat.GetColumn4();
+}
+
+// -----------------------------------------------------------------------------
+
+void hmatPutHVectIntoHMatrixCol1(const hvector& hvec, hmatrix& hmat)
+{
+	hmat.SetColumn1(hvec);
+}
+
+void hmatPutHVectIntoHMatrixCol2(const hvector& hvec, hmatrix& hmat)
+{
+	hmat.SetColumn2(hvec);
+}
+
+void hmatPutHVectIntoHMatrixCol3(const hvector& hvec, hmatrix& hmat)
+{
+	hmat.SetColumn3(hvec);
+}
+
+void hmatPutHVectIntoHMatrixCol4(const hvector& hvec, hmatrix& hmat)
+{
+	hmat.SetColumn4(hvec);
+}
+
+// -----------------------------------------------------------------------------
+
+void hmatGetVectFromHMatrixCol1(vector& vec, const hmatrix& hmat)
+{
+	vec = hmat.GetColumn1();
+}
+
+void hmatGetVectFromHMatrixCol2(vector& vec, const hmatrix& hmat)
+{
+	vec = hmat.GetColumn2();
+}
+
+void hmatGetVectFromHMatrixCol3(vector& vec, const hmatrix& hmat)
+{
+	vec = hmat.GetColumn3();
+}
+
+void hmatGetVectFromHMatrixCol4(vector& vec, const hmatrix& hmat)
+{
+	vec = hmat.GetColumn4();
+}
+// -----------------------------------------------------------------------------
+
+void hmatPutVectIntoHMatrixCol1(const vector& vec, hmatrix& hmat)
+{
+    (hmat).m11 = (vec).x;
+    (hmat).m21 = (vec).y;
+    (hmat).m31 = (vec).z;
+}
+
+void hmatPutVectIntoHMatrixCol2(const vector& vec, hmatrix& hmat)
+{
+    (hmat).m12 = (vec).x;
+    (hmat).m22 = (vec).y;
+    (hmat).m32 = (vec).z;
+}
+
+void hmatPutVectIntoHMatrixCol3(const vector& vec, hmatrix& hmat)
+{
+    (hmat).m13 = (vec).x;
+    (hmat).m23 = (vec).y;
+    (hmat).m33 = (vec).z;
+}
+
+void hmatPutVectIntoHMatrixCol4(const vector& vec, hmatrix& hmat)
+{
+    (hmat).m14 = (vec).x;
+    (hmat).m24 = (vec).y;
+    (hmat).m34 = (vec).z;
+}
+
+// -----------------------------------------------------------------------------
+//  3 X 3 matrix macros:
+
+void matGetVectFromMatrixCol1(vector& vec, const matrix& mat)
+{
+	vec = mat.GetColumn1();
+}
+
+void matGetVectFromMatrixCol2(vector& vec, const matrix& mat)
+{
+	vec = mat.GetColumn2();
+}
+
+void matGetVectFromMatrixCol3(vector& vec, const matrix& mat)
+{
+	vec = mat.GetColumn3();
+}
+
+// -----------------------------------------------------------------------------
+
+void matPutVectIntoMatrixCol1(const vector& vec, matrix& mat)
+{
+	mat.SetColumn1(vec);
+}
+
+void matPutVectIntoMatrixCol2(const vector& vec, matrix& mat)
+{
+	mat.SetColumn2(vec);
+}
+
+void matPutVectIntoMatrixCol3(const vector& vec, matrix& mat)
+{
+	mat.SetColumn3(vec);
 }

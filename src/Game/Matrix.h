@@ -13,7 +13,91 @@
 
 // INTERFACE -------------------------------------------------------------------
 
-typedef struct hmatrix
+template <typename PT>
+struct _Base2ColumnMatrix
+{
+	virtual ~_Base2ColumnMatrix() {};
+	typedef PT column;
+
+	virtual column GetColumn1() const = 0;
+	virtual void  SetColumn1(const column& col) = 0;
+
+	virtual column GetColumn2() const = 0;
+	virtual void  SetColumn2(const column& col) = 0;
+
+    virtual column::value_type MultiplyRow1   (const column& col) const = 0;
+    virtual column::value_type MultiplyRow2   (const column& col) const = 0;
+
+    virtual column::value_type MultiplyColumn1(const column& col) const = 0;
+    virtual column::value_type MultiplyColumn2(const column& col) const = 0;
+
+	virtual void Transpose() = 0;
+};
+
+template <typename PT>
+struct _Base3ColumnMatrix : public _Base2ColumnMatrix<PT>
+{
+	virtual ~_Base3ColumnMatrix() {};
+	virtual column GetColumn3() const = 0;
+	virtual void  SetColumn3(const column& col) = 0;
+
+    virtual column::value_type MultiplyRow3   (const column& col) const = 0;
+    virtual column::value_type MultiplyColumn3(const column& col) const = 0;
+};
+
+template <typename PT>
+struct _Base4ColumnMatrix : public _Base3ColumnMatrix<PT>
+{
+	virtual ~_Base4ColumnMatrix() {};
+	virtual column GetColumn4() const = 0;
+	virtual void  SetColumn4(const column& col) = 0;
+
+	virtual column::value_type MultiplyRow4   (const column& col) const = 0;
+    virtual column::value_type MultiplyColumn4(const column& col) const = 0;
+};
+
+struct matrix : public _Base3ColumnMatrix<vector>
+{
+/*-----------------------------------------------------------------------------
+    Conceptually, and mathematically, you should think of the matrix as follows:
+
+    |m11 m12 m13|
+    |m21 m22 m23|
+    |m31 m32 m33|
+
+    In memory, it is stored as follows to be compatible with GameGL
+-----------------------------------------------------------------------------*/
+    real32 m11,m21,m31, m12,m22,m32, m13,m23,m33;
+
+    column GetColumn1() override const;
+    column GetColumn2() override const;
+    column GetColumn3() override const;
+
+    void SetColumn1(const column& vec) override;
+    void SetColumn2(const column& vec) override;
+    void SetColumn3(const column& vec) override;
+
+    column::value_type Multiply(column::value_type x1, column::value_type x2,
+                                 column::value_type x3,
+                                 const column& col) const;
+
+    column::value_type MultiplyRow1(const column& col) override const;
+    column::value_type MultiplyRow2(const column& col) override const;
+    column::value_type MultiplyRow3(const column& col) override const;
+
+    column::value_type MultiplyColumn1(const column& col) override const;
+    column::value_type MultiplyColumn2(const column& col) override const;
+    column::value_type MultiplyColumn3(const column& col) override const;
+
+    void Transpose()
+    {
+        std::swap(m21, m12);
+        std::swap(m31, m13);
+        std::swap(m32, m23);
+    }
+};
+
+struct hmatrix : public _Base4ColumnMatrix<hvector>
 {
 /*-----------------------------------------------------------------------------
     Conceptually, and mathematically, you should think of the matrix as follows:
@@ -23,160 +107,143 @@ typedef struct hmatrix
     |m31 m32 m33 m34|
     |m41 m42 m43 m44|
 
-    In memory, it is stored as follows to be compatible with GameGL 
+    In memory, it is stored as follows to be compatible with GameGL
 -----------------------------------------------------------------------------*/
     real32 m11,m21,m31,m41, m12,m22,m32,m42, m13,m23,m33,m43, m14,m24,m34,m44;
 
-} hmatrix;
+    column GetColumn1() override const;
+    column GetColumn2() override const;
+    column GetColumn3() override const;
+    column GetColumn4() override const;
 
+    void SetColumn1(column::value_type f1, column::value_type f2,
+                      column::value_type f3, column::value_type f4);
 
-typedef struct matrix
-{
-/*-----------------------------------------------------------------------------
-    Conceptually, and mathematically, you should think of the matrix as follows:
+    void SetColumn1(const column& hvec) override;
 
-    |m11 m12 m13|
-    |m21 m22 m23|
-    |m31 m32 m33|
+    void SetColumn2(column::value_type f1, column::value_type f2,
+                      column::value_type f3, column::value_type f4);
 
-    In memory, it is stored as follows to be compatible with GameGL 
------------------------------------------------------------------------------*/
-    real32 m11,m21,m31, m12,m22,m32, m13,m23,m33;
+    void SetColumn2(const column& hvec) override;
 
-} matrix;
+    void SetColumn3(column::value_type f1, column::value_type f2,
+                      column::value_type f3, column::value_type f4);
+
+    void SetColumn3(const column& hvec) override;
+
+    void SetColumn4(column::value_type f1, column::value_type f2,
+                      column::value_type f3, column::value_type f4);
+
+    void SetColumn4(const column& hvec) override;
+
+    column::value_type Multiply(column::value_type x1, column::value_type x2,
+                                   column::value_type x3, column::value_type x4,
+                                   const column& col) const;
+
+    column::value_type MultiplyRow1(const column& col) override const;
+    column::value_type MultiplyRow2(const column& col) override const;
+    column::value_type MultiplyRow3(const column& col) override const;
+    column::value_type MultiplyRow4(const column& col) override const;
+
+    column::value_type MultiplyColumn1(const column& col) override const;
+    column::value_type MultiplyColumn2(const column& col) override const;
+    column::value_type MultiplyColumn3(const column& col) override const;
+    column::value_type MultiplyColumn4(const column& col) override const;
+
+    void Set(const column& col1, const column& col2,
+              const column& col3, const column& col4);
+
+    void Set(const matrix& matrix, const vector& col,
+              column::value_type f41 = 0.0f, column::value_type f42 = 0.0f,
+              column::value_type f43 = 0.0f, column::value_type f44 = 1.0f);
+
+    void Set(const matrix& matrix, column::value_type f41 = 0.0f, column::value_type f42 = 0.0f,
+              column::value_type f43 = 0.0f);
+
+    void Set(const matrix& matrix, const column& col,
+              column::value_type f41 = 0.0f, column::value_type f42 = 0.0f,
+              column::value_type f43 = 0.0f);
+
+    column::value_type MultiplyRow1(const column& col) override const;
+    column::value_type MultiplyRow2(const column& col) override const;
+    column::value_type MultiplyRow3(const column& col) override const;
+    column::value_type MultiplyRow4(const column& col) override const;
+
+    void Transpose()
+    {
+        std::swap(m12, m21);
+        std::swap(m13, m31);
+        std::swap(m14, m41);
+        std::swap(m23, m32);
+        std::swap(m24, m42);
+        std::swap(m34, m43);
+    }
+
+    matrix GetMatrix() const
+    {
+    	return matrix
+    	(
+    		m11,
+    		m21,
+    		m31,
+
+    		m12,
+    		m22,
+    		m32,
+
+    		m13,
+    		m23,
+    		m33
+    	);
+    }
+};
+
+vector  operator*(const  matrix& matrix, const  vector& vector);
+vector  operator*(const  vector& vector, const  matrix& matrix);
+hvector operator*(const hmatrix& matrix, const hvector& vector);
+hvector operator*(const hvector& vector, const hmatrix& matrix);
 
 
 // -----------------------------------------------------------------------------
 //  Homogenous matrix macros:
 
-#define hmatGetHVectFromHMatrixCol1(hvec,hmat)   \
-    (hvec).x = (hmat).m11;                       \
-    (hvec).y = (hmat).m21;                       \
-    (hvec).z = (hmat).m31;                       \
-    (hvec).w = (hmat).m41
-
-#define hmatGetHVectFromHMatrixCol2(hvec,hmat)   \
-    (hvec).x = (hmat).m12;                       \
-    (hvec).y = (hmat).m22;                       \
-    (hvec).z = (hmat).m32;                       \
-    (hvec).w = (hmat).m42
-
-#define hmatGetHVectFromHMatrixCol3(hvec,hmat)   \
-    (hvec).x = (hmat).m13;                       \
-    (hvec).y = (hmat).m23;                       \
-    (hvec).z = (hmat).m33;                       \
-    (hvec).w = (hmat).m43
-
-#define hmatGetHVectFromHMatrixCol4(hvec,hmat)   \
-    (hvec).x = (hmat).m14;                       \
-    (hvec).y = (hmat).m24;                       \
-    (hvec).z = (hmat).m34;                       \
-    (hvec).w = (hmat).m44
+void hmatGetHVectFromHMatrixCol1(hvector& hvec, const hmatrix& hmat);
+void hmatGetHVectFromHMatrixCol2(hvector& hvec, const hmatrix& hmat);
+void hmatGetHVectFromHMatrixCol3(hvector& hvec, const hmatrix& hmat);
+void hmatGetHVectFromHMatrixCol4(hvector& hvec, const hmatrix& hmat);
 
 // -----------------------------------------------------------------------------
 
-#define hmatPutHVectIntoHMatrixCol1(hvec,hmat)   \
-    (hmat).m11 = (hvec).x;                       \
-    (hmat).m21 = (hvec).y;                       \
-    (hmat).m31 = (hvec).z;                       \
-    (hmat).m41 = (hvec).w
-
-#define hmatPutHVectIntoHMatrixCol2(hvec,hmat)   \
-    (hmat).m12 = (hvec).x;                       \
-    (hmat).m22 = (hvec).y;                       \
-    (hmat).m32 = (hvec).z;                       \
-    (hmat).m42 = (hvec).w
-
-#define hmatPutHVectIntoHMatrixCol3(hvec,hmat)   \
-    (hmat).m13 = (hvec).x;                       \
-    (hmat).m23 = (hvec).y;                       \
-    (hmat).m33 = (hvec).z;                       \
-    (hmat).m43 = (hvec).w
-
-#define hmatPutHVectIntoHMatrixCol4(hvec,hmat)   \
-    (hmat).m14 = (hvec).x;                       \
-    (hmat).m24 = (hvec).y;                       \
-    (hmat).m34 = (hvec).z;                       \
-    (hmat).m44 = (hvec).w
+void hmatPutHVectIntoHMatrixCol1(const hvector& hvec, hmatrix& hmat);
+void hmatPutHVectIntoHMatrixCol2(const hvector& hvec, hmatrix& hmat);
+void hmatPutHVectIntoHMatrixCol3(const hvector& hvec, hmatrix& hmat);
+void hmatPutHVectIntoHMatrixCol4(const hvector& hvec, hmatrix& hmat);
 
 // -----------------------------------------------------------------------------
 
-#define hmatGetVectFromHMatrixCol1(vec,hmat)     \
-    (vec).x = (hmat).m11;                        \
-    (vec).y = (hmat).m21;                        \
-    (vec).z = (hmat).m31
-
-#define hmatGetVectFromHMatrixCol2(vec,hmat)     \
-    (vec).x = (hmat).m12;                        \
-    (vec).y = (hmat).m22;                        \
-    (vec).z = (hmat).m32
-
-#define hmatGetVectFromHMatrixCol3(vec,hmat)     \
-    (vec).x = (hmat).m13;                        \
-    (vec).y = (hmat).m23;                        \
-    (vec).z = (hmat).m33
-
-#define hmatGetVectFromHMatrixCol4(vec,hmat)     \
-    (vec).x = (hmat).m14;                        \
-    (vec).y = (hmat).m24;                        \
-    (vec).z = (hmat).m34
-
+void hmatGetVectFromHMatrixCol1(vector& vec, const hmatrix& hmat);
+void hmatGetVectFromHMatrixCol2(vector& vec, const hmatrix& hmat);
+void hmatGetVectFromHMatrixCol3(vector& vec, const hmatrix& hmat);
+void hmatGetVectFromHMatrixCol4(vector& vec, const hmatrix& hmat);
 // -----------------------------------------------------------------------------
 
-#define hmatPutVectIntoHMatrixCol1(vec,hmat)     \
-    (hmat).m11 = (vec).x;                        \
-    (hmat).m21 = (vec).y;                        \
-    (hmat).m31 = (vec).z;
-
-#define hmatPutVectIntoHMatrixCol2(vec,hmat)     \
-    (hmat).m12 = (vec).x;                        \
-    (hmat).m22 = (vec).y;                        \
-    (hmat).m32 = (vec).z;
-
-#define hmatPutVectIntoHMatrixCol3(vec,hmat)     \
-    (hmat).m13 = (vec).x;                        \
-    (hmat).m23 = (vec).y;                        \
-    (hmat).m33 = (vec).z;
-
-#define hmatPutVectIntoHMatrixCol4(vec,hmat)     \
-    (hmat).m14 = (vec).x;                        \
-    (hmat).m24 = (vec).y;                        \
-    (hmat).m34 = (vec).z;
+void hmatPutVectIntoHMatrixCol1(const vector& vec, hmatrix& hmat);
+void hmatPutVectIntoHMatrixCol2(const vector& vec, hmatrix& hmat);
+void hmatPutVectIntoHMatrixCol3(const vector& vec, hmatrix& hmat);
+void hmatPutVectIntoHMatrixCol4(const vector& vec, hmatrix& hmat);
 
 // -----------------------------------------------------------------------------
 //  3 X 3 matrix macros:
 
-#define matGetVectFromMatrixCol1(vec,mat)        \
-    (vec).x = (mat).m11;                         \
-    (vec).y = (mat).m21;                         \
-    (vec).z = (mat).m31;
-
-#define matGetVectFromMatrixCol2(vec,mat)        \
-    (vec).x = (mat).m12;                         \
-    (vec).y = (mat).m22;                         \
-    (vec).z = (mat).m32;
-
-#define matGetVectFromMatrixCol3(vec,mat)        \
-    (vec).x = (mat).m13;                         \
-    (vec).y = (mat).m23;                         \
-    (vec).z = (mat).m33;
+void matGetVectFromMatrixCol1(vector& vec, const matrix& mat);
+void matGetVectFromMatrixCol2(vector& vec, const matrix& mat);
+void matGetVectFromMatrixCol3(vector& vec, const matrix& mat);
 
 // -----------------------------------------------------------------------------
 
-#define matPutVectIntoMatrixCol1(vec,mat)        \
-    (mat).m11 = (vec).x;                         \
-    (mat).m21 = (vec).y;                         \
-    (mat).m31 = (vec).z;
-
-#define matPutVectIntoMatrixCol2(vec,mat)        \
-    (mat).m12 = (vec).x;                         \
-    (mat).m22 = (vec).y;                         \
-    (mat).m32 = (vec).z;
-
-#define matPutVectIntoMatrixCol3(vec,mat)        \
-    (mat).m13 = (vec).x;                         \
-    (mat).m23 = (vec).y;                         \
-    (mat).m33 = (vec).z;
+void matPutVectIntoMatrixCol1(const vector& vec, matrix& mat);
+void matPutVectIntoMatrixCol2(const vector& vec, matrix& mat);
+void matPutVectIntoMatrixCol3(const vector& vec, matrix& mat);
 
 // -----------------------------------------------------------------------------
 
@@ -185,32 +252,32 @@ extern const hmatrix IdentityHMatrix;
 extern const matrix  IdentityMatrix;
 
 
-void hmatMakeHMatFromMat(hmatrix *result, matrix *mat);
-void hmatMakeHMatFromMatAndVec(hmatrix *result, matrix *mat, vector *pos);
-void hmatCreateHMatFromHVecs(hmatrix *result, hvector *col1, hvector *col2, hvector *col3, hvector *col4);
+void hmatMakeHMatFromMat(hmatrix& result, const matrix& mat);
+void hmatMakeHMatFromMatAndVec(hmatrix& result, const matrix& mat, const vector& pos);
+void hmatCreateHMatFromHVecs(hmatrix& result, const hvector& col1, const hvector& col2, const hvector& col3, const hvector& col4);
 void hmatMultiplyHMatByHMat(hmatrix *result, hmatrix *first, hmatrix *second);
 void MultiplyMatrix4fByMatrix4f(real32* c, const real32* a, const real32* b);
-void hmatMultiplyHMatByHVec(hvector *result, hmatrix *matrix, hvector *vector);
-void hmatMultiplyHVecByHMat(hvector *result, hvector *vector, hmatrix *matrix);
-void hmatTranspose(hmatrix *matrix);
-void hmatCopyAndTranspose(hmatrix *src, hmatrix *dsttrans);
-void hmatMakeRotAboutZ(hmatrix *matrix, real32 costheta, real32 sintheta);
-void hmatMakeRotAboutX(hmatrix *matrix, real32 costheta, real32 sintheta);
-void hmatMakeRotAboutY(hmatrix *matrix, real32 costheta, real32 sintheta);
-void hmatPrintHMatrix(hmatrix *a);
+void hmatMultiplyHMatByHVec(hvector& result, const hmatrix& matrix, const hvector&vector);
+void hmatMultiplyHVecByHMat(hvector& result, const hvector& vector, const hmatrix& matrix);
+void hmatTranspose(hmatrix& matrix);
+void hmatCopyAndTranspose(const hmatrix& src, hmatrix&dsttrans);
+void hmatMakeRotAboutZ(hmatrix& matrix, real32 costheta, real32 sintheta);
+void hmatMakeRotAboutX(hmatrix& matrix, real32 costheta, real32 sintheta);
+void hmatMakeRotAboutY(hmatrix& matrix, real32 costheta, real32 sintheta);
+void hmatPrintHMatrix(hmatrix& a);
 
-void matGetMatFromHMat(matrix *result, hmatrix *hmat);
-void matCreateCoordSysFromHeading(matrix *result, vector *heading);
-void matCreateMatFromVecs(matrix *result, vector *col1, vector *col2, vector *col3);
+void matGetMatFromHMat(matrix& result, const hmatrix& hmat);
+void matCreateCoordSysFromHeading(matrix& result, const vector& heading);
+void matCreateMatFromVecs(matrix& result, const vector& col1, const vector& col2, const vector& col3);
 void matMultiplyMatByMat(matrix *result, matrix *first, matrix *second);
-void matMultiplyMatByVec(vector *result, matrix *matrix, vector *vector);
-void matMultiplyVecByMat(vector *result, vector *vector, matrix *matrix);
-void matTranspose(matrix *matrix);
-void matCopyAndTranspose(matrix *src, matrix *dsttrans);
-void matMakeRotAboutZ(matrix *matrix, real32 costheta, real32 sintheta);
-void matMakeRotAboutX(matrix *matrix, real32 costheta, real32 sintheta);
-void matMakeRotAboutY(matrix *matrix, real32 costheta, real32 sintheta);
-void matPrintmatrix(matrix *a);
-void matCopyAndScale(matrix *out, matrix *in, real32 scale);
+void matMultiplyMatByVec(vector& result, const matrix& matrix, const vector& vector);
+void matMultiplyVecByMat(vector& result, const vector& vector, const matrix& matrix);
+void matTranspose(matrix& matrix);
+void matCopyAndTranspose(matrix& src, matrix& dsttrans);
+void matMakeRotAboutZ(matrix& matrix, real32 costheta, real32 sintheta);
+void matMakeRotAboutX(matrix& matrix, real32 costheta, real32 sintheta);
+void matMakeRotAboutY(matrix& matrix, real32 costheta, real32 sintheta);
+void matPrintmatrix(matrix& a);
+void matCopyAndScale(matrix& out, const matrix& in, real32 scale);
 
 #endif
