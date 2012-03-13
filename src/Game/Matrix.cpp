@@ -15,9 +15,6 @@
     Private Macros:
 =============================================================================*/
 
-#define matrixdot(x1,x2,x3,y1,y2,y3) \
-    ( ((x1)*(y1)) + ((x2)*(y2)) + ((x3)*(y3)) )
-
 #define FPTR    DWORD PTR
 #define FSIZE   4
 #define FSIZE_STR "4"
@@ -1293,9 +1290,7 @@ void matMultiplyVecByMat(vector *result,vector *vector,matrix *matrix)
         : "S" (vector), "b" (result), "D" (matrix) );
 #else
 */
-    result->x = matrixdot(vector->x,vector->y,vector->z,matrix->m11,matrix->m21,matrix->m31);
-    result->y = matrixdot(vector->x,vector->y,vector->z,matrix->m12,matrix->m22,matrix->m32);
-    result->z = matrixdot(vector->x,vector->y,vector->z,matrix->m13,matrix->m23,matrix->m33);
+	result = vector * matrix;
 /*
 #endif
 */
