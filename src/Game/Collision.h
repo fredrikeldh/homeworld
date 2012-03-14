@@ -12,11 +12,11 @@
 #include "SpaceObj.h"
 
 real32 RangeToTarget(Ship *ship,SpaceObjRotImpTarg *target,vector *trajectory);
-real32 RangeToTargetGivenDist(Ship *ship,SpaceObjRotImpTarg *target,real32 dist);
+real32 RangeToTargetGivenDist(SpaceObjRotImpTarg& target,real32 dist);
 void collUpdateCollRectangle(SpaceObjRotImp *irobj);
 void collDrawCollisionInfo(SpaceObjRotImp *irobj);
 void collZeroRectInfo(StaticCollInfo *staticCollInfo);
-real32 collCheckRectLine(SpaceObjRotImp *obj1,vector *univpoint,vector *univdir,real32 linelength,sdword *collSide);
+real32 collCheckRectLine(SpaceObjRotImp& obj1,vector *univpoint, const vector& univdir, real32 linelength, sdword& collSide);
 bool collCheckRectPoint(SpaceObjRotImp *obj1,vector *point);
 bool collCheckRectInRect(SpaceObjRotImp *obj1,SpaceObjRotImp *obj2);
 bool collCheckLineOfSight(Ship* source, Ship* target, vector* sourcePosition, vector* direction);

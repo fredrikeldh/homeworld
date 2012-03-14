@@ -54,21 +54,17 @@ udword minechecks;
     Outputs     :
     Return      : range (in metres) to target
 ----------------------------------------------------------------------------*/
-real32 RangeToTarget(Ship *ship,SpaceObjRotImpTarg *target,vector *trajectory)
+real32 RangeToTarget(const SpaceObjRotImpTarg& target, const vector& strajectory)
 {
     real32 dist;
 
-    dist = fsqrt(vecMagnitudeSquared(*trajectory));
-    dist -= target->staticinfo->staticheader.staticCollInfo.approxcollspheresize;
+    dist = fsqrt(vecMagnitudeSquared(strajectory));
+    dist -= target.staticinfo->staticheader.staticCollInfo.approxcollspheresize;
 
     if (dist > 0.0f)
-    {
         return dist;
-    }
     else
-    {
         return 0.0f;
-    }
 }
 
 /*-----------------------------------------------------------------------------
@@ -80,18 +76,14 @@ real32 RangeToTarget(Ship *ship,SpaceObjRotImpTarg *target,vector *trajectory)
     Outputs     :
     Return      : range (in metres) to target
 ----------------------------------------------------------------------------*/
-real32 RangeToTargetGivenDist(Ship *ship,SpaceObjRotImpTarg *target,real32 dist)
+real32 RangeToTargetGivenDist(SpaceObjRotImpTarg& target,real32 dist)
 {
-    dist -= target->staticinfo->staticheader.staticCollInfo.approxcollspheresize;
+    dist -= target.staticinfo->staticheader.staticCollInfo.approxcollspheresize;
 
     if (dist > 0.0f)
-    {
         return dist;
-    }
     else
-    {
         return 0.0f;
-    }
 }
 
 /*-----------------------------------------------------------------------------
@@ -101,28 +93,26 @@ real32 RangeToTargetGivenDist(Ship *ship,SpaceObjRotImpTarg *target,real32 dist)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void collUpdateCollRectangle(SpaceObjRotImp *irobj)
+void collUpdateCollRectangle(SpaceObjRotImp& irobj)
 {
-    StaticCollInfo *staticCollInfo = &irobj->staticinfo->staticheader.staticCollInfo;
+    auto& staticCollInfo = irobj.staticinfo->staticheader.staticCollInfo;
     CollInfo *collInfo = &irobj->collInfo;
     vector upvector;
     vector rightvector;
     vector forwardvector;
 
-    if (staticCollInfo->uplength == 0)
-    {
+    if (staticCollInfo.uplength == 0)
         return;         // don't bother for all-zero rectangles
-    }
 
-    matMultiplyMatByVec(&collInfo->rectpos[0],&(irobj->rotinfo.coordsys),&staticCollInfo->collrectoffset);
+    matMultiplyMatByVec(collInfo->rectpos[0], (irobj.rotinfo.coordsys), staticCollInfo.collrectoffset);
 
-    matGetVectFromMatrixCol1(upvector,irobj->rotinfo.coordsys);
-    matGetVectFromMatrixCol2(rightvector,irobj->rotinfo.coordsys);
-    matGetVectFromMatrixCol3(forwardvector,irobj->rotinfo.coordsys);
+    matGetVectFromMatrixCol1(upvector     , irobj.rotinfo.coordsys);
+    matGetVectFromMatrixCol2(rightvector  , irobj.rotinfo.coordsys);
+    matGetVectFromMatrixCol3(forwardvector, irobj.rotinfo.coordsys);
 
-    vecMultiplyByScalar(upvector,staticCollInfo->uplength);
-    vecMultiplyByScalar(rightvector,staticCollInfo->rightlength);
-    vecMultiplyByScalar(forwardvector,staticCollInfo->forwardlength);
+    vecMultiplyByScalar(upvector     , staticCollInfo.uplength);
+    vecMultiplyByScalar(rightvector  , staticCollInfo.rightlength);
+    vecMultiplyByScalar(forwardvector, staticCollInfo.forwardlength);
 
     vecAdd(collInfo->rectpos[1],collInfo->rectpos[0],rightvector);
     vecAdd(collInfo->rectpos[2],collInfo->rectpos[1],forwardvector);
@@ -134,9 +124,9 @@ void collUpdateCollRectangle(SpaceObjRotImp *irobj)
     vecAdd(collInfo->rectpos[7],collInfo->rectpos[3],upvector);
 }
 
-#define LEFT    -1
-#define MIDDLE  0
-#define RIGHT   1
+static const short LEFT   = -1;
+static const short MIDDLE =  0;
+static const short RIGHT  =  1;
 
 /*-----------------------------------------------------------------------------
     Name        : collCheckRectLine
@@ -149,16 +139,16 @@ void collUpdateCollRectangle(SpaceObjRotImp *irobj)
     Return      : -1.0 if line misses, 0.0 if line origin is inside rectangle, else +x if line collides where x is the distance
                   from the line origin to the collision point
 ----------------------------------------------------------------------------*/
-real32 collCheckRectLine(SpaceObjRotImp *obj1,vector *univpoint,vector *univdir,real32 linelength,sdword *collSide)
+real32 collCheckRectLine(SpaceObjRotImp& obj1,vector *univpoint, const vector& univdir, real32 linelength, sdword& collSide)
 {
-    StaticCollInfo *staticCollInfo = &obj1->staticinfo->staticheader.staticCollInfo;
+    StaticCollInfo& staticCollInfo = obj1.staticinfo->staticheader.staticCollInfo;
     vector pointInWorld;
     real32 minB[3];
     real32 maxB[3];
-    real32 origin[3];
-    real32 dir[3];
+    vector origin;
+    vector dir;
     sdword quadrant[3];
-    real32 maxT[3];
+    vector maxT[3];
     real32 candidatePlane[3];
     real32 coord;
     real32 largestMaxT;
@@ -166,74 +156,62 @@ real32 collCheckRectLine(SpaceObjRotImp *obj1,vector *univpoint,vector *univdir,
     sdword whichPlane;
     bool inside;
 
-    *collSide = -1;
+    collSide = -1;
 
-    if (staticCollInfo->uplength == 0)
-    {
+    if (staticCollInfo.uplength == 0)
         return 0.0f;            // if no rectangle information present, assume collision
-    }
 
     // axis aligned bounding box in object co-ordinates
-    minB[0] = staticCollInfo->collrectoffset.x;
-    minB[1] = staticCollInfo->collrectoffset.y;
-    minB[2] = staticCollInfo->collrectoffset.z;
-    maxB[0] = minB[0] + staticCollInfo->uplength;
-    maxB[1] = minB[1] + staticCollInfo->rightlength;
-    maxB[2] = minB[2] + staticCollInfo->forwardlength;
+    minB[0] = staticCollInfo.collrectoffset.x;
+    minB[1] = staticCollInfo.collrectoffset.y;
+    minB[2] = staticCollInfo.collrectoffset.z;
+    maxB[0] = minB[0] + staticCollInfo.uplength;
+    maxB[1] = minB[1] + staticCollInfo.rightlength;
+    maxB[2] = minB[2] + staticCollInfo.forwardlength;
 
     // convert univpoint,univdir from universe to object co-ordinates
 
-    vecSub(pointInWorld,*univpoint,obj1->posinfo.position);
-    matMultiplyVecByMat((vector *)origin,&pointInWorld,&obj1->rotinfo.coordsys);
+    vecSub(pointInWorld, *univpoint, obj1.posinfo.position);
+    matMultiplyVecByMat(origin, pointInWorld, obj1.rotinfo.coordsys);
 
     // now we have minB, maxB, origin, dir in object co-ordinates
     // use a ray-box intersection algorithm as found in Graphics Gems I
 
-    inside = TRUE;
+    inside = true;
 
-    for (i=0;i<3;i++)
+    for (i=0; i < origin.size(); i++)
     {
         if (origin[i] < minB[i])
         {
             quadrant[i] = LEFT;
             candidatePlane[i] = minB[i];
-            inside = FALSE;
+            inside = false;
         }
         else if (origin[i] > maxB[i])
         {
             quadrant[i] = RIGHT;
             candidatePlane[i] = maxB[i];
-            inside = FALSE;
+            inside = false;
         }
         else
-        {
             quadrant[i] = MIDDLE;
-        }
     }
 
     if (inside)
-    {
         return 0.0f;
-    }
 
-    if (vecDotProduct(pointInWorld,*univdir) > 0.0f)
-    {
+    if (vecDotProduct(pointInWorld, univdir) > 0.0f)
         return -1.0f;
-    }
 
-    matMultiplyVecByMat((vector *)dir,univdir,&obj1->rotinfo.coordsys);
+    matMultiplyVecByMat(dir, univdir, obj1.rotinfo.coordsys);
 
     // calculate distances to candidate planes
-    for (i=0;i<3;i++)
+    for (i = 0; i < dir.size(); i++)
     {
         if ((quadrant[i] != MIDDLE) && (dir[i] != 0.0f))
-        {
             maxT[i] = (candidatePlane[i]-origin[i]) / dir[i];
-        }
         else
-        {
             maxT[i] = -1.0f;
-        }
     }
 
     // find largest maxT for final choice of intersection
@@ -241,9 +219,7 @@ real32 collCheckRectLine(SpaceObjRotImp *obj1,vector *univpoint,vector *univdir,
     for (i=1;i<3;i++)
     {
         if (maxT[i] > maxT[whichPlane])
-        {
             whichPlane = i;
-        }
     }
 
     largestMaxT = maxT[whichPlane];
@@ -360,7 +336,7 @@ bool collCheckRectPoint(SpaceObjRotImp *obj1,vector *point)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-bool collCheckRectInRect(SpaceObjRotImp *obj1,SpaceObjRotImp *obj2)
+bool collCheckRectInRect(SpaceObjRotImp& obj1,SpaceObjRotImp& obj2)
 {
     vector rect0;
     vector rect6;
@@ -375,60 +351,38 @@ bool collCheckRectInRect(SpaceObjRotImp *obj1,SpaceObjRotImp *obj2)
     vector obj2point;
 
     udword i;
-    bool pointinside = FALSE;
+    bool pointinside = false;
 
-    matGetVectFromMatrixCol1(upvector,obj1->rotinfo.coordsys);
-    matGetVectFromMatrixCol2(rightvector,obj1->rotinfo.coordsys);
-    matGetVectFromMatrixCol3(forwardvector,obj1->rotinfo.coordsys);
+    matGetVectFromMatrixCol1(upvector, obj1.rotinfo.coordsys);
+    matGetVectFromMatrixCol2(rightvector,obj1.rotinfo.coordsys);
+    matGetVectFromMatrixCol3(forwardvector,obj1.rotinfo.coordsys);
 
-    vecAdd(rect0,obj1->collInfo.rectpos[0],obj1->posinfo.position);
-    vecAdd(rect6,obj1->collInfo.rectpos[6],obj1->posinfo.position);
+    vecAdd(rect0, obj1.collInfo.rectpos[0], obj1.posinfo.position);
+    vecAdd(rect6, obj1.collInfo.rectpos[6], obj1.posinfo.position);
 
     for (i=0;i<8;i++)
     {
-        vecAdd(obj2point,obj2->collInfo.rectpos[i],obj2->posinfo.position);
+        vecAdd(obj2point, obj2.collInfo.rectpos[i],obj2.posinfo.position);
 
         vecSub(rect0topoint,obj2point,rect0);
         vecSub(rect6topoint,obj2point,rect6);
 
-        // reject if point is forward of forward face
-        if (vecDotProduct(forwardvector,rect6topoint) > (real32)1e-6)
-        {
+        static const real32 COMP_VALUE = 1e-6f;
+            // reject if point is forward of forward face
+        if( vecDotProduct(forwardvector, rect6topoint) >  COMP_VALUE
+            // reject if point is behind behind face
+         || vecDotProduct(forwardvector, rect0topoint) < -COMP_VALUE
+            // reject if point is right of right face
+         || vecDotProduct(rightvector  , rect6topoint) >  COMP_VALUE
+            // reject if point is left of left face
+         || vecDotProduct(rightvector  , rect0topoint) < -COMP_VALUE
+            // reject if point is above up face
+         || vecDotProduct(upvector     , rect6topoint) >  COMP_VALUE
+            // reject if point is below bottom face
+         || vecDotProduct(upvector     , rect0topoint) < -COMP_VALUE)
             continue;
-        }
 
-        // reject if point is behind behind face
-        if (vecDotProduct(forwardvector,rect0topoint) < (real32)-1e-6)
-        {
-            continue;
-        }
-
-        // reject if point is right of right face
-        if (vecDotProduct(rightvector,rect6topoint) > (real32)1e-6)
-        {
-            continue;
-        }
-
-        // reject if point is left of left face
-        if (vecDotProduct(rightvector,rect0topoint) < (real32)-1e-6)
-        {
-            continue;
-        }
-
-        // reject if point is above up face
-        if (vecDotProduct(upvector,rect6topoint) > (real32)1e-6)
-        {
-            continue;
-        }
-
-        // reject if point is below bottom face
-        if (vecDotProduct(upvector,rect0topoint) < (real32)-1e-6)
-        {
-            continue;
-        }
-
-        pointinside = TRUE;
-        break;
+        return true;
     }
 
     return pointinside;
@@ -441,7 +395,7 @@ bool collCheckRectInRect(SpaceObjRotImp *obj1,SpaceObjRotImp *obj2)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-bool collCheckRectBumpCollision(SpaceObjRotImp *obj1,SpaceObjRotImp *obj2)
+bool collCheckRectBumpCollision(SpaceObjRotImp& obj1, SpaceObjRotImp& obj2)
 {
     sdword collSide;
     vector sourcePosition;
@@ -449,35 +403,27 @@ bool collCheckRectBumpCollision(SpaceObjRotImp *obj1,SpaceObjRotImp *obj2)
     real32 linelength;
     real32 temp;
 
-    if (obj1->staticinfo->staticheader.staticCollInfo.uplength == 0)
-    {
-        return TRUE;            // if no rectangle information present, assume collision
-    }
+    if (obj1.staticinfo->staticheader.staticCollInfo.uplength == 0)
+        return true;            // if no rectangle information present, assume collision
 
-    if (obj2->staticinfo->staticheader.staticCollInfo.uplength == 0)
-    {
-        return TRUE;            // if no rectangle information present, assume collision
-    }
+    if (obj2.staticinfo->staticheader.staticCollInfo.uplength == 0)
+        return true;            // if no rectangle information present, assume collision
 
-    if (collCheckRectInRect(obj1,obj2) || collCheckRectInRect(obj2,obj1))
-    {
-        return TRUE;
-    }
+    if (collCheckRectInRect(obj1, obj2) || collCheckRectInRect(obj2, obj1))
+        return true;
 
     // now check case if both rectangles are colliding, but points are not inside each other
-    vecAdd(sourcePosition,obj1->collInfo.rectpos[0],obj1->posinfo.position);
+    vecAdd(sourcePosition, obj1.collInfo.rectpos[0], obj1.posinfo.position);
 
-    vecSub(univdir,obj1->collInfo.rectpos[6],obj1->collInfo.rectpos[0]);
+    vecSub(univdir, obj1.collInfo.rectpos[6], obj1.collInfo.rectpos[0]);
 
-    linelength = obj1->staticinfo->staticheader.staticCollInfo.diagonallength;
-    vecDivideByScalar(univdir,linelength,temp);
+    linelength = obj1.staticinfo->staticheader.staticCollInfo.diagonallength;
+    vecDivideByScalar(univdir, linelength);
 
-    if (collCheckRectLine(obj2,&sourcePosition,&univdir,linelength,&collSide) >= 0.0f)
-    {
-        return TRUE;
-    }
+    if (collCheckRectLine(obj2, &sourcePosition, univdir, linelength, collSide) >= 0.0f)
+    	return true;
 
-    return FALSE;
+    return false;
 }
 
 /*-----------------------------------------------------------------------------
@@ -487,15 +433,15 @@ bool collCheckRectBumpCollision(SpaceObjRotImp *obj1,SpaceObjRotImp *obj2)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void collZeroRectInfo(StaticCollInfo *staticCollInfo)
+void collZeroRectInfo(StaticCollInfo& staticCollInfo)
 {
-    staticCollInfo->collrectoffset.x = 0.0f;
-    staticCollInfo->collrectoffset.y = 0.0f;
-    staticCollInfo->collrectoffset.z = 0.0f;
+    staticCollInfo.collrectoffset.x = 0.0f;
+    staticCollInfo.collrectoffset.y = 0.0f;
+    staticCollInfo.collrectoffset.z = 0.0f;
 
-    staticCollInfo->uplength = 0.0f;
-    staticCollInfo->rightlength = 0.0f;
-    staticCollInfo->forwardlength = 0.0f;
+    staticCollInfo.uplength = 0.0f;
+    staticCollInfo.rightlength = 0.0f;
+    staticCollInfo.forwardlength = 0.0f;
 }
 
 /*-----------------------------------------------------------------------------
@@ -505,22 +451,19 @@ void collZeroRectInfo(StaticCollInfo *staticCollInfo)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void collDrawCollisionInfo(SpaceObjRotImp *irobj)
+void collDrawCollisionInfo(SpaceObjRotImp& irobj)
 {
-    vector position;
-    vector univrectpos[8];
+    std::array<vector, 8> univrectpos;
     udword i;
 
-    if (irobj->staticinfo->staticheader.staticCollInfo.uplength == 0)
-    {
+    if (irobj.staticinfo->staticheader.staticCollInfo.uplength == 0)
         return;         // don't bother for all-zero rectangles
-    }
 
-    position = irobj->posinfo.position;
+    auto& position = irobj.posinfo.position;
 
     for (i=0;i<8;i++)
     {
-        vecAdd(univrectpos[i],position,irobj->collInfo.rectpos[i]);
+        vecAdd(univrectpos[i], position, irobj.collInfo.rectpos[i]);
     }
 
     rndLightingEnable(FALSE);
@@ -551,14 +494,14 @@ void collDrawCollisionInfo(SpaceObjRotImp *irobj)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void collUpdateCollBlobs(void)
+void collUpdateCollBlobs()
 {
     if (universe.collUpdateAllBlobs)
     {
-        universe.collUpdateAllBlobs = FALSE;
-        bobListDelete(&universe.collBlobList);
+        universe.collUpdateAllBlobs = false;
+        bobListDelete(universe.collBlobList);
     }
-    bobListCreate(&collBlobProperties, &universe.collBlobList, 0);
+    bobListCreate(&collBlobProperties, universe.collBlobList, 0);
 }
 
 
@@ -571,70 +514,65 @@ void collUpdateCollBlobs(void)
 ----------------------------------------------------------------------------*/
 void collUpdateObjsInCollBlobs(void)
 {
-    Node *blobnode = universe.collBlobList.head;
-    blob *thisBlob;
-
-    while (blobnode != NULL)
+    for( auto& thisBlob : universe.collBlobList )
     {
-        thisBlob = (blob *)listGetStructOfNode(blobnode);
-
-        bobUpdateObjsInBlobCollInfo(thisBlob);
-
-        blobnode = blobnode->next;
+    	thisBlob.bobUpdateObjsInBlobCollInfo();
     }
 }
 
-bool kamikazeCheck(SpaceObjRotImpTarg *obj1, SpaceObjRotImpTarg *obj2)
+bool kamikazeCheck(SpaceObjRotImpTarg& obj1, SpaceObjRotImpTarg& obj2)
 {
     real32 damage1,damage2;
     sdword ret = FALSE;
     sdword killer1type,killer1index;
     sdword killer2type,killer2index;
-    Ship *ship1,*ship2;
-    ship1 = (Ship *)obj1;
-    ship2 = (Ship *)obj2;
 
     killer1type = killer2type = DEATH_Killed_By_Collision;
     killer1index = killer2index = 99;
     damage1=0.0f;
     damage2=0.0f;
 
-    if(ship1->objtype == OBJ_ShipType)
+    if(obj1.objtype == ObjType::OBJ_ShipType)
     {
-        if(bitTest(ship1->specialFlags,SPECIAL_Kamikaze))
+    	auto& ship1 = static_cast<Ship>(obj1);
+        if(bitTest(ship1.specialFlags,SPECIAL_Kamikaze))
         {
             //vector einsteinVel;
             //real32 shipvel,damFactor;
             //vecSub(einsteinVel,obj1->posinfo.velocity,obj2->posinfo.velocity);
             //shipvel = fsqrt(vecMagnitudeSquared(einsteinVel));
             //damFactor = shipvel/ship1->staticinfo->staticheader.maxvelocity;
-            if(ship1->attackvars.attacktarget == obj2)
+            if(ship1.attackvars.attacktarget == obj2)
             {
+            	damage2 = kamikazeDamage[ship1.shiptype];//*damFactor;
+
                 //ship was kamikazeeing and has collided with it's target
-                if(obj2->objtype == OBJ_ShipType)
+                if(obj2.objtype == ObjType::OBJ_ShipType)
                 {
-                    damage1 = ((Ship *)obj2)->staticinfo->maxhealth;//*damFactor;
+                	auto& ship2 = static_cast<Ship>(obj2);
+                    if( ship2.GetStaticInfo()->shipclass == CLASS_Fighter
+                     || ship2.GetStaticInfo()->shipclass == CLASS_Corvette)
+                    { //if target was a strike craft
+                        damage2 = std::min(damage2, ship1.GetStaticInfo()->maxhealth);//make sure strike craft cannot destroy targets more powerful than themselves
+                    }
+
+                    damage1 = ((Ship&)obj2).GetStaticInfo()->maxhealth;//*damFactor;
                 }
                 else
-                {
-                    damage1 = ((Ship *)obj1)->staticinfo->maxhealth+1;   //set very big so kamikaze ship dies
-                }
-                damage2 = kamikazeDamage[((Ship *)obj1)->shiptype];//*damFactor;
-                if (ship2->staticinfo->shipclass == CLASS_Fighter || ship2->staticinfo->shipclass == CLASS_Corvette)
-                {                                           //if target was a strike craft
-                    damage2 = min(damage2, ship1->staticinfo->maxhealth);//make sure strike craft cannot destroy targets more powerful than themselves
-                }
+                    damage1 = ship1.GetStaticInfo()->maxhealth+1;   //set very big so kamikaze ship dies
+
                 killer1type = DEATH_Killed_By_Kamikaze;
-                killer1index = ship1->playerowner->playerIndex;
+                killer1index = ship1.playerowner->playerIndex;
                 ret = TRUE;
             }
         }
     }
 
     //if ship 2 was kamikazing
-    if(ship2->objtype == OBJ_ShipType)
+    if(obj2.objtype == ObjType::OBJ_ShipType)
     {
-        if(bitTest(ship2->specialFlags,SPECIAL_Kamikaze))
+    	auto& ship2 = static_cast<Ship>(obj2);
+        if(bitTest(ship2.specialFlags, SPECIAL_Kamikaze))
         {
             //vector einsteinVel;
             //real32 shipvel,damFactor;
@@ -643,35 +581,37 @@ bool kamikazeCheck(SpaceObjRotImpTarg *obj1, SpaceObjRotImpTarg *obj2)
             //vecSub(einsteinVel,obj1->posinfo.velocity,obj2->posinfo.velocity);
             //shipvel = fsqrt(vecMagnitudeSquared(einsteinVel));
             //damFactor = shipvel/ship2->staticinfo->staticheader.maxvelocity;
-            if(ship2->attackvars.attacktarget == obj1)
+            if(ship2.attackvars.attacktarget == obj1)
             {
+            	damage1 += kamikazeDamage[ship2.shiptype];//*damFactor;
+
                 //ship was kamikazeeing and has collided with it's target
-                if(obj1->objtype == OBJ_ShipType)
+                if(obj1.objtype == ObjType::OBJ_ShipType)
                 {
-                    damage2 += ((Ship *)obj1)->staticinfo->maxhealth;//*damFactor;
+                	auto& ship1 = static_cast<Ship>(obj1);
+                    if( ship1.GetStaticInfo()->shipclass == CLASS_Fighter
+                     || ship1.GetStaticInfo()->shipclass == CLASS_Corvette)
+                    { //if target was a strike craft
+                        damage1 = std::min(damage1, ship2.GetStaticInfo()->maxhealth);//make sure strike craft cannot destroy targets more powerful than themselves
+                    }
+
+                    damage2 += ((Ship&)obj1).GetStaticInfo()->maxhealth;//*damFactor;
                 }
                 else
-                {
-                    damage2 += ((Ship *)obj2)->staticinfo->maxhealth+1;   //set very big so kamikaze ship dies
-                }
-                damage1 += kamikazeDamage[((Ship *)obj2)->shiptype];//*damFactor;
-                if (ship1->staticinfo->shipclass == CLASS_Fighter || ship1->staticinfo->shipclass == CLASS_Corvette)
-                {                                           //if target was a strike craft
-                    damage1 = min(damage1, ship2->staticinfo->maxhealth);//make sure strike craft cannot destroy targets more powerful than themselves
-                }
+                    damage2 += ship2.GetStaticInfo()->maxhealth+1;   //set very big so kamikaze ship dies                }
 
                 killer2type = DEATH_Killed_By_Kamikaze;
-                killer2index = ship2->playerowner->playerIndex;
-                ret = TRUE;
+                killer2index = ship2.playerowner->playerIndex;
+                ret = true;
             }
         }
     }
     if(!ret)
-        return FALSE;
+        return false;
 
-    ApplyDamageToTarget(obj1,damage1,0,killer2type,killer2index); //99 so as to register as invalid if it tries to get used (cause it shouldn't)
-    ApplyDamageToTarget(obj2,damage2,0,killer1type,killer1index);
-    return TRUE;
+    ApplyDamageToTarget(obj1, damage1, GunSoundType::GS_LargeEnergyCannon, killer2type,killer2index); //99 so as to register as invalid if it tries to get used (cause it shouldn't)
+    ApplyDamageToTarget(obj2, damage2, GunSoundType::GS_LargeEnergyCannon, killer1type,killer1index);
+    return true;
 }
 /*-----------------------------------------------------------------------------
     Name        : collCheckShipShipColl
@@ -681,7 +621,7 @@ bool kamikazeCheck(SpaceObjRotImpTarg *obj1, SpaceObjRotImpTarg *obj2)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void collCheckShipShipColl(blob *thisBlob,bool checkSmallShips)
+void collCheckShipShipColl(blob& thisBlob, bool checkSmallShips)
 {
     sdword obj1index = 0;
     Ship *obj1;
@@ -699,75 +639,67 @@ void collCheckShipShipColl(blob *thisBlob,bool checkSmallShips)
 
     real32 checkdist;
 
-    SelectCommand *selection;
+    SelectCommand& selection;
     sdword numShips;
 
     real32 maxShipCollSphereSize;
 
     if (checkSmallShips)
     {
-        selection = thisBlob->blobSmallShips;
-        maxShipCollSphereSize = thisBlob->blobMaxSmallShipCollSphereSize;
+        selection = *thisBlob.blobSmallShips;
+        maxShipCollSphereSize = thisBlob.blobMaxSmallShipCollSphereSize;
     }
     else
     {
-        selection = thisBlob->blobBigShips;
-        maxShipCollSphereSize = thisBlob->blobMaxBigShipCollSphereSize;
+        selection = *thisBlob.blobBigShips;
+        maxShipCollSphereSize = thisBlob.blobMaxBigShipCollSphereSize;
     }
-    numShips = selection->numShips;
+    numShips = selection.size();
 
     while (obj1index < numShips)
     {
-        obj1 = selection->ShipPtr[obj1index];
-        obj1collspheresize = obj1->staticinfo->staticheader.staticCollInfo.collspheresize;
+        auto& obj1 = *selection[obj1index];
+        obj1collspheresize = obj1.staticinfo->staticheader.staticCollInfo.collspheresize;
         maxdistCollPossible = obj1collspheresize + maxShipCollSphereSize;
 
         obj2index = obj1index + 1;
         while (obj2index < numShips)
         {
-            obj2 = selection->ShipPtr[obj2index];
+            auto& obj2 = *selection[obj2index];
 
 #if COLLISION_CHECK_STATS
             shipshipwalks++;
 #endif
 
-            checkdist = obj2->collOptimizeDist - obj1->collOptimizeDist;
+            checkdist = obj2.collOptimizeDist - obj1.collOptimizeDist;
 
-            if (checkdist > maxdistCollPossible)
-            {
-                goto nextobj1;
-            }
-
-            if ((obj1->posinfo.isMoving | obj2->posinfo.isMoving) == FALSE)     // assume objects not moving can't collide
+            if( checkdist > maxdistCollPossible
+             || (obj1.posinfo.isMoving | obj2.posinfo.isMoving) == FALSE ) // assume objects not moving can't collide
             {
                 goto nocollision;
             }
 
-            colldist = obj1collspheresize + obj2->staticinfo->staticheader.staticCollInfo.collspheresize;
+            colldist = obj1collspheresize + obj2.staticinfo->staticheader.staticCollInfo.collspheresize;
 
             if (checkdist > colldist)
-            {
                 goto nocollision;
-            }
 
             //old docking rejection code
 
-            if ((obj1->dockingship == obj2) || (obj2->dockingship == obj1))
+            if( (obj1.dockingship == obj2)
+            	// docking ships shouldn't collide
+             || (obj2.dockingship == obj1)
+                //special for slaved ships in DOCKING process...silly I know
+             || (obj1.dockingship != nullptr && obj2.dockingship != nullptr) )
             {
-                goto nocollision;       // docking ships shouldn't collide
-            }
-
-            if (obj1->dockingship != NULL && obj2->dockingship != NULL)
-            {   //special for slaved ships in DOCKING process...silly I know
                 goto nocollision;
             }
 
-            if(bitTest(obj1->flags, SOF_Slaveable) && bitTest(obj2->flags,SOF_Slaveable))
+            if( bitTest(obj1.flags, SOF_Slaveable)
+             && bitTest(obj2.flags,SOF_Slaveable)
+             && (obj1.slaveinfo->Master == obj2.slaveinfo->Master) )
             {    //both objects are slaveable...see if commonly linked.
-                if(obj1->slaveinfo->Master == obj2->slaveinfo->Master)
-                {
-                    goto nocollision;
-                }
+            	goto nocollision;
             }
 
             // Check for collisions between obj1 and obj2 here:
@@ -776,58 +708,41 @@ void collCheckShipShipColl(blob *thisBlob,bool checkSmallShips)
             shipshipchecks++;
 #endif
 
-            vecSub(distvector,obj2->collInfo.collPosition,obj1->collInfo.collPosition);
+            vecSub(distvector, obj2.collInfo.collPosition, obj1.collInfo.collPosition);
 
-            if (!isBetweenInclusive(distvector.x,-colldist,colldist))
-            {
+            if( !isBetweenInclusive(distvector.x,-colldist,colldist)
+             || !isBetweenInclusive(distvector.y,-colldist,colldist)
+             || !isBetweenInclusive(distvector.z,-colldist,colldist) )
                 goto nocollision;
+
+            if( (obj1.specialFlags & SPECIAL_IsASalvager)
+             && *static_cast<SalCapCorvetteSpec>(obj1.ShipSpecifics).target == obj2
+             && static_cast<SalCapCorvetteSpec>(obj1.ShipSpecifics).noAvoid )
+            {
+            	goto nocollision;
             }
 
-            if (!isBetweenInclusive(distvector.y,-colldist,colldist))
-            {
+            if( (obj2.specialFlags & SPECIAL_IsASalvager)
+             &&  *static_cast<SalCapCorvetteSpec>(obj2.ShipSpecifics).target == obj1
+             && static_cast<SalCapCorvetteSpec>(obj2.ShipSpecifics).noAvoid )
+			{
+				goto nocollision;
+			}
+
+            if ((obj1.flags | obj2.flags) & SOF_Hide)
                 goto nocollision;
-            }
 
-            if (!isBetweenInclusive(distvector.z,-colldist,colldist))
-            {
-                goto nocollision;
-            }
-
-            if(obj1->specialFlags & SPECIAL_IsASalvager)
-            {
-                if( ((SalCapCorvetteSpec *)obj1->ShipSpecifics)->target == (SpaceObjRotImpTargGuidanceShipDerelict *)obj2)
-                {
-                    if( ((SalCapCorvetteSpec *)obj1->ShipSpecifics)->noAvoid)
-                    {
-                        goto nocollision;
-                    }
-                }
-            }
-            if(obj2->specialFlags & SPECIAL_IsASalvager)
-            {
-                if( ((SalCapCorvetteSpec *)obj2->ShipSpecifics)->target == (SpaceObjRotImpTargGuidanceShipDerelict *)obj1)
-                {
-                    if( ((SalCapCorvetteSpec *)obj2->ShipSpecifics)->noAvoid)
-                    {
-                        goto nocollision;
-                    }
-                }
-            }
-
-            if ((obj1->flags|obj2->flags) & SOF_Hide)
-            {
-                goto nocollision;
-            }
-
-            if(obj1->clampInfo != NULL)
+            if(obj1.clampInfo != nullptr)
             {
                 //fix later...maybe can assume obj ios a ship?
                 //no a big speed concern...not A LOT of clamping going on
-                if(obj1->clampInfo->host->objtype == OBJ_ShipType)
+                if(obj1.clampInfo->host->objtype == ObjType::OBJ_ShipType)
                 {
-                    if(((Ship *)obj1->clampInfo->host)->shiptype == SalCapCorvette)
+                	auto& host1 = static_cast<Ship>(*obj1.clampInfo->host);
+                    if( host1.shiptype == SalCapCorvette )
                     {
-                        if(((SalCapCorvetteSpec *)((Ship *)obj1->clampInfo->host)->ShipSpecifics)->dockwith == obj2)
+                    	auto& sal1 = static_cast<SalCapCorvetteSpec>(host1.ShipSpecifics);
+                        if( sal1.dockwith == obj2 )
                         {
                             //ship clamped to salcap is colliding with the ship the salcap is docking with,
                             //don't really collide
@@ -835,68 +750,67 @@ void collCheckShipShipColl(blob *thisBlob,bool checkSmallShips)
                         }
                     }
                 }
-                if(obj2->clampInfo != NULL)
+
+                if(obj2.clampInfo != nullptr)
                 {
-                    if(((Ship *)obj2->clampInfo->host)->dockingship != NULL)
+                	auto& host2 = static_cast<Ship>(*obj2.clampInfo->host);
+                    if( host2.dockingship != nullptr)
                     {
-                        if(((Ship *)obj2->clampInfo->host)->dockingship == obj1->dockingship)
+                        if( host2.dockingship == obj1.dockingship )
                         {
                             //docking with same ships...
                             goto nocollision;
                         }
                     }
-                    if(obj2->clampInfo->host == obj1->clampInfo->host)
+                    if( host2 == *obj1.clampInfo->host)
                     {
                         //same host, so don't do collision detection
                         goto nocollision;
                     }
                 }
-                else if(((Ship *)obj1->clampInfo->host)->dockingship != NULL)
+                else if(((Ship *)obj1.clampInfo->host)->dockingship != nullptr)
                 {
-                    if (((Ship *)obj1->clampInfo->host)->dockingship == obj2)
-                    {
+                    if (((Ship *)obj1.clampInfo->host)->dockingship == obj2)
                         goto nocollision;
-                    }
-                    if (((Ship *)obj1->clampInfo->host)->dockingship == obj2->dockingship)
-                    {
+
+                    if (((Ship *)obj1.clampInfo->host)->dockingship == obj2.dockingship)
                         goto nocollision;
-                    }
                 }
             }
-            if(obj2->clampInfo != NULL)
+
+            if(obj2.clampInfo != nullptr)
             {
-                if(obj2->clampInfo->host->objtype == OBJ_ShipType)
+                if(obj2.clampInfo->host->objtype == ObjType::OBJ_ShipType)
                 {
-                    if(((Ship *)obj2->clampInfo->host)->shiptype == SalCapCorvette)
+                	auto& host2 = static_cast<Ship>(*obj2.clampInfo->host);
+                    if( host2.shiptype == SalCapCorvette )
                     {
-                        if(((SalCapCorvetteSpec *)((Ship *)obj2->clampInfo->host)->ShipSpecifics)->dockwith == obj1)
+                    	auto& sal2 = static_cast<SalCapCorvetteSpec>(*host2.ShipSpecifics);
+                        if( sal2.dockwith == obj1 )
                         {
                             //ship clamped to salcap is colliding with the ship the salcap is docking with,
                             //don't really collide
                             goto nocollision;
                         }
                     }
-                    if(obj1->clampInfo != NULL)
+                    if(obj1.clampInfo != nullptr)
                     {
-                        if(((Ship *)obj1->clampInfo->host)->dockingship != NULL)
+                        if(((Ship *)obj1.clampInfo->host)->dockingship != nullptr )
                         {
-                            if(((Ship *)obj1->clampInfo->host)->dockingship == obj2->dockingship)
+                            if(((Ship *)obj1.clampInfo->host)->dockingship == obj2.dockingship)
                             {
                                 //docking with same ships...
                                 goto nocollision;
                             }
                         }
                     }
-                    else if(((Ship *)obj2->clampInfo->host)->dockingship != NULL)
+                    else if(((Ship *)obj2.clampInfo->host)->dockingship != nullptr)
                     {
-                        if (((Ship *)obj2->clampInfo->host)->dockingship == obj1)
-                        {
+                        if (((Ship *)obj2.clampInfo->host)->dockingship == obj1)
                             goto nocollision;
-                        }
-                        if (((Ship *)obj2->clampInfo->host)->dockingship == obj1->dockingship)
-                        {
+
+                        if (((Ship *)obj2.clampInfo->host)->dockingship == obj1.dockingship)
                             goto nocollision;
-                        }
                     }
                 }
             }
@@ -905,7 +819,7 @@ void collCheckShipShipColl(blob *thisBlob,bool checkSmallShips)
 
             if (dist < colldist)
             {
-                if (collCheckRectBumpCollision((SpaceObjRotImp *)obj1,(SpaceObjRotImp *)obj2))
+                if (collCheckRectBumpCollision(obj1, obj2) )
                 {
                     if (distsquared < 1.0f)
                     {
@@ -914,45 +828,43 @@ void collCheckShipShipColl(blob *thisBlob,bool checkSmallShips)
                         dist = 10.0f;
                     }
 
-                    if (!bitTest(obj1->flags, SOF_NotBumpable) && !bitTest(obj2->flags, SOF_NotBumpable))
+                    if (!bitTest(obj1.flags, SOF_NotBumpable) && !bitTest(obj2.flags, SOF_NotBumpable))
                     {
-                        if(!kamikazeCheck((SpaceObjRotImpTarg *)obj1,(SpaceObjRotImpTarg *)obj2))    //return true if kamikaze collision is true
+                        if(!kamikazeCheck(obj1, obj2))    //return true if kamikaze collision is true
                         {
-                            if (obj1->playerowner == obj2->playerowner)
+                            if (obj1.playerowner == obj2.playerowner)
                             {
                                 goto dontapplydamage;      // don't apply bonk damage for own ships
                             }
 
-                            if ((obj1->flags & SOF_Disabled) || (obj2->flags & SOF_Disabled))
-                            {
+                            if ((obj1.flags & SOF_Disabled) || (obj2.flags & SOF_Disabled))
                                 goto dontapplydamage;
-                            }
 
-                            if(obj1->shiptype == SalCapCorvette || obj1->shiptype == JunkYardDawg)
+                            if(obj1.shiptype == SalCapCorvette || obj1.shiptype == JunkYardDawg)
                             {
-                                SalCapCorvetteSpec *spec = (SalCapCorvetteSpec *)obj1->ShipSpecifics;
+                                SalCapCorvetteSpec *spec = (SalCapCorvetteSpec *)obj1.ShipSpecifics;
                                 if(((SpaceObjRotImpTarg *)spec->noDamageTarget) == ((SpaceObjRotImpTarg *)obj2))
                                 {
                                     goto dontapplydamage;
                                 }
                             }
-                            else if(obj2->shiptype == SalCapCorvette || obj2->shiptype == JunkYardDawg)
+                            else if(obj2.shiptype == SalCapCorvette || obj2.shiptype == JunkYardDawg)
                             {
-                                SalCapCorvetteSpec *spec = (SalCapCorvetteSpec *)obj2->ShipSpecifics;
+                                SalCapCorvetteSpec *spec = (SalCapCorvetteSpec *)obj2.ShipSpecifics;
                                 if(((SpaceObjRotImpTarg *)spec->noDamageTarget) == ((SpaceObjRotImpTarg *)obj1))
                                 {
                                     goto dontapplydamage;
                                 }
                             }
 
-                            ApplyDamageToCollidingObjects((SpaceObjRotImpTarg *)obj1,(SpaceObjRotImpTarg *)obj2,&distvector,dist);
+                            ApplyDamageToCollidingObjects(obj1, obj2, distvector, dist);
 dontapplydamage:
-                            ObjectsCollided((SpaceObjRotImpTarg *)obj1,(SpaceObjRotImpTarg *)obj2,colldist,&distvector,dist,distsquared);
+                            ObjectsCollided(obj1, obj2, colldist, distvector, dist, distsquared);
                         }
                         else
                         {
                             //fix collided ships velocity....
-                            ObjectsCollided((SpaceObjRotImpTarg *)obj1,(SpaceObjRotImpTarg *)obj2,colldist,&distvector,dist,distsquared);
+                            ObjectsCollided(obj1, obj2, colldist, distvector, dist, distsquared);
                         }
 
                     }
@@ -975,7 +887,7 @@ nextobj1:
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void collCheckBigShipSmallShipColl(blob *thisBlob)
+void collCheckBigShipSmallShipColl(blob& thisBlob)
 {
     sdword obj1index = 0;
     Ship *obj1;
@@ -993,25 +905,23 @@ void collCheckBigShipSmallShipColl(blob *thisBlob)
 
     real32 checkdist;
 
-    SelectCommand *selection1 = thisBlob->blobBigShips;
-    sdword numShips1 = selection1->numShips;
+    SelectCommand& selection1 = *thisBlob.blobBigShips;
+    sdword numShips1 = selection1.size();
 
-    SelectCommand *selection2 = thisBlob->blobSmallShips;
-    sdword numShips2 = selection2->numShips;
+    SelectCommand& selection2 = *thisBlob.blobSmallShips;
+    sdword numShips2 = selection2.size();
 
-    real32 maxShipCollSphereSize = thisBlob->blobMaxSmallShipCollSphereSize;
+    real32 maxShipCollSphereSize = thisBlob.blobMaxSmallShipCollSphereSize;
 
     sdword bottom,top;
 
     if (numShips2 == 0)
-    {
         return;
-    }
 
     while (obj1index < numShips1)
     {
-        obj1 = selection1->ShipPtr[obj1index];
-        obj1collspheresize = obj1->staticinfo->staticheader.staticCollInfo.collspheresize;
+        auto& obj1 = *selection1[obj1index];
+        obj1collspheresize = obj1.staticinfo->staticheader.staticCollInfo.collspheresize;
         maxdistCollPossible = obj1collspheresize + maxShipCollSphereSize;
 
         // binary search targetindex such that
@@ -1021,15 +931,13 @@ void collCheckBigShipSmallShipColl(blob *thisBlob)
         while (top >= bottom)
         {
             obj2index = (bottom+top)>>1;
-            if ((obj1->collOptimizeDist - selection2->ShipPtr[obj2index]->collOptimizeDist) > maxdistCollPossible)
+            if ((obj1.collOptimizeDist - selection2[obj2index]->collOptimizeDist) > maxdistCollPossible)
             {
                 // targetindex is too small
                 bottom = obj2index+1;
             }
             else
-            {
                 top = obj2index-1;
-            }
         }
 
         dbgAssertOrIgnore(obj2index >= 0);
@@ -1037,49 +945,41 @@ void collCheckBigShipSmallShipColl(blob *thisBlob)
 
         while (obj2index < numShips2)
         {
-            obj2 = selection2->ShipPtr[obj2index];
+            auto& obj2 = *selection2[obj2index];
 
 #if COLLISION_CHECK_STATS
             shipshipwalks++;
 #endif
 
-            checkdist = obj2->collOptimizeDist - obj1->collOptimizeDist;
+            checkdist = obj2.collOptimizeDist - obj1.collOptimizeDist;
 
             if (checkdist > maxdistCollPossible)
-            {
                 goto nextobj1;
-            }
 
-            if ((obj1->posinfo.isMoving | obj2->posinfo.isMoving) == FALSE)     // assume objects not moving can't collide
-            {
+            if ((obj1.posinfo.isMoving | obj2.posinfo.isMoving) == FALSE)     // assume objects not moving can't collide
                 goto nocollision;
-            }
 
-            colldist = obj1collspheresize + obj2->staticinfo->staticheader.staticCollInfo.collspheresize;
+            colldist = obj1collspheresize + obj2.staticinfo->staticheader.staticCollInfo.collspheresize;
 
             if (checkdist > colldist)
-            {
                 goto nocollision;
-            }
 
             //old docking rejection code
 
-            if ((obj1->dockingship == obj2) || (obj2->dockingship == obj1))
-            {
+            if ((*obj1.dockingship == obj2) || (*obj2.dockingship == obj1))
                 goto nocollision;       // docking ships shouldn't collide
-            }
 
-            if (obj1->dockingship != NULL && obj2->dockingship != NULL)
+            if (obj1.dockingship != nullptr && obj2.dockingship != nullptr)
             {   //special for slaved ships in DOCKING process...silly I know
                 goto nocollision;
             }
 
-            if(bitTest(obj1->flags, SOF_Slaveable) && bitTest(obj2->flags,SOF_Slaveable))
-            {    //both objects are slaveable...see if commonly linked.
-                if(obj1->slaveinfo->Master == obj2->slaveinfo->Master)
-                {
-                    goto nocollision;
-                }
+            if( bitTest(obj1.flags, SOF_Slaveable)
+             && bitTest(obj2.flags,SOF_Slaveable)
+                //both objects are slaveable...see if commonly linked.
+             && obj1.slaveinfo->Master == obj2.slaveinfo->Master )
+            {
+            	goto nocollision;
             }
 
             // Check for collisions between obj1 and obj2 here:
@@ -1088,56 +988,46 @@ void collCheckBigShipSmallShipColl(blob *thisBlob)
             shipshipchecks++;
 #endif
 
-            vecSub(distvector,obj2->collInfo.collPosition,obj1->collInfo.collPosition);
+            vecSub(distvector, obj2.collInfo.collPosition, obj1.collInfo.collPosition);
 
-            if (!isBetweenInclusive(distvector.x,-colldist,colldist))
+            if( !isBetweenInclusive(distvector.x, -colldist,colldist)
+             || !isBetweenInclusive(distvector.y, -colldist,colldist)
+             || !isBetweenInclusive(distvector.z, -colldist,colldist) )
             {
                 goto nocollision;
             }
 
-            if (!isBetweenInclusive(distvector.y,-colldist,colldist))
+            if(obj1.specialFlags & SPECIAL_IsASalvager)
             {
-                goto nocollision;
-            }
-
-            if (!isBetweenInclusive(distvector.z,-colldist,colldist))
-            {
-                goto nocollision;
-            }
-
-            if(obj1->specialFlags & SPECIAL_IsASalvager)
-            {
-                if( ((SalCapCorvetteSpec *)obj1->ShipSpecifics)->target == (SpaceObjRotImpTargGuidanceShipDerelict *)obj2)
+                if( ((SalCapCorvetteSpec *)obj1.ShipSpecifics)->target == (SpaceObjRotImpTargGuidanceShipDerelict *)obj2)
                 {
-                    if( ((SalCapCorvetteSpec *)obj1->ShipSpecifics)->noAvoid)
+                    if( ((SalCapCorvetteSpec *)obj1.ShipSpecifics)->noAvoid)
                     {
                         goto nocollision;
                     }
                 }
             }
-            if(obj2->specialFlags & SPECIAL_IsASalvager)
+            if(obj2.specialFlags & SPECIAL_IsASalvager)
             {
-                if( ((SalCapCorvetteSpec *)obj2->ShipSpecifics)->target == (SpaceObjRotImpTargGuidanceShipDerelict *)obj1)
+                if( ((SalCapCorvetteSpec *)obj2.ShipSpecifics)->target == (SpaceObjRotImpTargGuidanceShipDerelict *)obj1)
                 {
-                    if( ((SalCapCorvetteSpec *)obj2->ShipSpecifics)->noAvoid)
+                    if( ((SalCapCorvetteSpec *)obj2.ShipSpecifics)->noAvoid)
                     {
                         goto nocollision;
                     }
                 }
             }
 
-            if ((obj1->flags|obj2->flags) & SOF_Hide)
-            {
+            if ((obj1.flags | obj2.flags) & SOF_Hide)
                 goto nocollision;
-            }
 
-            if(obj1->clampInfo != NULL)
+            if(obj1.clampInfo != nullptr)
             {
-                if(obj1->clampInfo->host->objtype == OBJ_ShipType)
+                if(obj1.clampInfo->host->objtype == ObjType::OBJ_ShipType)
                 {
-                    if(((Ship *)obj1->clampInfo->host)->shiptype == SalCapCorvette)
+                    if(((Ship *)obj1.clampInfo->host)->shiptype == SalCapCorvette)
                     {
-                        if(((SalCapCorvetteSpec *)((Ship *)obj1->clampInfo->host)->ShipSpecifics)->dockwith == obj2)
+                        if(((SalCapCorvetteSpec *)((Ship *)obj1.clampInfo->host)->ShipSpecifics)->dockwith == obj2)
                         {
                             //ship clamped to salcap is colliding with the ship the salcap is docking with,
                             //don't really collide
@@ -1145,41 +1035,38 @@ void collCheckBigShipSmallShipColl(blob *thisBlob)
                         }
                     }
                 }
-                if(obj2->clampInfo != NULL)
+                if(obj2.clampInfo != nullptr)
                 {
-                    if(((Ship *)obj2->clampInfo->host)->dockingship != NULL)
+                    if(((Ship *)obj2.clampInfo->host)->dockingship != nullptr)
                     {
-                        if(((Ship *)obj2->clampInfo->host)->dockingship == obj1->dockingship)
+                        if(((Ship *)obj2.clampInfo->host)->dockingship == obj1.dockingship)
                         {
                             //docking with same ships...
                             goto nocollision;
                         }
                     }
-                    if(obj2->clampInfo->host == obj1->clampInfo->host)
+                    if(obj2.clampInfo->host == obj1.clampInfo->host)
                     {
                         //same host, so don't do collision detection
                         goto nocollision;
                     }
                 }
-                else if(((Ship *)obj1->clampInfo->host)->dockingship != NULL)
+                else if(((Ship *)obj1.clampInfo->host)->dockingship != nullptr)
                 {
-                    if (((Ship *)obj1->clampInfo->host)->dockingship == obj2)
-                    {
+                    if (((Ship *)obj1.clampInfo->host)->dockingship == obj2)
                         goto nocollision;
-                    }
-                    if (((Ship *)obj1->clampInfo->host)->dockingship == obj2->dockingship)
-                    {
+
+                    if (((Ship *)obj1.clampInfo->host)->dockingship == obj2.dockingship)
                         goto nocollision;
-                    }
                 }
             }
-            if(obj2->clampInfo != NULL)
+            if(obj2.clampInfo != nullptr)
             {
-                if(obj2->clampInfo->host->objtype == OBJ_ShipType)
+                if(obj2.clampInfo->host->objtype == ObjType::OBJ_ShipType)
                 {
-                    if(((Ship *)obj2->clampInfo->host)->shiptype == SalCapCorvette)
+                    if(((Ship *)obj2.clampInfo->host)->shiptype == SalCapCorvette)
                     {
-                        if(((SalCapCorvetteSpec *)((Ship *)obj2->clampInfo->host)->ShipSpecifics)->dockwith == obj1)
+                        if(((SalCapCorvetteSpec *)((Ship *)obj2.clampInfo->host)->ShipSpecifics)->dockwith == obj1)
                         {
                             //ship clamped to salcap is colliding with the ship the salcap is docking with,
                             //don't really collide
@@ -1187,28 +1074,24 @@ void collCheckBigShipSmallShipColl(blob *thisBlob)
                         }
                     }
                 }
-                if(obj1->clampInfo != NULL)
+                if(obj1.clampInfo != nullptr)
                 {
-                    if(((Ship *)obj1->clampInfo->host)->dockingship != NULL)
+                    if(((Ship *)obj1.clampInfo->host)->dockingship != nullptr)
                     {
-                        if(((Ship *)obj1->clampInfo->host)->dockingship == obj2->dockingship)
+                        if(((Ship *)obj1.clampInfo->host)->dockingship == obj2.dockingship)
                         {
                             //docking with same ships...
                             goto nocollision;
                         }
                     }
                 }
-                else if(((Ship *)obj2->clampInfo->host)->dockingship != NULL)
+                else if(((Ship *)obj2.clampInfo->host)->dockingship != NULL)
                 {
-                    if (((Ship *)obj2->clampInfo->host)->dockingship == obj1)
-                    {
+                    if (((Ship *)obj2.clampInfo->host)->dockingship == obj1)
                         goto nocollision;
-                    }
 
-                    if (((Ship *)obj2->clampInfo->host)->dockingship == obj1->dockingship)
-                    {
+                    if (((Ship *)obj2.clampInfo->host)->dockingship == obj1.dockingship)
                         goto nocollision;
-                    }
                 }
             }
 
@@ -1217,7 +1100,7 @@ void collCheckBigShipSmallShipColl(blob *thisBlob)
 
             if (dist < colldist)
             {
-                if (collCheckRectBumpCollision((SpaceObjRotImp *)obj1,(SpaceObjRotImp *)obj2))
+                if (collCheckRectBumpCollision(obj1, obj2))
                 {
                     if (distsquared < 1.0f)
                     {
@@ -1226,45 +1109,45 @@ void collCheckBigShipSmallShipColl(blob *thisBlob)
                         dist = 10.0f;
                     }
 
-                    if (!bitTest(obj1->flags, SOF_NotBumpable) && !bitTest(obj2->flags, SOF_NotBumpable))
+                    if (!bitTest(obj1.flags, SOF_NotBumpable) && !bitTest(obj2.flags, SOF_NotBumpable))
                     {
-                        if(!kamikazeCheck((SpaceObjRotImpTarg *)obj1,(SpaceObjRotImpTarg *)obj2))    //return true if kamikaze collision is true
+                        if(!kamikazeCheck(obj1, obj2))    //return true if kamikaze collision is true
                         {
-                            if (obj1->playerowner == obj2->playerowner)
+                            if (obj1.playerowner == obj2.playerowner)
                             {
                                 goto dontapplydamage;
                             }
 
-                            if ((obj1->flags & SOF_Disabled) || (obj2->flags & SOF_Disabled))
+                            if ((obj1.flags & SOF_Disabled) || (obj2.flags & SOF_Disabled))
                             {
                                 goto dontapplydamage;
                             }
 
-                            if(obj1->shiptype == SalCapCorvette || obj1->shiptype == JunkYardDawg)
+                            if(obj1.shiptype == SalCapCorvette || obj1.shiptype == JunkYardDawg)
                             {
-                                SalCapCorvetteSpec *spec = (SalCapCorvetteSpec *)obj1->ShipSpecifics;
+                                SalCapCorvetteSpec *spec = (SalCapCorvetteSpec *)obj1.ShipSpecifics;
                                 if(((SpaceObjRotImpTarg *)spec->noDamageTarget) == ((SpaceObjRotImpTarg *)obj2))
                                 {
                                     goto dontapplydamage;
                                 }
                             }
-                            else if(obj2->shiptype == SalCapCorvette || obj2->shiptype == JunkYardDawg)
+                            else if(obj2.shiptype == SalCapCorvette || obj2.shiptype == JunkYardDawg)
                             {
-                                SalCapCorvetteSpec *spec = (SalCapCorvetteSpec *)obj2->ShipSpecifics;
+                                SalCapCorvetteSpec *spec = (SalCapCorvetteSpec *)obj2.ShipSpecifics;
                                 if(((SpaceObjRotImpTarg *)spec->noDamageTarget) == ((SpaceObjRotImpTarg *)obj1))
                                 {
                                     goto dontapplydamage;
                                 }
                             }
 
-                            ApplyDamageToCollidingObjects((SpaceObjRotImpTarg *)obj1,(SpaceObjRotImpTarg *)obj2,&distvector,dist);
+                            ApplyDamageToCollidingObjects(obj1, obj2, distvector, dist);
 dontapplydamage:
-                            ObjectsCollided((SpaceObjRotImpTarg *)obj1,(SpaceObjRotImpTarg *)obj2,colldist,&distvector,dist,distsquared);
+                            ObjectsCollided(obj1, obj2, colldist, distvector, dist, distsquared);
                         }
                         else
                         {
                             //fix collided ships velocity....
-                            ObjectsCollided((SpaceObjRotImpTarg *)obj1,(SpaceObjRotImpTarg *)obj2,colldist,&distvector,dist,distsquared);
+                            ObjectsCollided(obj1, obj2, colldist, distvector, dist, distsquared);
                         }
                     }
 
@@ -1285,7 +1168,7 @@ nextobj1:
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void collCheckShipResourceColl(blob *thisBlob)
+void collCheckShipResourceColl(blob& thisBlob)
 {
     sdword obj1index = 0;
     Ship *obj1;
@@ -1304,27 +1187,25 @@ void collCheckShipResourceColl(blob *thisBlob)
     real32 distcheck;
     real32 absdistcheck;
 
-    SelectCommand *selection = thisBlob->blobShips;
-    sdword numShips = selection->numShips;
+    SelectCommand& selection = thisBlob.blobShips;
+    sdword numShips = selection.size();
 
-    ResourceSelection *resselection = thisBlob->blobResources;
-    sdword numResources = resselection->numResources;
+    ResourceSelection& resselection = *thisBlob.blobResources;
+    sdword numResources = resselection.size();
 
     real32 maxResourceCollSphereSize;
 
     sdword bottom,top;
 
     if (numResources == 0)
-    {
         return;
-    }
 
-    maxResourceCollSphereSize = thisBlob->blobMaxResourceCollSphereSize;
+    maxResourceCollSphereSize = thisBlob.blobMaxResourceCollSphereSize;
 
     while (obj1index < numShips)
     {
-        obj1 = selection->ShipPtr[obj1index];
-        obj1collspheresize = obj1->staticinfo->staticheader.staticCollInfo.collspheresize;
+        auto& obj1 = *selection[obj1index];
+        obj1collspheresize = obj1.staticinfo->staticheader.staticCollInfo.collspheresize;
         maxdistCollPossible = obj1collspheresize + maxResourceCollSphereSize;
 
         // binary search targetindex such that
@@ -1334,15 +1215,13 @@ void collCheckShipResourceColl(blob *thisBlob)
         while (top >= bottom)
         {
             obj2index = (bottom+top)>>1;
-            if ((obj1->collOptimizeDist - resselection->ResourcePtr[obj2index]->collOptimizeDist) > maxdistCollPossible)
+            if ((obj1.collOptimizeDist - resselection[obj2index]->collOptimizeDist) > maxdistCollPossible)
             {
                 // targetindex is too small
                 bottom = obj2index+1;
             }
             else
-            {
                 top = obj2index-1;
-            }
         }
 
         dbgAssertOrIgnore(obj2index >= 0);
@@ -1350,32 +1229,24 @@ void collCheckShipResourceColl(blob *thisBlob)
 
         while (obj2index < numResources)
         {
-            obj2 = resselection->ResourcePtr[obj2index];
+            auto& obj2 = *resselection[obj2index];
 
 #if COLLISION_CHECK_STATS
             shipresourcewalks++;
 #endif
-            if ((distcheck = obj2->collOptimizeDist - obj1->collOptimizeDist) > maxdistCollPossible)
-            {
+            if ((distcheck = obj2.collOptimizeDist - obj1.collOptimizeDist) > maxdistCollPossible)
                 goto nextobj1;
-            }
 
-            if ((absdistcheck = ABS(distcheck)) > maxdistCollPossible)
-            {
+            if ((absdistcheck = std::abs(distcheck)) > maxdistCollPossible)
                 goto nocollision;
-            }
 
-            if ((obj1->posinfo.isMoving | obj2->posinfo.isMoving) == FALSE)     // assume objects not moving can't collide
-            {
+            if ((obj1.posinfo.isMoving | obj2.posinfo.isMoving) == FALSE)     // assume objects not moving can't collide
                 goto nocollision;
-            }
 
-            colldist = obj1collspheresize + obj2->staticinfo->staticheader.staticCollInfo.collspheresize;
+            colldist = obj1collspheresize + obj2.staticinfo->staticheader.staticCollInfo.collspheresize;
 
             if (absdistcheck > colldist)
-            {
                 goto nocollision;
-            }
 
             // Check for collisions between obj1 and obj2 here:
 
@@ -1383,29 +1254,23 @@ void collCheckShipResourceColl(blob *thisBlob)
             shipresourcechecks++;
 #endif
 
-            vecSub(distvector,obj2->collInfo.collPosition,obj1->collInfo.collPosition);
+            vecSub(distvector, obj2.collInfo.collPosition, obj1.collInfo.collPosition);
 
             if (!isBetweenInclusive(distvector.x,-colldist,colldist))
-            {
                 goto nocollision;
-            }
 
             if (!isBetweenInclusive(distvector.y,-colldist,colldist))
-            {
                 goto nocollision;
-            }
 
             if (!isBetweenInclusive(distvector.z,-colldist,colldist))
-            {
                 goto nocollision;
-            }
 
             distsquared = vecMagnitudeSquared(distvector);
             dist = (real32)fsqrt(distsquared);
 
             if (dist < colldist)
             {
-                if (collCheckRectBumpCollision((SpaceObjRotImp *)obj1,(SpaceObjRotImp *)obj2))
+                if (collCheckRectBumpCollision(obj1, obj2))
                 {
                     if (distsquared < 1.0f)
                     {
@@ -1414,21 +1279,19 @@ void collCheckShipResourceColl(blob *thisBlob)
                         dist = 10.0f;
                     }
 
-                    if (!bitTest(obj1->flags, SOF_NotBumpable) && !bitTest(obj2->flags, SOF_NotBumpable))
+                    if (!bitTest(obj1.flags, SOF_NotBumpable) && !bitTest(obj2.flags, SOF_NotBumpable))
                     {
-                        if(!kamikazeCheck((SpaceObjRotImpTarg *)obj1,(SpaceObjRotImpTarg *)obj2))    //return true if kamikaze collision is true
+                        if(!kamikazeCheck(obj1, obj2))    //return true if kamikaze collision is true
                         {
-                            if (obj1->shiptype != ResourceCollector)   // ResourceCollector's have special armor because they always collect resources
-                            {
-                                ApplyDamageToCollidingObjects((SpaceObjRotImpTarg *)obj1,(SpaceObjRotImpTarg *)obj2,&distvector,dist);
-                            }
+                            if (obj1.shiptype != ResourceCollector)   // ResourceCollector's have special armor because they always collect resources
+                                ApplyDamageToCollidingObjects(obj1, obj2, distvector, dist);
 
-                            ObjectsCollided((SpaceObjRotImpTarg *)obj1,(SpaceObjRotImpTarg *)obj2,colldist,&distvector,dist,distsquared);
+                            ObjectsCollided(obj1, obj2, colldist, &distvector, dist, distsquared);
                         }
                         else
                         {
                              //fix collided ships velocity....
-                            ObjectsCollided((SpaceObjRotImpTarg *)obj1,(SpaceObjRotImpTarg *)obj2,colldist,&distvector,dist,distsquared);
+                            ObjectsCollided(obj1, obj2, colldist, &distvector, dist, distsquared);
                         }
                     }
                 }
@@ -1448,7 +1311,7 @@ nextobj1:
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void collCheckShipDerelictColl(blob *thisBlob)
+void collCheckShipDerelictColl(blob& thisBlob)
 {
     sdword obj1index = 0;
     Ship *obj1       = NULL;
@@ -1467,11 +1330,11 @@ void collCheckShipDerelictColl(blob *thisBlob)
     vector distvector;
 
 
-    SelectCommand *selection = thisBlob->blobShips;
-    sdword numShips = selection->numShips;
+    SelectCommand& selection = *thisBlob.blobShips;
+    sdword numShips = selection.size();
 
-    DerelictSelection *derselection = thisBlob->blobDerelicts;
-    sdword numDerelicts = derselection->numDerelicts;
+    DerelictSelection& derselection = *thisBlob.blobDerelicts;
+    sdword numDerelicts = derselection.size();
 
     real32 maxDerelictCollSphereSize;
 
@@ -1482,12 +1345,12 @@ void collCheckShipDerelictColl(blob *thisBlob)
         return;
     }
 
-    maxDerelictCollSphereSize = thisBlob->blobMaxDerelictCollSphereSize;
+    maxDerelictCollSphereSize = thisBlob.blobMaxDerelictCollSphereSize;
 
     while (obj1index < numShips)
     {
-        obj1 = selection->ShipPtr[obj1index];
-        obj1collspheresize = obj1->staticinfo->staticheader.staticCollInfo.collspheresize;
+        auto& obj1 = *selection[obj1index];
+        obj1collspheresize = obj1.staticinfo->staticheader.staticCollInfo.collspheresize;
         maxdistCollPossible = obj1collspheresize + maxDerelictCollSphereSize;
 
         // binary search targetindex such that
@@ -1497,15 +1360,13 @@ void collCheckShipDerelictColl(blob *thisBlob)
         while (top >= bottom)
         {
             obj2index = (bottom+top)>>1;
-            if ((obj1->collOptimizeDist - derselection->DerelictPtr[obj2index]->collOptimizeDist) > maxdistCollPossible)
+            if ((obj1.collOptimizeDist - derselection[obj2index]->collOptimizeDist) > maxdistCollPossible)
             {
                 // targetindex is too small
                 bottom = obj2index+1;
             }
             else
-            {
                 top = obj2index-1;
-            }
         }
 
         dbgAssertOrIgnore(obj2index >= 0);
@@ -1513,34 +1374,26 @@ void collCheckShipDerelictColl(blob *thisBlob)
 
         while (obj2index < numDerelicts)
         {
-            obj2 = derselection->DerelictPtr[obj2index];
+            auto& obj2 = *derselection[obj2index];
 
 #if COLLISION_CHECK_STATS
             shipderelictwalks++;
 #endif
-            if ((distcheck = obj2->collOptimizeDist - obj1->collOptimizeDist) > maxdistCollPossible)
-            {
+            if ((distcheck = obj2.collOptimizeDist - obj1.collOptimizeDist) > maxdistCollPossible)
                 goto nextobj1;
-            }
 
-            if ((absdistcheck = ABS(distcheck)) > maxdistCollPossible)
-            {
+            if ((absdistcheck = std::abs(distcheck)) > maxdistCollPossible)
                 goto nocollision;
-            }
 
-            if ((obj1->posinfo.isMoving | obj2->posinfo.isMoving) == FALSE)     // assume objects not moving can't collide
-            {
+            if ((obj1.posinfo.isMoving | obj2.posinfo.isMoving) == FALSE)     // assume objects not moving can't collide
                 goto nocollision;
-            }
 
-            colldist = obj1collspheresize + obj2->staticinfo->staticheader.staticCollInfo.collspheresize;
+            colldist = obj1collspheresize + obj2.staticinfo->staticheader.staticCollInfo.collspheresize;
 
             if (absdistcheck > colldist)
-            {
                 goto nocollision;
-            }
 
-            if(obj2->dockingship == obj1)
+            if(obj2.dockingship == obj1)
             {    //derelict is 'docking' with obj1 so don't do collision detection
                 goto nocollision;
             }
@@ -1550,35 +1403,25 @@ void collCheckShipDerelictColl(blob *thisBlob)
             shipderelictchecks++;
 #endif
 
-            vecSub(distvector,obj2->collInfo.collPosition,obj1->collInfo.collPosition);
+            vecSub(distvector, obj2.collInfo.collPosition, obj1.collInfo.collPosition);
 
-            if (!isBetweenInclusive(distvector.x,-colldist,colldist))
+            if( !isBetweenInclusive(distvector.x,-colldist,colldist)
+             && !isBetweenInclusive(distvector.y,-colldist,colldist)
+             && !isBetweenInclusive(distvector.z,-colldist,colldist) )
             {
                 goto nocollision;
             }
 
-            if (!isBetweenInclusive(distvector.y,-colldist,colldist))
+            if(obj1.specialFlags & SPECIAL_IsASalvager)
             {
-                goto nocollision;
-            }
-
-            if (!isBetweenInclusive(distvector.z,-colldist,colldist))
-            {
-                goto nocollision;
-            }
-
-            if(obj1->specialFlags & SPECIAL_IsASalvager)
-            {
-                if( ((SalCapCorvetteSpec *)obj1->ShipSpecifics)->target == (SpaceObjRotImpTargGuidanceShipDerelict *)obj2)
+                if( *((SalCapCorvetteSpec *)obj1.ShipSpecifics)->target == obj2)
                 {
-                    if( ((SalCapCorvetteSpec *)obj1->ShipSpecifics)->noAvoid)
-                    {
+                    if( ((SalCapCorvetteSpec *)obj1.ShipSpecifics)->noAvoid)
                         goto nocollision;
-                    }
                 }
             }
 
-            if ((obj1->flags|obj2->flags) & SOF_Hide)
+            if ((obj1.flags|obj2.flags) & SOF_Hide)
             {
                 goto nocollision;
             }
@@ -1588,7 +1431,7 @@ void collCheckShipDerelictColl(blob *thisBlob)
 
             if (dist < colldist)
             {
-                if (collCheckRectBumpCollision((SpaceObjRotImp *)obj1,(SpaceObjRotImp *)obj2))
+                if (collCheckRectBumpCollision(obj1, obj2))
                 {
                     if (distsquared < 1.0f)
                     {
@@ -1597,17 +1440,17 @@ void collCheckShipDerelictColl(blob *thisBlob)
                         dist = 10.0f;
                     }
 
-                    if (!bitTest(obj1->flags, SOF_NotBumpable) && !bitTest(obj2->flags, SOF_NotBumpable))
+                    if (!bitTest(obj1.flags, SOF_NotBumpable) && !bitTest(obj2.flags, SOF_NotBumpable))
                     {
-                        if(!kamikazeCheck((SpaceObjRotImpTarg *)obj1,(SpaceObjRotImpTarg *)obj2))    //return true if kamikaze collision is true
+                        if(!kamikazeCheck(obj1, obj2))    //return true if kamikaze collision is true
                         {
                             // deliberately do not apply damage for ship-derelict collisions
-                            ObjectsCollided((SpaceObjRotImpTarg *)obj1,(SpaceObjRotImpTarg *)obj2,colldist,&distvector,dist,distsquared);
+                            ObjectsCollided(obj1, obj2, colldist, &distvector, dist, distsquared);
                         }
                         else
                         {
                              //fix collided ships velocity....
-                            ObjectsCollided((SpaceObjRotImpTarg *)obj1,(SpaceObjRotImpTarg *)obj2,colldist,&distvector,dist,distsquared);
+                            ObjectsCollided(obj1, obj2, colldist, &distvector, dist, distsquared);
                         }
                     }
                 }
@@ -1631,93 +1474,86 @@ nextobj1:
     Return      : TRUE if path is clear, FALSE if obscured
     todo: must check if target is closer than a "hit"
 ----------------------------------------------------------------------------*/
-bool collCheckLineOfSight(Ship* source, Ship* target, vector* sourcePosition, vector* direction)
+bool collCheckLineOfSight(Ship& source, Ship* target, vector* sourcePosition, const vector& direction)
 {
     sdword i, collSide;
     real32 length;
     blob* thisBlob;
-    Ship* ship;
     vector distvec;
 
     if (target == NULL)
-    {
         length = REALlyBig;
-    }
     else
     {
         vecSub(distvec, target->posinfo.position, *sourcePosition);
         length = fsqrt(vecMagnitudeSquared(distvec));
     }
 
-    if (target == NULL || target->collMyBlob == source->collMyBlob)
+    if (target == NULL || target->collMyBlob == source.collMyBlob)
     {
         //los in current blob
-        thisBlob = source->collMyBlob;
-        for (i = 0; i < thisBlob->blobShips->numShips; i++)
+        thisBlob = source.collMyBlob;
+        for (i = 0; i < thisBlob->blobShips->size(); i++)
         {
-            ship = thisBlob->blobShips->ShipPtr[i];
-            if (ship == source || ship == target)
+            auto& ship = *thisBlob->blobShips[i];
+            if (ship == source || ship == *target)
             {
                 //ignore source or target
                 continue;
             }
 
-            if (!allianceIsShipAlly(ship, source->playerowner))
+            if (!allianceIsShipAlly(ship, *source.playerowner))
             {
                 //only test with allied ships, self included
                 continue;
             }
 
-            if (collCheckRectLine((SpaceObjRotImp*)ship, sourcePosition, direction, length, &collSide) != -1.0f)
+            if (collCheckRectLine(ship, sourcePosition, direction, length, collSide) != -1.0f)
             {
                 //hit something of ours
-                return FALSE;
+                return false;
             }
         }
 
         //path is clear
-        return TRUE;
+        return true;
     }
     else
     {
         //los in universe
-        Node* blobnode = universe.collBlobList.head;
         vector distvector;
         real32 distsquared, v, dsqr;
 
-        while (blobnode != NULL)
+        for( auto& thisBlob : universe.collBlobList )
         {
-            thisBlob = (blob*)listGetStructOfNode(blobnode);
-            blobnode = blobnode->next;
-
-            vecSub(distvector, thisBlob->centre, *sourcePosition);
+            vecSub(distvector, thisBlob.centre, *sourcePosition);
             distsquared = vecMagnitudeSquared(distvector);
-            v = vecDotProduct(distvector, *direction);
+            v = vecDotProduct(distvector, direction);
 			if (v > 0)
 			{
-				dsqr = (thisBlob->radius * thisBlob->radius) - (distsquared - (v*v));
+				dsqr = (thisBlob.radius * thisBlob.radius) - (distsquared - (v*v));
 				if (dsqr > 0)
 				{
 					//line intersects blob, check all ships
-					for (i = 0; i < thisBlob->blobShips->numShips; i++)
+					for (i = 0; i < thisBlob.blobShips->size(); i++)
 					{
-						ship = thisBlob->blobShips->ShipPtr[i];
-						if (ship == source || ship == target)
+						auto& ship = *(*thisBlob.blobShips)[i];
+						if (ship == *source || ship == *target)
 						{
 							//ignore source or target
 							continue;
 						}
 
-						if (!allianceIsShipAlly(ship, source->playerowner))
+						if (!allianceIsShipAlly(ship, *source.playerowner))
 						{
 							//only test with allied ships, self included
 							continue;
 						}
 
-						if (collCheckRectLine((SpaceObjRotImp*)ship, sourcePosition, direction, length, &collSide) != -1.0f)
+						if (collCheckRectLine(ship, sourcePosition, direction, length, collSide) != -1.0f)
 						{
 							//hit something of ours
-							return FALSE;
+							return false;
 						}
 					}
 				}
@@ -1725,13 +1561,12 @@ bool collCheckLineOfSight(Ship* source, Ship* target, vector* sourcePosition, ve
         }
 
         //path is clear
-        return TRUE;
+        return true;
     }
 }
 
-void collCheckBeamCollWithTargetsInBlob(Bullet *bullet,blob *thisBlob,real32 *minbeamCollideLineDist,SpaceObjRotImpTarg **minbeamTarget,sdword *minbeamCollSide)
+void collCheckBeamCollWithTargetsInBlob(Bullet& bullet,blob& thisBlob, real32& minbeamCollideLineDist, SpaceObjRotImpTarg **minbeamTarget,sdword *minbeamCollSide)
 {
-    SelectAnyCommand *targetselection;
     sdword numTargets;
 
     SpaceObjRotImpTarg *target;
@@ -1750,32 +1585,35 @@ void collCheckBeamCollWithTargetsInBlob(Bullet *bullet,blob *thisBlob,real32 *mi
 
 passagain:
 
-    if (pass == 0)
-    {
-        targetselection = thisBlob->blobSmallTargets;
-    }
-    else
-    {
-        dbgAssertOrIgnore(pass == 1);
-        targetselection = thisBlob->blobBigTargets;
-    }
+	auto getTargetSelection = [&]() -> SelectAnyCommand&
+	{
+		SelectAnyCommand* pTargetSelection;
+		if (pass == 0)
+			pTargetSelection = thisBlob.blobSmallTargets;
+		else
+		{
+			dbgAssertOrIgnore(pass == 1);
+			pTargetSelection = thisBlob.blobBigTargets;
+		}
+		return *pTargetSelection;
+	};
+
+    auto& targetselection = getTargetSelection();
 
     targetindex = 0;
-    numTargets = targetselection->numTargets;
+    numTargets = targetselection.size();
 
     while (targetindex < numTargets)
     {
-        target = targetselection->TargetPtr[targetindex];
-        targetstaticheader = &target->staticinfo->staticheader;
+        auto& target = *targetselection[targetindex];
+        auto& targetstaticheader = target.staticinfo->staticheader;
 
 #if COLLISION_CHECK_STATS
 bulletwalks++;
 #endif
 
-        if (bullet->owner == (Ship *)target)
-        {
+        if (bullet.owner == (Ship *)target)
             goto beamnexttarget;
-        }
 
         // Check for collisions between bullet and target here:
 
@@ -1783,26 +1621,24 @@ bulletwalks++;
 bulletchecks++;
 #endif
 
-        vecSub(distvector,target->collInfo.collPosition,bullet->posinfo.position);
+        vecSub(distvector, target.collInfo.collPosition, bullet.posinfo.position);
         distsquared = vecMagnitudeSquared(distvector);
-        v = vecDotProduct(distvector,bullet->bulletheading);
+        v = vecDotProduct(distvector, bullet.bulletheading);
 		if (v > 0)
         {
-			dsqr = targetstaticheader->staticCollInfo.collspheresizeSqr - (distsquared - (v*v));
+			dsqr = targetstaticheader.staticCollInfo.collspheresizeSqr - (distsquared - (v*v));
 			if (dsqr > 0)
 			{
 				d = fsqrt(dsqr);
-				if ((v-d) < bullet->traveldist)
+				if ((v-d) < bullet.traveldist)
 				{
-					if ((collideLineDist = collCheckRectLine((SpaceObjRotImp *)target,&bullet->posinfo.position,&bullet->bulletheading,bullet->traveldist,&collSide)) >= 0.0f)
+					if ((collideLineDist = collCheckRectLine(target, &bullet.posinfo.position, bullet.bulletheading, bullet.traveldist, collSide)) >= 0.0f)
 					{
 						if (collideLineDist == 0.0f)
 						{
 							collideLineDist = v-d;
 							if (collideLineDist < 0.0f)
-							{
 								collideLineDist = 0.0f;
-							}
 						}
 						if (collideLineDist < *minbeamCollideLineDist)
 						{
@@ -1822,17 +1658,14 @@ beamnexttarget:
 //nextpass:
     pass++;
     if (pass < 2)
-    {
         goto passagain;
-    }
 }
 
-void collCheckBeamColl(blob *thisBlob,Bullet *bullet)
+void collCheckBeamColl(blob& thisBlob,Bullet& bullet)
 {
     real32 minbeamCollideLineDist = REALlyBig;
     SpaceObjRotImpTarg *minbeamTarget = NULL;
     sdword minbeamCollSide = -1;
-    Node *blobnode = universe.collBlobList.head;
     blob *checkBlob;
 
     real32 collideLineDist;
@@ -1841,37 +1674,35 @@ void collCheckBeamColl(blob *thisBlob,Bullet *bullet)
     real32 v,d,dsqr;
     sdword collSide;
 
-    if(bullet->target != NULL)
+    if(bullet.target != nullptr)
     {
-        switch(bullet->target->objtype)
+        switch(bullet.target->objtype)
         {
-        case OBJ_MissileType:
+        case ObjType::OBJ_MissileType:
             //do bullet/missle target collision with its target only!
-            vecSub(distvector,bullet->target->collInfo.collPosition,bullet->posinfo.position);
+            vecSub(distvector,bullet.target->collInfo.collPosition,bullet.posinfo.position);
             distsquared = vecMagnitudeSquared(distvector);
-            v = vecDotProduct(distvector,bullet->bulletheading);
+            v = vecDotProduct(distvector, bullet.bulletheading);
 			//if (v > 0)
 			{
-				dsqr = bullet->target->staticinfo->staticheader.staticCollInfo.collspheresizeSqr - (distsquared - (v*v));
+				dsqr = bullet.target->staticinfo->staticheader.staticCollInfo.collspheresizeSqr - (distsquared - (v*v));
 				if (dsqr > 0)
 				{
 					d = fsqrt(dsqr);
-					if ((v-d) < bullet->traveldist)
+					if ((v-d) < bullet.traveldist)
 					{
-						if ((collideLineDist = collCheckRectLine((SpaceObjRotImp *)bullet->target,&bullet->posinfo.position,&bullet->bulletheading,bullet->traveldist,&collSide)) >= 0.0f)
+						if ((collideLineDist = collCheckRectLine(*bullet.target, &bullet.posinfo.position, bullet.bulletheading, bullet.traveldist, collSide)) >= 0.0f)
 						{
 							if (collideLineDist == 0.0f)
 							{
 								collideLineDist = v-d;
 								if (collideLineDist < 0.0f)
-								{
 									collideLineDist = 0.0f;
-								}
 							}
 							if (collideLineDist < minbeamCollideLineDist)
 							{
 								minbeamCollideLineDist = collideLineDist;
-								minbeamTarget = bullet->target;
+								minbeamTarget = bullet.target;
 								minbeamCollSide = collSide;
 							}
 						}
@@ -1884,50 +1715,43 @@ void collCheckBeamColl(blob *thisBlob,Bullet *bullet)
         }
     }
 
-    collCheckBeamCollWithTargetsInBlob(bullet,thisBlob,&minbeamCollideLineDist,&minbeamTarget,&minbeamCollSide);
+    collCheckBeamCollWithTargetsInBlob(bullet, thisBlob, minbeamCollideLineDist, &minbeamTarget, &minbeamCollSide);
 
+    for( auto& checkBlob : universe.collBlobList )
     // do line-blob collision test for all other blobs in universe:
-    while (blobnode != NULL)
     {
-        checkBlob = (blob *)listGetStructOfNode(blobnode);
-        blobnode = blobnode->next;
-
         if (checkBlob == thisBlob)
-        {
             continue;
-        }
 
-        vecSub(distvector,checkBlob->centre,bullet->posinfo.position);
+        vecSub(distvector, checkBlob.centre, bullet.posinfo.position);
         distsquared = vecMagnitudeSquared(distvector);
-        v = vecDotProduct(distvector,bullet->bulletheading);
+        v = vecDotProduct(distvector, bullet.bulletheading);
 		if (v > 0)
 		{
-			dsqr = (checkBlob->radius*checkBlob->radius) - (distsquared - (v*v));
+			dsqr = (checkBlob.radius * checkBlob.radius) - (distsquared - (v*v));
 			if (dsqr > 0)
 			{
 				d = fsqrt(dsqr);
-				if ((v-d) < bullet->traveldist)
-				{
-					collCheckBeamCollWithTargetsInBlob(bullet,checkBlob,&minbeamCollideLineDist,&minbeamTarget,&minbeamCollSide);
-				}
+				if ((v-d) < bullet.traveldist)
+					collCheckBeamCollWithTargetsInBlob(bullet, checkBlob, minbeamCollideLineDist, &minbeamTarget, &minbeamCollSide);
 			}
 		}
     }
 
-    if (minbeamTarget != NULL)        // beam only collides with closest target
+    if (minbeamTarget != nullptr)        // beam only collides with closest target
     {
         dbgAssertOrIgnore(minbeamCollideLineDist >= 0.0f);
-        univBulletCollidedWithTarget(minbeamTarget,&minbeamTarget->staticinfo->staticheader,bullet,minbeamCollideLineDist,minbeamCollSide);
-        bullet->beamtraveldist = minbeamCollideLineDist;
+        univBulletCollidedWithTarget(*minbeamTarget, &minbeamTarget->staticinfo->staticheader, bullet, minbeamCollideLineDist, minbeamCollSide);
+        bullet.beamtraveldist = minbeamCollideLineDist;
     }
     else
     {
-        bullet->beamtraveldist = bullet->lengthmag;
+        bullet.beamtraveldist = bullet.lengthmag;
     }
     //adjust length of effect associated with bullet, if applicable
-    if (bullet->effect != NULL)
+    if (bullet.effect != NULL)
     {
-        ((real32 *)bullet->effect->variable)[ETG_LengthVariable] = bullet->beamtraveldist;
+        ((real32 *)bullet.effect->variable)[ETG_LengthVariable] = bullet.beamtraveldist;
     }
 }
 
@@ -1941,7 +1765,7 @@ void collCheckBeamColl(blob *thisBlob,Bullet *bullet)
     Return      :
     Notes       : This routine uses line-sphere intersection for collision detection
 ----------------------------------------------------------------------------*/
-void collCheckBulletTargetColl(blob *thisBlob)
+void collCheckBulletTargetColl(blob& thisBlob)
 {
     sdword bulletindex = 0;
     Bullet *bullet;
@@ -1963,7 +1787,7 @@ void collCheckBulletTargetColl(blob *thisBlob)
 
     real32 testcollsizesqr;
 
-    BulletSelection *bulletselection = thisBlob->blobBullets;
+    BulletSelection& bulletselection = thisBlob.blobBullets;
 
     SelectAnyCommand *targetselection;
     sdword numTargets;
@@ -1978,55 +1802,54 @@ void collCheckBulletTargetColl(blob *thisBlob)
 //    thisBlob->debugFlag = 1;
 #endif
 
-    while (bulletindex < bulletselection->numBullets)
+    while (bulletindex < bulletselection.size())
     {
-        bullet = bulletselection->BulletPtr[bulletindex];
-        dbgAssertOrIgnore(bullet->objtype == OBJ_BulletType);
+        auto& bullet = *bulletselection[bulletindex];
+        dbgAssertOrIgnore(bullet.objtype == ObjType::OBJ_BulletType);
 
         deletebulletflag = FALSE;
 
-        switch (bullet->bulletType)
+        switch (bullet.bulletType)
         {
-            case BULLET_Beam:
+            case BulletType::BULLET_Beam:
                 collCheckBeamColl(thisBlob,bullet);
                 break;
-            case BULLET_Laser:
+            case BulletType::BULLET_Laser:
                 break;              //don't do collision detection for lasers
             default:
                 pass = 0;
 
-
-                if(bullet->target != NULL)
+                if(bullet.target != nullptr)
                 {
-                    switch(bullet->target->objtype)
+                    switch(bullet.target->objtype)
                     {
-                    case OBJ_MissileType:
+                    case ObjType::OBJ_MissileType:
                         //do bullet/missle target collision with its target only!
-                         distcheck = bullet->target->collOptimizeDist - bullet->collOptimizeDist;
+                         distcheck = bullet.target->collOptimizeDist - bullet.collOptimizeDist;
 
-                        if (ABS(distcheck) > (bullet->target->staticinfo->staticheader.staticCollInfo.collspheresize+bullet->traveldist))
+                        if (std::abs(distcheck) > (bullet.target->staticinfo->staticheader.staticCollInfo.collspheresize+bullet.traveldist))
                         {
                             //trivially reject...
                             goto nominecollision;
                         }
-                        vecSub(distvector,bullet->target->collInfo.collPosition,bullet->posinfo.position);
+                        vecSub(distvector, bullet.target->collInfo.collPosition, bullet.posinfo.position);
                         distsquared = vecMagnitudeSquared(distvector);
-                        v = vecDotProduct(distvector,bullet->bulletheading);
+                        v = vecDotProduct(distvector, bullet.bulletheading);
 						//if (v > 0)
 						{
 
-							testcollsizesqr = bullet->target->staticinfo->staticheader.staticCollInfo.collspheresizeSqr;
+							testcollsizesqr = bullet.target->staticinfo->staticheader.staticCollInfo.collspheresizeSqr;
 
 							dsqr = testcollsizesqr - (distsquared - (v*v));
 							if (dsqr > 0)
 							{
 								d = fsqrt(dsqr);
-								if ((v-d) < bullet->traveldist)
+								if ((v-d) < bullet.traveldist)
 								{
-									if ((collideLineDist = collCheckRectLine((SpaceObjRotImp *)bullet->target,&bullet->posinfo.position,&bullet->bulletheading,bullet->traveldist,&collSide)) >= 0.0f)
+									if ((collideLineDist = collCheckRectLine(*bullet.target, &bullet.posinfo.position, bullet.bulletheading, bullet.traveldist, collSide)) >= 0.0f)
 									{
-										univBulletCollidedWithTarget(bullet->target,&bullet->target->staticinfo->staticheader,bullet,collideLineDist,collSide);
-										deletebulletflag = TRUE;
+										univBulletCollidedWithTarget(*bullet.target, &bullet.target->staticinfo->staticheader, bullet,collideLineDist, collSide);
+										deletebulletflag = true;
 										goto nextbullet;
 									}
 								}
@@ -2042,15 +1865,13 @@ nominecollision:
 passagain:
                 if (pass == 0)
                 {
-                    targetselection = thisBlob->blobSmallTargets;
-                    numTargets = targetselection->numTargets;
+                    targetselection = thisBlob.blobSmallTargets;
+                    numTargets = targetselection->size();
 
                     if (numTargets == 0)
-                    {
                         goto nextpass;         // go directly to next pass
-                    }
 
-                    maxTargetCollSphereSizePlusBulletTravelDist = thisBlob->blobMaxSTargetCollSphereSize + bullet->traveldist;
+                    maxTargetCollSphereSizePlusBulletTravelDist = thisBlob.blobMaxSTargetCollSphereSize + bullet.traveldist;
 
                     // binary search targetindex such that
                     // (bullet->collOptimizeDist - target->collOptimizeDist) <= maxTargetCollSphereSize
@@ -2059,15 +1880,13 @@ passagain:
                     while (top >= bottom)
                     {
                         targetindex = (bottom+top)>>1;
-                        if ((bullet->collOptimizeDist - targetselection->TargetPtr[targetindex]->collOptimizeDist) > maxTargetCollSphereSizePlusBulletTravelDist)
+                        if ((bullet.collOptimizeDist - (*targetselection)[targetindex]->collOptimizeDist) > maxTargetCollSphereSizePlusBulletTravelDist)
                         {
                             // targetindex is too small
                             bottom = targetindex+1;
                         }
                         else
-                        {
                             top = targetindex-1;
-                        }
                     }
 
                     dbgAssertOrIgnore(targetindex >= 0);
@@ -2076,46 +1895,37 @@ passagain:
                 else
                 {
                     dbgAssertOrIgnore(pass == 1);
-                    targetselection = thisBlob->blobBigTargets;
-                    numTargets = targetselection->numTargets;
+                    targetselection = thisBlob.blobBigTargets;
+                    numTargets = targetselection->size();
                     targetindex = 0;
-                    maxTargetCollSphereSizePlusBulletTravelDist = thisBlob->blobMaxBTargetCollSphereSize + bullet->traveldist;
+                    maxTargetCollSphereSizePlusBulletTravelDist = thisBlob.blobMaxBTargetCollSphereSize + bullet.traveldist;
                 }
 
                 while (targetindex < numTargets)
                 {
-                    target = targetselection->TargetPtr[targetindex];
-                    targetstaticheader = &target->staticinfo->staticheader;
+                    auto& target = *(*targetselection)[targetindex];
+                    auto& targetstaticheader = target.staticinfo->staticheader;
 
 #if COLLISION_CHECK_STATS
             bulletwalks++;
 #endif
 
-                    distcheck = target->collOptimizeDist - bullet->collOptimizeDist;
+                    distcheck = target.collOptimizeDist - bullet.collOptimizeDist;
 
                     if (distcheck > maxTargetCollSphereSizePlusBulletTravelDist)
-                    {
                         goto nextpass;
-                    }
 
-                    if ((target->objtype != OBJ_ShipType) || (((Ship *)target)->shiptype != DFGFrigate && ((Ship *)target)->shiptype != DefenseFighter))
+                    if ((target.objtype != ObjType::OBJ_ShipType) || (((Ship *)target)->shiptype != DFGFrigate && ((Ship *)target)->shiptype != DefenseFighter))
                     {
-                        if (ABS(distcheck) > (targetstaticheader->staticCollInfo.collspheresize+bullet->traveldist))
-                        {
+                        if (std::abs(distcheck) > (targetstaticheader.staticCollInfo.collspheresize+bullet.traveldist))
                             goto nexttarget;
-                        }
                     }
 
-                    if (bullet->owner == (Ship *)target)
-                    {
+                    if (bullet.owner == (Ship *)target)
                         goto nexttarget;
-                    }
 
-
-                    if ((target->objtype == OBJ_DustType) || (target->objtype == OBJ_NebulaType))
-                    {
+                    if ((target.objtype == ObjType::OBJ_DustType) || (target.objtype == ObjType::OBJ_NebulaType))
                         goto nexttarget;
-                    }
 
                     // Check for collisions between bullet and target here:
 
@@ -2123,29 +1933,30 @@ passagain:
             bulletchecks++;
 #endif
 
-                    vecSub(distvector,target->collInfo.collPosition,bullet->posinfo.position);
+                    vecSub(distvector, target.collInfo.collPosition, bullet.posinfo.position);
                     distsquared = vecMagnitudeSquared(distvector);
-                    v = vecDotProduct(distvector,bullet->bulletheading);
+                    v = vecDotProduct(distvector, bullet.bulletheading);
 
-                    if (target->objtype == OBJ_ShipType)
+                    if (target.objtype == ObjType::OBJ_ShipType)
                     {
-                        if(((Ship *)target)->shiptype == DFGFrigate)
+                    	auto& ship = static_cast<Ship>(target);
+                        if(ship.shiptype == DFGFrigate)
                         {       //if target is a dfgf,
                             DFGFrigateStatics *DFGFstatics;
 
-                            DFGFstatics = (DFGFrigateStatics *) ((ShipStaticInfo *)(((Ship *)target)->staticinfo))->custstatinfo;
+                            DFGFstatics = (DFGFrigateStatics *) ((ShipStaticInfo *)(ship.staticinfo))->custstatinfo;
                             if(distsquared < DFGFstatics->DFGFrigateFieldRadiusSqr)
                             {   //and bullet is within its field radius...affect the bullet
-                                univDFGFieldEffect((Ship *)target,bullet,universe.totaltimeelapsed);
+                                univDFGFieldEffect(&ship, &bullet, universe.totaltimeelapsed);
                             }
                         }
-                        if(((Ship *)target)->shiptype == DefenseFighter)
+                        if(ship.shiptype == DefenseFighter)
                         {    //if target is a DefenseFighter
                             DefenseFighterStatics *defensestatics;
-                            defensestatics = (DefenseFighterStatics *) ((ShipStaticInfo *)(((Ship *)target)->staticinfo))->custstatinfo;
-                            if(distsquared < ((Ship *)target)->staticinfo->bulletRangeSquared[((Ship *)target)->tacticstype])
+                            defensestatics = (DefenseFighterStatics *) ((ShipStaticInfo *)(ship.staticinfo))->custstatinfo;
+                            if(distsquared < ship.GetStaticInfo()->bulletRangeSquared[ship.tacticstype])
                             {
-                                DefenseFighterReportBullet((Ship *)target, bullet);
+                                DefenseFighterReportBullet(&ship, &bullet);
                             }
                         }
                     }
@@ -2153,17 +1964,17 @@ passagain:
 					//if (v > 0)
 					{
 
-						testcollsizesqr = targetstaticheader->staticCollInfo.collspheresizeSqr;
+						testcollsizesqr = targetstaticheader.staticCollInfo.collspheresizeSqr;
 
 						dsqr = testcollsizesqr - (distsquared - (v*v));
 						if (dsqr > 0)
 						{
 							d = fsqrt(dsqr);
-							if ((v-d) < bullet->traveldist)
+							if ((v-d) < bullet.traveldist)
 							{
-								if ((collideLineDist = collCheckRectLine((SpaceObjRotImp *)target,&bullet->posinfo.position,&bullet->bulletheading,bullet->traveldist,&collSide)) >= 0.0f)
+								if ((collideLineDist = collCheckRectLine(target, &bullet.posinfo.position, bullet.bulletheading, bullet.traveldist, collSide)) >= 0.0f)
 								{
-									univBulletCollidedWithTarget(target,targetstaticheader,bullet,collideLineDist,collSide);
+									univBulletCollidedWithTarget(target, &targetstaticheader,bullet,collideLineDist,collSide);
 									deletebulletflag = TRUE;
 									goto nextbullet;
 								}
@@ -2189,20 +2000,26 @@ nextbullet:
         {
             // we are deleting this bullet's index, so don't update bulletindex
 
-            if(bitTest(bullet->SpecialEffectFlag, 0x0002))
+            if(bitTest(bullet.SpecialEffectFlag, 0x0002))
             {    //bullet is possibly being targetted by a defense fighter...remove that reference
-                DefenseFighterBulletRemoval(bullet);
+                DefenseFighterBulletRemoval(&bullet);
             }
 
-            bobObjectDied((SpaceObj *)bullet,&universe.collBlobList);
-            listRemoveNode(&bullet->bulletlink);
-            univRemoveObjFromRenderList((SpaceObj *)bullet);
-            listDeleteNode(&bullet->objlink);
+            bobObjectDied(bullet, universe.collBlobList);
+            std::remove
+            (
+            	universe.BulletList.begin(),
+            	universe.BulletList.end(),
+            	bullet
+            );
+
+            univRemoveObjFromRenderList(bullet);
+            std::remove(universe.SpaceObjList.begin(),
+            		    universe.SpaceObjList.end(),
+            		    bullet);
         }
         else
-        {
             bulletindex++;
-        }
     }
 }
 
@@ -2213,7 +2030,7 @@ nextbullet:
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void collCheckMissileShipColl(blob *thisBlob,MissileType missileType)
+void collCheckMissileShipColl(blob& thisBlob, MissileType missileType)
 {
     sdword missileindex = 0;
     Missile *missile;
@@ -2233,7 +2050,6 @@ void collCheckMissileShipColl(blob *thisBlob,MissileType missileType)
 
     vector missileheading;
 
-    MissileSelection *missileselection;
     sdword numMissiles;
 
     SelectCommand *targetselection;
@@ -2245,15 +2061,19 @@ void collCheckMissileShipColl(blob *thisBlob,MissileType missileType)
 
     sdword pass;
 
-    if (missileType == MISSILE_Mine)
+    auto getMissileSelection = [&]() -> MissileSelection&
     {
-        missileselection = thisBlob->blobMissileMines;
-    }
-    else
-    {
-        missileselection = thisBlob->blobMissileMissiles;
-    }
-    numMissiles = missileselection->numMissiles;
+        MissileSelection* missileselection;
+        if (missileType == MissileType::MISSILE_Mine)
+            missileselection = thisBlob.blobMissileMines;
+        else
+            missileselection = thisBlob.blobMissileMissiles;
+        return *missileselection;
+    };
+
+    auto& missileselection = getMissileSelection();
+
+    numMissiles = missileselection.size();
 
 #ifdef HW_BUILD_FOR_DEBUGGING
 //    thisBlob->debugFlag = 1;
@@ -2261,13 +2081,11 @@ void collCheckMissileShipColl(blob *thisBlob,MissileType missileType)
 
     while (missileindex < numMissiles)
     {
-        missile = missileselection->MissilePtr[missileindex];
-        dbgAssertOrIgnore(missile->objtype == OBJ_MissileType);
+        auto& missile = *missileselection[missileindex];
+        dbgAssertOrIgnore(missile.objtype == ObjType::OBJ_MissileType);
 
-        if (missile->flags & SOF_Dead)
-        {
+        if (missile.flags & SOF_Dead)
             goto nextmissile;
-        }
 
         pass = 0;
 
@@ -2275,15 +2093,13 @@ passagain:
 
         if (pass == 0)
         {
-            targetselection = thisBlob->blobSmallShips;
-            numTargets = targetselection->numShips;
+            targetselection = thisBlob.blobSmallShips;
+            numTargets = targetselection->size();
 
             if (numTargets == 0)
-            {
                 goto nextpass;
-            }
 
-            maxCollSphereSizePlusMissileTravelDist = thisBlob->blobMaxSmallShipCollSphereSize+missile->maxtraveldist;
+            maxCollSphereSizePlusMissileTravelDist = thisBlob.blobMaxSmallShipCollSphereSize+missile.maxtraveldist;
 
             // binary search targetindex such that
             // (missile->collOptimizeDist - target->collOptimizeDist) <= maxCollSphereSize
@@ -2292,15 +2108,13 @@ passagain:
             while (top >= bottom)
             {
                 targetindex = (bottom+top)>>1;
-                if ((missile->collOptimizeDist - targetselection->ShipPtr[targetindex]->collOptimizeDist) > maxCollSphereSizePlusMissileTravelDist)
+                if ((missile.collOptimizeDist - (*targetselection)[targetindex]->collOptimizeDist) > maxCollSphereSizePlusMissileTravelDist)
                 {
                     // targetindex is too small
                     bottom = targetindex+1;
                 }
                 else
-                {
                     top = targetindex-1;
-                }
             }
 
             dbgAssertOrIgnore(targetindex >= 0);
@@ -2309,60 +2123,54 @@ passagain:
         else
         {
             dbgAssertOrIgnore(pass == 1);
-            targetselection = thisBlob->blobBigShips;
-            numTargets = targetselection->numShips;
-            maxCollSphereSizePlusMissileTravelDist = thisBlob->blobMaxBigShipCollSphereSize+missile->maxtraveldist;
+            targetselection = thisBlob.blobBigShips;
+            numTargets = targetselection->size();
+            maxCollSphereSizePlusMissileTravelDist = thisBlob.blobMaxBigShipCollSphereSize+missile.maxtraveldist;
             targetindex = 0;
         }
 
         while (targetindex < numTargets)
         {
-            target = targetselection->ShipPtr[targetindex];
+            auto& target = *(*targetselection)[targetindex];
 
 #if COLLISION_CHECK_STATS
     missilewalks++;
 #endif
 
-            distcheck = target->collOptimizeDist - missile->collOptimizeDist;
+            distcheck = target.collOptimizeDist - missile.collOptimizeDist;
 
             if (distcheck > maxCollSphereSizePlusMissileTravelDist)
-            {
                 goto nextpass;
-            }
 
-            targetstaticheader = &target->staticinfo->staticheader;
+            auto& targetstaticheader = target.staticinfo->staticheader;
 
-            if (ABS(distcheck) > (targetstaticheader->staticCollInfo.collspheresize+missile->maxtraveldist))
-            {
+            if (std::abs(distcheck) > (targetstaticheader.staticCollInfo.collspheresize+missile.maxtraveldist))
                 goto nexttarget;
-            }
 
-            if (missile->owner == (Ship *)target)
-            {
+            if (*missile.owner == target)
                 goto nexttarget;
-            }
 
             // Check for collisions between missile and target here:
 
 #if COLLISION_CHECK_STATS
     missilechecks++;
 #endif
-            vecSub(distvector,target->collInfo.collPosition,missile->posinfo.position);
+            vecSub(distvector,target.collInfo.collPosition, missile.posinfo.position);
             distsquared = vecMagnitudeSquared(distvector);
-            matGetVectFromMatrixCol3(missileheading,missile->rotinfo.coordsys);
+            matGetVectFromMatrixCol3(missileheading, missile.rotinfo.coordsys);
             v = vecDotProduct(distvector,missileheading);
 			//if (v > 0)
 			{
-				dsqr = targetstaticheader->staticCollInfo.collspheresizeSqr - (distsquared - (v*v));
+				dsqr = targetstaticheader.staticCollInfo.collspheresizeSqr - (distsquared - (v*v));
 				if (dsqr > 0)
 				{
 					d = fsqrt(dsqr);
-					if ((v-d) < missile->maxtraveldist)
+					if ((v-d) < missile.maxtraveldist)
 					{
-						if ((collideLineDist = collCheckRectLine((SpaceObjRotImp *)target,&missile->posinfo.position,&missileheading,missile->maxtraveldist,&collSide)) >= 0.0f)
+						if ((collideLineDist = collCheckRectLine(target, &missile.posinfo.position, missileheading, missile.maxtraveldist, collSide)) >= 0.0f)
 						{
-							univMissileCollidedWithTarget((SpaceObjRotImpTarg *)target,targetstaticheader,missile,collideLineDist,collSide);
-							AddMissileToDeleteMissileList(missile, -1);
+							univMissileCollidedWithTarget(target, &targetstaticheader, missile, collideLineDist, collSide);
+							AddMissileToDeleteMissileList(missile, GS_Invalid);
 							goto nextmissile;
 						}
 					}
@@ -2397,7 +2205,7 @@ nextmissile:
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void collCheckMissileResourceColl(blob *thisBlob,MissileType missileType)
+void collCheckMissileResourceColl(blob& thisBlob,MissileType missileType)
 {
     sdword missileindex = 0;
     Missile *missile;
@@ -2417,15 +2225,14 @@ void collCheckMissileResourceColl(blob *thisBlob,MissileType missileType)
 
     vector missileheading;
 
-    MissileSelection *missileselection;
     sdword numMissiles;
 
-    ResourceSelection *targetselection = thisBlob->blobResources;
-    sdword numTargets = targetselection->numResources;
+    ResourceSelection& targetselection = *thisBlob.blobResources;
+    sdword numTargets = targetselection.size();
 
     sdword bottom,top;
 
-    real32 maxCollSphereSize = thisBlob->blobMaxResourceCollSphereSize;
+    real32 maxCollSphereSize = thisBlob.blobMaxResourceCollSphereSize;
     real32 maxCollSphereSizePlusMissileTravelDist;
 
     if (numTargets == 0)
@@ -2433,14 +2240,18 @@ void collCheckMissileResourceColl(blob *thisBlob,MissileType missileType)
         return;
     }
 
-    if (missileType == MISSILE_Mine)
+    auto getMissileSelection = [&]() -> MissileSelection&
     {
-        missileselection = thisBlob->blobMissileMines;
-    }
-    else
-    {
-        missileselection = thisBlob->blobMissileMissiles;
-    }
+    	MissileSelection *missileselection;
+		if (missileType == MissileType::MISSILE_Mine)
+			missileselection = thisBlob.blobMissileMines;
+		else
+			missileselection = thisBlob.blobMissileMissiles;
+		return *missileselection;
+    };
+
+    auto& missileselection = getMissileSelection();
+
     numMissiles = missileselection->numMissiles;
 
 #ifdef HW_BUILD_FOR_DEBUGGING
@@ -2449,15 +2260,13 @@ void collCheckMissileResourceColl(blob *thisBlob,MissileType missileType)
 
     while (missileindex < numMissiles)
     {
-        missile = missileselection->MissilePtr[missileindex];
-        dbgAssertOrIgnore(missile->objtype == OBJ_MissileType);
+        auto& missile = *missileselection[missileindex];
+        dbgAssertOrIgnore(missile.objtype == ObjType::OBJ_MissileType);
 
-        if (missile->flags & SOF_Dead)
-        {
+        if (missile.flags & SOF_Dead)
             goto nextmissile;
-        }
 
-        maxCollSphereSizePlusMissileTravelDist = maxCollSphereSize + missile->maxtraveldist;
+        maxCollSphereSizePlusMissileTravelDist = maxCollSphereSize + missile.maxtraveldist;
 
         // binary search targetindex such that
         // (missile->collOptimizeDist - target->collOptimizeDist) <= maxCollSphereSizePlusMissileTravelDist
@@ -2466,15 +2275,13 @@ void collCheckMissileResourceColl(blob *thisBlob,MissileType missileType)
         while (top >= bottom)
         {
             targetindex = (bottom+top)>>1;
-            if ((missile->collOptimizeDist - targetselection->ResourcePtr[targetindex]->collOptimizeDist) > maxCollSphereSizePlusMissileTravelDist)
+            if ((missile.collOptimizeDist - targetselection[targetindex]->collOptimizeDist) > maxCollSphereSizePlusMissileTravelDist)
             {
                 // targetindex is too small
                 bottom = targetindex+1;
             }
             else
-            {
                 top = targetindex-1;
-            }
         }
 
         dbgAssertOrIgnore(targetindex >= 0);
@@ -2482,52 +2289,48 @@ void collCheckMissileResourceColl(blob *thisBlob,MissileType missileType)
 
         while (targetindex < numTargets)
         {
-            target = targetselection->ResourcePtr[targetindex];
+            auto& target = *targetselection[targetindex];
 
 #if COLLISION_CHECK_STATS
     missilewalks++;
 #endif
 
-            distcheck = target->collOptimizeDist - missile->collOptimizeDist;
+            distcheck = target.collOptimizeDist - missile.collOptimizeDist;
 
             if (distcheck > maxCollSphereSizePlusMissileTravelDist)
             {
                 goto nextmissile;
             }
 
-            targetstaticheader = &target->staticinfo->staticheader;
+            auto& targetstaticheader = target.staticinfo->staticheader;
 
-            if (ABS(distcheck) > (targetstaticheader->staticCollInfo.collspheresize+missile->maxtraveldist))
-            {
+            if (std::abs(distcheck) > (targetstaticheader.staticCollInfo.collspheresize+missile.maxtraveldist))
                 goto nexttarget;
-            }
 
-            if (target->flags & SOF_NotBumpable)
-            {
+            if (target.flags & SOF_NotBumpable)
                 goto nexttarget;
-            }
 
             // Check for collisions between missile and target here:
 
 #if COLLISION_CHECK_STATS
     missilechecks++;
 #endif
-            vecSub(distvector,target->collInfo.collPosition,missile->posinfo.position);
+            vecSub(distvector, target.collInfo.collPosition, missile.posinfo.position);
             distsquared = vecMagnitudeSquared(distvector);
-            matGetVectFromMatrixCol3(missileheading,missile->rotinfo.coordsys);
-            v = vecDotProduct(distvector,missileheading);
+            matGetVectFromMatrixCol3(missileheading, missile.rotinfo.coordsys);
+            v = vecDotProduct(distvector, missileheading);
 			//if (v > 0)
 			{
-				dsqr = targetstaticheader->staticCollInfo.collspheresizeSqr - (distsquared - (v*v));
+				dsqr = targetstaticheader.staticCollInfo.collspheresizeSqr - (distsquared - (v*v));
 				if (dsqr > 0)
 				{
 					d = fsqrt(dsqr);
-					if ((v-d) < missile->maxtraveldist)
+					if ((v-d) < missile.maxtraveldist)
 					{
-						if ((collideLineDist = collCheckRectLine((SpaceObjRotImp *)target,&missile->posinfo.position,&missileheading,missile->maxtraveldist,&collSide)) >= 0.0f)
+						if ((collideLineDist = collCheckRectLine(target, &missile.posinfo.position, missileheading, missile.maxtraveldist, collSide)) >= 0.0f)
 						{
-							univMissileCollidedWithTarget((SpaceObjRotImpTarg *)target,targetstaticheader,missile,collideLineDist,collSide);
-							AddMissileToDeleteMissileList(missile, -1);
+							univMissileCollidedWithTarget(target, &targetstaticheader, missile, collideLineDist, collSide);
+							AddMissileToDeleteMissileList(missile, GS_Invalid);
 							goto nextmissile;
 						}
 					}
@@ -2556,7 +2359,7 @@ nextmissile:
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void collCheckMissileDerelictColl(blob *thisBlob,MissileType missileType)
+void collCheckMissileDerelictColl(blob& thisBlob, MissileType missileType)
 {
     sdword missileindex = 0;
     Missile *missile;
@@ -2576,30 +2379,31 @@ void collCheckMissileDerelictColl(blob *thisBlob,MissileType missileType)
 
     vector missileheading;
 
-    MissileSelection *missileselection;
     sdword numMissiles;
 
-    DerelictSelection *targetselection = thisBlob->blobDerelicts;
-    sdword numTargets = targetselection->numDerelicts;
+    DerelictSelection& targetselection = *thisBlob.blobDerelicts;
+    sdword numTargets = targetselection.size();
 
-    real32 maxCollSphereSize = thisBlob->blobMaxDerelictCollSphereSize;
+    real32 maxCollSphereSize = thisBlob.blobMaxDerelictCollSphereSize;
     real32 maxCollSphereSizePlusMissileTravelDist;
 
     sdword bottom,top;
 
     if (numTargets == 0)
-    {
         return;
-    }
 
-    if (missileType == MISSILE_Mine)
+    auto getMissileSelection = [&]() -> MissileSelection&
     {
-        missileselection = thisBlob->blobMissileMines;
-    }
-    else
-    {
-        missileselection = thisBlob->blobMissileMissiles;
-    }
+    	MissileSelection *missileselection;
+		if (missileType == MissileType::MISSILE_Mine)
+			missileselection = thisBlob.blobMissileMines;
+		else
+			missileselection = thisBlob.blobMissileMissiles;
+		return *missileselection;
+    };
+
+    auto& missileselection = getMissileSelection();
+
     numMissiles = missileselection->numMissiles;
 
 #ifdef HW_BUILD_FOR_DEBUGGING
@@ -2608,15 +2412,13 @@ void collCheckMissileDerelictColl(blob *thisBlob,MissileType missileType)
 
     while (missileindex < numMissiles)
     {
-        missile = missileselection->MissilePtr[missileindex];
-        dbgAssertOrIgnore(missile->objtype == OBJ_MissileType);
+        auto& missile = *missileselection[missileindex];
+        dbgAssertOrIgnore(missile.objtype == ObjType::OBJ_MissileType);
 
-        if (missile->flags & SOF_Dead)
-        {
+        if (missile.flags & SOF_Dead)
             goto nextmissile;
-        }
 
-        maxCollSphereSizePlusMissileTravelDist = maxCollSphereSize + missile->maxtraveldist;
+        maxCollSphereSizePlusMissileTravelDist = maxCollSphereSize + missile.maxtraveldist;
 
         // binary search targetindex such that
         // (missile->collOptimizeDist - target->collOptimizeDist) <= maxCollSphereSizePlusMissileTravelDist
@@ -2625,15 +2427,13 @@ void collCheckMissileDerelictColl(blob *thisBlob,MissileType missileType)
         while (top >= bottom)
         {
             targetindex = (bottom+top)>>1;
-            if ((missile->collOptimizeDist - targetselection->DerelictPtr[targetindex]->collOptimizeDist) > maxCollSphereSizePlusMissileTravelDist)
+            if ((missile.collOptimizeDist - targetselection[targetindex]->collOptimizeDist) > maxCollSphereSizePlusMissileTravelDist)
             {
                 // targetindex is too small
                 bottom = targetindex+1;
             }
             else
-            {
                 top = targetindex-1;
-            }
         }
 
         dbgAssertOrIgnore(targetindex >= 0);
@@ -2641,47 +2441,43 @@ void collCheckMissileDerelictColl(blob *thisBlob,MissileType missileType)
 
         while (targetindex < numTargets)
         {
-            target = targetselection->DerelictPtr[targetindex];
+            auto& target = *targetselection[targetindex];
 
 #if COLLISION_CHECK_STATS
     missilewalks++;
 #endif
 
-            distcheck = target->collOptimizeDist - missile->collOptimizeDist;
+            distcheck = target.collOptimizeDist - missile.collOptimizeDist;
 
             if (distcheck > maxCollSphereSizePlusMissileTravelDist)
-            {
                 goto nextmissile;
-            }
 
-            targetstaticheader = &target->staticinfo->staticheader;
+            auto& targetstaticheader = target.staticinfo->staticheader;
 
-            if (ABS(distcheck) > (targetstaticheader->staticCollInfo.collspheresize+missile->maxtraveldist))
-            {
+            if (std::abs(distcheck) > (targetstaticheader.staticCollInfo.collspheresize+missile.maxtraveldist))
                 goto nexttarget;
-            }
 
             // Check for collisions between missile and target here:
 
 #if COLLISION_CHECK_STATS
     missilechecks++;
 #endif
-            vecSub(distvector,target->collInfo.collPosition,missile->posinfo.position);
+            vecSub(distvector, target.collInfo.collPosition, missile.posinfo.position);
             distsquared = vecMagnitudeSquared(distvector);
-            matGetVectFromMatrixCol3(missileheading,missile->rotinfo.coordsys);
-            v = vecDotProduct(distvector,missileheading);
+            matGetVectFromMatrixCol3(missileheading, missile.rotinfo.coordsys);
+            v = vecDotProduct(distvector, missileheading);
 			//if (v > 0)
 			{
-				dsqr = targetstaticheader->staticCollInfo.collspheresizeSqr - (distsquared - (v*v));
+				dsqr = targetstaticheader.staticCollInfo.collspheresizeSqr - (distsquared - (v*v));
 				if (dsqr > 0)
 				{
 					d = fsqrt(dsqr);
-					if ((v-d) < missile->maxtraveldist)
+					if ((v-d) < missile.maxtraveldist)
 					{
-						if ((collideLineDist = collCheckRectLine((SpaceObjRotImp *)target,&missile->posinfo.position,&missileheading,missile->maxtraveldist,&collSide)) >= 0.0f)
+						if ((collideLineDist = collCheckRectLine(target, &missile.posinfo.position, missileheading, missile.maxtraveldist, collSide)) >= 0.0f)
 						{
-							univMissileCollidedWithTarget((SpaceObjRotImpTarg *)target,targetstaticheader,missile,collideLineDist,collSide);
-							AddMissileToDeleteMissileList(missile, -1);
+							univMissileCollidedWithTarget(target, &targetstaticheader, missile, collideLineDist, collSide);
+							AddMissileToDeleteMissileList(missile, GS_Invalid);
 							goto nextmissile;
 						}
 					}
@@ -2709,7 +2505,7 @@ nextmissile:
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void collCheckMissileMineColl(blob *thisBlob)
+void collCheckMissileMineColl(blob& thisBlob)
 {
     sdword missileindex = 0;
     Missile *missile;
@@ -2729,20 +2525,18 @@ void collCheckMissileMineColl(blob *thisBlob)
 
     vector missileheading;
 
-    MissileSelection *missileselection = thisBlob->blobMissileMissiles;
-    sdword numMissiles = missileselection->numMissiles;
+    MissileSelection& missileselection = *thisBlob.blobMissileMissiles;
+    sdword numMissiles = missileselection.size();
 
-    MissileSelection *targetselection = thisBlob->blobMissileMines;
-    sdword numTargets = targetselection->numMissiles;
+    MissileSelection& targetselection = *thisBlob.blobMissileMines;
+    sdword numTargets = targetselection.size();
 
     sdword bottom,top;
 
     real32 maxMineCollSphereSizePlusMissileTravelDist;
 
     if (numTargets == 0)
-    {
         return;
-    }
 
 #ifdef HW_BUILD_FOR_DEBUGGING
 //    thisBlob->debugFlag = 1;
@@ -2750,16 +2544,14 @@ void collCheckMissileMineColl(blob *thisBlob)
 
     while (missileindex < numMissiles)
     {
-        missile = missileselection->MissilePtr[missileindex];
-        dbgAssertOrIgnore(missile->objtype == OBJ_MissileType);
-        dbgAssertOrIgnore(missile->missileType == MISSILE_Regular);
+        auto& missile = *missileselection[missileindex];
+        dbgAssertOrIgnore(missile.objtype == ObjType::OBJ_MissileType);
+        dbgAssertOrIgnore(missile.missileType == MissileType::MISSILE_Regular);
 
-        if (missile->flags & SOF_Dead)
-        {
+        if (missile.flags & SOF_Dead)
             goto nextmissile;
-        }
 
-        maxMineCollSphereSizePlusMissileTravelDist = maxMineCollSphereSize + missile->maxtraveldist;
+        maxMineCollSphereSizePlusMissileTravelDist = maxMineCollSphereSize + missile.maxtraveldist;
 
         // binary search targetindex such that
         // (missile->collOptimizeDist - target->collOptimizeDist) <= maxMineCollSphereSizePlusMissileTravelDist
@@ -2768,15 +2560,13 @@ void collCheckMissileMineColl(blob *thisBlob)
         while (top >= bottom)
         {
             targetindex = (bottom+top)>>1;
-            if ((missile->collOptimizeDist - targetselection->MissilePtr[targetindex]->collOptimizeDist) > maxMineCollSphereSizePlusMissileTravelDist)
+            if ((missile.collOptimizeDist - targetselection[targetindex]->collOptimizeDist) > maxMineCollSphereSizePlusMissileTravelDist)
             {
                 // targetindex is too small
                 bottom = targetindex+1;
             }
             else
-            {
                 top = targetindex-1;
-            }
         }
 
         dbgAssertOrIgnore(targetindex >= 0);
@@ -2784,49 +2574,45 @@ void collCheckMissileMineColl(blob *thisBlob)
 
         while (targetindex < numTargets)
         {
-            target = targetselection->MissilePtr[targetindex];
-            dbgAssertOrIgnore(target->objtype == OBJ_MissileType);
-            dbgAssertOrIgnore(target->missileType == MISSILE_Mine);
+            auto& target = *targetselection[targetindex];
+            dbgAssertOrIgnore(target.objtype == ObjType::OBJ_MissileType);
+            dbgAssertOrIgnore(target.missileType == MissileType::MISSILE_Mine);
 
 #if COLLISION_CHECK_STATS
     missilewalks++;
 #endif
 
-            distcheck = target->collOptimizeDist - missile->collOptimizeDist;
+            distcheck = target.collOptimizeDist - missile.collOptimizeDist;
 
             if (distcheck > maxMineCollSphereSizePlusMissileTravelDist)
-            {
                 goto nextmissile;
-            }
 
-            targetstaticheader = &target->staticinfo->staticheader;
+            auto& targetstaticheader = target.staticinfo->staticheader;
 
-            if (ABS(distcheck) > (targetstaticheader->staticCollInfo.collspheresize+missile->maxtraveldist))
-            {
+            if (std::abs(distcheck) > (targetstaticheader.staticCollInfo.collspheresize+missile.maxtraveldist))
                 goto nexttarget;
-            }
 
             // Check for collisions between missile and target here:
 
 #if COLLISION_CHECK_STATS
     missilechecks++;
 #endif
-            vecSub(distvector,target->collInfo.collPosition,missile->posinfo.position);
+            vecSub(distvector, target.collInfo.collPosition, missile.posinfo.position);
             distsquared = vecMagnitudeSquared(distvector);
-            matGetVectFromMatrixCol3(missileheading,missile->rotinfo.coordsys);
-            v = vecDotProduct(distvector,missileheading);
+            matGetVectFromMatrixCol3(missileheading, missile.rotinfo.coordsys);
+            v = vecDotProduct(distvector, missileheading);
 			//if (v > 0)
 			{
-				dsqr = targetstaticheader->staticCollInfo.collspheresizeSqr - (distsquared - (v*v));
+				dsqr = targetstaticheader.staticCollInfo.collspheresizeSqr - (distsquared - (v*v));
 				if (dsqr > 0)
 				{
 					d = fsqrt(dsqr);
-					if ((v-d) < missile->maxtraveldist)
+					if ((v-d) < missile.maxtraveldist)
 					{
-						if ((collideLineDist = collCheckRectLine((SpaceObjRotImp *)target,&missile->posinfo.position,&missileheading,missile->maxtraveldist,&collSide)) >= 0.0f)
+						if ((collideLineDist = collCheckRectLine(target, &missile.posinfo.position, missileheading, missile.maxtraveldist, collSide)) >= 0.0f)
 						{
-							univMissileCollidedWithTarget((SpaceObjRotImpTarg *)target,targetstaticheader,missile,collideLineDist,collSide);
-							AddMissileToDeleteMissileList(missile, -1);
+							univMissileCollidedWithTarget(target, &targetstaticheader, missile, collideLineDist, collSide);
+							AddMissileToDeleteMissileList(missile, GS_Invalid);
 							goto nextmissile;
 						}
 					}
@@ -2854,11 +2640,8 @@ nextmissile:
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void collCheckAllBumpCollisions(void)
+void collCheckAllBumpCollisions()
 {
-    Node *blobnode = universe.collBlobList.head;
-    blob *thisBlob;
-
 #if COLLISION_CHECK_STATS
     shipshipwalks = 0;
     shipshipchecks = 0;
@@ -2871,13 +2654,10 @@ void collCheckAllBumpCollisions(void)
     if (!nisIsRunning)
     {
         // for each blob, check all collisions within that blob
-        while (blobnode != NULL)
+    	for( auto& thisBlob : universe.collBlobList )
         {
-            thisBlob = (blob *)listGetStructOfNode(blobnode);
-            blobnode = blobnode->next;
-
-            collCheckShipShipColl(thisBlob,TRUE);       // check smallship-smallship collisions
-            collCheckShipShipColl(thisBlob,FALSE);      // check bigship-bigship collisions
+            collCheckShipShipColl(thisBlob, true);       // check smallship-smallship collisions
+            collCheckShipShipColl(thisBlob, false);      // check bigship-bigship collisions
             collCheckBigShipSmallShipColl(thisBlob);    // check bigship-smallship collisions
             collCheckShipResourceColl(thisBlob);
             collCheckShipDerelictColl(thisBlob);
@@ -2886,13 +2666,10 @@ void collCheckAllBumpCollisions(void)
     else if ((singlePlayerGame) && (spGetCurrentMission() == MISSION_4_GREAT_WASTELANDS_TRADERS))
     {
         // for each blob, check all collisions within that blob
-        while (blobnode != NULL)
+        for( auto& thisBlob : universe.collBlobList )
         {
-            thisBlob = (blob *)listGetStructOfNode(blobnode);
-            blobnode = blobnode->next;
-
             // in case Bentusi traders run into some ships...
-            collCheckShipShipColl(thisBlob,FALSE);      // check bigship-bigship collisions
+            collCheckShipShipColl(thisBlob, false);      // check bigship-bigship collisions
             collCheckBigShipSmallShipColl(thisBlob);    // check bigship-smallship collisions
         }
     }
@@ -2907,8 +2684,6 @@ void collCheckAllBumpCollisions(void)
 ----------------------------------------------------------------------------*/
 void collCheckAllBulletMissileCollisions(void)
 {
-    Node *blobnode = universe.collBlobList.head;
-    blob *thisBlob;
     udword savemissilewalks;
     udword savemissilechecks;
 
@@ -2922,11 +2697,8 @@ void collCheckAllBulletMissileCollisions(void)
 #endif
 
     // for each blob, check all collisions within that blob
-    while (blobnode != NULL)
+    for( auto& thisBlob : universe.collBlobList )
     {
-        thisBlob = (blob *)listGetStructOfNode(blobnode);
-        blobnode = blobnode->next;
-
         collCheckBulletTargetColl(thisBlob);
         //collCheckBulletShipColl(thisBlob);
         //collCheckBulletResourceColl(thisBlob);
@@ -2935,9 +2707,9 @@ void collCheckAllBulletMissileCollisions(void)
 
         //collCheckMissileTargetColl(thisBlob);
 
-        collCheckMissileShipColl(thisBlob,MISSILE_Regular);
-        collCheckMissileResourceColl(thisBlob,MISSILE_Regular);
-        collCheckMissileDerelictColl(thisBlob,MISSILE_Regular);
+        collCheckMissileShipColl(thisBlob, MissileType::MISSILE_Regular);
+        collCheckMissileResourceColl(thisBlob, MissileType::MISSILE_Regular);
+        collCheckMissileDerelictColl(thisBlob, MissileType::MISSILE_Regular);
 
 #if COLLISION_CHECK_STATS
         savemissilewalks = missilewalks;
@@ -2946,9 +2718,9 @@ void collCheckAllBulletMissileCollisions(void)
         missilechecks = 0;
 #endif
 
-        collCheckMissileShipColl(thisBlob,MISSILE_Mine);
+        collCheckMissileShipColl(thisBlob, MissileType::MISSILE_Mine);
         //collCheckMissileResourceColl(thisBlob,MISSILE_Mine);
-        collCheckMissileDerelictColl(thisBlob,MISSILE_Mine);
+        collCheckMissileDerelictColl(thisBlob, MissileType::MISSILE_Mine);
 
 #if COLLISION_CHECK_STATS
         minewalks += missilewalks;
