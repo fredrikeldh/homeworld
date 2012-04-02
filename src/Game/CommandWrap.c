@@ -30,7 +30,7 @@
     Outputs     : Modifies global gMessage variable
     Return      : void
 ----------------------------------------------------------------------------*/
-void clCommandMessage(char CommandMessage[MAX_MESSAGE_LENGTH])
+void clCommandMessage(const char CommandMessage[MAX_MESSAGE_LENGTH])
 {
     ubyte i = 0;
 
@@ -493,7 +493,7 @@ void clWrapSpecial(CommandLayer *comlayer,SelectCommand *selectcom,SpecialComman
 				speechEvent(selectcom->ShipPtr[0], COMM_SCVette_Salvage, 0);
 			}
         }
-		
+
         /* salvage command given */
 nonormalsalevent:;
     }

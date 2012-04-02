@@ -1,3 +1,4 @@
+#include "../gles2.h"
 #include "matrices.h"
 #include <Matrix.h>
 #include <math.h>
@@ -24,14 +25,14 @@ MatrixSetup::MatrixEntry::MatrixEntry(MatrixEntry* pPrevious):
 	previous(pPrevious)
 {
 	// Duplicate matrix values
-	
+
 	GLfloat* previousMatrix;
-	
+
 	if( previous )
 		previousMatrix = previous->matrix;
 	else
 		previousMatrix = IDENTITY;
-	
+
 	Copy(previousMatrix, matrix, MATRIX_SIZE);
 }
 
@@ -57,7 +58,7 @@ GLubyte MatrixSetup::GetMatrixIndex(GLenum mode)
 GLenum MatrixSetup::GetMatrixMode()
 {
 	auto type = _activeMatrixIndex;
-	
+
 	switch( type )
 	{
 	case TEXTURE_MATRIX:
@@ -104,10 +105,17 @@ void MatrixSetup::SetActiveMatrix(const GLfloat* buffer)
 	Copy(buffer, GetActiveMatrixEntry().matrix, MATRIX_SIZE);
 }
 
+#ifndef MAPIP
 void glGetIntegerv(GLenum pname, GLint* params)
 {
 	Get<MatrixSetup>().Get<GLint>(pname, params);
 }
+
+void glGetFloatv(GLenum pname, GLfloat* params)
+{
+	Get<MatrixSetup>().Get(pname, params);
+}
+#endif
 
 void glLoadMatrixf(const GLfloat* m)
 {
@@ -117,11 +125,6 @@ void glLoadMatrixf(const GLfloat* m)
 void glLoadIdentity()
 {
 	glLoadMatrixf(IDENTITY);
-}
-
-void glGetFloatv(GLenum pname, GLfloat* params)
-{
-	Get<MatrixSetup>().Get(pname, params);
 }
 
 void glPushMatrix()
@@ -331,8 +334,51 @@ void glFrustumf(
 		0, 0, C, D,
 		0, 0, -1, 0
 	};
-	
+
 	glMultMatrixf(matrix);
+}
+
+extern "C"
+void glOrthof (GLfloat left, GLfloat right, GLfloat bottom, GLfloat top, GLfloat near, GLfloat far)
+{
+	GLfloat m [16];
+	GLfloat rml = right - left;
+	GLfloat fmn = far - near;
+	GLfloat tmb = top - bottom;
+	GLfloat _1over_rml;
+	GLfloat _1over_fmn;
+	GLfloat _1over_tmb;
+
+	if (rml == 0.0 || fmn == 0.0 || tmb == 0.0) {
+		GLPart::SetError<GL_INVALID_VALUE>();
+		return;
+	}
+
+	_1over_rml = 1.0 / rml;
+	_1over_fmn = 1.0 / fmn;
+	_1over_tmb = 1.0 / tmb;
+
+	m[0] = 2.0 * _1over_rml;
+	m[1] = 0.0;
+	m[2] = 0.0;
+	m[3] = 0.0;
+
+	m[4] = 0.0;
+	m[5] = 2.0 * _1over_tmb;
+	m[6] = 0.0;
+	m[7] = 0.0;
+
+	m[8] = 0.0;
+	m[9] = 0.0;
+	m[10] = -2.0 * _1over_fmn;
+	m[11] = 0.0;
+
+	m[12] = -(right + left) *  _1over_rml;
+	m[13] = -(top + bottom) *  _1over_tmb;
+	m[14] = -(far + near) * _1over_fmn;
+	m[15] = 1.0;
+
+	glMultMatrixf(m);
 }
 
 void MatrixSetup::Push()
@@ -348,19 +394,19 @@ void MatrixSetup::Push()
 void MatrixSetup::Pop()
 {
 	auto& old = GetActiveMatrixEntry();
-	
+
 	_topMatrixEntries[_activeMatrixIndex] = old.previous;
-	
+
 	delete &old;
 }
 
 void MatrixSetup::SetActive(GLenum mode)
 {
 	auto index = GetMatrixIndex(mode);
-	
+
 	if( GetError() != GL_NO_ERROR )
 		return; //failed
-	
+
 	_activeMatrixIndex = index;
 }
 

@@ -22,12 +22,12 @@ typedef struct AIVar
 
 void aivarStartup(void);
 void aivarShutdown(void);
-AIVar *aivarCreate(char *label);
-AIVar *aivarFind(char *label);
-AIVar *aivarFindAnyFSM(char *label);
+AIVar *aivarCreate(const char *label);
+AIVar *aivarFind(const char *label);
+AIVar *aivarFindAnyFSM(const char *label);
 char *aivarLabelGenerate(char *label);
 char *aivarLabelGet(AIVar *var);
-void aivarLabelSet(AIVar *var, char *label);
+void aivarLabelSet(AIVar *var, const char *label);
 void aivarDestroy(AIVar *var);
 void aivarDestroyAll(void);
 void aivarValueSet(AIVar *var, sdword value);

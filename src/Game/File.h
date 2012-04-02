@@ -69,15 +69,17 @@
 #define MAX_FILES_OPEN          32
 
 #ifdef __cplusplus
+#if 0
 class LogFile
 {
 public:
 	LogFile(const char* str);
-	Clear();
-	Log(const char *str);
+	void Clear();
+	void Log(const char *str);
 private:
 	std::string _logFile;
 };
+#endif
 
 extern "C" {
 #endif
@@ -118,27 +120,27 @@ extern char filePathTempBuffer    [];
     Functions:
 =============================================================================*/
 
-char *filePathPrepend(char *fileName, udword flags);
+char *filePathPrepend(const char *fileName, udword flags);
 void fileNameReplaceSlashesInPlace(char *fileName);
 
-bool fileCDROMPathSet(char *path);
-void fileHomeworldDataPathSet(char *path);
-bool fileOverrideBigPathSet(char *path);
-bool fileUserSettingsPathSet(char *path);
+bool fileCDROMPathSet(const char *path);
+void fileHomeworldDataPathSet(const char *path);
+bool fileOverrideBigPathSet(const char *path);
+bool fileUserSettingsPathSet(const char *path);
 
 
 //load files directly into memory
-sdword fileLoadAlloc(char *fileName, void **address, udword flags);
-sdword fileLoad(char *fileName, void *address, udword flags);
+sdword fileLoadAlloc(const char *fileName, void **address, udword flags);
+sdword fileLoad(const char *fileName, void *address, udword flags);
 
 //save files, if you want stream saving, use the ANSI C stream functions
-sdword fileSave(char *fileName, void *address, sdword length);
+sdword fileSave(const char *fileName, void *address, sdword length);
 
 //delete a file
-void fileDelete(char *fileName);
+void fileDelete(const char *fileName);
 
 //load files like ANSI C streams (fopen, fread etc)
-filehandle fileOpen(char *fileName, udword flags);
+filehandle fileOpen(const char *fileName, udword flags);
 void fileClose(filehandle handle);
 sdword fileSeek(filehandle handle, sdword offset, sdword whence);
 sdword fileBlockRead(filehandle handle, void *dest, sdword nBytes);
@@ -153,13 +155,13 @@ FILE *fileStream(filehandle handle);
 //utility functions
 bool8 fileMakeDirectory(const char *directoryName);
 bool8 fileMakeDestinationDirectory(const char *fileName);
-bool fileExistsInBigFile(char *fileName);
-bool fileExists(char *fileName, udword flags);
-sdword fileSizeGet(char *fileName, udword flags);
+bool fileExistsInBigFile(const char *fileName);
+bool fileExists(const char *fileName, udword flags);
+sdword fileSizeGet(const char *fileName, udword flags);
 
 void logfileClear(const char *logfile);
 void logfileLog(const char *logfile,const char *str);
-void logfileLogf(const char *logfile,char *format, ...);
+void logfileLogf(const char *logfile,const char *format, ...);
 
 #ifdef __cplusplus
 }

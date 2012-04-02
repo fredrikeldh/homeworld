@@ -87,6 +87,14 @@
 #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
+
+#elif defined(MAPIP)
+#undef HW_USE_GLES
+#define HW_USE_GL 1
+#include <GLES2/gl2.h>
+
+const char* glGetString();
+
 #else
     #include <sys/mman.h>
 #endif
@@ -140,6 +148,7 @@ renderfunction rndMainViewRender = rndMainViewRenderFunction;
 static sdword rndHint = 0;
 #endif
 
+#ifndef MAPIP
 #ifdef HW_USE_GLES
 #	ifdef EMSCRIPTEN
 static WGLContext wgl_context = WGL_NO_CONTEXT;
@@ -157,9 +166,10 @@ PFNGLBUFFERDATAPROC glBufferData = 0;
 PFNGLBUFFERSUBDATAPROC glBufferSubData = 0;
 #endif
 
+#endif
 PFNGLDRAWTEXIOESPROC glDrawTexiOES = 0;
 
-static char *gl_extensions = 0;
+static const char *gl_extensions = 0;
 
 static bool useVBO = FALSE;
 static GLuint vboStars;
@@ -292,7 +302,7 @@ static sdword polysAtLOD[5];
 #if RND_GL_STATE_DEBUG
 typedef struct
 {
-    char *name;
+    const char *name;
     GLenum enumeration;
     bool bDefault;
 }
@@ -378,7 +388,7 @@ enumentry rndTextureEnvEnums[] =
 
 typedef struct
 {
-    char *heading;
+    const char *heading;
     GLenum enumeration;
     sdword type;
     sdword nValues;
@@ -477,7 +487,7 @@ bool8 rndShamelessPlugEnabled = TRUE;
     Outputs     :
     Return      : name of enumeration
 ----------------------------------------------------------------------------*/
-char *rndIntToString(GLenum enumb, enumentry *table)
+const char *rndIntToString(GLenum enumb, enumentry *table)
 {
     sdword index;
 
@@ -502,7 +512,7 @@ char *rndIntToString(GLenum enumb, enumentry *table)
 #define MAX_FLOATS          16
 #define MAX_INTS            4
 #define MAX_BOOLS           1
-void rndGLStateLogFunction(char *location)
+void rndGLStateLogFunction(const char *location)
 {
     sdword index, j;
     GLfloat floats[MAX_FLOATS];
@@ -901,7 +911,7 @@ bool setupPixelFormat()
 
     /* Create OpenGL window. */
     flags = SDL_SWSURFACE;
-    
+
 #ifdef HW_USE_GL
     flags |= SDL_OPENGL;
 
@@ -929,16 +939,16 @@ bool setupPixelFormat()
 		fprintf(stderr, "WGL failed to initialize: code 0x%x\n", wglGetError());
 		return FALSE;
 	}
-	
+
 	//FIXME: get real context
 	new_context = wglGetContext(0);
-	
+
 	if( new_context == WGL_NO_CONTEXT )
 	{
 		fprintf(stderr, "WGL failed to create context: code 0x%x\n", wglGetError());
 		return FALSE;
 	}
-	
+
 	if( !wglMakeCurrent(new_context) )
 	{
 		fprintf(stderr, "WGL failed to change current surface: 0x%x\n", eglGetError());
@@ -973,7 +983,7 @@ bool setupPixelFormat()
         fprintf(stderr, "EGL failed to create context: code 0x%x\n", eglGetError());
         return FALSE;
     }
-    
+
     new_surface = eglCreateWindowSurface(egl_display, egl_config, (EGLNativeWindowType)info.info.x11.window, NULL);
     if (new_surface == EGL_NO_SURFACE) {
         fprintf(stderr, "EGL failed to create a window surface: 0x%x\n", eglGetError());
@@ -1028,6 +1038,7 @@ bool setupPixelFormat()
 	lastDepth  = MAIN_WindowDepth;
 	lastFull   = fullScreen;
 
+#ifndef MAPIP
 #ifdef HW_USE_GLES
     glDrawTexiOES = eglGetProcAddress("glDrawTexiOES");
 #elif defined HW_USE_GL
@@ -1036,6 +1047,7 @@ bool setupPixelFormat()
     glGenBuffers = SDL_GL_GetProcAddress("glGenBuffers");
     glBufferData = SDL_GL_GetProcAddress("glBufferData");
     glBufferSubData = SDL_GL_GetProcAddress("glBufferSubData");
+#endif
 #endif
 
     gl_extensions = glGetString(GL_EXTENSIONS);
@@ -1047,9 +1059,9 @@ bool setupPixelFormat()
 }
 
 int glCheckExtension(const char *ext) {
-    bool gotext = gl_extensions ? strstr(gl_extensions, ext) != NULL : gl_extensions;
+    bool gotext = gl_extensions ? strstr(gl_extensions, ext) != NULL : 0;
     if (strcmp(ext, "GL_ARB_vertex_buffer_object") == 0) {
-#ifdef HW_USE_GLES
+#if defined(HW_USE_GLES) || defined(MAPIP)
         /* part of the standard in GLES */
         return 1;
 #elif HW_USE_GL
@@ -1158,7 +1170,7 @@ sdword rndInit(rndinitdata *initData)
     dbgMessagef("rndInit: OpenGL Extensions :%s", glGetString(GL_EXTENSIONS));
 #endif
     rndSetClearColor(colRGBA(0,0,0,255));
-#ifdef HW_USE_GLES
+#if defined(HW_USE_GLES) || defined(MAPIP)
     glClearDepthf( 1.0f );
 #else
     glClearDepth( 1.0 );
@@ -2030,6 +2042,7 @@ extern fontregistry frFontRegistry[FR_NumberFonts];
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
+extern sdword trTextureChanges, trAvoidedChanges;
 void rndPostRenderDebug2DStuff(Camera *camera)
 {
 #if LOD_PRINT_DISTANCE
@@ -2189,7 +2202,6 @@ void rndPostRenderDebug2DStuff(Camera *camera)
 #if DEBUG_VERBOSE_SHIP_STATS
         sdword i;
 #endif
-        extern sdword trTextureChanges, trAvoidedChanges;
 
         sprintf(string, "(%d . %d) (%u) . %u",
                 trTextureChanges, trAvoidedChanges,
@@ -2235,7 +2247,7 @@ void rndPostRenderDebug2DStuff(Camera *camera)
         }
     }
 #endif
-#if MEM_STATISTICS
+#if 0//MEM_STATISTICS
         if (memStatsLogging)
         {
             sdword y = 0, x = 0, maxWidth = 0, width, index;
@@ -2335,6 +2347,10 @@ void rndMainViewAllButRenderFunction(Camera *camera)
                     rndMainViewRenderFunction will have to be made to
                     rndMainViewAllButRenderFunction.
 ----------------------------------------------------------------------------*/
+#if SHOW_TRAIL_STATS
+extern sdword trailsUpdated, trailsNotUpdated;
+#endif
+extern sdword trailsRendered;
 void rndMainViewRenderFunction(Camera *camera)
 {
     Node *objnode;
@@ -2352,10 +2368,6 @@ void rndMainViewRenderFunction(Camera *camera)
 //    meshdata *worldMesh;
     Effect *effect;
     static sdword shipTrails;
-#if SHOW_TRAIL_STATS
-    extern sdword trailsUpdated, trailsNotUpdated;
-#endif
-    extern sdword trailsRendered;
     sdword colorScheme;
     bool displayEffect = FALSE;
 
@@ -3237,7 +3249,7 @@ typedef struct tagTGAHeader
 } TGAHeader;
 
 //rndLoadTarga
-udword rndLoadTarga(char* filename, sdword* width, sdword* height)
+udword rndLoadTarga(const char* filename, sdword* width, sdword* height)
 {
     TGAHeader head;
     ubyte* data;
@@ -3733,7 +3745,7 @@ void rndDrawOnScreenDebugInfo(void)
         fontPrint(MAIN_WindowWidth - fontWidth(string), 0, colWhite, string);
     }
 #endif
-#if NIS_PRINT_INFO
+#ifdef NIS_PRINT_INFO
     if (nisPrintInfo)
     {
         fontPrintf(MAIN_WindowWidth - fontWidth(nisInfoString) - 10,
@@ -3961,9 +3973,9 @@ DEFINE_TASK(rndRenderTask)
         // set the cursor type, reset the variables then draw the mouse cursor
         mouseSelectCursorSetting();
         mouseSetCursorSetting();
-        
+
         mouseDraw();                                        //draw mouse atop everything
-      
+
         if (universePause)
         {
             rndShamelessPlug();
@@ -3989,7 +4001,7 @@ DEFINE_TASK(rndRenderTask)
         {
             keyClearSticky(PAUSEKEY);
         }
-        
+
         if (rndTakeScreenshot)
         {
             rndTakeScreenshot = FALSE;
@@ -4147,13 +4159,13 @@ sdword rndTextureEnable(sdword bEnable)
 udword rndTextureEnvironment(udword textureMode)
 {
     udword oldMode = rndTextureEnviron;
-    
+
     if (rndTextureEnviron != textureMode)
     {
         rndTextureEnviron = textureMode;
         glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, rndTextureEnviron);
     }
-    
+
     return oldMode;
 }
 
@@ -4251,10 +4263,10 @@ void rndHintInc()
     Outputs     :
     Return      : previous status
 ----------------------------------------------------------------------------*/
+extern udword gDevcaps2;
 sdword rndAdditiveBlends(sdword bAdditive)
 {
     sdword oldStatus;
-    extern udword gDevcaps2;
 
     oldStatus = rndAdditiveBlending;
     if (bAdditive != rndAdditiveBlending)

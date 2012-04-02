@@ -1835,7 +1835,7 @@ SelectCommand *selectMergeTwoSelections(SelectCommand *selection1, SelectCommand
     Outputs     : Allocates memory for the new selection
     Return      : The new selection
 ----------------------------------------------------------------------------*/
-SelectCommand *selectMemDupSelection(SelectCommand *selection, char *str, udword mmflag)
+SelectCommand *selectMemDupSelection(SelectCommand *selection, const char *str, udword mmflag)
 {
     SelectCommand *new_selection;
 
@@ -1965,7 +1965,7 @@ bool MakeSelectionKamikazeCapable(SelectCommand *selection)
     return TRUE;
 }
 
-SelectCommand * shipLinkedListAsSelectCommand(LinkedList *list, char *label)
+SelectCommand * shipLinkedListAsSelectCommand(LinkedList *list, const char *label)
 {
     Node *objnode = NULL;
     SelectCommand *selection = NULL;

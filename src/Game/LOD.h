@@ -116,7 +116,7 @@ extern real32 lodDebugScaleFactor;
 /*=============================================================================
     Functions:
 =============================================================================*/
-lodinfo *lodTableReadScript(char *directory, char *fileName);
+lodinfo *lodTableReadScript(const char *directory, const char *fileName);
 
 lod *lodLevelGet(void *spaceObj, vector *camera, vector *ship);
 lod *lodPanicLevelGet(void *spaceObj, vector *camera, vector *ship);

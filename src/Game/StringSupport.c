@@ -822,7 +822,7 @@ bool8 strFreeLanguage(void)
     Outputs     : none
     Return      : none
 ----------------------------------------------------------------------------*/
-void strSetStringCB(char *directory,char *field,void *dataToFillIn)
+void strSetStringCB(const char *directory,char *field,void *dataToFillIn)
 {
     *(void**)dataToFillIn = (void *)memStringDupe(field);
     *(void**)dataToFillIn = strParseString(*(void**)dataToFillIn);

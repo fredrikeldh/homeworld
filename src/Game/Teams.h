@@ -97,8 +97,8 @@ void teShutdown(void);
 void teTeamColorsSet(sdword iTeam, color baseColor, color stripeColor);
 
 //parsing callbacks
-void teTrailColorSet(char *directory,char *field,void *dataToFillIn);
-void teColorSet(char *directory,char *field,void *dataToFillIn);
-void teColorFactorsSet(char *directory,char *field,void *dataToFillIn);
+void teTrailColorSet(const char *directory,char *field,void *dataToFillIn);
+void teColorSet(const char *directory,char *field,void *dataToFillIn);
+void teColorFactorsSet(const char *directory,char *field,void *dataToFillIn);
 
 #endif

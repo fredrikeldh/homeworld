@@ -93,7 +93,7 @@ void lightPlayerColorLightSet(sdword playerIndex);
 #endif
 
 //parse an HSF file full of lighting data, filling in the default lightinfo struct
-void lightParseHSF(char*);
+void lightParseHSF(const char*);
 //gl up the lighting info (either from an hsf, or defaultlightset)
 void lightSetLighting(void);
 

@@ -32,11 +32,11 @@
 static regionhandle cpRegion[15];
 
 //color picker process callbacks
-void cpBaseColor(char *name, featom *atom);
-void cpStripeColor(char *name, featom *atom);
-void cpDefault(char *name, featom *atom);
-void cpPreviousColor(char *name, featom *atom);
-void cpNewRace(char *name, featom *atom);
+void cpBaseColor(const char *name, featom *atom);
+void cpStripeColor(const char *name, featom *atom);
+void cpDefault(const char *name, featom *atom);
+void cpPreviousColor(const char *name, featom *atom);
+void cpNewRace(const char *name, featom *atom);
 fecallback cpProcessCallbacks[] =
 {
     {cpBaseColor,               "CP_BaseColor"},
@@ -145,7 +145,7 @@ sdword cpValueArrowHeight = CP_ValueArrowHeight;
 color  cpValueArrowColor = CP_ValueArrowColor;
 
 //script processing table for color picker stuff
-void colPickScalarScan(char *directory,char *field,void *dataToFillIn);
+void colPickScalarScan(const char *directory,char *field,void *dataToFillIn);
 static scriptEntry colPickScriptTable[] =
 {
     {"baseScalar",         colPickScalarScan, NULL},
@@ -179,7 +179,7 @@ trcolorinfo colPreviousColors[CP_NumberPreviousColors] =
     Private functions:
 =============================================================================*/
 //scan in a new
-void colPickScalarScan(char *directory,char *field,void *dataToFillIn)
+void colPickScalarScan(const char *directory,char *field,void *dataToFillIn)
 {
     char raceString[32];
     sdword race, index;
@@ -383,7 +383,7 @@ void cpPreviewTexturePrepare(void)
 void cpPreviewImagePrepare(void)
 {
 #if PREVIEW_IMAGE
-    char *fileName;
+    const char *fileName;
 
     if (whichRaceSelected == R1)
     {
@@ -589,7 +589,7 @@ udword cpHueSaturationProcess(regionhandle region, sdword ID, udword event, udwo
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void cpBaseColor(char *name, featom *atom)
+void cpBaseColor(const char *name, featom *atom)
 {
     color* buffer;
 
@@ -644,7 +644,7 @@ void cpBaseColor(char *name, featom *atom)
         memFree(buffer);
     }
 }
-void cpStripeColor(char *name, featom *atom)
+void cpStripeColor(const char *name, featom *atom)
 {
     color *buffer;
     feToggleButtonSet("CP_BaseColor", FALSE);
@@ -689,7 +689,7 @@ void cpPreviewImageDelete(void)
 #endif
 }
 //previous color buttons: choose some previously chosen colors
-void cpPreviousColor(char *name, featom *atom)
+void cpPreviousColor(const char *name, featom *atom)
 {
     sdword index = -1;
     color *buffer;
@@ -712,7 +712,7 @@ void cpPreviousColor(char *name, featom *atom)
 }
 
 //default color buttons: reset to your race defaults
-void cpDefault(char *name, featom *atom)
+void cpDefault(const char *name, featom *atom)
 {
     color *buffer;
     //set default color schemes
@@ -749,7 +749,7 @@ void cpResetRegions(void)
     Outputs     : modifies whichRaceSelected (== R1 or R2)
     Return      :
 ----------------------------------------------------------------------------*/
-void cpNewRace(char *name, featom *atom)
+void cpNewRace(const char *name, featom *atom)
 {
     udword raceOne, raceTwo;
     ShipRace oldRace = whichRaceSelected;
@@ -984,7 +984,7 @@ void cpHueSaturationDraw(featom *atom, regionhandle region)
     trRGBTextureMakeCurrent(cpHueSatTexture);
     rndPerspectiveCorrection(FALSE);
     primRectSolidTextured2(&region->rect);
-    
+
     primLine2(region->rect.x0, region->rect.y1-1, region->rect.x1, region->rect.y1-1, atom->borderColor);
     primLine2(region->rect.x0, region->rect.y1, region->rect.x1, region->rect.y1, atom->borderColor);
     //draw the pointer indicating what color we have
@@ -1362,7 +1362,7 @@ void cpColorsAddToPreviousList(color base, color stripe)
     {
         colPreviousColors[index] = colPreviousColors[index - 1];
     }
-    
+
     colPreviousColors[0].base   = base;
     colPreviousColors[0].detail = stripe;
 }

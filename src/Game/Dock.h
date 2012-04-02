@@ -42,7 +42,7 @@ void dockDrawDockInfo(Ship *ship);
 
 void dockInitializeCustomFunctions(ShipStaticInfo *statinfo,ShipType type,ShipRace race);
 
-sdword dockFindDockIndex(char *name,DockStaticInfo *dockstaticinfo);
+sdword dockFindDockIndex(const char *name,DockStaticInfo *dockstaticinfo);
 /*static void dockReserveDockPoint(Ship *ship,Ship *dockwith,sdword dockpointindex);*/
 /*void dockReserveDockPoint(Ship *ship,Ship *dockwith,sdword dockpointindex);*/
 

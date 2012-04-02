@@ -89,12 +89,12 @@ typedef struct
     dbgAssertOrIgnore(c);                       \
     dbgAssertOrIgnore((c)->type == (t));
 
-bool SaveGame(char *filename);
-void LoadGame(char *filename);
-void PreLoadGame(char *filename);
+bool SaveGame(const char *filename);
+void LoadGame(const char *filename);
+void PreLoadGame(const char *filename);
 
 void SaveThisChunk(SaveChunk *thischunk);
-SaveChunk *CreateChunk(TypeOfSaveChunk type,sdword contentsSize,void *contents);
+SaveChunk *CreateChunk(TypeOfSaveChunk type,sdword contentsSize,const void *contents);
 SaveChunk *LoadNextChunk();
 
 sdword SpaceObjRegistryGetID(SpaceObj *obj);
@@ -141,7 +141,7 @@ void SaveStructureOfSize(void *structure,sdword size);
 void *LoadStructureOfSize(sdword size);
 void LoadStructureOfSizeToAddress(void *address,sdword size);
 
-void Save_String(char *string);
+void Save_String(const char *string);
 char *Load_String(void);
 void Load_StringToAddress(char *addr);
 

@@ -16,6 +16,7 @@
 #include "SDL.h"
 #include "SDL_syswm.h"
 
+#include "avi.h"
 #include "AIPlayer.h"
 #include "Animatic.h"
 #include "AutoDownloadMap.h"
@@ -121,6 +122,7 @@
     #include <sys/types.h>
     #include <sys/mman.h>
     #include <unistd.h>
+#elif defined(MAPIP)
 #else
     #include <sys/mman.h>
     #include <unistd.h>
@@ -133,7 +135,7 @@
 	#define stat _stat
 	#define S_ISDIR(mode) ((mode) & _S_IFDIR)
 	#define mkdir(p) _mkdir(p)
-    
+
     #include <direct.h>  // for _mkdir
 #else
     #include <strings.h>
@@ -164,9 +166,13 @@ udword loadedDevcaps2 = 0xFFFFFFFF;
     Outputs     :
     Return      : TRUE if the browser was started OK, FALSE otherwise
 ----------------------------------------------------------------------------*/
-bool utyBrowserExec(char *URL)
+bool utyBrowserExec(const char *URL)
 {
+#if defined(MAPIP)
+	return maPlatformRequest(URL);
+#else
     return FALSE;
+#endif
 }
 
 
@@ -238,7 +244,7 @@ char levelfile[80];
 char dirfile[100];
 
 //basic global front end data
-char *utyFrontEndFiles[] =
+const char *utyFrontEndFiles[] =
 {                                                           //basic front-end screens
     "FEMan\\Front_end.fib",
     "FEMan\\Sensors_manager.fib",
@@ -252,14 +258,14 @@ char *utyFrontEndFiles[] =
     NULL
 };
 
-void scriptSetHomeworldCRC(char *directory,char *field,void *dataToFillIn);
+void scriptSetHomeworldCRC(const char *directory,char *field,void *dataToFillIn);
 
 bool onlygetfirstcrc = FALSE;
 
 scriptEntry WonStuffSet[] =
 {
     makeEntry(HomeworldCRC,scriptSetHomeworldCRC),
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -276,167 +282,167 @@ bool utyPlugScreens = FALSE;
 bool utyCreditsSequence = FALSE;
 
 //front-end callback functions
-void utySinglePlayerOptions(char *name, featom *atom);
-void utySinglePlayerGame(char *name, featom *atom);
-void utySelectSinglePlayerGame(char *name, featom *atom);
-void utyLoadMultiSinglePlayerGame(char *name, featom *atom);
-void utyLoadSinglePlayerGame(char *name, featom *atom);
-void utySelectMultiPlayerGame(char *name, featom *atom);
-void utyLoadMultiPlayerGame(char *name, featom *atom);
-void utySinglePlayerGameStart(char *name, featom *atom);
-void utyBackFromSinglePlayer(char *name, featom *atom);
-void utyBackFromSinglePlayerOptions(char *name, featom *atom);
-void utyGameQuit(char *name, featom *atom);
-void utyMultiplayerGameStart(char *name, featom *atom);
-void utyShowCredits(char *name, featom *atom);
-void utyStartInternetGame(char *name, featom *atom);
-void utyBackgroundToggle(char *name, featom *atom);
-void utyBackgroundBitmapToggle(char *name, featom *atom);
-void utyFilterToggle(char *name, featom *atom);
-void utyMagFilterToggle(char *name, featom *atom);
-void utyFilterBitmapToggle(char *name, featom *atom);
-void utySmoothingToggle(char *name, featom *atom);
-void utySmoothingBitmapToggle(char *name, featom *atom);
-void utyStippleToggle(char* name, featom* atom);
-void utyStippleBitmapToggle(char* name, featom* atom);
-void utyTrailsToggle(char* name, featom* atom);
-void utyTrailsBitmapToggle(char* name, featom* atom);
-void utyLanguageToggle(char* name, featom* atom);
-void utySensorsBlobsToggle(char* name, featom* atom);
-void utyInstantTransitionToggle(char *name, featom *atom);
-void utyInstantTransitionBitmapToggle(char* name, featom* atom);
-void utySensorsBlobsBitmapToggle(char* name, featom* atom);
-void utyBulletBitmapToggle(char* name, featom* atom);
-void utyBulletToggle(char* name, featom* atom);
-void utyMuzzleBitmapToggle(char* name, featom* atom);
-void utyMuzzleToggle(char* name, featom* atom);
-void utyDamageBitmapToggle(char* name, featom* atom);
-void utyDamageToggle(char* name, featom* atom);
-void utyHitBitmapToggle(char* name, featom* atom);
-void utyHitToggle(char* name, featom* atom);
+void utySinglePlayerOptions(const char* name, featom* atom);
+void utySinglePlayerGame(const char* name, featom* atom);
+void utySelectSinglePlayerGame(const char* name, featom* atom);
+void utyLoadMultiSinglePlayerGame(const char* name, featom* atom);
+void utyLoadSinglePlayerGame(const char* name, featom* atom);
+void utySelectMultiPlayerGame(const char* name, featom* atom);
+void utyLoadMultiPlayerGame(const char* name, featom* atom);
+void utySinglePlayerGameStart(const char* name, featom* atom);
+void utyBackFromSinglePlayer(const char* name, featom* atom);
+void utyBackFromSinglePlayerOptions(const char* name, featom* atom);
+void utyGameQuit(const char* name, featom* atom);
+void utyMultiplayerGameStart(const char* name, featom* atom);
+void utyShowCredits(const char* name, featom* atom);
+void utyStartInternetGame(const char* name, featom* atom);
+void utyBackgroundToggle(const char* name, featom* atom);
+void utyBackgroundBitmapToggle(const char* name, featom* atom);
+void utyFilterToggle(const char* name, featom* atom);
+void utyMagFilterToggle(const char* name, featom* atom);
+void utyFilterBitmapToggle(const char* name, featom* atom);
+void utySmoothingToggle(const char* name, featom* atom);
+void utySmoothingBitmapToggle(const char* name, featom* atom);
+void utyStippleToggle(const char* name, featom* atom);
+void utyStippleBitmapToggle(const char* name, featom* atom);
+void utyTrailsToggle(const char* name, featom* atom);
+void utyTrailsBitmapToggle(const char* name, featom* atom);
+void utyLanguageToggle(const char* name, featom* atom);
+void utySensorsBlobsToggle(const char* name, featom* atom);
+void utyInstantTransitionToggle(const char* name, featom* atom);
+void utyInstantTransitionBitmapToggle(const char* name, featom* atom);
+void utySensorsBlobsBitmapToggle(const char* name, featom* atom);
+void utyBulletBitmapToggle(const char* name, featom* atom);
+void utyBulletToggle(const char* name, featom* atom);
+void utyMuzzleBitmapToggle(const char* name, featom* atom);
+void utyMuzzleToggle(const char* name, featom* atom);
+void utyDamageBitmapToggle(const char* name, featom* atom);
+void utyDamageToggle(const char* name, featom* atom);
+void utyHitBitmapToggle(const char* name, featom* atom);
+void utyHitToggle(const char* name, featom* atom);
 
-void utyPickColors(char *name, featom *atom);
-//void utyScenarioPick(char *name, featom *atom);
-void utyHideMenuOrGotoQuitGame(char *name, featom *atom);
-//void utyNewGameRace(char *name, featom *atom);
+void utyPickColors(const char* name, featom* atom);
+//void utyScenarioPick(const char* name, featom* atom);
+void utyHideMenuOrGotoQuitGame(const char* name, featom* atom);
+//void utyNewGameRace(const char* name, featom* atom);
 //void utyTeaserEnd(void);
 
-void utyInGameCancel(char *name, featom *atom);
-void utyInGameLoad(char *name, featom *atom);
-void utyInGameSave(char *name, featom *atom);
+void utyInGameCancel(const char* name, featom* atom);
+void utyInGameLoad(const char* name, featom* atom);
+void utyInGameSave(const char* name, featom* atom);
 
-void utySaveRecordedGame(char *name, featom *atom);
+void utySaveRecordedGame(const char* name, featom* atom);
 //from options.c
 
-void opKeyCancel(char* name, featom* atom);
+void opKeyCancel(const char* name, featom* atom);
 
 void opDrawNumChannels(featom *atom, regionhandle region);
 
-void opOptionsAccept(char* name, featom* atom);
+void opOptionsAccept(const char* name, featom* atom);
 void opOptionsInit(void);
-void opOptionsStart(char* name, featom* atom);
-void opOptionsCancel(char* name, featom* atom);
+void opOptionsStart(const char* name, featom* atom);
+void opOptionsCancel(const char* name, featom* atom);
 
-void opInGameOptionsStart(char* name, featom* atom);
-void opInGameOptionsCancel(char* name, featom* atom);
-void opInGameOptionsAccept(char* name, featom* atom);
+void opInGameOptionsStart(const char* name, featom* atom);
+void opInGameOptionsCancel(const char* name, featom* atom);
+void opInGameOptionsAccept(const char* name, featom* atom);
 
-void opEqualizerToAudioAccept(char* name, featom* atom);
-void opEqualizerToAudioCancel(char* name, featom* atom);
-void opEqualizerToInGameAudioAccept(char* name, featom* atom);
-void opEqualizerToInGameAudioCancel(char* name, featom* atom);
-void opAdvancedToAudioAccept(char* name, featom* atom);
-void opAdvancedToAudioCancel(char* name, featom* atom);
-void opAdvancedToInGameAudioCancel(char* name, featom* atom);
-void opAdvancedToInGameAudioAccept(char* name, featom* atom);
+void opEqualizerToAudioAccept(const char* name, featom* atom);
+void opEqualizerToAudioCancel(const char* name, featom* atom);
+void opEqualizerToInGameAudioAccept(const char* name, featom* atom);
+void opEqualizerToInGameAudioCancel(const char* name, featom* atom);
+void opAdvancedToAudioAccept(const char* name, featom* atom);
+void opAdvancedToAudioCancel(const char* name, featom* atom);
+void opAdvancedToInGameAudioCancel(const char* name, featom* atom);
+void opAdvancedToInGameAudioAccept(const char* name, featom* atom);
 
-void opEffectsToVideoAccept(char* name, featom* atom);
-void opEffectsToVideoCancel(char* name, featom* atom);
-void opEffectsToInGameVideoAccept(char* name, featom* atom);
-void opEffectsToInGameVideoCancel(char* name, featom* atom);
+void opEffectsToVideoAccept(const char* name, featom* atom);
+void opEffectsToVideoCancel(const char* name, featom* atom);
+void opEffectsToInGameVideoAccept(const char* name, featom* atom);
+void opEffectsToInGameVideoCancel(const char* name, featom* atom);
 
-void opMusicVolume(char* name, featom* atom);
-void opSFXVolume(char* name, featom* atom);
-void opSpeechVolume(char* name, featom* atom);
-void opNumberChannels(char* name, featom* atom);
-void opAutoChannels(char* name, featom* atom);
-void opSpeaker(char* name, featom* atom);
-void opSoundQualitySet(char* name, featom* atom);
-void opAdvancedButton(char* name, featom* atom);
-void opEqualizerButton(char* name, featom* atom);
-void opEqualizer1(char* name, featom* atom);
-void opEqualizer2(char* name, featom* atom);
-void opEqualizer3(char* name, featom* atom);
-void opEqualizer4(char* name, featom* atom);
-void opEqualizer5(char* name, featom* atom);
-void opEqualizer6(char* name, featom* atom);
-void opEqualizer7(char* name, featom* atom);
-void opEqualizer8(char* name, featom* atom);
+void opMusicVolume(const char* name, featom* atom);
+void opSFXVolume(const char* name, featom* atom);
+void opSpeechVolume(const char* name, featom* atom);
+void opNumberChannels(const char* name, featom* atom);
+void opAutoChannels(const char* name, featom* atom);
+void opSpeaker(const char* name, featom* atom);
+void opSoundQualitySet(const char* name, featom* atom);
+void opAdvancedButton(const char* name, featom* atom);
+void opEqualizerButton(const char* name, featom* atom);
+void opEqualizer1(const char* name, featom* atom);
+void opEqualizer2(const char* name, featom* atom);
+void opEqualizer3(const char* name, featom* atom);
+void opEqualizer4(const char* name, featom* atom);
+void opEqualizer5(const char* name, featom* atom);
+void opEqualizer6(const char* name, featom* atom);
+void opEqualizer7(const char* name, featom* atom);
+void opEqualizer8(const char* name, featom* atom);
 //advanced:
-void opVoice(char* name, featom* atom);
-void opVoice0(char* name, featom* atom);
-void opVoice1(char* name, featom* atom);
-void opVoice2(char* name, featom* atom);
-void opHearVoice1(char* name, featom* atom);
-void opHearVoice2(char* name, featom* atom);
-void opHearVoice3(char* name, featom* atom);
-void opVoiceCommands(char* name, featom* atom);
-void opVoiceStatus(char* name, featom* atom);
-void opVoiceChatter(char* name, featom* atom);
+void opVoice(const char* name, featom* atom);
+void opVoice0(const char* name, featom* atom);
+void opVoice1(const char* name, featom* atom);
+void opVoice2(const char* name, featom* atom);
+void opHearVoice1(const char* name, featom* atom);
+void opHearVoice2(const char* name, featom* atom);
+void opHearVoice3(const char* name, featom* atom);
+void opVoiceCommands(const char* name, featom* atom);
+void opVoiceStatus(const char* name, featom* atom);
+void opVoiceChatter(const char* name, featom* atom);
 //game
-void opMouseSensitivity(char* name, featom* atom);
-void opBattleChatterCB(char* name, featom* atom);
-void opNumberEffects(char* name, featom* atom);
-void opCPUDifficulty(char* name, featom* atom);
-void opCPUAttacks(char* name, featom* atom);
-void opInfoOverlay(char* name, featom* atom);
-void opTaskbarUp(char* name, featom* atom);
-void opIncreaseChatting(char* name, featom* atom);
-void opDecreaseChatting(char* name, featom* atom);
-void opNumberChatlines(char* name, featom* atom);
-void opAutodockHealth(char* name, featom* atom);
-void opAutodockFuel(char* name, featom* atom);
-void opAutodockHealthValue(char* name, featom* atom);
-void opAutodockFuelValue(char* name, featom* atom);
+void opMouseSensitivity(const char* name, featom* atom);
+void opBattleChatterCB(const char* name, featom* atom);
+void opNumberEffects(const char* name, featom* atom);
+void opCPUDifficulty(const char* name, featom* atom);
+void opCPUAttacks(const char* name, featom* atom);
+void opInfoOverlay(const char* name, featom* atom);
+void opTaskbarUp(const char* name, featom* atom);
+void opIncreaseChatting(const char* name, featom* atom);
+void opDecreaseChatting(const char* name, featom* atom);
+void opNumberChatlines(const char* name, featom* atom);
+void opAutodockHealth(const char* name, featom* atom);
+void opAutodockFuel(const char* name, featom* atom);
+void opAutodockHealthValue(const char* name, featom* atom);
+void opAutodockFuelValue(const char* name, featom* atom);
 
 //video
-void opNoLOD(char* name, featom* atom);
-void opDetailThreshold(char* name, featom* atom);
-void opBrightness(char* name, featom* atom);
-void opLighting(char* name, featom* atom);
-void opEffects(char* name, featom* atom);
-void opCustomEffects(char* name, featom* atom);
-void opResolution(char* name, featom* atom);
-void opRender(char* name, featom* atom);
+void opNoLOD(const char* name, featom* atom);
+void opDetailThreshold(const char* name, featom* atom);
+void opBrightness(const char* name, featom* atom);
+void opLighting(const char* name, featom* atom);
+void opEffects(const char* name, featom* atom);
+void opCustomEffects(const char* name, featom* atom);
+void opResolution(const char* name, featom* atom);
+void opRender(const char* name, featom* atom);
 
 void versionNumDraw(featom *atom, regionhandle region);
 
-void utyVideoPlay(char* name, featom* atom);
+void utyVideoPlay(const char* name, featom* atom);
 
-void utyTutorialAlertCancel(char* name, featom* atom);
+void utyTutorialAlertCancel(const char* name, featom* atom);
 
-void tbSensorsBegin(char* name, featom* atom);
+void tbSensorsBegin(const char* name, featom* atom);
 
 void opNoPalDecrease(featom* atom, regionhandle region);
 void opNoPalIncrease(featom* atom, regionhandle region);
 void opNoPalDraw(featom* atom, regionhandle region);
 
-void utyStartTutorial(char* name, featom* atom);
-void utyStartSinglePlayer(char* name, featom* atom);
-void utyStartSkirmish(char* name, featom* atom);
+void utyStartTutorial(const char* name, featom* atom);
+void utyStartSinglePlayer(const char* name, featom* atom);
+void utyStartSkirmish(const char* name, featom* atom);
 
-void opTroubleShoot(char* name, featom* atom);
+void opTroubleShoot(const char* name, featom* atom);
 
-void spRestartLevel(char *name, featom *atom);
+void spRestartLevel(const char* name, featom* atom);
 
 // these callbacks are for the drop player dialog
-void utyYesDropPlayer(char *name, featom *atom);
-void utyDontDropPlayer(char *name, featom *atom);
+void utyYesDropPlayer(const char* name, featom* atom);
+void utyDontDropPlayer(const char* name, featom* atom);
 void utyDrawDroppedPlayer(featom *atom, regionhandle region);
 
 void opCountdownBoxDraw(featom* atom, regionhandle region);
-void opCountdownYes(char* name, featom* atom);
-void opCountdownNo(char* name, featom* atom);
+void opCountdownYes(const char* name, featom* atom);
+void opCountdownNo(const char* name, featom* atom);
 
 sdword utyPlayerDroppedDisplay=-1;
 
@@ -807,7 +813,7 @@ scriptEntry utyOptionsList[] =
     Functions:
 =============================================================================*/
 
-void utyVideoPlay(char* name, featom* atom)
+void utyVideoPlay(const char* name, featom* atom)
 {
     animBinkPlay(0,1);
 
@@ -819,7 +825,7 @@ void utyVideoPlay(char* name, featom* atom)
     feRenderEverything = TRUE;
 }
 
-void utyTutorialAlertCancel(char* name, featom* atom)
+void utyTutorialAlertCancel(const char* name, featom* atom)
 {
     while (feStackIndex)
     {
@@ -962,7 +968,7 @@ void utyOptionsFileWrite(void)
                 *((bool *)utyOptionsList[index].dataPtr) ? "TRUE" : "FALSE");
         }
     }
-    
+
     fclose(f);
 
 }
@@ -979,7 +985,7 @@ color utyStripeColor;
 bool  utyShipsAlwaysUseOwnerColors = FALSE;
 //bool utyColorsPicked = FALSE;
 
-void utyPickColors(char *name, featom *atom)
+void utyPickColors(const char* name, featom* atom)
 {
     cpColorsPick(&utyBaseColor, &utyStripeColor, &whichRaceSelected);
     //utyColorsPicked = TRUE;
@@ -1000,9 +1006,9 @@ void utyUnsetCustomEffects(void)
     opCustomEffectsToggled = FALSE;
 }
 
-void utyMagFilterToggle(char* name, featom* atom)
+extern sdword texLinearMag;
+void utyMagFilterToggle(const char* name, featom* atom)
 {
-    extern sdword texLinearMag;
 
     if (FEFIRSTCALL(atom))
     {
@@ -1024,7 +1030,7 @@ void utyMagFilterToggle(char* name, featom* atom)
     trFilterEnable(texLinearFiltering);
 }
 
-void utyFilterToggle(char *name, featom *atom)
+void utyFilterToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1044,7 +1050,7 @@ void utyFilterToggle(char *name, featom *atom)
 
     utySetCustomEffects();
 }
-void utyFilterBitmapToggle(char *name, featom *atom)
+void utyFilterBitmapToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1061,7 +1067,7 @@ void utyFilterBitmapToggle(char *name, featom *atom)
 
     trFilterEnable(texLinearFiltering);
 }
-void utyBackgroundToggle(char *name, featom *atom)
+void utyBackgroundToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1078,7 +1084,7 @@ void utyBackgroundToggle(char *name, featom *atom)
 
     utySetCustomEffects();
 }
-void utyBackgroundBitmapToggle(char *name, featom *atom)
+void utyBackgroundBitmapToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1093,7 +1099,7 @@ void utyBackgroundBitmapToggle(char *name, featom *atom)
         feToggleButtonSet("VO_Background",showBackgrounds);
     }
 }
-void utyInstantTransitionToggle(char *name, featom *atom)
+void utyInstantTransitionToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1110,7 +1116,7 @@ void utyInstantTransitionToggle(char *name, featom *atom)
 
     utySetCustomEffects();
 }
-void utyInstantTransitionBitmapToggle(char* name, featom* atom)
+void utyInstantTransitionBitmapToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1125,7 +1131,7 @@ void utyInstantTransitionBitmapToggle(char* name, featom* atom)
         feToggleButtonSet("VO_InstantTransition", smInstantTransition);
     }
 }
-void utySmoothingToggle(char *name, featom *atom)
+void utySmoothingToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1142,7 +1148,7 @@ void utySmoothingToggle(char *name, featom *atom)
 
     utySetCustomEffects();
 }
-void utySmoothingBitmapToggle(char *name, featom *atom)
+void utySmoothingBitmapToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1157,7 +1163,7 @@ void utySmoothingBitmapToggle(char *name, featom *atom)
         feToggleButtonSet("VO_Smoothing",enableSmoothing);
     }
 }
-void utyStippleToggle(char* name, featom* atom)
+void utyStippleToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1174,7 +1180,7 @@ void utyStippleToggle(char* name, featom* atom)
 
     utySetCustomEffects();
 }
-void utyStippleBitmapToggle(char* name, featom* atom)
+void utyStippleBitmapToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1189,7 +1195,7 @@ void utyStippleBitmapToggle(char* name, featom* atom)
         feToggleButtonSet("VO_Stipple",enableStipple);
     }
 }
-void utyTrailsToggle(char* name, featom* atom)
+void utyTrailsToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1206,7 +1212,7 @@ void utyTrailsToggle(char* name, featom* atom)
 
     utySetCustomEffects();
 }
-void utyTrailsBitmapToggle(char* name, featom* atom)
+void utyTrailsBitmapToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1221,7 +1227,7 @@ void utyTrailsBitmapToggle(char* name, featom* atom)
         feToggleButtonSet("VO_Trails", enableTrails);
     }
 }
-void utyHitToggle(char* name, featom* atom)
+void utyHitToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1238,7 +1244,7 @@ void utyHitToggle(char* name, featom* atom)
 
     utySetCustomEffects();
 }
-void utyHitBitmapToggle(char* name, featom* atom)
+void utyHitBitmapToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1253,7 +1259,7 @@ void utyHitBitmapToggle(char* name, featom* atom)
         feToggleButtonSet("VO_Hit", etgHitEffectsEnabled);
     }
 }
-void utyDamageToggle(char* name, featom* atom)
+void utyDamageToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1270,7 +1276,7 @@ void utyDamageToggle(char* name, featom* atom)
 
     utySetCustomEffects();
 }
-void utyDamageBitmapToggle(char* name, featom* atom)
+void utyDamageBitmapToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1285,7 +1291,7 @@ void utyDamageBitmapToggle(char* name, featom* atom)
         feToggleButtonSet("VO_Damage", etgDamageEffectsEnabled);
     }
 }
-void utyMuzzleToggle(char* name, featom* atom)
+void utyMuzzleToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1302,7 +1308,7 @@ void utyMuzzleToggle(char* name, featom* atom)
 
     utySetCustomEffects();
 }
-void utyMuzzleBitmapToggle(char* name, featom* atom)
+void utyMuzzleBitmapToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1317,7 +1323,7 @@ void utyMuzzleBitmapToggle(char* name, featom* atom)
         feToggleButtonSet("VO_Muzzle", etgFireEffectsEnabled);
     }
 }
-void utyBulletToggle(char* name, featom* atom)
+void utyBulletToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1334,7 +1340,7 @@ void utyBulletToggle(char* name, featom* atom)
 
     utySetCustomEffects();
 }
-void utyBulletBitmapToggle(char* name, featom* atom)
+void utyBulletBitmapToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1351,7 +1357,7 @@ void utyBulletBitmapToggle(char* name, featom* atom)
 }
 
 
-void utySensorsBlobsToggle(char* name, featom* atom)
+void utySensorsBlobsToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1368,7 +1374,7 @@ void utySensorsBlobsToggle(char* name, featom* atom)
 
     utySetCustomEffects();
 }
-void utySensorsBlobsBitmapToggle(char* name, featom* atom)
+void utySensorsBlobsBitmapToggle(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1384,7 +1390,7 @@ void utySensorsBlobsBitmapToggle(char* name, featom* atom)
     }
 }
 
-void utyLanguageToggle(char* name, featom* atom)
+void utyLanguageToggle(const char* name, featom* atom)
 {
     sdword index;
 
@@ -1410,13 +1416,13 @@ void utyLanguageToggle(char* name, featom* atom)
     }
 }
 
-//void utyScenarioPick(char *name, featom *atom)
+//void utyScenarioPick(const char* name, featom* atom)
 //{
 //    spScenarioPick(NULL);//!!! make some real pointer
 //}
 
 extern bool nisScreenStarted;
-void utyHideMenuOrGotoQuitGame(char *name, featom *atom)
+void utyHideMenuOrGotoQuitGame(const char* name, featom* atom)
 {
 /*
     if (nisEnabled && utyTeaserPlaying != NULL && atom->hotKey[strCurLanguage] == ESCKEY)
@@ -1507,7 +1513,7 @@ sdword utyNonFatalErrorWaitLoop(void)
 bool8 etgHasBeenStarted;
 void FancyFightPreLoad(void);
 
-void gameStart(char *loadfilename)
+void gameStart(const char *loadfilename)
 {
     char *useScenarioFile = 0;
     Player *player = NULL;
@@ -2002,7 +2008,7 @@ abortloading:
     {
         rndSetClearColor(universe.backgroundColor|0xff000000);
     }
-    
+
     /* restore sound engine */
     soundEventPause(FALSE);
 
@@ -2010,7 +2016,7 @@ abortloading:
     {
         soundEventPlayMusic(SongNumber);
     }
-    
+
     // reset any spurious joystick motion that's been recorded
     cameraJoystickReset();
 
@@ -2175,7 +2181,7 @@ void gameEnd(void)
     Outputs     :
     Return      : void
 ----------------------------------------------------------------------------*/
-void utyMultiplayerGameStart(char *name, featom *atom)
+void utyMultiplayerGameStart(const char* name, featom* atom)
 {
     mgStartMultiPlayerGameScreens(ghMainRegion,0,0,0, FALSE);
 }
@@ -2187,7 +2193,7 @@ void utyMultiplayerGameStart(char *name, featom *atom)
     Outputs     : Why Credits of course
     Return      : void
 ----------------------------------------------------------------------------*/
-void utyShowCredits(char *name, featom *atom)
+void utyShowCredits(const char* name, featom* atom)
 {
     soundEventPlayMusic(RollCredits);
     psModeBegin("Credits\\", PMF_Credits | PMF_LanguageSpecific | PMF_MusicTrack);
@@ -2202,7 +2208,7 @@ void utyShowCredits(char *name, featom *atom)
     Return      :
 ----------------------------------------------------------------------------*/
 #if 0
-void utyNewGameRace(char *name, featom *atom)
+void utyNewGameRace(const char* name, featom* atom)
 {
     udword raceOne, raceTwo;
     ShipRace oldRace = whichRaceSelected;
@@ -2515,7 +2521,7 @@ bool utyDemoAutoPlay(udword num, void* data, struct BabyCallBack* baby)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utySinglePlayerOptions(char *name, featom *atom)
+void utySinglePlayerOptions(const char* name, featom* atom)
 {
 #if defined(HW_GAME_DEMO)
     featom *bitchatom;
@@ -2536,7 +2542,7 @@ void utySinglePlayerOptions(char *name, featom *atom)
 #endif
         return;
     }
-    
+
     feScreenDisappear(NULL,NULL);
     feScreenStart(ghMainRegion, "Create_new_game");
 }
@@ -2548,7 +2554,7 @@ void utySinglePlayerOptions(char *name, featom *atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utySinglePlayerGame(char *name, featom *atom)
+void utySinglePlayerGame(const char* name, featom* atom)
 {
     feScreenDisappear(NULL,NULL);
 
@@ -2562,7 +2568,7 @@ void utySinglePlayerGame(char *name, featom *atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utySelectSinglePlayerGame(char *name, featom *atom)
+void utySelectSinglePlayerGame(const char* name, featom* atom)
 {
     gpGamePick("S");
 }
@@ -2610,7 +2616,7 @@ void utyLoadSinglePlayerGameGivenFilename(char *filename)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utyLoadSinglePlayerGame(char *name, featom *atom)
+void utyLoadSinglePlayerGame(const char* name, featom* atom)
 {
     char filename[100];
     sdword verifysavename;
@@ -2639,7 +2645,7 @@ void utyLoadSinglePlayerGame(char *name, featom *atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utyLoadMultiSinglePlayerGame(char *name, featom *atom)
+void utyLoadMultiSinglePlayerGame(const char* name, featom* atom)
 {
     if (gpLoadSinglePlayerGame)
     {
@@ -2658,7 +2664,7 @@ void utyLoadMultiSinglePlayerGame(char *name, featom *atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utySelectMultiPlayerGame(char *name, featom *atom)
+void utySelectMultiPlayerGame(const char* name, featom* atom)
 {
     gpGamePick("M");
 }
@@ -2702,7 +2708,7 @@ void utyLoadMultiPlayerGameGivenFilename(char *filename)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utyLoadMultiPlayerGame(char *name, featom *atom)
+void utyLoadMultiPlayerGame(const char* name, featom* atom)
 {
     char filename[100];
     sdword verifysavename;
@@ -2731,7 +2737,7 @@ void utyLoadMultiPlayerGame(char *name, featom *atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utyBackFromSinglePlayerOptions(char *name, featom *atom)
+void utyBackFromSinglePlayerOptions(const char* name, featom* atom)
 {
     cpResetRegions();
 
@@ -2747,7 +2753,7 @@ void utyBackFromSinglePlayerOptions(char *name, featom *atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utyStartTutorial(char* name, featom* atom)
+void utyStartTutorial(const char* name, featom* atom)
 {
     forceSP = TRUE;
     tutorial = 1;
@@ -2761,7 +2767,7 @@ void utyStartTutorial(char* name, featom* atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utyStartSinglePlayer(char* name, featom* atom)
+void utyStartSinglePlayer(const char* name, featom* atom)
 {
     forceSP = TRUE;
     needtutorial = FALSE;
@@ -2775,7 +2781,7 @@ void utyStartSinglePlayer(char* name, featom* atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utyStartSkirmish(char* name, featom* atom)
+void utyStartSkirmish(const char* name, featom* atom)
 {
     forceSP = TRUE;
     needtutorial = FALSE;
@@ -2789,7 +2795,7 @@ void utyStartSkirmish(char* name, featom* atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utySinglePlayerGameStart(char *name, featom *atom)
+void utySinglePlayerGameStart(const char* name, featom* atom)
 {
     cpResetRegions();
 
@@ -2847,7 +2853,7 @@ void utySinglePlayerGameStart(char *name, featom *atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utyBackFromSinglePlayer(char *name, featom *atom)
+void utyBackFromSinglePlayer(const char* name, featom* atom)
 {
     cpResetRegions();
 
@@ -2863,7 +2869,7 @@ void utyBackFromSinglePlayer(char *name, featom *atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utyNewGameStart(char *name, featom *atom)
+void utyNewGameStart(const char* name, featom* atom)
 {
     udword i,j;
 
@@ -3040,7 +3046,7 @@ void utyNewGameStart(char *name, featom *atom)
     Outputs     : Calls utyCloseOK
     Return      : void
 ----------------------------------------------------------------------------*/
-void utyGameQuit(char *name, featom *atom)
+void utyGameQuit(const char* name, featom* atom)
 {
 #ifdef HW_BUILD_FOR_DEBUGGING
     dbgMessagef("Quit game, baby!");
@@ -3068,7 +3074,7 @@ void utyGameQuit(char *name, featom *atom)
     Outputs     : Calls utyCloseOK
     Return      : void
 ----------------------------------------------------------------------------*/
-void utyGameQuitToMain(char *name, featom *atom)
+void utyGameQuitToMain(const char* name, featom* atom)
 {
     bool networkgame=multiPlayerGame;
     dbgMessagef("Quit to main menu!");
@@ -3132,7 +3138,7 @@ void utyGameQuitToMain(char *name, featom *atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utyInGameCancel(char *name, featom *atom)
+void utyInGameCancel(const char* name, featom* atom)
 {
     if (!multiPlayerGame)
     {
@@ -3149,7 +3155,7 @@ void utyInGameCancel(char *name, featom *atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utyInGameLoad(char *name, featom *atom)
+void utyInGameLoad(const char* name, featom* atom)
 {
 /* This is where we actually load the game */
 }
@@ -3161,7 +3167,7 @@ void utyInGameLoad(char *name, featom *atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utyInGameSave(char *name, featom *atom)
+void utyInGameSave(const char* name, featom* atom)
 {
 /* This is where we actually save the game */
 }
@@ -3175,7 +3181,7 @@ void utyInGameSave(char *name, featom *atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void utySaveRecordedGame(char *name, featom *atom)
+void utySaveRecordedGame(const char* name, featom* atom)
 {
 /* This is where we start the recording */
 }
@@ -3323,7 +3329,7 @@ void utyTeaserEnd(void)
 }
 */
 
-void scriptSetHomeworldCRC(char *directory,char *field,void *dataToFillIn)
+void scriptSetHomeworldCRC(const char *directory,char *field,void *dataToFillIn)
 {
     if (onlygetfirstcrc)
     {
@@ -3341,7 +3347,7 @@ void scriptSetHomeworldCRC(char *directory,char *field,void *dataToFillIn)
         HomeworldCRC[2] = crc[2];
         HomeworldCRC[3] = crc[3];
     }
-    
+
     onlygetfirstcrc = TRUE;
 }
 
@@ -3477,6 +3483,8 @@ void *utyGrowthHeapAlloc(sdword size)
     dbgAssertOrIgnore(size > 0);
 #ifdef _WIN32
     return((void *)VirtualAlloc(NULL, size, MEM_COMMIT, PAGE_READWRITE));
+#elif defined(MAPIP)
+	return malloc(size);
 #else
     return mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 #endif
@@ -3495,7 +3503,7 @@ void utyGrowthHeapFree(void *heap)
     BOOL result;
     result = VirtualFree(heap, 0, MEM_RELEASE);
     dbgAssertOrIgnore(result);
-#elif _MACOSX
+#elif defined(_MACOSX) || defined(MAPIP)
 	//not sure if this is an equivalent statement, but it fixes a crash on exit
 	free(heap);
 #else
@@ -3505,7 +3513,7 @@ void utyGrowthHeapFree(void *heap)
 #endif
 }
 
-char *utyMissingCDMessages[] =
+const char *utyMissingCDMessages[] =
 {
     "Invalid or missing Homeworld CD. Please insert valid CD.",
     "CD Homeworld non valide. Veuillez insérer un CD valide.",
@@ -3513,7 +3521,7 @@ char *utyMissingCDMessages[] =
     "El CD de Homeworld no es correcto o no se encuentra en la unidad. Introduce el CD correcto.",
     "CD di Homeworld mancante o non valido. Inserisci un CD valido.",
 };
-char *utyInvalidCDMessages[] =
+const char *utyInvalidCDMessages[] =
 {
     "Invalid Homeworld CD.",
     "CD Homeworld invalide.",
@@ -3521,7 +3529,7 @@ char *utyInvalidCDMessages[] =
     "CD de Homeworld incorrecto.",
     "CD di Homeworld non valido.",
 };
-char *utyCannotOpenFileMessages[] =
+const char *utyCannotOpenFileMessages[] =
 {
     "Unable to open file: %s",
     "Impossible d’ouvrir le fichier: %s",
@@ -3538,7 +3546,7 @@ char *utyCannotOpenFileMessages[] =
     Outputs     :
     Return      : NULL on success, string pointing to error message on error
 ----------------------------------------------------------------------------*/
-char* utyGameSystemsPreInit(void)
+const char* utyGameSystemsPreInit(void)
 {
 #if CD_VALIDATION_ENABLED
 #ifdef HW_BUILD_FOR_DISTRIBUTION
@@ -3584,8 +3592,8 @@ char* utyGameSystemsPreInit(void)
     {
         // HW_Data is set. overwrite current setting.
         // But make sure that there isn't a trailing slash
-        
-        if (dataPath[(strlen(dataPath) - 1 )] == '/') 
+
+        if (dataPath[(strlen(dataPath) - 1 )] == '/')
         {
             dataPath[(strlen(dataPath) - 1 )] = '\0';
         }
@@ -3605,7 +3613,7 @@ char* utyGameSystemsPreInit(void)
         // directory, not a real .big file)
         strcpy(filePathTempBuffer, fileHomeworldDataPath);
         strcat(filePathTempBuffer, "/Override.big");
-        
+
         overrideBigPath = filePathTempBuffer;
 #else
         // in absence of environment vars (like in a retail install), assume
@@ -3635,7 +3643,7 @@ char* utyGameSystemsPreInit(void)
 		// Use the user's own Homeworld configuration dir if possible or
 		// else use the Homeworld data directory itself.
         char *homeDir = getenv("HOME");
-        
+
 		if (homeDir != NULL)
 		{
 			snprintf(filePathTempBuffer, PATH_MAX, "%s/" CONFIGDIR, homeDir);
@@ -3788,7 +3796,7 @@ char* utyGameSystemsPreInit(void)
 		int page_size = getpagesize();
 		newSize = (sdword)((real32)phys_pages * (real32)page_size
             * MEM_HeapDefaultScalar);
-#elif __native_client__
+#elif defined(__native_client__) || defined(MAPIP)
 		// Doesn't seem like we can access the available
 		// memory. Leave default.
 #else
@@ -3802,9 +3810,11 @@ char* utyGameSystemsPreInit(void)
             MemoryHeapSize = min(newSize, MEM_HeapDefaultMax);
         }
     }
-    
+
 #ifdef _WIN32
     utyMemoryHeap = (void *)VirtualAlloc(NULL, MemoryHeapSize + sizeof(memcookie) * 4, MEM_COMMIT, PAGE_READWRITE);
+#elif defined(MAPIP)
+		utyMemoryHeap = malloc(MemoryHeapSize + sizeof(memcookie) * 4);
 #else
     utyMemoryHeap = mmap(0, MemoryHeapSize + sizeof(memcookie) * 4,
         PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
@@ -3816,12 +3826,14 @@ char* utyGameSystemsPreInit(void)
         return(errorString);
     }
     utySet(SSA_MemoryHeap);
+#if 0
     if (memStartup(utyMemoryHeap, MemoryHeapSize, utyGrowthHeapAlloc) != OKAY)
     {
         sprintf(errorString, "Error starting memory manager with heap size %u at 0x%x", MemoryHeapSize, (unsigned int)utyMemoryHeap);
         return(errorString);
     }
     utySet(SSA_MemoryModule);
+#endif
 
     bigOpenAllBigFiles();
 
@@ -3876,7 +3888,7 @@ char* utyGameSystemsPreInit(void)
     Outputs     :
     Return      : NULL on success, string pointing to error message on error
 ----------------------------------------------------------------------------*/
-char *utyGameSystemsInit(void)
+const char *utyGameSystemsInit(void)
 {
     rndinitdata renderData;
     Uint32 sdlSubsystemFlags;
@@ -3897,17 +3909,17 @@ char *utyGameSystemsInit(void)
 
     dbgMessagef(
         "Homeworld CRCs:\n"
-        "%22s = 0x%x\n"    
-        "%22s = 0x%x\n"    
-        "%22s = 0x%x\n"    
-        "%22s = 0x%x"    
+        "%22s = 0x%x\n"
+        "%22s = 0x%x\n"
+        "%22s = 0x%x\n"
+        "%22s = 0x%x"
         ,
         "HomeworldSDL.big TOC", HomeworldCRC[0], // was CRC for code block (WON hacked client check)
         "Update.big TOC",       HomeworldCRC[1],
         "Homeworld.big TOC",    HomeworldCRC[2],
         "(not used)",           HomeworldCRC[3]  // never been used
     );
-    
+
     // startup any SDL systems we want that haven't already been kicked off
     sdlSubsystemFlags = SDL_WasInit(SDL_INIT_EVERYTHING);
 
@@ -3918,7 +3930,8 @@ char *utyGameSystemsInit(void)
             return "Unable to initialize SDL Timer.";
         }
     }
-    
+
+#ifndef MAPIP
     // Joystick used for controlling the 3D camera view. It can be any old
     // joystick but this is primarily intended to support devices used for
     // 3D CAD applications which have more degrees of freedom (6) than typical
@@ -3927,33 +3940,34 @@ char *utyGameSystemsInit(void)
     if (!(sdlSubsystemFlags & SDL_INIT_JOYSTICK))
     {
         int joystick_i = 0;
-        
+
         if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) == -1)
         {
             return "Unable to initialize SDL Joystick.";
         }
-        
+
         for (joystick_i = 0; joystick_i < SDL_NumJoysticks(); ++joystick_i)
         {
             if (strcmp(SDL_JoystickName(joystick_i), "SpaceNavigator") == 0)
             {
                 SDL_Joystick *joystick;
-                
+
                 SDL_JoystickEventState(SDL_ENABLE);
                 joystick = SDL_JoystickOpen(joystick_i);
-                
+
                 dbgMessagef("SpaceNavigator found at index %d", joystick_i);
             }
         }
     }
-    
+#endif
+
     utyTimerDivisor = 1000 / UTY_TimerResolutionMax;
     utySet(SSA_Timer);
                                                             //start the task manager
     taskStartup((udword)(1000 / utyTimerDivisor));
     utySet(SSA_Task);
 
-#if MEM_STATISTICS
+#if 0//MEM_STATISTICS
     if (memStatsTaskHandle == 0xffffffff)
     {
         memStatsTaskHandle = taskStart(memStatsTaskFunction, MEM_TaskStatsPeriod, 0);//start frame rate task
@@ -4292,7 +4306,7 @@ DONE_INTROS:
     Outputs     :
     Return      : NULL on success, string pointing to error message on error
 ----------------------------------------------------------------------------*/
-char* utyGameSystemsPreShutdown(void)
+const char* utyGameSystemsPreShutdown(void)
 {
     if (utyTest(SSA_FontReg))
     {
@@ -4304,6 +4318,7 @@ char* utyGameSystemsPreShutdown(void)
 
     keyClose();
 
+#if 0
 #if MEM_ANALYSIS
     memAnalysisCreate();
 #endif
@@ -4322,6 +4337,7 @@ char* utyGameSystemsPreShutdown(void)
 #endif
         utyClear(SSA_MemoryHeap);
     }
+#endif	//0
 
     if (DebugWindow)
     {
@@ -4343,7 +4359,7 @@ char* utyGameSystemsPreShutdown(void)
     Outputs     :
     Return      : NULL on success, string pointing to error message on error
 ----------------------------------------------------------------------------*/
-char *utyGameSystemsShutdown(void)
+const char *utyGameSystemsShutdown(void)
 {
     // close the autorun lock file
     if(utyLockFilehandle != 0) fileClose(utyLockFilehandle);
@@ -4654,6 +4670,7 @@ char *utyGameSystemsShutdown(void)
 
     keyClose();
 
+#if 0
 #if MEM_ANALYSIS
     memAnalysisCreate();
 #endif
@@ -4678,6 +4695,7 @@ char *utyGameSystemsShutdown(void)
 #endif
         utyClear(SSA_MemoryHeap);
     }
+#endif	//0
 
     // close down the debug window if so required
     if (DebugWindow)
@@ -4951,7 +4969,7 @@ void utyToggleKeyStatesSave(void)
 void utyToggleKeyStatesRestore(void)
 {
     Uint8* state;
-#if !defined(_WIN32) && !defined(_MACOSX)
+#if !defined(_WIN32) && !defined(_MACOSX) && !defined(MAPIP)
     SDL_SysWMinfo info;
     SDL_VERSION(&info.version);
     SDL_GetWMInfo(&info);
@@ -4978,7 +4996,7 @@ void utyToggleKeyStatesRestore(void)
 
         // Simulate a key release
         keybd_event( VK_CAPITAL, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-#elif !defined(_MACOSX)
+#elif !defined(_MACOSX) && !defined(MAPIP)
         xe.xkey.keycode = XKeysymToKeycode(info.info.x11.display, XK_Caps_Lock);
 
         // Simulate a key press
@@ -5000,7 +5018,7 @@ void utyToggleKeyStatesRestore(void)
 
         // Simulate a key release
         keybd_event( VK_SCROLL, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-#elif !defined(_MACOSX)
+#elif !defined(_MACOSX) && !defined(MAPIP)
         xe.xkey.keycode = XKeysymToKeycode(info.info.x11.display, XK_Scroll_Lock);
 
         // Simulate a key press
@@ -5022,7 +5040,7 @@ void utyToggleKeyStatesRestore(void)
 
         // Simulate a key release
         keybd_event( VK_NUMLOCK, 0x45, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-#elif !defined(_MACOSX)
+#elif !defined(_MACOSX) && !defined(MAPIP)
         xe.xkey.keycode = XKeysymToKeycode(info.info.x11.display, XK_Num_Lock);
 
         // Simulate a key press
@@ -5069,7 +5087,7 @@ void utyStartDroppedDialog(sdword playernum)
     feScreenStart(ghMainRegion, "Player_Drop");
 }
 
-void utyYesDropPlayer(char *name, featom *atom)
+void utyYesDropPlayer(const char* name, featom* atom)
 {
     KeepAliveDropPlayerCB(utyPlayerDroppedDisplay);
     utyPlayerDroppedDisplay = -1;
@@ -5078,7 +5096,7 @@ void utyYesDropPlayer(char *name, featom *atom)
     feScreenDisappear(NULL,NULL);
 }
 
-void utyDontDropPlayer(char *name, featom *atom)
+void utyDontDropPlayer(const char* name, featom* atom)
 {
     KeepAliveDontDropPlayerCB(utyPlayerDroppedDisplay);
     utyPlayerDroppedDisplay = -1;

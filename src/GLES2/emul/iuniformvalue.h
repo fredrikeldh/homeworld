@@ -11,14 +11,14 @@ class IUniformValue
 protected:
 	GLint location;
 
-	IUniformValue(GLint location):
-		location(location)
+	IUniformValue(GLint _location):
+		location(_location)
 	{
 	}
 public:
 	virtual void Set(const T* values) = 0;
 	virtual void Set(const std::vector<T>& values) = 0;
 };
-	
+
 #endif //_HW_GLES_IUNIFORMVALUE_H_
 

@@ -441,7 +441,7 @@ ophandleentry;
 typedef sdword (*opparsefunction)(struct etgeffectstatic *stat, ubyte *dest, char *opcode, char *params, char *ret);
 typedef struct
 {
-    char *name;                                 //corresponding op-code name, if any
+    const char *name;                           //corresponding op-code name, if any
     udword flags;                               //parsing flags
     opparsefunction function;                   //function to handle parsing/creation of the opcode
 }
@@ -452,7 +452,7 @@ typedef void (*etgresolvefunction)(struct etgeffectstatic *stat, etgfunctioncall
 //function-parsing table entry
 typedef struct
 {
-    char *name;                                 //name of function
+    const char *name;                           //name of function
     void *function;                             //function pointer
 #ifdef GENERIC_ETGCALLFUNCTION
     memsize (*wrap_function)(struct Effect *, struct etgeffectstatic *,etgfunctioncall *);  //wrap function to call
@@ -465,7 +465,11 @@ typedef struct
 }
 opfunctionentry;
 
+#ifdef GENERIC_ETGCALLFUNCTION
+#define END_OP_FUNCTION_ENTRY  {NULL, NULL, NULL, 0, 0, NULL, 0, {0, 0, 0, 0, 0, 0, 0, 0, 0}}
+#else
 #define END_OP_FUNCTION_ENTRY  {NULL, NULL, 0, 0, NULL, 0, {0, 0, 0, 0, 0, 0, 0, 0, 0}}
+#endif
 
 //entry in a variable-name list for this effect
 typedef struct
@@ -473,7 +477,7 @@ typedef struct
     char *name;                                 //name of variable
     udword offset;                              //offset in variable block of this effect
     udword rateOffset;                          //offset in the variable rate block or 0xffffffff
-    memsize initial;                             //initial value of type, if any
+    memsize initial;                            //initial value of type, if any
     ubyte bInitial;                             //flag set nonzero if there is an initial value
     ubyte type;                                 //type of variable
     ubyte size;                                 //optional size of pointer-variable, not needed for dword types
@@ -497,8 +501,8 @@ etgnestentry;
 //structure for parsing conditional statements
 typedef struct
 {
-    char *symbol;                               //comparison symbol
-    char *transpose;                            //symbol to use if parameters are reversed
+    const char *symbol;                         //comparison symbol
+    const char *transpose;                      //symbol to use if parameters are reversed
     etgopcode opcode[4];                        //variable-constant-integer
                                                 //variable-variable-integer
                                                 //variable-constant-Float
@@ -534,7 +538,7 @@ etgextalt;
 //structure for an effect object's static information
 typedef struct etgeffectstatic
 {
-    char *name;                                 //name of effect
+    const char *name;                           //name of effect
     struct etgeffectstatic *softwareVersion;    //version of effect to play in software, if any
     udword nParticleBlocks;                     //number of particle block pointers to allocate
     udword variableSize;                        //size of variables block
@@ -569,7 +573,7 @@ etglod;
 //structure for an entry in the effect event registry
 typedef struct
 {
-//    char *name;
+//    const char *name;
     struct etgeffectstatic *effectStatic;
     sdword loadCount;
 }
@@ -655,8 +659,8 @@ void etgReloadReset(void);
 void etgFixupUV(void);
 
 //load in an effect template from an effect file and then delete.
-etgeffectstatic *etgEffectCodeLoad(char *fileName);
-etgeffectstatic *etgEffectStaticFind(char *name, bool bRegister);
+etgeffectstatic *etgEffectCodeLoad(const char *fileName);
+etgeffectstatic *etgEffectStaticFind(const char *name, bool bRegister);
 void etgEffectCodeDelete(etgeffectstatic *stat, bool bFullDelete);
 
 //create effects

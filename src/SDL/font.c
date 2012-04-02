@@ -578,9 +578,9 @@ bool glfontDisplayCharacter(fontheader* font, char ch, sdword x, sdword y, color
     Outputs     :
     Return      : TRUE or FALSE (success or failure)
 ----------------------------------------------------------------------------*/
-bool glfontDisplayString(fontheader* font, char* string, sdword x, sdword y, color c)
+bool glfontDisplayString(fontheader* font, const char* string, sdword x, sdword y, color c)
 {
-    char* charp;
+    const char* charp;
     glfontheader* glfont;
     glfontcharacter* character;
     charheader* fcharacter;
@@ -685,7 +685,7 @@ bool glfontDisplayString(fontheader* font, char* string, sdword x, sdword y, col
     Outputs     : allocates memory for font
     Return      : handle to font
 ----------------------------------------------------------------------------*/
-fontheader *fontLoad(char *fileName)
+fontheader *fontLoad(const char *fileName)
 {
     fontfileheader *fileHeader;
     fontheader *header, *newHeader;
@@ -899,7 +899,7 @@ fonthandle fontCurrentGet(void)
     Outputs     :
     Return      : OKAY
 ----------------------------------------------------------------------------*/
-sdword fontPrintCentreCentreRectangle(rectangle *rect, color c, char *string)
+sdword fontPrintCentreCentreRectangle(rectangle *rect, color c, const char *string)
 {
     sdword x;
     sdword width = fontWidth(string);
@@ -936,7 +936,7 @@ sdword fontPrintCentreCentreRectangle(rectangle *rect, color c, char *string)
     Outputs     :
     Return      : OKAY
 ----------------------------------------------------------------------------*/
-sdword fontPrintCentre(sdword y, color c, char *string)
+sdword fontPrintCentre(sdword y, color c, const char *string)
 {
     sdword x;
     sdword width = fontWidth(string);
@@ -964,7 +964,7 @@ sdword fontPrintCentre(sdword y, color c, char *string)
     Outputs     : Creates a quadrangle texture for each texture.
     Return      : OKAY
 ----------------------------------------------------------------------------*/
-sdword fontPrint(sdword x, sdword y, color c, char *string)
+sdword fontPrint(sdword x, sdword y, color c, const char *string)
 {
     return fontPrintN(x, y, c, string, SDWORD_Max);
 }
@@ -1009,7 +1009,7 @@ FontShadowType fontShadowGet(void)
     Outputs     : Creates a quadrangle texture for each texture.
     Return      : OKAY
 ----------------------------------------------------------------------------*/
-sdword fontPrintN(sdword x, sdword y, color c, char *string, sdword maxCharacters)
+sdword fontPrintN(sdword x, sdword y, color c, const char *string, sdword maxCharacters)
 {
     charheader *character;
     real32 imageWidth, imageHeight; //, clipHeight = 0.0f;
@@ -1189,7 +1189,7 @@ noDraw:
     Outputs     :
     Return      : OKAY
 ----------------------------------------------------------------------------*/
-sdword fontPrintf(sdword x, sdword y, color c, char *format, ...)
+sdword fontPrintf(sdword x, sdword y, color c, const char *format, ...)
 {
     char buffer[DBG_BufferLength];
     va_list argList;
@@ -1208,7 +1208,7 @@ sdword fontPrintf(sdword x, sdword y, color c, char *format, ...)
     Return      : Width in pixels of string.  This will be the same number of
                     pixels used if the string is printed.
 ----------------------------------------------------------------------------*/
-sdword fontWidthN(char *string, sdword maxCharacters)
+sdword fontWidthN(const char *string, sdword maxCharacters)
 {
     charheader *character;
     ubyte ch;
@@ -1259,7 +1259,7 @@ sdword fontWidthN(char *string, sdword maxCharacters)
     Return      : Width in pixels of string.  This will be the same number of
                     pixels used if the string is printed.
 ----------------------------------------------------------------------------*/
-sdword fontWidth(char *string)
+sdword fontWidth(const char *string)
 {
     return(fontWidthN(string, SDWORD_Max));
 }
@@ -1271,7 +1271,7 @@ sdword fontWidth(char *string)
     Outputs     :
     Return      : Windth, in pixels required to print this formatted string.
 ----------------------------------------------------------------------------*/
-sdword fontWidthf(char *format, ...)
+sdword fontWidthf(const char *format, ...)
 {
     char buffer[DBG_BufferLength];
     va_list argList;
@@ -1288,11 +1288,11 @@ sdword fontWidthf(char *format, ...)
     Outputs     :
     Return      : Height of currently selected font.
 ----------------------------------------------------------------------------*/
-sdword fontHeight(char *string)
+sdword fontHeight(const char *string)
 {
     return(fontCurrentFont->fullHeight);
 }
-sdword fontHeightf(char *format, ...)
+sdword fontHeightf(const char *format, ...)
 {
     return(fontCurrentFont->fullHeight);
 }

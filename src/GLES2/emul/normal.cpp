@@ -1,4 +1,5 @@
 
+#include "../gles2.h"
 #include "normal.h"
 
 NormalSetup::NormalSetup() :

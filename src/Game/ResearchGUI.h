@@ -101,7 +101,7 @@ Point;
 
 typedef struct
 {
-    char *name;
+    const char *name;
 }
 TechNames;
 

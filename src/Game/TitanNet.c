@@ -114,8 +114,8 @@ udword ROOM_MAX_THRESHOLD = 50;
 
 unsigned long WAIT_SHUTDOWN_MS = 1000;
 
-void scriptSetIPStrings(char *directory,char *field,void *dataToFillIn);
-void scriptSetPortNumbers(char *directory,char *field,void *dataToFillIn);
+void scriptSetIPStrings(const char *directory,char *field,void *dataToFillIn);
+void scriptSetPortNumbers(const char *directory,char *field,void *dataToFillIn);
 
 extern sdword TimedOutWaitingForPauseAcksGiveUpAfterNumTimes;
 
@@ -158,7 +158,7 @@ scriptEntry NetTweaks[] =
     makeEntry(ROOM_MIN_THRESHOLD,scriptSetUdwordCB),
     makeEntry(ROOM_MAX_THRESHOLD,scriptSetUdwordCB),
     makeEntry(WAIT_SHUTDOWN_MS,scriptSetUdwordCB),
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -166,7 +166,7 @@ scriptEntry NetTweaks[] =
     Functions:
 =============================================================================*/
 
-void scriptSetPortNumbers(char *directory,char *field,void *dataToFillIn)
+void scriptSetPortNumbers(const char *directory,char *field,void *dataToFillIn)
 {
     char *param;
     sdword i;
@@ -187,7 +187,7 @@ void scriptSetPortNumbers(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-void scriptSetIPStrings(char *directory,char *field,void *dataToFillIn)
+void scriptSetIPStrings(const char *directory,char *field,void *dataToFillIn)
 {
     char *param;
     sdword i;
@@ -214,7 +214,7 @@ void ResetChannel(void)
     CurrentChannelDescription[0] = 0;
 }
 
-void SetChannel(wchar_t *channel, wchar_t *description)
+void SetChannel(const wchar_t *channel, const wchar_t *description)
 {
 #ifndef _MACOSX_FIX_LAN
     dbgAssertOrIgnore(wcslen(channel) <= MAX_CHANNEL_NAME_LEN);

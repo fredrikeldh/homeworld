@@ -82,7 +82,7 @@ real32 selAverageSize;
 //hot-key number stuff
 color selHotKeyNumberColor = SEL_HotKeyNumberColor;
 udword selNumberMargin = SEL_NumberMargin;
-char *selHotKeyString[10] = {"10", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+const char *selHotKeyString[10] = {"10", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 
 //camera-space location of centre point of ship most recently considered for selection
 hvector selCameraSpace;

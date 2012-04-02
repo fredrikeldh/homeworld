@@ -30,9 +30,9 @@
 
 #else
 
-#define REG_ERROR_CHECKING          1           //general error checking 
+#define REG_ERROR_CHECKING          1           //general error checking
 						// This REG_ERROR_CHECKING define fixes the problem
-						// of the Equaliser. 
+						// of the Equaliser.
 #define REG_VERBOSE_LEVEL           0           //control specific output code
 #define REG_TEST                    0           //test of region code
 #define REG_DRAW_REGION_BORDERS     0           //draw a recrangle for debugging
@@ -277,7 +277,7 @@ void regRegionScroll(regionhandle reg, sdword scrollX, sdword scrollY);
 
 //misc utility functions
 regionhandle regSiblingFindByFunction(regionhandle reg, regionfunction find);
-regionhandle regFindChildByAtomName(regionhandle reg, char *pAtomName);
+regionhandle regFindChildByAtomName(regionhandle reg, const char *pAtomName);
 
 //process null poo
 udword regNULLProcessFunction(regionhandle region, smemsize ID, udword event, udword data);

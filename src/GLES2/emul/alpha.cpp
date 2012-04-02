@@ -1,4 +1,5 @@
 
+#include "../gles2.h"
 #include "alpha.h"
 
 void AlphaSetup::SetFunc(
@@ -19,7 +20,7 @@ void AlphaSetup::SetFunc(
 		>(func)
 	)
 		return;
-	
+
 	this->func = func;
 	this->ref  = clamp(ref, 0.0f, 1.0f);
 }

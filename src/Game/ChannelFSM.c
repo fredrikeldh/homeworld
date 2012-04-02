@@ -8,7 +8,7 @@
 #include "ChannelFSM.h"
 
 #include "MultiplayerGame.h"
-#include "ServerStatus.h"
+#include "ThirdParty/Titan/ServerStatus.h"
 #include "StringSupport.h"
 #include "TitanInterfaceC.h"
 #include "TitanNet.h"

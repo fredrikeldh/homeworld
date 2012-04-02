@@ -687,7 +687,7 @@ bool aiuShipNotGoodAgainstFighters(Ship *ship)
         case HeavyCruiser:
             return TRUE;
             break;
-            
+
         default:
             break;
     }
@@ -2982,10 +2982,10 @@ Resource *aiuFindBestResource(Resource **biggestResource, ShipPtr ship, Resource
     Outputs     :
     Return      : the modifying factor
 ----------------------------------------------------------------------------*/
+extern real32 RCONTROLLER_POS_FACTOR_INBETWEEN;
+extern real32 RCONTROLLER_POS_FACTOR_NOTINBETWEEN;
 real32 aiuBlobInbetweenMothershipAndEnemyFactor(blob *thisBlob)
 {
-    extern real32 RCONTROLLER_POS_FACTOR_INBETWEEN;
-    extern real32 RCONTROLLER_POS_FACTOR_NOTINBETWEEN;
     Ship *mothership = aiCurrentAIPlayer->player->PlayerMothership;
     Ship *enemymothership;
     vector MotherToEnemy;
@@ -3027,11 +3027,11 @@ real32 aiuBlobInbetweenMothershipAndEnemyFactor(blob *thisBlob)
     Outputs     :
     Return      : a rating of the blob depending on a whole bunch of stuff
 ----------------------------------------------------------------------------*/
+extern real32 RCONTROLLER_POS_FACTOR_ENEMIESPRESENT;
+extern real32 RCONTROLLER_POS_FACTOR_ENEMIESPRESENT_BUT_OUTNUMBERED;
+extern real32 RCONTROLLER_POS_FACTOR_FRIENDLIES_PRESENT;
 real32 aiuRateBlobForResourcing(blob *thisBlob)
 {
-    extern real32 RCONTROLLER_POS_FACTOR_ENEMIESPRESENT;
-    extern real32 RCONTROLLER_POS_FACTOR_ENEMIESPRESENT_BUT_OUTNUMBERED;
-    extern real32 RCONTROLLER_POS_FACTOR_FRIENDLIES_PRESENT;
     sdword RUs = 0;
     sdword numEnemies = 0;
     sdword numFriendlies = 0;
@@ -3783,7 +3783,7 @@ void aiuFindPriorityTarget(SelectCommand *attackers, SelectCommand *targets)
 {
     MaxSelection tempsel;	//temporary selection
 	bool capship = FALSE;
-	
+
 	// split depending on the attacker type to select specific targets
 	switch (attackers->ShipPtr[0]->shiptype)
 	{
@@ -3805,7 +3805,7 @@ void aiuFindPriorityTarget(SelectCommand *attackers, SelectCommand *targets)
 			}
 
 			// no break - the above ships fall through and try to eliminate SalCaps as well
-		
+
 		// anti-corvette
 		case MissileDestroyer:
 		case StandardFrigate:
@@ -3816,13 +3816,13 @@ void aiuFindPriorityTarget(SelectCommand *attackers, SelectCommand *targets)
 				selSelectionCopy((MaxAnySelection *)targets, (MaxAnySelection *)&tempsel);
 				break;
 			}
-			
+
 			// anti-capital ships break out here
 			if (capship)
 			{
 				break;
 			}
-		
+
 		// anti-fighter
 		case CloakedFighter:
 		case DDDFrigate:
@@ -3840,12 +3840,12 @@ void aiuFindPriorityTarget(SelectCommand *attackers, SelectCommand *targets)
 				selSelectionCopy((MaxAnySelection *)targets, (MaxAnySelection *)&tempsel);
 				break;
 			}
-		
+
 		// minor firepower ships
 		case AdvanceSupportFrigate:
 		case RepairCorvette:
 		case Carrier:
-		
+
 		default:
 			// guarantee attacking mothership 1 out of 4 times.
 			if (!randyrandom(RANDOM_AI_PLAYER, 4) &&
@@ -4031,9 +4031,9 @@ void aiuSplitAttack(SelectCommand *ships, SelectCommand *targets)
     Outputs     :
     Return      : void
 ----------------------------------------------------------------------------*/
+extern real32 BUSY_ADD_TO_DISTANCE;
 void aiuSwarmDock(SelectCommand *ships, SelectCommand *pods)
 {
-    extern real32 BUSY_ADD_TO_DISTANCE;
     SelectCommand *dockgroups[20];
     real32 dist, busyadddist, mindist = REALlyBig;
     vector diff;

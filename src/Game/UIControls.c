@@ -65,7 +65,7 @@ scriptEntry FrontEndColourTweaks[] =
     makeEntry(TB_HyperspaceColor, scriptSetRGBCB),
     makeEntry(TB_CompleteColor, scriptSetRGBCB),
     makeEntry(TB_IncompleteColor, scriptSetRGBCB),
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -4880,7 +4880,7 @@ void uicTextEntryCleanUp(textentryhandle entry)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void uicTextEntrySet(textentryhandle entry, char *text, sdword cursorPos)
+void uicTextEntrySet(textentryhandle entry, const char *text, sdword cursorPos)
 {
     sdword length = strlen(text);
     memset(entry->textBuffer,0,entry->bufferLength*sizeof(char));

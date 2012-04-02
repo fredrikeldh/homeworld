@@ -26,7 +26,7 @@ bool trkTrackingVisual = FALSE;
 
 struct
 {
-    char *minusString, *plusString;
+    const char *minusString, *plusString;
     real32 base;
 }
 trkRangeString[] =
@@ -67,7 +67,7 @@ trkRangeString[] =
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void trkTrackValueAddFn(char *name, real32 *number, real32 *timer, color c)
+void trkTrackValueAddFn(const char *name, real32 *number, real32 *timer, color c)
 {
     dbgAssertOrIgnore(trkTrackIndex < TRK_NumberTracks - 1);
     trkValue[trkTrackIndex].value = number;
@@ -87,7 +87,7 @@ void trkTrackValueAddFn(char *name, real32 *number, real32 *timer, color c)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void trkTrackValueRemoveFn(char *name)
+void trkTrackValueRemoveFn(const char *name)
 {
     sdword index, j;
 

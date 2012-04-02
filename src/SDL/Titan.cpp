@@ -1,3 +1,13 @@
+#ifdef MAPIP
+#include "Titan.h"
+void titanDebug(const char *format, ...) {
+}
+void titanLogFileOpen() {
+}
+void titanLogFileClose() {
+}
+
+#else
 
 #ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
@@ -21,14 +31,17 @@
 
 static const std::string TITAN_LOG_FILE_NAME(u8"titanlog.txt");
 
+
 //bool titanLogEnable = TRUE;
+
+class TitanLog;
 
 static TitanLog* LOG = NULL;
 
-class TitanLog : public LogFile
+class TitanLog //: public LogFile
 {
 public:
-	void Debug(char *format, ...)
+	void Debug(char *format, ...) //__attribute(format(printf, 2, 3))
 	{
 		//TODO: switch to UTF8
 #define DATA_SIZE 200 // space passed data is allowed to take up
@@ -42,7 +55,7 @@ public:
 		GetSystemTime(&systime);
 		snprintf(buffer, TIME_SIZE, "%02d:%02d:%02d ", systime.wHour, systime.wMinute, systime.wSecond);
 #else
-		struct timeval tv;
+		timeval tv;
 		long tv_hour, tv_minute, tv_second;
 
 		gettimeofday(&tv, 0);
@@ -58,10 +71,10 @@ public:
 
 		if (aNumChars >= 0)
 			memcpy((void*)(buffer + TIME_SIZE + aNumChars), "\n\0", 2);
-		
+
 		Log(buffer);
 	}
-	
+
 	TitanLog() :
 		LogFile(TITAN_LOG_FILE_NAME.c_str())
 	{
@@ -77,7 +90,7 @@ void titanDebug(char *format, ...)
 {
 	if( !LOG )
 		return;
-	
+
 	LOG->Debug(format, ...);
 }
 
@@ -85,7 +98,7 @@ void titanLogFileOpen()
 {
 	if( LOG && logEnable )
 		return;
-	
+
 	LOG = new TitanLog();
 }
 
@@ -93,4 +106,4 @@ void titanLogFileClose(void)
 {
 	//NO Op
 }
-
+#endif

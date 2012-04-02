@@ -55,8 +55,8 @@ bool aishipTempDisableAvoiding = FALSE;
     Private Function declarations:
 =============================================================================*/
 
-static void scriptAIShipPrecalculate(char *directory,char *field,void *dataToFillIn);
-static void rowSetDetails(char *directory,char *field,void *dataToFillIn);
+static void scriptAIShipPrecalculate(const char *directory,char *field,void *dataToFillIn);
+static void rowSetDetails(const char *directory,char *field,void *dataToFillIn);
 
 /*=============================================================================
     Tweakables:
@@ -193,11 +193,11 @@ scriptEntry AIShipTweaks[] =
     makeEntry(DONTUSEVELOCITYPRED_IFBELOW,scriptSetReal32CB),
     { "rowDetails", rowSetDetails, NULL },
     { "AISHIP_OTHER_CALCULATIONS", scriptAIShipPrecalculate, NULL },        // should go last
-    
+
     END_SCRIPT_ENTRY
 };
 
-static void scriptAIShipPrecalculate(char *directory,char *field,void *dataToFillIn)
+static void scriptAIShipPrecalculate(const char *directory,char *field,void *dataToFillIn)
 {
     oneOverDESCEND_PITCH4_DIST = 1.0f / DESCEND_PITCH4_DIST;
     oneOverDESCEND_3_MINUS_4_DIST = 1.0f / (DESCEND_PITCH3_DIST - DESCEND_PITCH4_DIST);
@@ -458,7 +458,7 @@ real32 GetCollSizeInDirection(SpaceObjRotImp *obj,vector dir)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-static void rowSetDetails(char *directory,char *field,void *dataToFillIn)
+static void rowSetDetails(const char *directory,char *field,void *dataToFillIn)
 {
     char shipstr[50];
     sdword rowpri;
@@ -467,7 +467,7 @@ static void rowSetDetails(char *directory,char *field,void *dataToFillIn)
 
     RemoveCommasFromString(field);
 
-    sscanf(field,"%s %d %f",shipstr,&rowpri,&rowAvoidByVal);
+    sscanf(field,"%s %d %f",shipstr,(int*)&rowpri,&rowAvoidByVal);
 
     shiptype = StrToShipType(shipstr);
     if ((shiptype < 0) || (shiptype >= TOTAL_NUM_SHIPS))
@@ -612,7 +612,7 @@ sdword rowShipCanGetOutOfWayOfMe(Ship *ship,Ship *me)
 bool rowOriginalPointIsClear(Ship *ship)
 {
     real32 avoidcollsize;
-    real32 avoidcollpad;
+    //real32 avoidcollpad;
     vector destToObj;
     real32 destToObjMag2;
     Ship *avoidme;
@@ -639,7 +639,7 @@ bool rowOriginalPointIsClear(Ship *ship)
     }
 
     avoidcollsize = avoidme->staticinfo->staticheader.staticCollInfo.avoidcollspheresize;
-    avoidcollpad = avoidme->staticinfo->staticheader.staticCollInfo.avoidcollspherepad;
+   // avoidcollpad = avoidme->staticinfo->staticheader.staticCollInfo.avoidcollspherepad;
 
     vecSub(destToObj,avoidme->collInfo.collPosition,ship->rowOriginalPoint);
     destToObjMag2 = vecMagnitudeSquared(destToObj);

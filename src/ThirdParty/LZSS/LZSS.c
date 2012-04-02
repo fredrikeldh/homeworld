@@ -51,8 +51,8 @@
 #define UNUSED               0
 #define MOD_WINDOW( a )      ( ( a ) & ( WINDOW_SIZE - 1 ) )
 
-char *CompressionName = "LZSS Encoder";
-char *Usage           = "in-file out-file\n\n";
+const char *CompressionName = "LZSS Encoder";
+const char *Usage           = "in-file out-file\n\n";
 
 /*
  * These are the two global data structures used in this program.
@@ -385,7 +385,7 @@ int lzssCompressBuffer(char *input, int inputSize, char *output, int outputSize)
             bitioBufferOutputBit(outBuffer, 1 );
             bitioBufferOutputBits(outBuffer, (unsigned long)window[current_position], 8);
         }
-        else 
+        else
         {
             bitioBufferOutputBit(outBuffer, 0 );
             bitioBufferOutputBits(outBuffer, (unsigned long)match_position, INDEX_BIT_COUNT);
@@ -436,7 +436,7 @@ int lzssExpandBuffer(char *input, int inputSize, char *output, int outputSize)
     int match_position;
     BitBuffer *inBuffer;
     char *outBuffer = output;
- 
+
     inBuffer = bitioBufferOpen(input);
 
     current_position = 1;
@@ -482,7 +482,7 @@ int lzssExpandFileToBuffer(BitFile *input, char *output, int outputSize)
     int match_length;
     int match_position;
     char *outBuffer = output;
- 
+
     current_position = 1;
     for ( ; ; ) {
         if (bitioFileInputBit(input))

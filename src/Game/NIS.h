@@ -370,12 +370,12 @@ extern bool nisIsRunning;
 extern bool nisCaptureCamera;
 extern Camera *nisCamera;
 extern taskhandle nisTaskHandle;
-#if NIS_PRINT_INFO
+#ifdef NIS_PRINT_INFO
 extern char nisInfoString[256];
 extern bool nisPrintInfo;
 extern bool nisNoLockout;
 #endif
-#if NIS_TEST
+#ifdef NIS_TEST
 nisplaying *testPlaying;
 #endif
 
@@ -419,7 +419,7 @@ void nisStartup(void);
 void nisShutdown(void);
 
 //load/delete objects
-nisheader *nisLoad(char *fileName, char *scriptName);
+nisheader *nisLoad(const char *fileName, const char *scriptName);
 void nisDelete(nisheader *header);
 
 //play an NIS

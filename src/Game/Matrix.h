@@ -11,6 +11,10 @@
 #include "Types.h"
 #include "Vector.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 // INTERFACE -------------------------------------------------------------------
 
 typedef struct hmatrix
@@ -23,7 +27,7 @@ typedef struct hmatrix
     |m31 m32 m33 m34|
     |m41 m42 m43 m44|
 
-    In memory, it is stored as follows to be compatible with GameGL 
+    In memory, it is stored as follows to be compatible with GameGL
 -----------------------------------------------------------------------------*/
     real32 m11,m21,m31,m41, m12,m22,m32,m42, m13,m23,m33,m43, m14,m24,m34,m44;
 
@@ -39,7 +43,7 @@ typedef struct matrix
     |m21 m22 m23|
     |m31 m32 m33|
 
-    In memory, it is stored as follows to be compatible with GameGL 
+    In memory, it is stored as follows to be compatible with GameGL
 -----------------------------------------------------------------------------*/
     real32 m11,m21,m31, m12,m22,m32, m13,m23,m33;
 
@@ -212,5 +216,9 @@ void matMakeRotAboutX(matrix *matrix, real32 costheta, real32 sintheta);
 void matMakeRotAboutY(matrix *matrix, real32 costheta, real32 sintheta);
 void matPrintmatrix(matrix *a);
 void matCopyAndScale(matrix *out, matrix *in, real32 scale);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

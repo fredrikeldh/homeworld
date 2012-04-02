@@ -1,4 +1,5 @@
 
+#include "../gles2.h"
 #include "render.h"
 #include "light.h"
 #include <cstring>
@@ -27,10 +28,10 @@ RenderPipe::RenderPipe():
 void RenderPipe::LoadProgram(GLubyte index)
 {
 	ProgramConfiguration& configuration = _configurations[index];
-	
+
 	GLuint vertexShader = LoadShader(configuration.vertexShader,   GL_VERTEX_SHADER);
 	GLuint fragmentShader = LoadShader(configuration.fragmentShader, GL_FRAGMENT_SHADER);
-	
+
 	GLuint program = glCreateProgram();
 	glAttachShader(program, vertexShader);
 	glAttachShader(program, fragmentShader);
@@ -47,9 +48,9 @@ public:
 	ShaderStrings()
 	{
 	}
-	
+
 	using std::vector<char*>::push_back;
-	
+
 	char* push_back(size_t& size)
 	{
 		size = BUFFER_SIZE;
@@ -57,7 +58,7 @@ public:
 		push_back(buffer);
 		return buffer;
 	}
-	
+
 	void clamp(size_t size)
 	{
 		(*lengths.end()) = size;
@@ -70,7 +71,7 @@ public:
 			delete[] *it;
 		}
 	}
-	
+
 	std::vector<size_t> lengths;
 };
 
@@ -81,7 +82,7 @@ GLuint RenderPipe::LoadShader(std::string& shaderFile, GLenum type)
 	{
 		std::string& fileName = shaderFile;
 		std::ifstream file(fileName, std::ifstream::in);
-		
+
 		do
 		{
 			size_t size = 0;
@@ -94,22 +95,22 @@ GLuint RenderPipe::LoadShader(std::string& shaderFile, GLenum type)
 
 	GLint* stringLengths = new GLint[strings.size()];
 	const char** stringArray = new const char*[strings.size()];
-	
+
 	GLuint index = 0;
 	for( std::vector<char*>::iterator it = strings.begin(); it != strings.end(); it++, index++ )
 	{
 		stringArray[index] = *it;
 		stringLengths[index] = BUFFER_SIZE;
 	}
-	
+
 	{
 		GLuint lastIndex = strings.size() - 1;
-		stringLengths[lastIndex] = (strchr(stringArray[lastIndex], '\0') - stringArray[lastIndex]); 
+		stringLengths[lastIndex] = (strchr(stringArray[lastIndex], '\0') - stringArray[lastIndex]);
 	}
 #undef BUFFER_SIZE
 
 	GLuint shader = glCreateShader(type);
-	
+
 	glShaderSource
 	(
 		shader,
@@ -117,7 +118,7 @@ GLuint RenderPipe::LoadShader(std::string& shaderFile, GLenum type)
 		stringArray,
 		stringLengths
 	);
-	
+
 	glCompileShader(shader);
 	return shader;
 }
@@ -125,40 +126,40 @@ GLuint RenderPipe::LoadShader(std::string& shaderFile, GLenum type)
 void RenderPipe::Render()
 {
 	GLuint program = 0;
-	
+
 	GLint param = 0;
-	
+
 	glGetProgramiv(program, GL_ACTIVE_UNIFORM_MAX_LENGTH, &param);
 
 	::Get<LightSetup>().ApplyTo(this);
 /*
 	GLint index = glGetUniformLocation(GLuint program, const char* name);
 
-	
+
 	GLuint uniform_index = GetUniformIndex();
-	
+
 	GLint size = 0;
 	GLenum type = 0;
 	char* name = new char[uniformNameLength];
-	
+
 	for( int i = 0; i != uniform_count; i++ )
 	{
 		glGetActiveUniform
 		(
 			program,
-			uniform_index, 
+			uniform_index,
 			uniformNameLength,
 			NULL, //length
 			&size,
 			&type,
 			name
 		);
-		
-		
+
+
 	}
-	
+
 	delete name;
-	
+
 	gles1::RenderPipe::Render();
 */
 }

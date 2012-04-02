@@ -270,7 +270,7 @@ ShipStatsType;
 typedef struct
 {
     uword number;
-    char *str;
+    const char *str;
 } NumStrXlate;
 
 typedef udword SpecialEffectType;
@@ -308,73 +308,73 @@ extern uword NumShipTypesInRace[NUM_RACES];
     Support Functions:
 =============================================================================*/
 
-char *NumToStr(NumStrXlate numstrtab[],uword num);
-sdword StrToNum(NumStrXlate numstrtab[],char *str);
+const char *NumToStr(NumStrXlate numstrtab[],uword num);
+sdword StrToNum(NumStrXlate numstrtab[],const char *str);
 
 ShipRace RaceBitsToRace(uword raceBits);
 
-char *ShipClassToStr(ShipClass shipclass);
+const char *ShipClassToStr(ShipClass shipclass);
 char *ShipClassToNiceStr(ShipClass shipclass);
-ShipClass StrToShipClass(char *str);
+ShipClass StrToShipClass(const char *str);
 
-char *ShipRaceToStr(ShipRace shiprace);
-ShipRace StrToShipRace(char *str);
+const char *ShipRaceToStr(ShipRace shiprace);
+ShipRace StrToShipRace(const char *str);
 
-char *TacticsTypeToStr(TacticsType tactics);
-TacticsType StrToTacticsType(char *str);
+const char *TacticsTypeToStr(TacticsType tactics);
+TacticsType StrToTacticsType(const char *str);
 
-SpecialEffectType StrToEffectNum(char *str);
+SpecialEffectType StrToEffectNum(const char *str);
 
-char *ShipTypeToStr(ShipType shiptype);
+const char *ShipTypeToStr(ShipType shiptype);
 char *ShipTypeToNiceStr(ShipType shiptype);
-ShipType StrToShipType(char *str);
+ShipType StrToShipType(const char *str);
 
 char *ShipStatToNiceStr(ShipStatsType stattype);
 char *ShipTypeStatToNiceStr(ShipType shiptype, ShipStatsType stattype);
 
-char *AsteroidTypeToStr(AsteroidType asteroidtype);
-AsteroidType StrToAsteroidType(char *str);
+const char *AsteroidTypeToStr(AsteroidType asteroidtype);
+AsteroidType StrToAsteroidType(const char *str);
 
-char *DustCloudTypeToStr(DustCloudType dustcloudtype);
-DustCloudType StrToDustCloudType(char *str);
+const char *DustCloudTypeToStr(DustCloudType dustcloudtype);
+DustCloudType StrToDustCloudType(const char *str);
 
-char *GasCloudTypeToStr(GasCloudType gascloudtype);
-GasCloudType StrToGasCloudType(char *str);
+const char *GasCloudTypeToStr(GasCloudType gascloudtype);
+GasCloudType StrToGasCloudType(const char *str);
 
-char *NebulaTypeToStr(NebulaType nebulatype);
-NebulaType StrToNebulaType(char *str);
+const char *NebulaTypeToStr(NebulaType nebulatype);
+NebulaType StrToNebulaType(const char *str);
 
-char *DerelictTypeToStr(DerelictType derelicttype);
-DerelictType StrToDerelictType(char *str);
+const char *DerelictTypeToStr(DerelictType derelicttype);
+DerelictType StrToDerelictType(const char *str);
 
-char *ExplosionTypeToStr(EffectType type);
-EffectType StrToExplosionType(char *str);
+const char *ExplosionTypeToStr(EffectType type);
+EffectType StrToExplosionType(const char *str);
 
-char *GunTypeToStr(GunType guntype);
-GunType StrToGunType(char *str);
+const char *GunTypeToStr(GunType guntype);
+GunType StrToGunType(const char *str);
 
-DockPointType StrToDockPointType(char *str);
-char *DockPointTypeToStr(DockPointType dockpointtype);
+DockPointType StrToDockPointType(const char *str);
+const char *DockPointTypeToStr(DockPointType dockpointtype);
 
-SalvagePointType StrToSalvagePointType(char *str);
-char *SalvagePointTypeToStr(SalvagePointType salvagepointtype);
+SalvagePointType StrToSalvagePointType(const char *str);
+const char *SalvagePointTypeToStr(SalvagePointType salvagepointtype);
 
-char *GunSoundTypeToStr(GunSoundType gunsoundtype);
-GunSoundType StrToGunSoundType(char *str);
+const char *GunSoundTypeToStr(GunSoundType gunsoundtype);
+GunSoundType StrToGunSoundType(const char *str);
 
-char *BulletTypeToStr(BulletType bulletType);
-BulletType StrToBulletType(char *str);
+const char *BulletTypeToStr(BulletType bulletType);
+BulletType StrToBulletType(const char *str);
 
-char *MissileTypeToStr(MissileType missileType);
-MissileType StrToMissileType(char *str);
+const char *MissileTypeToStr(MissileType missileType);
+MissileType StrToMissileType(const char *str);
 
-char *NAVLightTypeToStr(NAVLightType navlightType);
-NAVLightType StrToNAVLightType(char *str);
+const char *NAVLightTypeToStr(NAVLightType navlightType);
+NAVLightType StrToNAVLightType(const char *str);
 
-char *ObjTypeToStr(ObjType objtype);
-ObjType StrToObjType(char *str);
+const char *ObjTypeToStr(ObjType objtype);
+ObjType StrToObjType(const char *str);
 
-char *NisRaceToStr(ShipRace race);
+const char *NisRaceToStr(ShipRace race);
 ShipRace StrToNisRace(char *string);
 
 #endif

@@ -68,7 +68,7 @@ fileOpenInfo filesOpen[MAX_FILES_OPEN+1];
 
 // where all the data files are kept (*.big, *.vce, *.wxe)
 char fileHomeworldDataPath [PATH_MAX] = "";
- 
+
 // local directory mimicking the .big archive hierarchy and overrides
 // the contents of those archives. (Mainly used for testing.)
 char fileOverrideBigPath   [PATH_MAX] = "";
@@ -818,14 +818,14 @@ bool8 fileMakeDestinationDirectory (const char* fileName)
     Note        : Generates a fatal error if file doesn't exist.  If you don't
         like this behavior, call fileExists() first.
 ----------------------------------------------------------------------------*/
-sdword fileLoadAlloc(char *_fileName, void **address, udword flags)
+sdword fileLoadAlloc(const char *_fileName, void **address, udword flags)
 {
     char  *memoryName = NULL,
           *fileName   = NULL;
     FILE  *inFile     = NULL;
-    
+
     bigFileConfiguration *whereFound = NULL;
-    
+
     udword nameLength    = 0,
            length        = 0,
            lengthRead    = 0,
@@ -846,7 +846,7 @@ sdword fileLoadAlloc(char *_fileName, void **address, udword flags)
                 {
                     logfileLogf(FILELOADSLOG, "%s | %s\n", whereFound->bigFileName, _fileName);
                 }
-                
+
                 return bigfileResult;
             }
         }
@@ -867,7 +867,7 @@ sdword fileLoadAlloc(char *_fileName, void **address, udword flags)
     {
         memoryName = fileName;
     }
-    
+
     length = fileSizeGet(_fileName, flags);                 //get size of file
     dbgAssertOrIgnore(length > 0);                                  //and verify it
     *address = memAllocAttempt(length, memoryName, (flags & (NonVolatile | Pyrophoric)) | MBF_String);//allocate the memory for this file
@@ -915,13 +915,13 @@ sdword fileLoadAlloc(char *_fileName, void **address, udword flags)
     Note        : Generates a fatal error if file doesn't exist.  If you don't
         like this behavior, call fileExists() first.
 ----------------------------------------------------------------------------*/
-sdword fileLoad(char *_fileName, void *address, udword flags)
+sdword fileLoad(const char *_fileName, void *address, udword flags)
 {
     char  *fileName   = NULL;
     FILE  *inFile     = NULL;
-    
+
     bigFileConfiguration *whereFound = NULL;
-    
+
     udword length        = 0,
            lengthRead    = 0,
            bigFileIndex  = 0;
@@ -939,7 +939,7 @@ sdword fileLoad(char *_fileName, void *address, udword flags)
                 {
                     logfileLogf(FILELOADSLOG, "%s | %s\n", whereFound->bigFileName, _fileName);
                 }
-                
+
                 return bigfileResult;
             }
         }
@@ -985,7 +985,7 @@ sdword fileLoad(char *_fileName, void *address, udword flags)
     Outputs     :
     Return      : length
 ----------------------------------------------------------------------------*/
-sdword fileSave(char *_fileName, void *address, sdword length)
+sdword fileSave(const char *_fileName, void *address, sdword length)
 {
     FILE *outFile;
     char *fileName;
@@ -1033,11 +1033,11 @@ sdword fileSave(char *_fileName, void *address, sdword length)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-bool fileExistsInBigFile(char *fileName)
+bool fileExistsInBigFile(const char *fileName)
 {
     udword fileIndex = 0;
     bigFileConfiguration *whereFound = NULL;
-    
+
     return bigFindFile(fileName, &whereFound, &fileIndex);
 }
 
@@ -1049,7 +1049,7 @@ bool fileExistsInBigFile(char *fileName)
     Outputs     : ..
     Return      : TRUE if file found, FALSE otherwise
 ----------------------------------------------------------------------------*/
-bool fileExists(char *_fileName, udword flags)
+bool fileExists(const char *_fileName, udword flags)
 {
     char *fileName;
 
@@ -1081,7 +1081,7 @@ bool fileExists(char *_fileName, udword flags)
     Note        : Because this may actually open the file to find it's length,
         it should never be called on files which are already open.
 ----------------------------------------------------------------------------*/
-sdword fileSizeGet(char *_fileName, udword flags)
+sdword fileSizeGet(const char *_fileName, udword flags)
 {
     FILE *file;
     sdword length;
@@ -1091,7 +1091,7 @@ sdword fileSizeGet(char *_fileName, udword flags)
     {
         bigFileConfiguration *whereFound = NULL;
         udword fileIndex = 0;
-        
+
         if (bigFindFile(_fileName, &whereFound, &fileIndex))
         {
             length = (whereFound->tableOfContents.fileEntries + fileIndex)->realLength;
@@ -1120,7 +1120,7 @@ sdword fileSizeGet(char *_fileName, udword flags)
     return(length);
 }
 
-void fileDelete(char *_fileName)
+void fileDelete(const char *_fileName)
 {
     char *fileName;
 
@@ -1138,7 +1138,7 @@ void fileDelete(char *_fileName)
     Outputs     : creates a fileOpenInfo for subsequent accesses
     Return      : returns a handle (which may be reference a FILE * or the bigfile)
  ----------------------------------------------------------------------------*/
-filehandle fileOpen(char *_fileName, udword flags)
+filehandle fileOpen(const char *_fileName, udword flags)
 {
     FILE *file;
     char access[3];
@@ -1182,7 +1182,7 @@ filehandle fileOpen(char *_fileName, udword flags)
         filePathPrepend(_fileName, FF_NoModifers);  // this ends up with the override path...
         strcpy(localPath, filePathTempBuffer);
     }
-    
+
     // don't fiddle with the path any more - we should have an explicit full path
     // at this point; the question is does a file exist there?
     localFileExists = fileExists(localPath, FF_IgnorePrepend);
@@ -1192,7 +1192,7 @@ filehandle fileOpen(char *_fileName, udword flags)
     {
         bigFileConfiguration *whereFound = NULL;
         udword fileIndex = 0;
-        
+
         if (bigFindFile(_fileName, &whereFound, &fileIndex))
         {
             // no write support for bigfiles currently
@@ -1200,7 +1200,7 @@ filehandle fileOpen(char *_fileName, udword flags)
             dbgAssertOrIgnore(!bitTest(flags, FF_WriteMode));
 
             usingBigfile = TRUE;
-            
+
             filesOpen[fh].usingBigfile  = TRUE;
             filesOpen[fh].bigFP         = whereFound->filePtr;
             filesOpen[fh].bigTOC        = &(whereFound->tableOfContents);
@@ -1225,7 +1225,7 @@ filehandle fileOpen(char *_fileName, udword flags)
                         {
                             firstBufUse = TRUE;
                         }
-                        
+
                         decompWorkspaceSize = filesOpen[fh].length + decompWorkspaceIncrement;
                         decompWorkspaceP    = memRealloc(decompWorkspaceP, decompWorkspaceSize,
                                                       "decompWorkspace", 0);
@@ -1350,7 +1350,7 @@ filehandle fileOpen(char *_fileName, udword flags)
         }
         dbgFatalf(DBG_Loc, "fileOpen: cannot open file %s", fileName);
     }
-    
+
 #if FILE_VERBOSE_LEVEL >= 2
     dbgMessagef("fileOpen: '%s' (from filesystem) handle 0x%x, FILE *0x%x", fileName, fh, file);
 #endif
@@ -1842,25 +1842,25 @@ FILE *fileStream(filehandle handle)
     Description : populates preallocated buffer with given path and ensures
                   it is properly formatted/terminated. Buffer should ideally
                   be PATH_MAX bytes long.
-    Outputs     : 
+    Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void filePathMaxBufferSet(char *buffer, char *path)
+void filePathMaxBufferSet(char *buffer, const char *path)
 {
     unsigned int path_len = 0;
-    
+
     dbgAssertOrIgnore(buffer != NULL);
     dbgAssertOrIgnore(path   != NULL);
-    
+
     path_len = strlen(path);
 
     dbgAssertOrIgnore(path_len < PATH_MAX);
 
     strncpy(buffer, path, PATH_MAX);
-    
+
     // make sure path is delimited
     strcat(buffer, "/");
-    
+
     fileNameReplaceSlashesInPlace(buffer);
 }
 
@@ -1873,7 +1873,7 @@ void filePathMaxBufferSet(char *buffer, char *path)
     Outputs     : Copies prepend path to global variable and concatenates fileName
     Return      : pointer to new full path
 ----------------------------------------------------------------------------*/
-char *filePathPrepend(char *fileName, udword flags)
+char *filePathPrepend(const char *fileName, udword flags)
 {
     dbgAssertOrIgnore(fileName != NULL);
 
@@ -1897,13 +1897,13 @@ char *filePathPrepend(char *fileName, udword flags)
     {
         strcpy(filePathTempBuffer, fileOverrideBigPath);
     }
-    
+
     strcat(filePathTempBuffer, fileName);
 
     return filePathTempBuffer;
 }
 
-bool fileCDROMPathSet(char *path)
+bool fileCDROMPathSet(const char *path)
 {
 #ifdef _WIN32
     char message[80];
@@ -1919,18 +1919,18 @@ bool fileCDROMPathSet(char *path)
     return TRUE;
 }
 
-void fileHomeworldDataPathSet(char *path)
+void fileHomeworldDataPathSet(const char *path)
 {
     filePathMaxBufferSet(fileHomeworldDataPath, path);
 }
 
-bool fileOverrideBigPathSet(char *path)
+bool fileOverrideBigPathSet(const char *path)
 {
     filePathMaxBufferSet(fileOverrideBigPath, path);
     return TRUE;
 }
 
-bool fileUserSettingsPathSet(char *path)
+bool fileUserSettingsPathSet(const char *path)
 {
     filePathMaxBufferSet(fileUserSettingsPath, path);
     return TRUE;
@@ -1996,7 +1996,7 @@ void logfileLog(const char *logfile, const char *str)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void logfileLogf(const char *logfile, char *format, ...)
+void logfileLogf(const char *logfile, const char *format, ...)
 {
     char buffer[200];
     va_list argList;

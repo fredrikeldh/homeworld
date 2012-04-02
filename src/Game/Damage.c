@@ -45,7 +45,7 @@ scriptEntry DamageTweaks[] =
     makeEntry(DMG_LightLimit, scriptSetReal32CB),
     makeEntry(DMG_HeavyLimit, scriptSetReal32CB),
     makeEntry(DMG_DyingLimit, scriptSetReal32CB),
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -156,7 +156,7 @@ void dmgRandomDamageLocation(Ship* ship, vector* location, matrix* coordsys)
     Outputs     : location, coordsys
     Return      :
 ----------------------------------------------------------------------------*/
-void dmgCoordSysFromChunk(Ship* ship, vector* location, matrix* coordsys, char* type, char* name)
+void dmgCoordSysFromChunk(Ship* ship, vector* location, matrix* coordsys, const char* type, const char* name)
 {
     ShipStaticInfo* shipStatic;
     MEXChunk* mexChunk;
@@ -459,13 +459,13 @@ void dmgStopSingleEffect(Effect* effect)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
+extern bool gShowDamage;
 void dmgShipThink(Ship* ship)
 {
     ShipStaticInfo* shipstaticinfo;
     ShipSinglePlayerGameInfo* ssinfo;
     ShipClass shipClass;
     real32 maxhealth, health, healthRatio;
-    extern bool gShowDamage;
 
     if (!gShowDamage)
     {

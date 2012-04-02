@@ -30,7 +30,7 @@ extern udword strCurKeyboardLanguage;
 
 bool8 strLoadLanguage(strLanguageType language);
 bool8 strFreeLanguage(void);
-void  strSetStringCB(char *directory, char *field, void *dataToFillIn);
+void  strSetStringCB(const char *directory, char *field, void *dataToFillIn);
 strGamesMessages strNameToEnum(char *string);
 void strSetCurKeyboard(void);
 

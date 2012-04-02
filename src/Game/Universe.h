@@ -289,7 +289,7 @@ void CloseStatGasCloudInfo(GasCloudStaticInfo *gascloudStatInfo);
 void CloseStatMissileInfo(MissileStaticInfo *missileStatInfo);
 void CloseStatMineInfo(MissileStaticInfo *mineStatInfo);
 void CloseStatEffectInfo(etgeffectstatic *effectStatInfo);
-void InitStatDerelictInfoByPath(DerelictStaticInfo *derelictStatInfo, DerelictType derelicttype, char *directory, char *shipFile);
+void InitStatDerelictInfoByPath(DerelictStaticInfo *derelictStatInfo, DerelictType derelicttype, const char *directory, char *shipFile);
 
 void unitCapCreateShip(Ship *ship, Player *player);
 void unitCapDeleteShip(Ship *ship, Player *player);

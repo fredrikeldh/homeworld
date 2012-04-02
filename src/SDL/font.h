@@ -158,7 +158,7 @@ typedef udword fonthandle;
     Functions:
 =============================================================================*/
 //load in a font
-fontheader *fontLoad(char *fileName);
+fontheader *fontLoad(const char *fileName);
 void fontDiscard(fonthandle font);
 void fontDiscardGL(fontheader* font);
 
@@ -170,16 +170,16 @@ void fontShadowSet(FontShadowType s, color color);
 FontShadowType fontShadowGet(void);
 
 //printing fonts
-sdword fontPrintCentre(sdword y, color c, char *string);
-sdword fontPrintCentreCentreRectangle(rectangle *rect, color c, char *string);
-sdword fontPrint(sdword x, sdword y, color c, char *string);
-sdword fontPrintN(sdword x, sdword y, color c, char *string, sdword maxCharacters);
-sdword fontPrintf(sdword x, sdword y, color c, char *format, ...);
-sdword fontWidth(char *string);
-sdword fontWidthN(char *string, sdword maxCharacters);
-sdword fontWidthf(char *format, ...);
-sdword fontHeight(char *string);
-sdword fontHeightf(char *format, ...);
+sdword fontPrintCentre(sdword y, color c, const char *string);
+sdword fontPrintCentreCentreRectangle(rectangle *rect, color c, const char *string);
+sdword fontPrint(sdword x, sdword y, color c, const char *string);
+sdword fontPrintN(sdword x, sdword y, color c, const char *string, sdword maxCharacters);
+sdword fontPrintf(sdword x, sdword y, color c, const char *format, ...);
+sdword fontWidth(const char *string);
+sdword fontWidthN(const char *string, sdword maxCharacters);
+sdword fontWidthf(const char *format, ...);
+sdword fontHeight(const char *string);
+sdword fontHeightf(const char *format, ...);
 
 void glfontRecreate(fontheader* header);
 

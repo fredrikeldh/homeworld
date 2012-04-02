@@ -746,6 +746,8 @@ real32 gl_pow(real32 a, real32 b)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
+extern bool bFade;
+extern real32 meshFadeAlpha;
 void shSpecularColour(
     sdword specInd, sdword side, vector* vobj, vector* norm, ubyte* color,
     real32* m, real32* minv)
@@ -755,8 +757,6 @@ void shSpecularColour(
     real32 nx, ny, nz;
     real32 alpha, nDotVP;
     real32 fade;
-    extern bool bFade;
-    extern real32 meshFadeAlpha;
 
     fade = bFade ? meshFadeAlpha : 1.0f;
 

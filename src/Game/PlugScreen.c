@@ -32,7 +32,7 @@
 /*=============================================================================
     Data:
 =============================================================================*/
-char *psLanguageString[] = {FR_English, FR_French, FR_German, FR_Spanish, FR_Italian};
+const char *psLanguageString[] = {FR_English, FR_French, FR_German, FR_Spanish, FR_Italian};
 udword psGlobalFlags;
 regionhandle psBaseRegion = NULL;               //base region, the actual plug screen bitmap
 taskhandle psRenderTask;                        //rendering task which replaces standard render task when here
@@ -53,10 +53,10 @@ pluglink *psFadeLink = NULL;
 real32 psFadeStartTime;
 real32 psFadeTime = PS_FadeTime;
 
-void psImageSet(char *directory,char *field,void *dataToFillIn);
-void psPlugLinkSet(char *directory,char *field,void *dataToFillIn);
-void psTimeoutSet(char *directory,char *field,void *dataToFillIn);
-void psCrossFadeLinkSet(char *directory,char *field,void *dataToFillIn);
+void psImageSet(const char *directory,char *field,void *dataToFillIn);
+void psPlugLinkSet(const char *directory,char *field,void *dataToFillIn);
+void psTimeoutSet(const char *directory,char *field,void *dataToFillIn);
+void psCrossFadeLinkSet(const char *directory,char *field,void *dataToFillIn);
 
 //for timing out a screen
 real32 psScreenCreationTime;
@@ -76,7 +76,7 @@ scriptEntry psScreenTweaks[] =
     { "GameLink",        psPlugLinkSet, (void *)PLT_GameOn },
     { "TimeOut",         psTimeoutSet,  NULL },
     { "Mouse",           scriptSetBool, &psMouseFlag },
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -326,7 +326,7 @@ udword psBaseRegionProcess(regionhandle region, sdword ID, udword event, udword 
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void psImageLoad(psimage *destImage, char *directory, char *imageName)
+void psImageLoad(psimage *destImage, const char *directory, char *imageName)
 {
     JPEGDATA    jp;
     sdword x, y, quiltX, quiltY, endX, endY;
@@ -400,7 +400,7 @@ void psImageLoad(psimage *destImage, char *directory, char *imageName)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void psImageSet(char *directory,char *field,void *dataToFillIn)
+void psImageSet(const char *directory,char *field,void *dataToFillIn)
 {
     if (psFadeImage.imageQuilt != NULL)
     {                                                       //if we just cross-faded from another image
@@ -419,7 +419,7 @@ void psImageSet(char *directory,char *field,void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void psCrossFadeLinkSet(char *directory,char *field,void *dataToFillIn)
+void psCrossFadeLinkSet(const char *directory,char *field,void *dataToFillIn)
 {
     sdword nScanned;
     char fadeImageName[80];
@@ -464,7 +464,7 @@ void RemoveCommasButNotQuestionMarksFromString(char *field)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void psPlugLinkSet(char *directory,char *field,void *dataToFillIn)
+void psPlugLinkSet(const char *directory,char *field,void *dataToFillIn)
 {
     char fileName[80];
     char onName[80];
@@ -516,7 +516,7 @@ void psPlugLinkSet(char *directory,char *field,void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void psTimeoutSet(char *directory,char *field,void *dataToFillIn)
+void psTimeoutSet(const char *directory,char *field,void *dataToFillIn)
 {
     sdword nScanned;
 
@@ -583,7 +583,7 @@ DEFINE_TASK(psRenderTaskFunction)
     taskBegin;
 
     taskYield(0);
-    
+
     while (1)
     {
         primErrorMessagePrint();
@@ -686,11 +686,11 @@ DEFINE_TASK(psRenderTaskFunction)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void psModeBegin(char *directory, udword modeFlags)
+void psModeBegin(const char *directory, udword modeFlags)
 {
     psGlobalFlags = modeFlags;
     psGLCompat = FALSE;
-    
+
     psStartup();
     strcpy(psDirectory, directory);
     psFadeState = PFS_ToBlack;
@@ -727,7 +727,7 @@ void psModeEnd(void)
     Return      : void
 ----------------------------------------------------------------------------*/
 udword psScreenSkipKey[] = {ESCKEY, SPACEKEY, ENTERKEY, 0};
-void psScreenStart(char *name)
+void psScreenStart(const char *name)
 {
     sdword index;
     regionhandle reg;

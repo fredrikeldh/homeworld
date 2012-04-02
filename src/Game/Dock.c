@@ -284,7 +284,7 @@ void GetDirectionVectorOfShip(vector *result,udword direction,Ship *ship)
     Outputs     :
     Return      : returns an index to the found dockpoint
 ----------------------------------------------------------------------------*/
-sdword dockFindDockIndex(char *name,DockStaticInfo *dockstaticinfo)
+sdword dockFindDockIndex(const char *name,DockStaticInfo *dockstaticinfo)
 {
     sdword numDockPoints = dockstaticinfo->numDockPoints;
     DockStaticPoint *curdockpoint;
@@ -3990,14 +3990,14 @@ void R1MothershipStaticDockInit(ShipStaticInfo *staticinfo)
 
     R1MOTHERSHIP_In      = dockFindDockIndex("In",      dockStaticInfo);
     R1MOTHERSHIP_In1     = dockFindDockIndex("In1",     dockStaticInfo);
-    
+
     R1MOTHERSHIP_Out     = dockFindDockIndex("Out",     dockStaticInfo);
     R1MOTHERSHIP_Out1    = dockFindDockIndex("Out1",    dockStaticInfo);
-    
+
     R1MOTHERSHIP_Frigate = dockFindDockIndex("Frigate", dockStaticInfo);
-    
+
     R1MOTHERSHIP_Big     = dockFindDockIndex("Big",     dockStaticInfo);
-    
+
     R1MOTHERSHIP_ResU    = dockFindDockIndex("ResU",    dockStaticInfo);
     R1MOTHERSHIP_ResD    = dockFindDockIndex("ResD",    dockStaticInfo);
 }
@@ -4008,12 +4008,12 @@ void R2MothershipStaticDockInit(ShipStaticInfo *staticinfo)
 
     R2MOTHERSHIP_In0  = dockFindDockIndex("In0",  dockStaticInfo);
     R2MOTHERSHIP_In1  = dockFindDockIndex("In1",  dockStaticInfo);
-    
+
     R2MOTHERSHIP_Out0 = dockFindDockIndex("Out0", dockStaticInfo);
     R2MOTHERSHIP_Out1 = dockFindDockIndex("Out1", dockStaticInfo);
-    
+
     R2MOTHERSHIP_Big  = dockFindDockIndex("Big",  dockStaticInfo);
-    
+
     R2MOTHERSHIP_Res0 = dockFindDockIndex("Res0", dockStaticInfo);
     R2MOTHERSHIP_Res1 = dockFindDockIndex("Res1", dockStaticInfo);
 }
@@ -4023,7 +4023,7 @@ void P1MothershipStaticDockInit(ShipStaticInfo *staticinfo)
     DockStaticInfo *dockStaticInfo = staticinfo->dockStaticInfo;
 
     P1MOTHERSHIP_In   = dockFindDockIndex("In",   dockStaticInfo);
-    
+
     P1MOTHERSHIP_Out  = dockFindDockIndex("Out",  dockStaticInfo);
     P1MOTHERSHIP_Out1 = dockFindDockIndex("Out1", dockStaticInfo);
 }
@@ -4044,7 +4044,7 @@ void P2MothershipStaticDockInit(ShipStaticInfo *staticinfo)
     P2MOTHERSHIP_In9   = dockFindDockIndex("In9",   dockStaticInfo);
     P2MOTHERSHIP_In10  = dockFindDockIndex("In10",  dockStaticInfo);
     P2MOTHERSHIP_In11  = dockFindDockIndex("In11",  dockStaticInfo);
-    
+
     P2MOTHERSHIP_Out   = dockFindDockIndex("Out",   dockStaticInfo);
     P2MOTHERSHIP_Out1  = dockFindDockIndex("Out1",  dockStaticInfo);
     P2MOTHERSHIP_Out2  = dockFindDockIndex("Out2",  dockStaticInfo);
@@ -4102,7 +4102,7 @@ bool shipStaticIndicatesBigHangerBayForRace(ShipStaticInfo *ship_static, sdword 
             return ship_static->salvageStaticInfo->needBigR2;
         }
     }
-    
+
     // default to using the small hanger bay - it doesn't sound particularly
     // sensible but that's the way the .shp configuration is set up
     return FALSE;
@@ -4114,7 +4114,7 @@ bool shipRequiresBigHangerBayWhenDockingWith(Ship *smaller_ship, Ship *larger_sh
     {
         return shipStaticIndicatesBigHangerBayForRace(smaller_ship->staticinfo, larger_ship->shiprace);
     }
-    
+
     // use small hanger bay by default
     return FALSE;
 }
@@ -4224,7 +4224,7 @@ sdword **GetLaunchPoints(ShipStaticInfo *shipstatic,ShipStaticInfo *dockwithstat
             }
         }
     }
-    
+
     return NULL;
 }
 

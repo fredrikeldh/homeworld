@@ -104,7 +104,7 @@ scriptEntry ShipViewTweaks[] =
     makeEntry(svDeclination, scriptSetReal32CB),
     makeEntry(svZoomInScalar, scriptSetReal32CB),
     makeEntry(svZoomOutScalar,scriptSetReal32CB),
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -313,7 +313,7 @@ void svShipViewRender(featom* atom, regionhandle region)
     sdword width, height;
     sdword x, y;
     keyindex key;
-    char* keystring;
+    const char* keystring;
     bool resetRender = FALSE;
     char    temp[100];
 
@@ -323,7 +323,7 @@ void svShipViewRender(featom* atom, regionhandle region)
     static real32 time_user_rotated_view      = 0.0f;
            real32 real_time_angle             = 0.0f;
     static real32 user_real_angle_offset      = 0.0f;
-    
+
     rect = &region->rect;
     viewRect.x0 = 0;
     viewRect.y0 = 0;
@@ -423,7 +423,7 @@ void svShipViewRender(featom* atom, regionhandle region)
             }
 
             svCamera.angle = real_time_angle + user_real_angle_offset;
-            
+
             // collapse pitch to default declination
             if (time_user_rotated_view > 0.0) {
                 if (universe.totaltimeelapsed > time_user_rotated_view + SV_PITCH_FLATTEN_SECS) {
@@ -434,7 +434,7 @@ void svShipViewRender(featom* atom, regionhandle region)
                     svCamera.declination = declination_user_rotated_to + (DEG_TO_RAD(svDeclination) - declination_user_rotated_to) * ((universe.totaltimeelapsed - time_user_rotated_view) / SV_PITCH_FLATTEN_SECS);
                 }
             }
-            
+
             if (svMouseInside) mouseCursorShow();
         }
     }

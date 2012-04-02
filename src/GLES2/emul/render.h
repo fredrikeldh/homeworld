@@ -26,23 +26,23 @@ namespace gles2
 			IUniformValue<bool, 1>(location), IUniform<bool, 1>::ICustomData()
 		{
 		}
-	
+
 		void Set(const bool* array)
 		{
 			Set(array[0]);
 		}
-		
+
 		void Set(const std::vector<bool>& array)
 		{
 			Set(array[0]);
 		}
-		
+
 		void Set(bool value)
 		{
 			glUniform1i(location, value ? 1 : 0);
 		}
 	};
-	
+
 	template<>
 	class UniformValue<GLfloat, 1> : public IUniformValue<GLfloat, 1>, public IUniform<GLfloat, 1>::ICustomData
 	{
@@ -52,23 +52,23 @@ namespace gles2
 			IUniformValue<GLfloat, 1>(location), IUniform<GLfloat, 1>::ICustomData()
 		{
 		}
-	
+
 		void Set(const GLfloat* array)
 		{
 			Set(array[0]);
 		}
-		
+
 		void Set(const std::vector<GLfloat>& array)
 		{
 			Set(array[0]);
 		}
-		
+
 		void Set(GLfloat value)
 		{
 			glUniform1f(location, value);
 		}
 	};
-	
+
 	template<>
 	class UniformValue<GLfloat, 3> : public IUniformValue<GLfloat, 3>, public IUniform<GLfloat, 3>::ICustomData
 	{
@@ -77,18 +77,18 @@ namespace gles2
 			IUniformValue<GLfloat, 3>(location), IUniform<GLfloat, 3>::ICustomData()
 		{
 		}
-	
+
 		void Set(const GLfloat* array)
 		{
 			glUniform3fv(location, 3, array);
 		}
-		
+
 		void Set(const std::vector<GLfloat>& array)
 		{
 			glUniform3f(location, array[0], array[1], array[2]);
 		}
 	};
-	
+
 	template<>
 	class UniformValue<GLfloat, 4> : public IUniformValue<GLfloat, 4>, public IUniform<GLfloat, 4>::ICustomData
 	{
@@ -97,12 +97,12 @@ namespace gles2
 			IUniformValue<GLfloat, 4>(location), IUniform<GLfloat, 4>::ICustomData()
 		{
 		}
-	
+
 		void Set(const GLfloat* array)
 		{
 			glUniform4fv(location, 4, array);
 		}
-		
+
 		void Set(const std::vector<GLfloat>& array)
 		{
 			glUniform4f(location, array[0], array[1], array[2], array[3]);
@@ -119,21 +119,21 @@ namespace gles2
 			std::string vertexShader;
 			std::string fragmentShader;
 		};
-		
+
 		std::vector<ProgramConfiguration> _configurations;
-		
+
 		std::vector<GLuint> _programs;
-		
+
 		GLuint _program;
-		
+
 		template<typename T, GLubyte NUMBER>
 		IUniformValue<T, NUMBER>& Get(IUniform<T, NUMBER>& uniform)
 		{
 			//TODO: find type safe way to do this
-		
+
 			// See whether we saved information earlier
 			UniformValue<T, NUMBER>* uniformInfo = (UniformValue<T, NUMBER>*)uniform.GetCustomData();
-			
+
 			if( !uniformInfo )
 			{
 				GLint location = glGetUniformLocation
@@ -141,24 +141,24 @@ namespace gles2
 					_program,
 					uniform.GetName().c_str()
 				);
-				
+
 				if( location == -1 )
-					throw -1;
-				
+					maPanic(-1, "IUniformValue");
+
 				uniformInfo = new UniformValue<T, NUMBER>(location);
 				uniform.SetCustomData
 				(
 					std::unique_ptr< typename IUniform<T, NUMBER >::ICustomData >(uniformInfo)
 				);
 			}
-			
+
 			return *uniformInfo;
 		}
-		
+
 	public:
 		RenderPipe();
 		virtual void Render();
-		
+
 		virtual IUniformValue<bool   , 1>& GetValue(IUniform<bool   , 1>& uniform);
 		virtual IUniformValue<GLfloat, 1>& GetValue(IUniform<GLfloat, 1>& uniform);
 		virtual IUniformValue<GLfloat, 3>& GetValue(IUniform<GLfloat, 3>& uniform);

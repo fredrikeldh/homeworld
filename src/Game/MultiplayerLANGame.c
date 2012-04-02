@@ -29,7 +29,7 @@
 #include "Randy.h"
 #include "ScenPick.h"
 #include "Scroller.h"
-#include "ServerStatus.h"
+#include "ThirdParty/Titan/ServerStatus.h"
 #include "StatScript.h"
 #include "StringSupport.h"
 #include "TimeoutTimer.h"
@@ -273,74 +273,74 @@ static wchar_t JustDeletedGameFromGameList[MAX_TITAN_GAME_NAME_LEN] = L"";
 
 
 // Shared between the internet screen and the lan screen
-void lgNameEntry                    (char *name, featom *atom);
-void lgBackToConnection             (char *name, featom *atom);
+void lgNameEntry                    (const char *name, featom *atom);
+void lgBackToConnection             (const char *name, featom *atom);
 
 // Callbacks for the LAN launch screen
-void lgLaunchLAN                    (char *name, featom *atom);
-void lgLanProtocalButton            (char *name, featom *atom);
+void lgLaunchLAN                    (const char *name, featom *atom);
+void lgLanProtocalButton            (const char *name, featom *atom);
 
 // Callbacks for the channel chatting screen.
-void lgChatTextEntry                (char *name, featom *atom);
-void lgCreateGame                   (char *name, featom *atom);
-void lgBackToLogin                  (char *name, featom *atom);
-void lgChangeColors                 (char *name, featom *atom);
-void lgChatWindowInit               (char *name, featom *atom);
-void lgUserNameWindowInit           (char *name, featom *atom);
+void lgChatTextEntry                (const char *name, featom *atom);
+void lgCreateGame                   (const char *name, featom *atom);
+void lgBackToLogin                  (const char *name, featom *atom);
+void lgChangeColors                 (const char *name, featom *atom);
+void lgChatWindowInit               (const char *name, featom *atom);
+void lgUserNameWindowInit           (const char *name, featom *atom);
 void lgCurrentChannelDraw           (featom *atom, regionhandle region);
 
 // Callbacks for the game entry screen.
-extern void mgGamePasswordEntry            (char *name, featom *atom);
-void lgBackFromPassword             (char *name, featom *atom);
-//void lgGoPassword                   (char *name, featom *atom);
+extern void mgGamePasswordEntry            (const char *name, featom *atom);
+void lgBackFromPassword             (const char *name, featom *atom);
+//void lgGoPassword                   (const char *name, featom *atom);
 
 // Callbacks for the Available Games screen.
-void lgSeeDetails                   (char *name, featom *atom);
-void lgJoinGame                     (char *name, featom *atom);
-void lgListOfGamesInit              (char *name, featom *atom);
+void lgSeeDetails                   (const char *name, featom *atom);
+void lgJoinGame                     (const char *name, featom *atom);
+void lgListOfGamesInit              (const char *name, featom *atom);
 //bool lgRefresh                        (udword num, void *data, struct BabyCallBack *baby);
 
 // Callbacks for the waiting for game screens.
-void lgGameChatWindowInit           (char *name, featom *atom);
-void lgGameUserNameWindowInit       (char *name, featom *atom);
-void lgViewDetails                  (char *name, featom *atom);
-void lgLeaveGame                    (char *name, featom *atom);
-void lgSetupGame                    (char *name, featom *atom);
-void lgStartGame                    (char *name, featom *atom);
-void lgGameChatTextEntry            (char *name, featom *atom);
+void lgGameChatWindowInit           (const char *name, featom *atom);
+void lgGameUserNameWindowInit       (const char *name, featom *atom);
+void lgViewDetails                  (const char *name, featom *atom);
+void lgLeaveGame                    (const char *name, featom *atom);
+void lgSetupGame                    (const char *name, featom *atom);
+void lgStartGame                    (const char *name, featom *atom);
+void lgGameChatTextEntry            (const char *name, featom *atom);
 void lgCurrentGameDraw              (featom *atom, regionhandle region);
 
 // Callbacks for the Basic Game Options game screen.
-void lgCreateGameNow                (char *name, featom *atom);
-void lgGameNameTextEntry            (char *name, featom *atom);
-void lgChooseScenario               (char *name, featom *atom);
+void lgCreateGameNow                (const char *name, featom *atom);
+void lgGameNameTextEntry            (const char *name, featom *atom);
+void lgChooseScenario               (const char *name, featom *atom);
 
 
 // Callbacks for buttons linking LAN and internet FE screens
-void lgAdvanced                     (char *name, featom *atom);
-void lgResource                     (char *name, featom *atom);
+void lgAdvanced                     (const char *name, featom *atom);
+void lgResource                     (const char *name, featom *atom);
 
 
 // Callbacks shared by all of the Game Options screens
-void lgBackFromOptions              (char *name, featom *atom);
-void lgBasicOptions                 (char *name, featom *atom);
+void lgBackFromOptions              (const char *name, featom *atom);
+void lgBasicOptions                 (const char *name, featom *atom);
 
 // Callbacks for the Player options screen.
-void lgSetColorsNow                 (char *name, featom *atom);
-void lgBackFromPlayerOptions        (char *name, featom *atom);
+void lgSetColorsNow                 (const char *name, featom *atom);
+void lgBackFromPlayerOptions        (const char *name, featom *atom);
 
 
 // Callbacks for the quit WON question screen.
-void lgYesQuitWON                   (char *name, featom *atom);
-void lgDontQuitWON                  (char *name, featom *atom);
+void lgYesQuitWON                   (const char *name, featom *atom);
+void lgDontQuitWON                  (const char *name, featom *atom);
 
 // Callbacks from the message box screen.
-void lgMessageOk                    (char *name, featom *atom);
+void lgMessageOk                    (const char *name, featom *atom);
 extern void mgDrawMessageBox               (featom *atom, regionhandle region);
 
 void lgDrawProtocal                 (featom *atom, regionhandle region);
 
-void mgStartingFleet(char *name, featom *atom);
+void mgStartingFleet(const char *name, featom *atom);
 
 void lgSendChatMessage(char *towho,char *message);
 
@@ -730,7 +730,7 @@ void lgPrepareLanLoginScreen(void)
     }
 }
 
-void lgLanProtocalButton(char *name, featom *atom)
+void lgLanProtocalButton(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -742,7 +742,7 @@ void lgLanProtocalButton(char *name, featom *atom)
     }
 }
 
-void lgNameEntry(char *name, featom *atom)
+void lgNameEntry(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -765,7 +765,7 @@ void lgNameEntry(char *name, featom *atom)
     }
 }
 
-void lgLaunchLAN(char *name, featom *atom)
+void lgLaunchLAN(const char *name, featom *atom)
 {
     LANGame = TRUE;
     IPGame = LanProtocalButton; // DO NOT USE TRUE for CPP reasons
@@ -813,7 +813,7 @@ void lgLaunchLAN(char *name, featom *atom)
     Callbacks for the channel chatting screen.:
 =============================================================================*/
 
-void lgChatTextEntry(char*name,featom *atom)
+void lgChatTextEntry(const char *name, featom *atom)
 {
     chatlist *newchat = NULL;
     userlist *user;
@@ -910,7 +910,7 @@ void lgChatTextEntry(char*name,featom *atom)
     }
 }
 
-void lgCreateGame(char *name,featom *atom)
+void lgCreateGame(const char *name, featom *atom)
 {
     lgCreatingNetworkGame = TRUE;
 
@@ -920,12 +920,12 @@ void lgCreateGame(char *name,featom *atom)
     mgShowScreen(MGS_Basic_Options,TRUE);
 }
 
-void lgBackToLogin(char *name,featom *atom)
+void lgBackToLogin(const char *name, featom *atom)
 {
     mgShowScreen(LGS_Quit_WON, FALSE);
 }
 
-void lgChangeColors(char *name, featom *atom)
+void lgChangeColors(const char *name, featom *atom)
 {
     // save the colors so if they change their minds it is backed up
     BaseColorSave   = utyBaseColor;
@@ -994,7 +994,7 @@ void lgDrawChatWindowItem(rectangle *rect, listitemhandle data)
     fontMakeCurrent(oldfont);
 }
 
-void lgChatWindowInit(char *name, featom *atom)
+void lgChatWindowInit(const char *name, featom *atom)
 {
     fonthandle oldfont;
     Node      *walk;
@@ -1055,7 +1055,7 @@ void lgDrawUserNameWindowItem(rectangle *rect, listitemhandle data)
     fontMakeCurrent(oldfont);
 }
 
-void lgUserNameWindowInit(char *name, featom *atom)
+void lgUserNameWindowInit(const char *name, featom *atom)
 {
     fonthandle oldfont;
     Node      *walk;
@@ -1121,7 +1121,7 @@ void lgCurrentChannelDraw(featom *atom, regionhandle region)
 
 
 
-void lgSeeDetails(char*name,featom*atom)
+void lgSeeDetails(const char *name, featom *atom)
 {
 #ifndef _MACOSX_FIX_LAN
     dbgAssertOrIgnore(LANGame);
@@ -1151,7 +1151,7 @@ void lgRequestJoinGame(tpscenario *game)
     listDeleteAll(&listofplayersold);
 }
 
-void lgJoinGame(char*name,featom*atom)
+void lgJoinGame(const char *name, featom *atom)
 {
     lggamelist *gameinfo;
 
@@ -1473,7 +1473,7 @@ void lgListOfGamesItemDraw(rectangle *rect, listitemhandle data)
 }
 
 // initilize the list of games window structure to needed settings
-void lgListOfGamesInit(char *name, featom *atom)
+void lgListOfGamesInit(const char *name, featom *atom)
 {
     fonthandle      oldfont;
     sdword          titleheight, itemheight;
@@ -1544,7 +1544,7 @@ void lgGameChatItemDraw(rectangle *rect, listitemhandle data)
     sdword  x = rect->x0 + LG_HorzSpacing,
             y = rect->y0 + LG_VertSpacing / 2;
     color   c = lgNormalChatColor;
-    
+
     fonthandle  oldfont  = fontMakeCurrent(lgGameChatFont);
     chatlist   *chatinfo = (chatlist *)data->data;
 
@@ -1594,7 +1594,7 @@ void lgGameChatItemDraw(rectangle *rect, listitemhandle data)
     fontMakeCurrent(oldfont);
 }
 
-void lgGameChatWindowInit(char *name, featom *atom)
+void lgGameChatWindowInit(const char *name, featom *atom)
 {
     fonthandle      oldfont;
     Node           *walk;
@@ -1651,7 +1651,7 @@ void lgGameUserNameItemDraw(rectangle *rect, listitemhandle data)
     fontMakeCurrent(oldfont);
 }
 
-void lgGameUserNameWindowInit(char *name, featom *atom)
+void lgGameUserNameWindowInit(const char *name, featom *atom)
 {
     fonthandle      oldfont;
     Node           *walk;
@@ -1694,12 +1694,12 @@ void lgGameUserNameWindowInit(char *name, featom *atom)
     }
 }
 
-void lgViewDetails(char*name,featom *atom)
+void lgViewDetails(const char *name, featom *atom)
 {
     mgShowScreen(MGS_Basic_Options_View,TRUE);
 }
 
-void lgLeaveGame(char*name,featom*atom)
+void lgLeaveGame(const char *name, featom *atom)
 {
     if (GameCreator)
     {
@@ -1721,7 +1721,7 @@ void lgLeaveGame(char*name,featom*atom)
     }
 }
 
-void lgSetupGame(char*name,featom*atom)
+void lgSetupGame(const char *name, featom *atom)
 {
     BackupGameCreated = tpGameCreated;
     spCurrentSelectedBack = spCurrentSelected;
@@ -1729,7 +1729,7 @@ void lgSetupGame(char*name,featom*atom)
     mgShowScreen(MGS_Basic_Options_Change, TRUE);
 }
 
-void lgStartGame(char*name,featom*atom)
+void lgStartGame(const char *name, featom *atom)
 {
 #ifndef _MACOSX_FIX_LAN
     sdword i;
@@ -1783,7 +1783,7 @@ void lgStartGame(char*name,featom*atom)
 #endif // _MACOSX_FIX_LAN
 }
 
-void lgGameChatTextEntry(char *name, featom *atom)
+void lgGameChatTextEntry(const char *name, featom *atom)
 {
     chatlist *newchat;
     gameplayerinfo *user;
@@ -1908,7 +1908,7 @@ void lgDirtyNumPlayerRegions()
     }
 }
 
-void lgCreateGameNow(char *name, featom *atom)
+void lgCreateGameNow(const char *name, featom *atom)
 {
 #ifndef _MACOSX_FIX_LAN
     if (SeeingDetailsForGameName[0])
@@ -1984,7 +1984,7 @@ void lgCreateGameNow(char *name, featom *atom)
 #endif // _MACOSX_FIX_LAN
 }
 
-void lgGameNameTextEntry(char *name, featom *atom)
+void lgGameNameTextEntry(const char *name, featom *atom)
 {
     static char asciigamename[MAX_GAMENAME_LENGTH];
 
@@ -2010,7 +2010,7 @@ void lgGameNameTextEntry(char *name, featom *atom)
     }
 }
 
-void lgChooseScenario(char *name, featom *atom)
+void lgChooseScenario(const char *name, featom *atom)
 {
     spScenarioPick(NULL);
 }
@@ -2020,7 +2020,7 @@ void lgChooseScenario(char *name, featom *atom)
 =============================================================================*/
 
 
-void lgBackFromOptions(char *name, featom *atom)
+void lgBackFromOptions(const char *name, featom *atom)
 {
     if (WaitingForGame)
     {
@@ -2042,18 +2042,18 @@ void lgBackFromOptions(char *name, featom *atom)
     }
 }
 
-void lgBasicOptions(char *name,featom *atom)
+void lgBasicOptions(const char *name, featom *atom)
 {
     mgShowScreen(MGS_Basic_Options,TRUE);
 }
 
 
-void lgAdvanced(char *name,featom *atom)
+void lgAdvanced(const char *name, featom *atom)
 {
     mgShowScreen(MGS_Advanced_Options,TRUE);
 }
 
-void lgResource(char *name,featom *atom)
+void lgResource(const char *name, featom *atom)
 {
     mgShowScreen(MGS_Resource_Options,TRUE);
 }
@@ -2063,7 +2063,7 @@ void lgResource(char *name,featom *atom)
     Callbacks for the Player options screen:
 =============================================================================*/
 
-void lgSetColorsNow(char *name, featom *atom)
+void lgSetColorsNow(const char *name, featom *atom)
 {
     cpResetRegions();
 
@@ -2086,7 +2086,7 @@ void lgSetColorsNow(char *name, featom *atom)
     mgShowScreen(lastScreen, TRUE);
 }
 
-void lgBackFromPlayerOptions(char *name, featom *atom)
+void lgBackFromPlayerOptions(const char *name, featom *atom)
 {
     dbgAssertOrIgnore(lastScreen != -1);
 
@@ -2103,12 +2103,12 @@ void lgBackFromPlayerOptions(char *name, featom *atom)
     Callbacks for the game entry screen.:
 =============================================================================*/
 
-void lgBackFromPassword(char *name, featom *atom)
+void lgBackFromPassword(const char *name, featom *atom)
 {
     mgShowScreen(LGS_Channel_Chat,TRUE);
 }
 
-void lgGoPassword(char *name, featom *atom)
+void lgGoPassword(const char *name, featom *atom)
 {
 #ifndef _MACOSX_FIX_LAN
     static wchar_t widepasswordentryboxtext[MAX_PASSWORD_LENGTH];
@@ -2134,7 +2134,7 @@ void lgGoPassword(char *name, featom *atom)
     callbacks from the Quit WON question box.:
 =============================================================================*/
 
-void lgBackToConnection(char *name, featom *atom)
+void lgBackToConnection(const char *name, featom *atom)
 {
     // closedown the titan engine
     titanShutdown();
@@ -2147,7 +2147,7 @@ void lgBackToConnection(char *name, featom *atom)
     mgStartMultiPlayerGameScreens(ghMainRegion,0,0,0, FALSE);       // fix properly later
 }
 
-void lgYesQuitWON(char *name, featom *atom)
+void lgYesQuitWON(const char *name, featom *atom)
 {
     bool waitforshutdown = FALSE;
     //LoggedIn=FALSE;
@@ -2184,7 +2184,7 @@ void lgYesQuitWON(char *name, featom *atom)
     mgStartMultiPlayerGameScreens(ghMainRegion,0,0,0, FALSE);       // fix properly later
 }
 
-void lgDontQuitWON(char *name, featom *atom)
+void lgDontQuitWON(const char *name, featom *atom)
 {
     mgShowScreen(-1, LG_JustOneDisappear);
 }
@@ -2193,7 +2193,7 @@ void lgDontQuitWON(char *name, featom *atom)
     Callbacks from the message box screen.:
 =============================================================================*/
 
-void lgMessageOk(char *name, featom *atom)
+void lgMessageOk(const char *name, featom *atom)
 {
     mgShowScreen(-1, LG_JustOneDisappear);
 }

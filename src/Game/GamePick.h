@@ -64,16 +64,16 @@ void gpShutdown(void);
 void gpReset(void);
 
 //run the game picker
-void gpGamePick(char *dest);
+void gpGamePick(const char *dest);
 
 //close the picker, either with 'back' or with 'OK'
-void gpDonePicking(char *name, featom *atom);
-void gpBackPicking(char *name, featom *atom);
+void gpDonePicking(const char *name, featom *atom);
+void gpBackPicking(const char *name, featom *atom);
 
 bool gpQuickSave(void);
 bool gpQuickLoad(void);
 
-bool gpGetGameName(char *name, featom *atom, char *filename);
+bool gpGetGameName(const char *name, featom *atom, char *filename);
 
 sdword gpCountTrainingSavegames(void);
 

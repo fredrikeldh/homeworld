@@ -197,7 +197,7 @@ void primRectSolid2(rectangle *rect, color c)
     glVertex2f(primScreenToGLX(rect->x0), primScreenToGLY(rect->y1));
     glVertex2f(primScreenToGLX(rect->x1), primScreenToGLY(rect->y1));
     glVertex2f(primScreenToGLX(rect->x1), primScreenToGLY(rect->y0));
-    glEnd(); 
+    glEnd();
 }
 
 /*-----------------------------------------------------------------------------
@@ -221,7 +221,7 @@ void primRectTranslucent2(rectangle* rect, color c)
     glVertex2f(primScreenToGLX(rect->x1), primScreenToGLY(rect->y1));
     glVertex2f(primScreenToGLX(rect->x1), primScreenToGLY(rect->y0));
     glEnd();
-    
+
     if (!blendOn) glDisable(GL_BLEND);
 }
 
@@ -361,9 +361,9 @@ void primOvalArcOutline2(oval *o, real32 radStart, real32 radEnd, sdword thickne
 
     x = centreX + (real32)sin((double)radStart) * width;    //first vertex
     y = centreY + (real32)cos((double)radStart) * height;
- 
+
     glVertex2f(x, y);
-    
+
     segment++;
     angle = (real32)segment * (2.0f * PI / (real32)segments);
     angleInc = (2.0f * PI / (real32)segments);
@@ -374,14 +374,14 @@ void primOvalArcOutline2(oval *o, real32 radStart, real32 radEnd, sdword thickne
         y = centreY + (real32)cos((double)angle) * height;
 
         glVertex2f(x, y);
-        
+
         angle += angleInc;                                  //update angle
     }
     x = centreX + (real32)sin((double)radEnd) * width;
     y = centreY + (real32)cos((double)radEnd) * height;
 
     glVertex2f(x, y);                                       //draw last vertex
-    
+
     glEnd();
     glLineWidth(linewidth);
 }
@@ -416,7 +416,7 @@ void primGLCircleOutline2(real32 x, real32 y, real32 radius, sdword nSegments, c
     Outputs     : checks error messages and prints out any errors found
     Return      :
 ----------------------------------------------------------------------------*/
-void primErrorMessagePrintFunction(char *file, sdword line)
+void primErrorMessagePrintFunction(const char *file, sdword line)
 {
     GLenum errorEnum;
     //there can be multiple errors simultaneously.  detect them all
@@ -1162,7 +1162,7 @@ sdword primGLToScreenScaleY(real32 y)
 {
 	return (sdword)(y * (real32)MAIN_WindowHeight / 2.0f);
 }
-
+#if 0	// very broken
 bool primPointInRectXY2(real32 r, real32 x, real32 y)
 {
 	return x >= r->x0
@@ -1170,3 +1170,4 @@ bool primPointInRectXY2(real32 r, real32 x, real32 y)
 			&& x < r->x1
 			&& y < r->y1;
 }
+#endif

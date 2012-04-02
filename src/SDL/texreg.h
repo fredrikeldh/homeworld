@@ -364,7 +364,7 @@ void trRGBTextureUpdate(udword handle, color *data, sdword width, sdword height)
 void trPalettedTextureMakeCurrent(udword handle, color *palette);
 void trRGBTextureMakeCurrent(udword handle);
 void trRGBTextureDelete(udword handle);
-lifheader *trLIFFileLoad(char *fileName, udword flags);
+lifheader *trLIFFileLoad(const char *fileName, udword flags);
 void trBufferColorRGB(color *dest, color *source, ubyte *teamEffect0, ubyte *teamEffect1, color teamColor0, color teamColor1, sdword size, udword flags, real32 effectScalar0, real32 effectScalar1);
 
 //misc utility functions
@@ -373,7 +373,7 @@ texreg *trStructureGet(trhandle handle);
 color *trImageScale(color *data, sdword width, sdword height, sdword newWidth, sdword newHeight, bool bFree);
 ubyte *trImageScaleIndexed(ubyte *data, sdword width, sdword height, sdword newWidth, sdword newHeight, bool bFree);
 void trSetAllPending(bool freeNoPal);
-void trTextureUsageList(char *fileName);
+void trTextureUsageList(const char *fileName);
 sdword trColorsEqual(trcolorinfo *info, sdword textureIndex);
 
 //no-palette palette functions

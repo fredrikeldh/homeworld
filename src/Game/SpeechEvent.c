@@ -204,7 +204,7 @@ MUSICHEADER *musicheader;
 sdword  levelTrack = -1;
 
 // player names should not exceed MAX_PERSONAL_NAME_LEN characters
-char *relicPlayerNames[MAX_RELIC_NAMES] = {
+const char *relicPlayerNames[MAX_RELIC_NAMES] = {
     "Rupract",
     "SpankMaster3000",
     "SM3K",
@@ -289,7 +289,7 @@ scriptStructEntry streamEQScriptTable[] =
     { "eq5", scriptSetReal32CB,   &streamEQ[0].eq[5], &streamEQ[0] },
     { "eq6", scriptSetReal32CB,   &streamEQ[0].eq[6], &streamEQ[0] },
     { "eq7", scriptSetReal32CB,   &streamEQ[0].eq[7], &streamEQ[0] },
-    
+
     END_SCRIPT_STRUCT_ENTRY
 };
 
@@ -306,7 +306,7 @@ scriptStructEntry streamDelaySciptTable[] =
     { "eq5",      scriptSetReal32CB, &streamdelay[0].eq[5],    &streamdelay[0] },
     { "eq6",      scriptSetReal32CB, &streamdelay[0].eq[6],    &streamdelay[0] },
     { "eq7",      scriptSetReal32CB, &streamdelay[0].eq[7],    &streamdelay[0] },
-    
+
     END_SCRIPT_STRUCT_ENTRY
 };
 
@@ -329,7 +329,7 @@ scriptStructEntry streamEffectScriptTable[] =
     { "ToneLevel",     scriptSetReal32CB, &cleaneffect[0].fToneLev,       &cleaneffect[0] },
     { "LimitLevel",    scriptSetReal32CB, &cleaneffect[0].fLimitLev,      &cleaneffect[0] },
     { "PitchShift",    scriptSetReal32CB, &cleaneffect[0].fPitchShift,    &cleaneffect[0] },
-    
+
     END_SCRIPT_STRUCT_ENTRY
 };
 
@@ -430,7 +430,7 @@ sdword speechEventInit(void)
     sdword streamersize;
     char loadfile[100];
     sdword i, j;
-    
+
 #if FIX_ENDIAN
     sdword p, z;
 #endif
@@ -467,7 +467,7 @@ sdword speechEventInit(void)
 		SentenceLUT->lookup[z] = FIX_ENDIAN_INT_16( SentenceLUT->lookup[z] );
 	}
 #endif // FIX_ENDIAN
-	
+
     strcpy(loadfile, SOUNDFXDIR);
 #ifdef HW_GAME_DEMO
     strcat(loadfile, "DLphrase.lut");

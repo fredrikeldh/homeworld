@@ -528,7 +528,7 @@ void mrShutdown(void)
 /*-----------------------------------------------------------------------------
     Callback functions for right-click menus:
 -----------------------------------------------------------------------------*/
-void mrDockingOrders(char *string, featom *atom)
+void mrDockingOrders(const char *string, featom *atom)
 {
     if ((tutorial==TUTORIAL_ONLY) && !tutEnable.bDock)
     {
@@ -558,7 +558,7 @@ void mrDockingOrders(char *string, featom *atom)
 }
 
 
-void mrDeltaFormation(char *string, featom *atom)
+void mrDeltaFormation(const char *string, featom *atom)
 {
     if ((tutorial==TUTORIAL_ONLY) && !tutEnable.bContextFormDelta)
     {
@@ -569,7 +569,7 @@ void mrDeltaFormation(char *string, featom *atom)
 }
 
 
-void mrBroadFormation(char *string, featom *atom)
+void mrBroadFormation(const char *string, featom *atom)
 {
     if ((playPackets) || (universePause && !opPauseOrders) || (mrDisabled))
     {
@@ -585,7 +585,7 @@ void mrBroadFormation(char *string, featom *atom)
 }
 
 
-void mrXFormation(char *string, featom *atom)
+void mrXFormation(const char *string, featom *atom)
 {
     if ((playPackets) || (universePause && !opPauseOrders) || (mrDisabled))
     {
@@ -601,7 +601,7 @@ void mrXFormation(char *string, featom *atom)
 }
 
 
-void mrClawFormation(char *string, featom *atom)
+void mrClawFormation(const char *string, featom *atom)
 {
     if ((playPackets) || (universePause && !opPauseOrders) || (mrDisabled))
     {
@@ -617,7 +617,7 @@ void mrClawFormation(char *string, featom *atom)
 }
 
 
-void mrWallFormation(char *string, featom *atom)
+void mrWallFormation(const char *string, featom *atom)
 {
     if ((playPackets) || (universePause && !opPauseOrders) || (mrDisabled))
     {
@@ -633,7 +633,7 @@ void mrWallFormation(char *string, featom *atom)
 }
 
 
-void mrSphereFormation(char *string, featom *atom)
+void mrSphereFormation(const char *string, featom *atom)
 {
     if ((playPackets) || (universePause && !opPauseOrders) || (mrDisabled))
     {
@@ -649,7 +649,7 @@ void mrSphereFormation(char *string, featom *atom)
 }
 
 
-void mrCustomFormation(char *string, featom *atom)
+void mrCustomFormation(const char *string, featom *atom)
 {
     if ((playPackets) || (universePause && !opPauseOrders) || (mrDisabled))
     {
@@ -665,7 +665,7 @@ void mrCustomFormation(char *string, featom *atom)
 }
 
 
-void mrHarvestResources(char *string, featom *atom)
+void mrHarvestResources(const char *string, featom *atom)
 {
     MaxSelection tempSelection;
     Resource *nearestresource;
@@ -703,7 +703,7 @@ void mrHarvestResources(char *string, featom *atom)
 }
 
 
-void mrBuildShips(char *string, featom *atom)
+void mrBuildShips(const char *string, featom *atom)
 {
     if ((playPackets) || (universePause && !opPauseOrders) || (mrDisabled))
 
@@ -733,7 +733,7 @@ void mrBuildShips(char *string, featom *atom)
 }
 
 
-void mrTradeStuff(char *string, featom *atom)
+void mrTradeStuff(const char *string, featom *atom)
 {
     tmTradeBegin(ghMainRegion, 0, 0, 0);
 
@@ -743,7 +743,7 @@ void mrTradeStuff(char *string, featom *atom)
 }
 
 //nn: this function isn't used when your in the sensors manager (smDispatch is used there).
-void mrMoveShips(char *string, featom *atom)
+void mrMoveShips(const char *string, featom *atom)
 {
     vector dist;
 
@@ -800,13 +800,13 @@ void mrMoveShips(char *string, featom *atom)
 }
 
 
-void mrInfo(char *string, featom *atom)
+void mrInfo(const char *string, featom *atom)
 {
     dbgMessagef("Info - stubbed out.");
 }
 
 
-void mrCancel(char *string, featom *atom)
+void mrCancel(const char *string, featom *atom)
 {
     if ((playPackets) || (universePause && !opPauseOrders) || (mrDisabled))
     {
@@ -829,7 +829,7 @@ void mrCancel(char *string, featom *atom)
 }
 
 
-void mrScuttle(char *string, featom *atom)
+void mrScuttle(const char *string, featom *atom)
 {
     static real32 confirmTime=-7.0f;    //initial value
 
@@ -896,7 +896,7 @@ void mrScuttle(char *string, featom *atom)
 }
 
 
-void mrRetire(char *string, featom *atom)
+void mrRetire(const char *string, featom *atom)
 {
     if ((playPackets) || (universePause) || (mrDisabled))
     {
@@ -945,9 +945,9 @@ void mrUpdateHyperspaceStatus(bool goForLaunch)
 }
 
 
-void mrHyperspace(char *string, featom *atom)
+extern bool uicButtonReleased;
+void mrHyperspace(const char *string, featom *atom)
 {
-    extern bool uicButtonReleased;
     if (FEFIRSTCALL(atom))
     {
         //...
@@ -966,7 +966,7 @@ void mrHyperspace(char *string, featom *atom)
 }
 
 
-void mrLaunch(char *string, featom *atom)
+void mrLaunch(const char *string, featom *atom)
 {
     if ((playPackets) || (universePause && !opPauseOrders) || (mrDisabled))
     {
@@ -991,7 +991,7 @@ void mrLaunch(char *string, featom *atom)
 
     dbgMessagef("Launch Ships.");
 }
-void mrResearch(char *string, featom *atom)
+void mrResearch(const char *string, featom *atom)
 {
     if ((playPackets) || (universePause && !opPauseOrders) || (mrDisabled))
     {
@@ -1011,7 +1011,7 @@ void mrResearch(char *string, featom *atom)
     dbgMessage("Research.");
 #endif
 }
-void mrEvasiveTactics(char *string, featom *atom)
+void mrEvasiveTactics(const char *string, featom *atom)
 {
     if ((playPackets) || (universePause && !opPauseOrders) || (mrDisabled))
     {
@@ -1031,7 +1031,7 @@ void mrEvasiveTactics(char *string, featom *atom)
 
     dbgMessagef("Evasive Tactics - stubbed out.");
 }
-void mrNeutralTactics(char *string, featom *atom)
+void mrNeutralTactics(const char *string, featom *atom)
 {
     if ((playPackets) || (universePause && !opPauseOrders) || (mrDisabled))
     {
@@ -1051,7 +1051,7 @@ void mrNeutralTactics(char *string, featom *atom)
 
     dbgMessagef("Neutral Tactics - stubbed out.");
 }
-void mrAgressiveTactics(char *string, featom *atom)
+void mrAgressiveTactics(const char *string, featom *atom)
 {
     if ((playPackets) || (universePause && !opPauseOrders) || (mrDisabled))
     {
@@ -1072,7 +1072,7 @@ void mrAgressiveTactics(char *string, featom *atom)
     dbgMessagef("Agressive Tactics - stubbed out.");
 }
 
-void mrFormAlliance(char *string, featom *atom)
+void mrFormAlliance(const char *string, featom *atom)
 {
     if (playerClickedOn!=-1)
     {
@@ -1080,7 +1080,7 @@ void mrFormAlliance(char *string, featom *atom)
     }
 }
 
-void mrBreakAlliance(char *string, featom *atom)
+void mrBreakAlliance(const char *string, featom *atom)
 {
     if (playerClickedOn!=-1)
     {
@@ -1088,7 +1088,7 @@ void mrBreakAlliance(char *string, featom *atom)
     }
 }
 
-void mrTransferRUS(char *string, featom *atom)
+void mrTransferRUS(const char *string, featom *atom)
 {
     if (playerClickedOn!=-1)
     {
@@ -1601,14 +1601,14 @@ void mrKeyPress(sdword ID)
 // handler code unless we explicitly skip that lookup. Of course having checked for it
 // here we could also put the handler code here too but for consistency that's been left
 // in the switch().
-#ifdef _MACOSX                  
+#ifdef _MACOSX
     if (ID != QKEY)
 #endif
     {
         // Drew's keybinding
         ID = (sdword)kbCheckBindings(ID);
     }
-    
+
     if (ID == CAPSLOCKKEY)
     {
         goto docapslock;        // TO always on
@@ -1673,7 +1673,7 @@ void mrKeyPress(sdword ID)
         case EIGHTKEY:
         case NINEKEY:
             dbgAssertOrIgnore((ID - ZEROKEY) < COMMAND_MAX_SHIPS);
-#if NIS_PRINT_INFO
+#ifdef NIS_PRINT_INFO
             if (keyIsHit(NKEY))
             {                                               //n-#: play an NIS or NISlet
                 if (ID == ZEROKEY)
@@ -1702,7 +1702,7 @@ void mrKeyPress(sdword ID)
 #endif
             if (keyIsHit(CONTROLKEY))
             {                                               //control-# assign a hot key group
-#if SP_NISLET_TEST
+#ifdef SP_NISLET_TEST
                 if (keyIsHit(ALTKEY) && singlePlayerGame)
                 {                                           //control-alt-#: attempt to test a NISlet
                     spNISletTestAttempt(ID - ZEROKEY - 1);
@@ -2120,7 +2120,7 @@ cancelfocus:
                 soundEvent(NULL, UI_Click);
             }
             break;
-			
+
         case MMOUSE_BUTTON:
         case MMOUSE_DOUBLE:
             if (keyIsHit(ALTKEY))
@@ -2130,7 +2130,7 @@ cancelfocus:
                 break;
             }
             // fallthrough to FKEY
-			
+
         case FKEY:
 			if (selSelected.numShips != 0)
             {
@@ -2758,7 +2758,7 @@ docapslock:
 struct
 {
     udword mask;
-    char *string;
+    const char *string;
 }
 mrActionString[] =
 {
@@ -2834,7 +2834,7 @@ udword mrMenuActionsByShipType[TOTAL_NUM_SHIPS] =
     /* JunkYardDawg           */  MAM_ExtSet
 };
 
-char *mrMenuItemByFormation[] =
+const char *mrMenuItemByFormation[] =
 {
     /* DELTA_FORMATION   */ "CSM_DeltaFormation",
     /* BROAD_FORMATION   */ "CSM_BroadFormation",
@@ -2845,7 +2845,7 @@ char *mrMenuItemByFormation[] =
     /* CUSTOM_FORMATION  */ "CSM_PicketFormation",
 };
 
-char *mrMenuItemByTactic[] =
+const char *mrMenuItemByTactic[] =
 {
     /* Evasive,     */ "CSM_Evasive",
     /* Neutral,     */ "CSM_Neutral",
@@ -2927,7 +2927,7 @@ void mrMenuDisplay(udword actionMask, TypeOfFormation currentFormation, udword t
 #define NUMBER_GAPS         12
     fescreen *newScreen, *staticScreen;
     sdword index, j;
-    char *name;
+    const char *name;
     sdword nGaps = 0;
     struct
     {
@@ -4019,7 +4019,7 @@ udword mrRegionProcess(regionhandle reg, sdword ID, udword event, udword data)
                                 {                           //band-selecting no ships disabled if tutorial's cancel select disabled
                                     selRectSelect(&(universe.mainCameraCommand.actualcamera),
                                                   &mrSelectionRect);
-                                    if ((selSelected.numShips > 0) && (!playPackets) && (!universePause && opPauseOrders) )  
+                                    if ((selSelected.numShips > 0) && (!playPackets) && (!universePause && opPauseOrders) )
                                     {
                                         if (selShipInSelection(selSelected.ShipPtr, selSelected.numShips, universe.curPlayerPtr->PlayerMothership)
                                             && (universe.curPlayerPtr->PlayerMothership->shiptype == Mothership))
@@ -4052,7 +4052,7 @@ plainOldClickAction:
                         if (ship != NULL)
                         {                                       //if mouse over a ship
 #ifndef _MACOSX_FIX_MISC
-// Mac OS X: the [ALT] + [left mouse button] hack does not work 
+// Mac OS X: the [ALT] + [left mouse button] hack does not work
 // in the tutorial unless we ignore this check
                             if((!(tutorial==TUTORIAL_ONLY)) || tutEnable.bClickSelect)
 #endif
@@ -5897,7 +5897,7 @@ typedef void (*debugFunc)(void);    //callback function
 
 typedef struct debugStructX
 {
-    char *string;
+    const char *string;
     debugFunc callback;
     udword mask;
 }

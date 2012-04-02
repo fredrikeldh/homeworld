@@ -349,7 +349,7 @@ trhandle * meshTextureRegisterAllPlayers(char *fullName, void *meshReference)
     Outputs     : out - path to texture
     Return      : void
 ----------------------------------------------------------------------------*/
-void meshTextureNameToPath(char *out, char *mesh, char *tex)
+void meshTextureNameToPath(char *out, const char *mesh, char *tex)
 {
     char *string;
     unsigned int i;
@@ -391,7 +391,7 @@ bool meshStringContainsPeriod(char* s)
     return FALSE;
 }
 
-void meshPagedName(char* outFileName, char* inFileName)
+void meshPagedName(char* outFileName, const char* inFileName)
 {
     char  fileName[1024];
     char* token;
@@ -428,7 +428,7 @@ void meshPagedName(char* outFileName, char* inFileName)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-bool meshPagedVersionExists(char* fileName)
+bool meshPagedVersionExists(const char* fileName)
 {
     char pagedName[1024];
 
@@ -612,7 +612,7 @@ void meshFixupPacoUV(meshdata* mesh, sdword on)
     Outputs     : Allocates and loads data returned in meshdata structure.
     Return      : Pointer to allocated and fixed-up meshdata structure.
 ----------------------------------------------------------------------------*/
-meshdata *meshLoad(char *inFileName)
+meshdata *meshLoad(const char *inFileName)
 {
     GeoFileHeader header;
     filehandle file;
@@ -639,7 +639,7 @@ meshdata *meshLoad(char *inFileName)
     bool newFormat;
 
     char  pagedName[1024];
-    char* fileName;
+    const char* fileName;
 
     allowPacking = mainAllowPacking;
 
@@ -918,7 +918,7 @@ meshdata *meshLoad(char *inFileName)
             handles = meshTextureRegisterAllPlayers(fullName, mesh);
             if (handles != NULL)
             {                                               //if anything was registered
-                mesh->localMaterial[index].texture = handles;
+                mesh->localMaterial[index].texture = (size_t)handles;
                 mesh->localMaterial[index].bTexturesRegistered = TRUE;
             }
         }
@@ -1036,7 +1036,7 @@ void meshRecolorize(meshdata *mesh)
                 handles = meshTextureRegisterAllPlayers(fullName, mesh);
                 if (handles != NULL)
                 {                                               //if anything was registered
-                    mesh->localMaterial[index].texture = handles;
+                    mesh->localMaterial[index].texture = (size_t)handles;
                     mesh->localMaterial[index].bTexturesRegistered = TRUE;
                 }
             }
@@ -1177,7 +1177,7 @@ void meshFree(meshdata *mesh)
                     {
                         if (((trhandle *)mesh->localMaterial[index].texture)[j] < TR_RegistrySize ) {
 #endif
-                
+
                     trTextureUnregister(((trhandle *)mesh->localMaterial[index].texture)[j]);
 
 #ifdef _X86_64
@@ -2070,7 +2070,7 @@ void meshMorphedObjectRender(
         meshLerpVerts(&vert0, &vertexList1[polygon->iV0], &vertexList2[polygon->iV0], frac);
         meshLerpVerts(&vert1, &vertexList1[polygon->iV1], &vertexList2[polygon->iV1], frac);
         meshLerpVerts(&vert2, &vertexList1[polygon->iV2], &vertexList2[polygon->iV2], frac);
-#if MESH_MORPH_DEBUG                                        //morphed mesh debug code
+#if MESH_MORPH_DEBUG && !defined(MAPIP)                                        //morphed mesh debug code
         if (meshMorphDebug)
         {
             //disable a bunch of stuff

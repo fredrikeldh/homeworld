@@ -303,7 +303,7 @@ void mgStartup(void);
 void mgShutdown(void);
 
 //sets the game options based on gameName
-void mgSetGameType(char *gameName);
+void mgSetGameType(const char *gameName);
 
 void mgScreensDisappear(void);
 

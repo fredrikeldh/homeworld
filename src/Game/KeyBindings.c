@@ -297,7 +297,7 @@ void kbListItemDraw(rectangle *rect, listitemhandle data)
     Parameters  : char *string, featom *atom
     Return      : void
 -----------------------------------------------------------------------------*/
-void kbListWindowCB(char *string, featom *atom)
+void kbListWindowCB(const char *string, featom *atom)
 {
     fonthandle oldfont;
     sdword     index;
@@ -426,7 +426,7 @@ void kbPoolListItemDraw(rectangle *rect, listitemhandle data)
     Parameters  : udword keypressed
     Return      : void
 -----------------------------------------------------------------------------*/
-void kbPoolListWindowCB(char *string, featom *atom)
+void kbPoolListWindowCB(const char *string, featom *atom)
 {
     fonthandle          oldfont;
     static sdword       index;
@@ -558,7 +558,7 @@ void kbSetNewKey(udword keypressed)
     Parameters  : char *string, featom *atom
     Return      : void
 -----------------------------------------------------------------------------*/
-void kbKeyResetToDefault(char *string, featom *atom)
+void kbKeyResetToDefault(const char *string, featom *atom)
 {
     sdword index;
 

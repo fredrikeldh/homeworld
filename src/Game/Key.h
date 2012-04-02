@@ -68,7 +68,7 @@
 #define LESSTHAN                SDLK_COMMA
 #define GREATERTHAN             SDLK_PERIOD
 #if !SDL_VERSION_ATLEAST(1,3,0)
-#define PLUSMINUS               SDLK_WORLD_0  // key under ESC and next to upper row numeric 1 
+#define PLUSMINUS               SDLK_WORLD_0  // key under ESC and next to upper row numeric 1
 #endif
 #define ZEROKEY                 '0'
 #define ONEKEY                  '1'

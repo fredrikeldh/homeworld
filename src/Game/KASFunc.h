@@ -24,7 +24,7 @@
 #define POPUPTEXT_BOX_WIDTH  200
 
 void kasfPopupTextDraw(void);
-void kasfPopupText(char *line);
+void kasfPopupText(const char *line);
 void kasfPopupTextClear(void);
 
 //
@@ -42,28 +42,28 @@ void kasfMissionFailed(void);
 
 void kasfFadeToWhite(void);
 
-void kasfVarCreate(char *name);
-void kasfVarValueSet(char *name, sdword value);
-void kasfVarCreateSet(char *name, sdword value);
-void kasfVarValueInc(char *name);
-void kasfVarValueDec(char *name);
-sdword kasfVarValueGet(char *name);
-void kasfVarDestroy(char *name);
+void kasfVarCreate(const char *name);
+void kasfVarValueSet(const char *name, sdword value);
+void kasfVarCreateSet(const char *name, sdword value);
+void kasfVarValueInc(const char *name);
+void kasfVarValueDec(const char *name);
+sdword kasfVarValueGet(const char *name);
+void kasfVarDestroy(const char *name);
 
-void kasfCommandMessage(char *message);
+void kasfCommandMessage(const char *message);
 
-void kasfTimerCreate(char *name);
-void kasfTimerSet(char *name, sdword duration);
-void kasfTimerStart(char *name);
-void kasfTimerCreateSetStart(char *name, sdword duration);
-void kasfTimerStop(char *name);
+void kasfTimerCreate(const char *name);
+void kasfTimerSet(const char *name, sdword duration);
+void kasfTimerStart(const char *name);
+void kasfTimerCreateSetStart(const char *name, sdword duration);
+void kasfTimerStop(const char *name);
 void kasfHarvest(void);
-sdword kasfTimerRemaining(char *name);
-sdword kasfTimerExpired(char *name);
-sdword kasfTimerExpiredDestroy(char *name);
-void kasfTimerDestroy(char *name);
+sdword kasfTimerRemaining(const char *name);
+sdword kasfTimerExpired(const char *name);
+sdword kasfTimerExpiredDestroy(const char *name);
+void kasfTimerDestroy(const char *name);
 
-sdword kasfMsgReceived(char *msg);
+sdword kasfMsgReceived(const char *msg);
 
 void kasfAttackMothership(void);
 void kasfAttack(GrowSelection *targets);
@@ -94,8 +94,8 @@ void kasfGuardShips(GrowSelection *ships);
 void kasfPatrolPath(Path *path);
 void kasfPatrolActive(void);
 
-void kasfLog(char *string);
-void kasfLogInteger(char *string, sdword integer);
+void kasfLog(const char *string);
+void kasfLogInteger(const char *string, sdword integer);
 
 sdword kasfTeamHealthAverage(void);
 sdword kasfTeamHealthLowest(void);
@@ -125,10 +125,10 @@ sdword kasfFindShipsInside(Volume *volume, GrowSelection *ships);
 sdword kasfFindEnemiesInside(Volume *volume, GrowSelection *ships, sdword neighborRadius);
 sdword kasfFindEnemiesNearby(GrowSelection *ships, sdword radius);
 sdword kasfFindEnemiesNearTeam(GrowSelection *ships, sdword radius);
-sdword kasfFindEnemyShipsOfType(GrowSelection *ships, char *shipType);
-sdword kasfFindFriendlyShipsOfType(GrowSelection *ships, char *shipType);
-sdword kasfFindEnemyShipsOfClass(GrowSelection *ships, char *shipClass);
-sdword kasfFindFriendlyShipsOfClass(GrowSelection *ships, char *shipClass);
+sdword kasfFindEnemyShipsOfType(GrowSelection *ships, const char *shipType);
+sdword kasfFindFriendlyShipsOfType(GrowSelection *ships, const char *shipType);
+sdword kasfFindEnemyShipsOfClass(GrowSelection *ships, const char *shipClass);
+sdword kasfFindFriendlyShipsOfClass(GrowSelection *ships, const char *shipClass);
 sdword kasfFindShipsNearPoint(GrowSelection *ships, hvector *location, sdword radius);
 
 void kasfTeamSkillSet(sdword skillLevel);
@@ -150,7 +150,7 @@ sdword kasfGateShipsOutNearest(GrowSelection *ships);
 void kasfMissionSkillSet(sdword skillLevel);
 sdword kasfMissionSkillGet(void);
 
-void kasfRequestShips(char *shipType, sdword numShips);
+void kasfRequestShips(const char *shipType, sdword numShips);
 void kasfRequestShipsOriginal(sdword percentOriginal);
 
 void kasfReinforce(struct AITeam *team);
@@ -185,7 +185,7 @@ sdword kasfFindDistance(hvector *location1, hvector *location2);
 sdword kasfUnderAttack(GrowSelection *attackers);
 sdword kasfUnderAttackElsewhere(struct AITeam *otherTeam, GrowSelection *attackers);
 
-sdword kasfShipsCountType(GrowSelection *ships, char *shipType);
+sdword kasfShipsCountType(GrowSelection *ships, const char *shipType);
 
 void kasfDock(struct AITeam *withTeam);
 void kasfDockSupport();
@@ -201,8 +201,8 @@ sdword kasfTeamDocking(void);
 sdword kasfTeamDockedReadyForLaunch(void);
 sdword kasfTeamFinishedLaunching(void);
 
-void kasfMsgSend(struct AITeam *team, char *msg);
-void kasfMsgSendAll(char *msg);
+void kasfMsgSend(struct AITeam *team, const char *msg);
+void kasfMsgSendAll(const char *msg);
 
 sdword kasfRUsEnemyCollected(void);
 
@@ -221,8 +221,8 @@ void kasfTeamSetPercentFueled(sdword percentFueled);
 
 sdword kasfShipsSelectEnemy(GrowSelection *newShips, GrowSelection *originalShips);
 sdword kasfShipsSelectFriendly(GrowSelection *newShips, GrowSelection *originalShips);
-sdword kasfShipsSelectClass(GrowSelection *newShips, GrowSelection *originalShips, char *shipClass);
-sdword kasfShipsSelectType(GrowSelection *newShips, GrowSelection *originalShips, char *shipType);
+sdword kasfShipsSelectClass(GrowSelection *newShips, GrowSelection *originalShips, const char *shipClass);
+sdword kasfShipsSelectType(GrowSelection *newShips, GrowSelection *originalShips, const char *shipType);
 sdword kasfShipsSelectDamaged(GrowSelection *newShips, GrowSelection *originalShips, sdword maxHealthPercent);
 sdword kasfShipsSelectMoving(GrowSelection *newShips, GrowSelection *originalShips);
 sdword kasfShipsSelectCapital(GrowSelection *newShips, GrowSelection *originalShips);
@@ -247,10 +247,10 @@ sdword kasfShipsRemove(GrowSelection *shipsA, GrowSelection *shipsB);
 void kasfShipsSetNonRetaliation(GrowSelection *ships);
 void kasfShipsSetRetaliation(GrowSelection *ships);
 
-void kasfPingAddSingleShip(GrowSelection *ships, char *label);
-void kasfPingAddShips(GrowSelection *ships, char *label);
-void kasfPingAddPoint(hvector *point, char *label);
-void kasfPingRemove(char *label);
+void kasfPingAddSingleShip(GrowSelection *ships, const char *label);
+void kasfPingAddShips(GrowSelection *ships, const char *label);
+void kasfPingAddPoint(hvector *point, const char *label);
+void kasfPingRemove(const char *label);
 
 void kasfBuildControl(sdword on);
 void kasfBuildingTeam(struct AITeam *builder);
@@ -260,16 +260,16 @@ void kasfStop(void);
 void kasfKamikaze(GrowSelection *targets);
 void kasfKamikazeEveryone(GrowSelection *targets);
 
-void kasfPopup(char *text);
-void kasfPopupInteger(char *text, sdword integer);
+void kasfPopup(const char *text);
+void kasfPopupInteger(const char *text, sdword integer);
 
-void kasfObjectiveCreate(char *label, char *briefText, char *fullText);
-void kasfObjectiveCreateSecondary(char *label, char* briefText, char* fullText);
-void kasfObjectiveSet(char *label, sdword status);
+void kasfObjectiveCreate(const char *label, const char *briefText, const char *fullText);
+void kasfObjectiveCreateSecondary(const char *label, const char * briefText, const char * fullText);
+void kasfObjectiveSet(const char *label, sdword status);
 //void kasfObjectivePopupAll(void);
-sdword kasfObjectiveGet(char *label);
+sdword kasfObjectiveGet(const char *label);
 sdword kasfObjectiveGetAll(void);
-void kasfObjectiveDestroy(char *label);
+void kasfObjectiveDestroy(const char *label);
 void kasfObjectiveDestroyAll(void);
 
 void kasfSpecialToggle(void);
@@ -279,42 +279,42 @@ void kasfShipsDamage(GrowSelection *ships, sdword points);
 void kasfForceTaskbar(void);
 
 // Tutorial helper functions for kas ------------
-void kasfBuilderRestrictShipTypes(char *shipTypes);
-void kasfBuilderUnrestrictShipTypes(char *shipTypes);
+void kasfBuilderRestrictShipTypes(const char *shipTypes);
+void kasfBuilderUnrestrictShipTypes(const char *shipTypes);
 void kasfBuilderRestrictAll(void);
 void kasfBuilderRestrictNone(void);
 void kasfBuilderCloseIfOpen(void);
-void kasfForceBuildShipType(char *shipType);
+void kasfForceBuildShipType(const char *shipType);
 
 sdword kasfCameraGetAngleDeg(void);
 sdword kasfCameraGetDeclinationDeg(void);
 sdword kasfCameraGetDistance(void);
 
 sdword kasfSelectNumSelected(void);
-sdword kasfSelectIsSelectionShipType(sdword Index, char *shipType);
-sdword kasfSelectContainsShipTypes(char *shipTypes);
+sdword kasfSelectIsSelectionShipType(sdword Index, const char *shipType);
+sdword kasfSelectContainsShipTypes(const char *shipTypes);
 sdword kasfSelectedShipsInFormation(sdword formation);
 sdword kasfShipsInFormation(GrowSelection *ships, sdword formation);
 
-void kasfTutSetPointerTargetXY(char *name, sdword x, sdword y);
-void kasfTutSetPointerTargetXYRight(char *name, sdword x, sdword y);
-void kasfTutSetPointerTargetXYBottomRight(char *name, sdword x, sdword y);
-void kasfTutSetPointerTargetXYTaskbar(char *name, sdword x, sdword y);
-void kasfTutSetPointerTargetXYFE(char *name, sdword x, sdword y);
-void kasfTutSetPointerTargetShip(char *name, GrowSelection *ships);
-void kasfTutSetPointerTargetShipSelection(char *name, GrowSelection *ships);
-void kasfTutSetPointerTargetShipHealth(char *name, GrowSelection *ships);
-void kasfTutSetPointerTargetShipGroup(char *name, GrowSelection *ships);
-void kasfTutSetPointerTargetFERegion(char *name, char *pAtomName);
-void kasfTutSetPointerTargetRect(char *name, sdword x0, sdword y0, sdword x1, sdword y1);
-void kasfTutSetPointerTargetAIVolume(char *name, Volume *volume);
-void kasfTutRemovePointer(char *name);
+void kasfTutSetPointerTargetXY(const char *name, sdword x, sdword y);
+void kasfTutSetPointerTargetXYRight(const char *name, sdword x, sdword y);
+void kasfTutSetPointerTargetXYBottomRight(const char *name, sdword x, sdword y);
+void kasfTutSetPointerTargetXYTaskbar(const char *name, sdword x, sdword y);
+void kasfTutSetPointerTargetXYFE(const char *name, sdword x, sdword y);
+void kasfTutSetPointerTargetShip(const char *name, GrowSelection *ships);
+void kasfTutSetPointerTargetShipSelection(const char *name, GrowSelection *ships);
+void kasfTutSetPointerTargetShipHealth(const char *name, GrowSelection *ships);
+void kasfTutSetPointerTargetShipGroup(const char *name, GrowSelection *ships);
+void kasfTutSetPointerTargetFERegion(const char *name, const char *pAtomName);
+void kasfTutSetPointerTargetRect(const char *name, sdword x0, sdword y0, sdword x1, sdword y1);
+void kasfTutSetPointerTargetAIVolume(const char *name, Volume *volume);
+void kasfTutRemovePointer(const char *name);
 void kasfTutRemoveAllPointers(void);
 
 void kasfTutSetTextDisplayBoxGame(sdword x, sdword y, sdword width, sdword height);
 void kasfTutSetTextDisplayBoxFE(sdword x, sdword y, sdword width, sdword height);
 void kasfTutSetTextDisplayBoxToSubtitleRegion(void);
-void kasfTutShowText(char *szText);
+void kasfTutShowText(const char *szText);
 void kasfTutHideText(void);
 void kasfTutShowNextButton(void);
 void kasfTutHideNextButton(void);
@@ -322,30 +322,30 @@ sdword kasfTutNextButtonClicked(void);
 void kasfTutShowBackButton(void);
 void kasfTutHideBackButton(void);
 void kasfTutShowPrevButton(void);
-void kasfTutSaveLesson(sdword Num, char *pName);
+void kasfTutSaveLesson(sdword Num, const char *pName);
 
-void kasfTutShowImages(char *szImages);
+void kasfTutShowImages(const char *szImages);
 void kasfTutHideImages(void);
 
 void kasfTutEnableEverything(void);
 void kasfTutDisableEverything(void);
-void kasfTutEnableFlags(char *pFlags);
-void kasfTutDisableFlags(char *pFlags);
+void kasfTutEnableFlags(const char *pFlags);
+void kasfTutDisableFlags(const char *pFlags);
 void kasfTutForceUnpaused(void);
 
-sdword kasfTutGameSentMessage(char *commandNames);
+sdword kasfTutGameSentMessage(const char *commandNames);
 void kasfTutResetGameMessageQueue(void);
-sdword kasfTutContextMenuDisplayedForShipType(char *shipType);
+sdword kasfTutContextMenuDisplayedForShipType(const char *shipType);
 void  kasfTutResetContextMenuShipTypeTest(void);
 void kasfTutRedrawEverything(void);
 
-sdword kasfBuildManagerShipTypeInBatchQueue(char *shipType);
-sdword kasfBuildManagerShipTypeInBuildQueue(char *shipType);
-sdword kasfBuildManagerShipTypeSelected(char *shipType);
+sdword kasfBuildManagerShipTypeInBatchQueue(const char *shipType);
+sdword kasfBuildManagerShipTypeInBuildQueue(const char *shipType);
+sdword kasfBuildManagerShipTypeSelected(const char *shipType);
 
-sdword kasfTutCameraFocusedOnShipType(char *shipTypes);
+sdword kasfTutCameraFocusedOnShipType(const char *shipTypes);
 void kasfTutCameraFocus(GrowSelection *ships);
-void kasfTutCameraFocusDerelictType(char *derelictType);
+void kasfTutCameraFocusDerelictType(const char *derelictType);
 void kasfTutCameraFocusFar(GrowSelection *ships);
 void kasfTutCameraFocusCancel(void);
 
@@ -363,19 +363,19 @@ void kasfCloseSensors(sdword flag);
 sdword kasfSensorsIsOpen(sdword flag);
 void kasfSensorsWeirdness(sdword flag);
 
-void kasfAllowPlayerToResearch(char *name);
-void kasfAllowPlayerToPurchase(char *name);
-void kasfPlayerAcquiredTechnology(char *name);
-sdword kasfCanPlayerResearch(char *name);
-sdword kasfCanPlayerPurchase(char *name);
-sdword kasfDoesPlayerHave(char *name);
-void kasfSetBaseTechnologyCost(char *name, sdword cost);
-sdword kasfGetBaseTechnologyCost(char *name);
+void kasfAllowPlayerToResearch(const char *name);
+void kasfAllowPlayerToPurchase(const char *name);
+void kasfPlayerAcquiredTechnology(const char *name);
+sdword kasfCanPlayerResearch(const char *name);
+sdword kasfCanPlayerPurchase(const char *name);
+sdword kasfDoesPlayerHave(const char *name);
+void kasfSetBaseTechnologyCost(const char *name, sdword cost);
+sdword kasfGetBaseTechnologyCost(const char *name);
 sdword kasfTechIsResearching(void);
 
 void kasfEnableTraderGUI(void);
 sdword kasfTraderGUIActive(void);
-void kasfSetTraderDialog(sdword dialogNum, char *text);
+void kasfSetTraderDialog(sdword dialogNum, const char *text);
 void kasfSetTraderPriceScale(sdword percent);
 sdword kasfGetTraderPriceScale(void);
 void kasfSetTraderDisabled(sdword disable);
@@ -398,25 +398,25 @@ void kasfMusicStop(sdword fadeTime);
 
 sdword kasfRenderedShips(GrowSelection *ships, sdword LOD);
 void kasfResetShipRenderFlags(GrowSelection *ships);
-sdword kasfRenderedDerelicts(char *derelictType, sdword LOD);
-void kasfResetDerelictRenderFlags(char *derelicttype);
+sdword kasfRenderedDerelicts(const char *derelictType, sdword LOD);
+void kasfResetDerelictRenderFlags(const char *derelicttype);
 
 udword kasfFindSelectedShips(GrowSelection *ships);
 
-void kasfSaveLevel(sdword num, char *name);
+void kasfSaveLevel(sdword num, const char *name);
 
 void kasfClearScreen(void);
 
 void kasfWideScreenIn(sdword frames);
 void kasfWideScreenOut(sdword frames);
-void kasfSubtitleSimulate(sdword actor, sdword milliseconds, char *speech);
-void kasfLocationCard(sdword milliseconds, char *location);
+void kasfSubtitleSimulate(sdword actor, sdword milliseconds, const char *speech);
+void kasfLocationCard(sdword milliseconds, const char *location);
 void kasfHideShips(GrowSelection *ships);
 void kasfUnhideShips(GrowSelection *ships);
 
 void kasfDeleteShips(GrowSelection *ships);
 
-void kasfRotateDerelictType(char *derelictType, sdword rot_x, sdword rot_y, sdword rot_z, sdword variation);
+void kasfRotateDerelictType(const char *derelictType, sdword rot_x, sdword rot_y, sdword rot_z, sdword variation);
 
 sdword kasfRaceOfHuman(void);
 void kasfUniversePause(void);
@@ -437,6 +437,6 @@ void kasfSensorsStaticOff(void);
 //end the game right now and start plugscreens
 void kasfGameEnd(void);
 
-void kasfSpawnEffect(GrowSelection *ships, char *effectName, sdword parameter);
+void kasfSpawnEffect(GrowSelection *ships, const char *effectName, sdword parameter);
 
 #endif

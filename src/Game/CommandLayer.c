@@ -138,7 +138,7 @@ scriptEntry CommandLayerTweaks[] =
     makeEntry(SHRINKMAX,scriptSetReal32CB),
     makeEntry(FLY_INTO_WORLD_PERCENT_DIST,scriptSetReal32CB),
     makeEntry(RESCONTROLLER_FOLLOW_BEHIND,scriptSetReal32CB),
-    
+
     END_SCRIPT_ENTRY
 };
 

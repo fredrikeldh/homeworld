@@ -54,22 +54,22 @@
 bool gpQuickSave(void);
 bool gpQuickLoad(void);
 
-void gpGameWindowInit(char *name, featom *atom);
-void gpTextEntryWindowInit(char *name, featom *atom);
+void gpGameWindowInit(const char *name, featom *atom);
+void gpTextEntryWindowInit(const char *name, featom *atom);
 void gpGameNameDraw(featom *atom, regionhandle region);
 void gpSaveGivenGame(char* gamename);
 void gpLoadGivenGame(char* gamename);
-void gpSaveGame(char *name, featom *atom);
-void gpLoadGame(char *name, featom *atom);
-void gpLoadTheRecordedGame(char *name, featom *atom);
-void gpSaveTheRecordedGame(char *name, featom *atom);
-void gpDeleteGame(char *name, featom *atom);
-void gpBackToInGameEscapeMenu(char *name, featom *atom);
-void gpStopPlayback(char *name, featom *atom);
-void gpStopRecording(char *name, featom *atom);
+void gpSaveGame(const char *name, featom *atom);
+void gpLoadGame(const char *name, featom *atom);
+void gpLoadTheRecordedGame(const char *name, featom *atom);
+void gpSaveTheRecordedGame(const char *name, featom *atom);
+void gpDeleteGame(const char *name, featom *atom);
+void gpBackToInGameEscapeMenu(const char *name, featom *atom);
+void gpStopPlayback(const char *name, featom *atom);
+void gpStopRecording(const char *name, featom *atom);
 
-void gpOverwriteYes(char *name, featom *atom);
-void gpOverwriteNo(char *name, featom *atom);
+void gpOverwriteYes(const char *name, featom *atom);
+void gpOverwriteNo(const char *name, featom *atom);
 
 bool gpLoadSinglePlayerGame = FALSE;
 bool gpLoadTutorial = FALSE;
@@ -429,7 +429,7 @@ alreadyLoaded:;
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void gpTextEntryWindowInit(char *name, featom *atom)
+void gpTextEntryWindowInit(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -599,7 +599,7 @@ bool gpQuickLoad(void)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void gpGameWindowInit(char *name, featom *atom)
+void gpGameWindowInit(const char *name, featom *atom)
 {
     fonthandle  oldfont;
     sdword      index;
@@ -708,7 +708,7 @@ void gpGameWindowInit(char *name, featom *atom)
                     will be stored in dest.
     Return      : void
 ----------------------------------------------------------------------------*/
-void gpGamePick(char *dest)
+void gpGamePick(const char *dest)
 {
     if (dest[0] == 'S')
     {
@@ -733,7 +733,7 @@ void gpGamePick(char *dest)
     Outputs     : DonePicking stores chosen file name in parameter to gpGamePick
     Return      : void
 ----------------------------------------------------------------------------*/
-void gpDonePicking(char *name, featom *atom)
+void gpDonePicking(const char *name, featom *atom)
 {
     sdword index;
 
@@ -755,7 +755,7 @@ void gpDonePicking(char *name, featom *atom)
 static char overwritefilename[PATH_MAX] = "";
 static bool overwriteRecGame = FALSE;
 
-void gpOverwriteYes(char *name, featom *atom)
+void gpOverwriteYes(const char *name, featom *atom)
 {
     dbgAssertOrIgnore(overwritefilename[0] != 0);
 
@@ -784,12 +784,12 @@ void gpOverwriteYes(char *name, featom *atom)
     }
 }
 
-void gpOverwriteNo(char *name, featom *atom)
+void gpOverwriteNo(const char *name, featom *atom)
 {
     feScreenDisappear(NULL, NULL);
 }
 
-void gpSaveGame(char *name, featom *atom)
+void gpSaveGame(const char *name, featom *atom)
 {
     char filename[300];
 
@@ -860,7 +860,7 @@ void gpSaveGame(char *name, featom *atom)
     GeneralMessageBox(strGetString(strErrorInSaveGameName),strGetString(strAtLeast2Chars));
 }
 
-void gpLoadTheRecordedGame(char *name, featom *atom)
+void gpLoadTheRecordedGame(const char *name, featom *atom)
 {
     sdword verifysavename;
 
@@ -888,7 +888,7 @@ void gpLoadTheRecordedGame(char *name, featom *atom)
     utyLoadMultiPlayerGameGivenFilename(recordPacketSaveFileName);
 }
 
-void gpSaveTheRecordedGame(char *name, featom *atom)
+void gpSaveTheRecordedGame(const char *name, featom *atom)
 {
     char filename[300];
 
@@ -947,12 +947,12 @@ void gpSaveTheRecordedGame(char *name, featom *atom)
     GeneralMessageBox(strGetString(strErrorInSaveGameName),strGetString(strAtLeast2Chars));
 }
 
-void gpStopPlayback(char *name, featom *atom)
+void gpStopPlayback(const char *name, featom *atom)
 {
     dbgMessage("Stop playback.");
 }
 
-void gpStopRecording(char *name, featom *atom)
+void gpStopRecording(const char *name, featom *atom)
 {
     recPackInGameStopCB();
     feScreenDisappear(NULL, NULL);
@@ -1017,7 +1017,7 @@ void gpLoadGivenGame(char* gamename)
     }
 }
 
-void spRestartLevel(char *name, featom *atom)
+void spRestartLevel(const char *name, featom *atom)
 {
     if (strlen(CurrentLevelName) > 0)
     {
@@ -1027,7 +1027,7 @@ void spRestartLevel(char *name, featom *atom)
     }
 }
 
-void gpLoadGame(char *name, featom *atom)
+void gpLoadGame(const char *name, featom *atom)
 {
     char filename[PATH_MAX] = "";
     sdword verifysavename;
@@ -1087,7 +1087,7 @@ void gpLoadGame(char *name, featom *atom)
 }
 
 
-void gpDeleteGame(char *name, featom *atom)
+void gpDeleteGame(const char *name, featom *atom)
 {
     char filename[PATH_MAX] = "";
     sdword i;
@@ -1156,7 +1156,7 @@ void gpDeleteGame(char *name, featom *atom)
     fontMakeCurrent(oldfont);
 }
 
-bool gpGetGameName(char *name, featom *atom, char *filename)
+bool gpGetGameName(const char *name, featom *atom, char *filename)
 {
     if (gpNumberGames > 0)
     {
@@ -1169,12 +1169,12 @@ bool gpGetGameName(char *name, featom *atom, char *filename)
     return FALSE;
 }
 
-void gpBackPicking(char *name, featom *atom)
+void gpBackPicking(const char *name, featom *atom)
 {
     feScreenDisappear(NULL, NULL);
 }
 
-void gpBackToInGameEscapeMenu(char *name, featom *atom)
+void gpBackToInGameEscapeMenu(const char *name, featom *atom)
 {
     feScreenDisappear(NULL, NULL);
 

@@ -1,10 +1,11 @@
+#include "../gles2.h"
 
 #include "light.h"
 #include <sstream>
 
 GLfloat LightSetup::DARK[] = {0, 0, 0, 0};
 
-LightSetup::LightSetup() : 
+LightSetup::LightSetup() :
 	ambient(0.2f, 0.2f, 0.2f, 1.0f, "u_ambient"),
 	color_control(GL_SINGLE_COLOR),
 	local_viewer(false),
@@ -97,12 +98,12 @@ void LightSetup::Set(
 		>(lightEnum)
 	)
 		return;
-	
+
 	Light& light = _lights[lightEnum - GL_LIGHT0];
-	
+
 	const GLfloat value = *params;
 #define INVALID_BREAK {SetError<GL_INVALID_VALUE>(); break;}
-		
+
 	switch( pname )
 	{
 	case GL_AMBIENT:
@@ -124,7 +125,7 @@ void LightSetup::Set(
 	{
 		if( value < 0 || value > 128 )
 			INVALID_BREAK
-		
+
 		light.spot_exponent.Set(value);
 		break;
 	}
@@ -132,7 +133,7 @@ void LightSetup::Set(
 	{
 		if( (value < 0 || value > 90) && (value != 180) )
 			INVALID_BREAK
-		
+
 		light.spot_cutoff.Set(value);
 		break;
 	}
@@ -140,7 +141,7 @@ void LightSetup::Set(
 	{
 		if( value < 0 )
 			INVALID_BREAK
-		
+
 		light.constantAttenuation.Set(value);
 		break;
 	}
@@ -148,7 +149,7 @@ void LightSetup::Set(
 	{
 		if( value < 0 )
 			INVALID_BREAK
-		
+
 		light.linearAttenuation.Set(value);
 		break;
 	}
@@ -156,7 +157,7 @@ void LightSetup::Set(
 	{
 		if( value < 0 )
 			INVALID_BREAK
-		
+
 		light.quadraticAttenuation.Set(value);
 		break;
 	}
@@ -166,7 +167,7 @@ void LightSetup::Set(
 #undef INVALID_BREAK
 }
 
-std::string __buildString(const char* prefix, GLubyte index, const char* postfix)
+static std::string __buildString(const char* prefix, GLubyte index, const char* postfix)
 {
 	std::stringstream stream;
 	stream << std::string(prefix) << index << postfix;
@@ -233,6 +234,11 @@ void LightSetup::Light::ApplyTo(RENDER_PROCESSOR* renderer)
 		|| diffuse != LightSetup::DARK
 		|| specular != LightSetup::DARK
 	);
-	
+
 	IRenderComponent::ApplyTo(renderer);
+}
+
+void LightSetup::ApplyTo(RENDER_PROCESSOR* renderer)
+{
+	//todo
 }

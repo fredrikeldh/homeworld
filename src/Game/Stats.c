@@ -182,8 +182,8 @@ static sbyte *RaceCalcFightStatsFor[NUM_RACES_TO_GATHER_STATS_FOR] =
 
 bool ForceTotalRefresh = FALSE;
 
-static void StatsForRaceCB(char *directory,char *field,void *dataToFillIn);
-static void StatsForCB(char *directory,char *field,void *dataToFillIn);
+static void StatsForRaceCB(const char *directory,char *field,void *dataToFillIn);
+static void StatsForCB(const char *directory,char *field,void *dataToFillIn);
 
 scriptEntry GatherStatsScriptTable[] =
 {
@@ -191,11 +191,11 @@ scriptEntry GatherStatsScriptTable[] =
 
     {"StatsForRace", StatsForRaceCB, NULL},
     {"StatsFor",     StatsForCB, NULL},
-    
+
     END_SCRIPT_ENTRY
 };
 
-static void StatsForRaceCB(char *directory,char *field,void *dataToFillIn)
+static void StatsForRaceCB(const char *directory,char *field,void *dataToFillIn)
 {
     char *param;
     ShipRace race;
@@ -227,7 +227,7 @@ static void StatsForRaceCB(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-static void StatsForCB(char *directory,char *field,void *dataToFillIn)
+static void StatsForCB(const char *directory,char *field,void *dataToFillIn)
 {
     char racestr[15];
     char shipstr[50];
@@ -259,7 +259,7 @@ static void StatsForCB(char *directory,char *field,void *dataToFillIn)
     RaceCalcFightStatsFor[race][shiptype - FirstShipTypeOfRace[race]] = val;
 }
 
-void statLog(char *format, ...)
+void statLog(const char *format, ...)
 {
     char buffer[200];
     va_list argList;
@@ -731,8 +731,8 @@ sdword currentFancyFightEntry = 0;
 sdword currentFancyFightRepeatFight = 0;
 bool ShowFancyFightsShipsFighting = FALSE;
 
-void SetFlightEntrysCB(char *directory,char *field,void *dataToFillIn);
-void SetFlightEntrysPreLoadCB(char *directory,char *field,void *dataToFillIn);
+void SetFlightEntrysCB(const char *directory,char *field,void *dataToFillIn);
+void SetFlightEntrysPreLoadCB(const char *directory,char *field,void *dataToFillIn);
 
 void SetInfoNeededForShipAndRelatedStaticInfo(ShipType type,ShipRace race,bool8 dataToFillIn);
 void universeFlagNothingNeeded(void);
@@ -753,7 +753,7 @@ scriptEntry FancyFightPreLoadScriptTable[] =
     END_SCRIPT_ENTRY
 };
 
-void SetFlightEntrysCB(char *directory,char *field,void *dataToFillIn)
+void SetFlightEntrysCB(const char *directory,char *field,void *dataToFillIn)
 {
     sdword repeat;
     sdword num[2];
@@ -781,7 +781,7 @@ void SetFlightEntrysCB(char *directory,char *field,void *dataToFillIn)
     numFancyFightEntrys++;
 }
 
-void SetFlightEntrysPreLoadCB(char *directory,char *field,void *dataToFillIn)
+void SetFlightEntrysPreLoadCB(const char *directory,char *field,void *dataToFillIn)
 {
     sdword repeat;
     sdword num[2];

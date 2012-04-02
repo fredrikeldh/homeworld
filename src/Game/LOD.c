@@ -27,10 +27,10 @@ extern meshdata *defaultmesh;          // hack for now.  remove later when defau
     Data:
 =============================================================================*/
 //script-parsing function for LOD files
-static void lodTypeRead(char *directory,char *field,void *dataToFillIn);
-static void lodMeshFileLoad(char *directory,char *field,void *dataToFillIn);
-static void lodSpriteFileRead(char *directory,char *field,void *dataToFillIn);
-static void lodColorScalarRead(char *directory,char *field,void *dataToFillIn);
+static void lodTypeRead(const char *directory,char *field,void *dataToFillIn);
+static void lodMeshFileLoad(const char *directory,char *field,void *dataToFillIn);
+static void lodSpriteFileRead(const char *directory,char *field,void *dataToFillIn);
+static void lodColorScalarRead(const char *directory,char *field,void *dataToFillIn);
 static lodinfo lodStaticInfo;
 scriptStructEntry lodScriptTable[] =
 {
@@ -103,7 +103,7 @@ real32 lodDebugScaleFactor = 0.0f;
     Return      : newly allocated LOD table.
 ----------------------------------------------------------------------------*/
 lodmaxinfo lodMaxInfo;
-lodinfo *lodTableReadScript(char *directory, char *fileName)
+lodinfo *lodTableReadScript(const char *directory, const char *fileName)
 {
     lodinfo *info;
     sdword index;
@@ -153,7 +153,7 @@ lodinfo *lodTableReadScript(char *directory, char *fileName)
     Callback functions for script reading
 =============================================================================*/
 //set correct LOD type
-static void lodColorScalarRead(char *directory,char *field,void *dataToFillIn)
+static void lodColorScalarRead(const char *directory,char *field,void *dataToFillIn)
 {
     real32 data;
 
@@ -173,7 +173,7 @@ static void lodColorScalarRead(char *directory,char *field,void *dataToFillIn)
     }
 }
 //set correct LOD type
-static void lodTypeRead(char *directory,char *field,void *dataToFillIn)
+static void lodTypeRead(const char *directory,char *field,void *dataToFillIn)
 {                                                           //set correct LOD type
     lod *dest;
     unsigned int i;
@@ -218,7 +218,7 @@ static void lodTypeRead(char *directory,char *field,void *dataToFillIn)
 #endif
 }
 //load in a mesh
-static void lodMeshFileLoad(char *directory,char *field,void *dataToFillIn)
+static void lodMeshFileLoad(const char *directory,char *field,void *dataToFillIn)
 {
     char fullfilename[80];
 #if LOD_VERBOSE_LEVEL >= 1
@@ -244,7 +244,7 @@ static void lodMeshFileLoad(char *directory,char *field,void *dataToFillIn)
     }
 }
 //load in a tiny sprite file
-static void lodSpriteFileRead(char *directory,char *field,void *dataToFillIn)
+static void lodSpriteFileRead(const char *directory,char *field,void *dataToFillIn)
 {
 #if LOD_VERBOSE_LEVEL >= 1
     dbgMessagef("lodSpriteFileRead: %s", field);
@@ -444,7 +444,7 @@ sdword lodHierarchySizeCompute(lodinfo *LOD)
     Note        : Prints a warning if the .LOD file cannot be opened for writing.
 ----------------------------------------------------------------------------*/
 #if LOD_AUTO_SAVE
-char *lodTypeStrings[] = {"INVALID", "MESH", "TINYSPRITE", "SUBPIXEL", "FUNCTION", "NULL"};
+const char *lodTypeStrings[] = {"INVALID", "MESH", "TINYSPRITE", "SUBPIXEL", "FUNCTION", "NULL"};
 sdword lodAutoSave(lodinfo *LOD)
 {
     sdword level;

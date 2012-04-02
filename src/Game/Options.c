@@ -133,7 +133,7 @@ void opEQHelper(void);
 void opUpdateAudioSettings(void);
 void opUpdateVideoSettings(void);
 
-void opOptionsEndHelper(char* linkName);
+void opOptionsEndHelper(const char* linkName);
 void opOptionsEnd(void);
 
 // The following functions are used to save and or restore the options in each screen
@@ -177,7 +177,7 @@ typedef struct
     keyindex key1;
     keyindex key2;
     sword highlight;
-    char *funcname;
+    const char *funcname;
 }
 tempkeytrans;
 
@@ -268,7 +268,7 @@ keyindex DefaultKeyTranslations[OP_NumKeys] =
 typedef struct
 {
     keyindex key;
-    char *name;
+    const char *name;
 }
 KeyNameStruct;
 
@@ -947,7 +947,7 @@ void opKeyAssign(uword func, keyindex key)
     Outputs     :
     Return      :
 -------------------------------------------------------------------------------*/
-char* opKeyToNiceString(keyindex key)
+const char* opKeyToNiceString(keyindex key)
 {
     sdword i;
 
@@ -1130,14 +1130,14 @@ void opModeswitchFailed(void)
     opGLCStart();
 }
 
-void opCountdownYes(char* name, featom* atom)
+void opCountdownYes(const char* name, featom* atom)
 {
     opTimerActive = FALSE;
     feScreenDisappear(NULL, NULL);
     opGLCStart();
 }
 
-void opCountdownNo(char* name, featom* atom)
+void opCountdownNo(const char* name, featom* atom)
 {
     opTimerActive = FALSE;
     if (name != NULL || atom != NULL)
@@ -1162,13 +1162,13 @@ void opTimerExpired(void)
     opCountdownNo(NULL, NULL);
 }
 
+extern fonthandle ghDefaultFont;
 void opCountdownBoxDraw(featom* atom, regionhandle region)
 {
     fonthandle oldfont;
     char* str;
     sdword x, y, width, height;
     color c;
-    extern fonthandle ghDefaultFont;
 
     oldfont = fontMakeCurrent(ghDefaultFont);
 
@@ -1199,7 +1199,7 @@ void opCountdownBoxStart(void)
     feScreenStart(ghMainRegion, "Countdown_Message_Box");
 }
 
-void opOptionsAcceptHelper(char* name, featom* atom, char* linkName)
+void opOptionsAcceptHelper(const char* name, featom* atom, const char* linkName)
 {
     udword i, temp;
     oprender* rnd;
@@ -1323,12 +1323,12 @@ void opOptionsAcceptHelper(char* name, featom* atom, char* linkName)
     opOptionsSaveSettings();
 }
 
-void opOptionsAccept(char* name, featom* atom)
+void opOptionsAccept(const char* name, featom* atom)
 {
     opOptionsAcceptHelper(name, atom, "Main_game_screen");
 }
 
-void opInGameOptionsAccept(char* name, featom* atom)
+void opInGameOptionsAccept(const char* name, featom* atom)
 {
     opOptionsAcceptHelper(name, atom, "Game_options");
 }
@@ -1461,24 +1461,24 @@ void opRestoreSavedSettings()
     opAutodockFuelVal = opSaveAutodockFuelVal;
 }
 
-void opOptionsCancelHelper(char* name, featom* atom, char* linkName)
+void opOptionsCancelHelper(const char* name, featom* atom, const char* linkName)
 {
     opRestoreSavedSettings();
     opOptionsEndHelper(linkName);
     kbRestoreSavedSettings();
 }
 
-void opOptionsCancel(char* name, featom* atom)
+void opOptionsCancel(const char* name, featom* atom)
 {
     opOptionsCancelHelper(name, atom, "Main_game_screen");
 }
 
-void opInGameOptionsCancel(char* name, featom* atom)
+void opInGameOptionsCancel(const char* name, featom* atom)
 {
     opOptionsCancelHelper(name, atom, "Game_options");
 }
 
-void opEqualizerToAudioAccept(char* name, featom* atom)
+void opEqualizerToAudioAccept(const char* name, featom* atom)
 {
     if (opEqualizerToggled)
     {
@@ -1489,14 +1489,14 @@ void opEqualizerToAudioAccept(char* name, featom* atom)
     feScreenStart(ghMainRegion, "Audio_Options");
 }
 
-void opEqualizerToAudioCancel(char* name, featom* atom)
+void opEqualizerToAudioCancel(const char* name, featom* atom)
 {
     opRestoreSavedEqualizerSettings();
     feScreenDisappear(NULL, NULL);
     feScreenStart(ghMainRegion, "Audio_Options");
 }
 
-void opEqualizerToInGameAudioAccept(char* name, featom* atom)
+void opEqualizerToInGameAudioAccept(const char* name, featom* atom)
 {
     if (opEqualizerToggled)
     {
@@ -1507,14 +1507,14 @@ void opEqualizerToInGameAudioAccept(char* name, featom* atom)
     feScreenStart(ghMainRegion, "Audio");
 }
 
-void opEqualizerToInGameAudioCancel(char* name, featom* atom)
+void opEqualizerToInGameAudioCancel(const char* name, featom* atom)
 {
     opRestoreSavedEqualizerSettings();
     feScreenDisappear(NULL, NULL);
     feScreenStart(ghMainRegion, "Audio");
 }
 
-void opAdvancedToAudioAccept(char* name, featom* atom)
+void opAdvancedToAudioAccept(const char* name, featom* atom)
 {
     speechEventCleanup();   // make sure we shut off and fade out and speech playing from the hear buttons
     opOptionsSaveAdvancedSettings();
@@ -1522,7 +1522,7 @@ void opAdvancedToAudioAccept(char* name, featom* atom)
     feScreenStart(ghMainRegion, "Audio_Options");
 }
 
-void opAdvancedToAudioCancel(char* name, featom* atom)
+void opAdvancedToAudioCancel(const char* name, featom* atom)
 {
     speechEventCleanup();   // make sure we shut off and fade out and speech playing from the hear buttons
     opRestoreAdvancedSettings();
@@ -1530,7 +1530,7 @@ void opAdvancedToAudioCancel(char* name, featom* atom)
     feScreenStart(ghMainRegion, "Audio_Options");
 }
 
-void opAdvancedToInGameAudioAccept(char* name, featom* atom)
+void opAdvancedToInGameAudioAccept(const char* name, featom* atom)
 {
     speechEventCleanup();   // make sure we shut off and fade out and speech playing from the hear buttons
     opOptionsSaveAdvancedSettings();
@@ -1538,7 +1538,7 @@ void opAdvancedToInGameAudioAccept(char* name, featom* atom)
     feScreenStart(ghMainRegion, "Audio");
 }
 
-void opAdvancedToInGameAudioCancel(char* name, featom* atom)
+void opAdvancedToInGameAudioCancel(const char* name, featom* atom)
 {
     speechEventCleanup();   // make sure we shut off and fade out and speech playing from the hear buttons
     opRestoreAdvancedSettings();
@@ -1546,7 +1546,7 @@ void opAdvancedToInGameAudioCancel(char* name, featom* atom)
     feScreenStart(ghMainRegion, "Audio");
 }
 
-void opEffectsToVideoAccept(char* name, featom* atom)
+void opEffectsToVideoAccept(const char* name, featom* atom)
 {
     if (opCustomEffectsToggled)
     {
@@ -1557,14 +1557,14 @@ void opEffectsToVideoAccept(char* name, featom* atom)
     feScreenStart(ghMainRegion, "Video_Options");
 }
 
-void opEffectsToVideoCancel(char* name, featom* atom)
+void opEffectsToVideoCancel(const char* name, featom* atom)
 {
     opRestoreSavedCustomEffectsSettings();
     feScreenDisappear(NULL, NULL);
     feScreenStart(ghMainRegion, "Video_Options");
 }
 
-void opEffectsToInGameVideoAccept(char* name, featom* atom)
+void opEffectsToInGameVideoAccept(const char* name, featom* atom)
 {
     if (opCustomEffectsToggled)
     {
@@ -1575,7 +1575,7 @@ void opEffectsToInGameVideoAccept(char* name, featom* atom)
     feScreenStart(ghMainRegion, "Video");
 }
 
-void opEffectsToInGameVideoCancel(char* name, featom* atom)
+void opEffectsToInGameVideoCancel(const char* name, featom* atom)
 {
     opRestoreSavedCustomEffectsSettings();
     feScreenDisappear(NULL, NULL);
@@ -1763,7 +1763,7 @@ void opOptionsSaveSettings(void)
     }
 }
 
-void opOptionsStartHelper(char* name, featom* atom, char* linkName)
+void opOptionsStartHelper(const char* name, featom* atom, const char* linkName)
 {
     opOptionsSaveSettings();
 
@@ -1787,17 +1787,17 @@ void opOptionsStartHelper(char* name, featom* atom, char* linkName)
     feScreenStart(ghMainRegion, linkName);
 }
 
-void opOptionsStart(char* name, featom* atom)
+void opOptionsStart(const char* name, featom* atom)
 {
     opOptionsStartHelper(name, atom, "Audio_Options");
 }
 
-void opInGameOptionsStart(char* name, featom* atom)
+void opInGameOptionsStart(const char* name, featom* atom)
 {
     opOptionsStartHelper(name, atom, "Game_options");
 }
 
-void opOptionsEndHelper(char* linkName)
+void opOptionsEndHelper(const char* linkName)
 
 {
 #if(0)
@@ -1826,13 +1826,13 @@ void opCancelKeyDetour(void)
 }
 
 
-void opKeyCancel(char* name, featom* atom)
+void opKeyCancel(const char* name, featom* atom)
 {
     opCancelKeyDetour();
 }
 
 
-void opMusicVolume(char* name, featom* atom)
+void opMusicVolume(const char* name, featom* atom)
 {
     udword f;
     sliderhandle shandle;
@@ -1866,7 +1866,7 @@ void opMusicVolume(char* name, featom* atom)
     }
 }
 
-void opSFXVolume(char* name, featom* atom)
+void opSFXVolume(const char* name, featom* atom)
 {
     udword f;
     sliderhandle shandle;
@@ -1898,7 +1898,7 @@ void opSFXVolume(char* name, featom* atom)
     }
 }
 
-void opSpeechVolume(char* name, featom* atom)
+void opSpeechVolume(const char* name, featom* atom)
 {
     udword f;
     sliderhandle shandle;
@@ -1931,7 +1931,7 @@ void opSpeechVolume(char* name, featom* atom)
     }
 }
 
-/*void opBattleChatterCB(char* name, featom* atom)
+/*void opBattleChatterCB(const char* name, featom* atom)
 {
     udword f;
     sliderhandle shandle;
@@ -1957,7 +1957,7 @@ void opSpeechVolume(char* name, featom* atom)
 }*/
 
 
-void opNumberChannels(char* name, featom* atom)
+void opNumberChannels(const char* name, featom* atom)
 {
     udword f;
     sdword min, max;
@@ -2007,7 +2007,7 @@ void opDrawNumChannels(featom *atom, regionhandle region)
     fontMakeCurrent(currentFont);
 }
 
-void opAutoChannels(char* name, featom* atom)
+void opAutoChannels(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2177,7 +2177,7 @@ void opEQHelper(void)
     soundEventMasterEQ((real32*)opEQReal);
 }
 
-void opSpeaker(char* name, featom* atom)
+void opSpeaker(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2191,7 +2191,7 @@ void opSpeaker(char* name, featom* atom)
     opEQHelper();
 }
 
-void opSoundQualitySet(char* name, featom* atom)
+void opSoundQualitySet(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2205,11 +2205,11 @@ void opSoundQualitySet(char* name, featom* atom)
     soundMixerSetMode(opSoundQuality);
 }
 
-void opAdvancedButton(char* name, featom* atom)
+void opAdvancedButton(const char* name, featom* atom)
 {
 }
 
-void opEqualizerButton(char* name, featom* atom)
+void opEqualizerButton(const char* name, featom* atom)
 {
     feScreenStart(feStack[feStackIndex].baseRegion, "Equalizer"); //popup
 }
@@ -2225,7 +2225,7 @@ udword opDetailThresholdProcess(regionhandle reg, sdword ID, udword event, udwor
 }
 
 
-void opLighting(char* name, featom* atom)
+void opLighting(const char* name, featom* atom)
 {
     region *reg;
     if (FEFIRSTCALL(atom))
@@ -2304,7 +2304,7 @@ void opUpdateVideoSettings(void)
     trNoPalResizePool(opNoPalMB);
 }
 
-void opEffects(char* name, featom* atom)
+void opEffects(const char* name, featom* atom)
 {
     region* reg;
 
@@ -2350,7 +2350,7 @@ void opDetailDisable(void)
     detailSliderRegion->reg.status |= RSF_DrawThisFrame;
 }
 
-void opNoLOD(char* name, featom* atom)
+void opNoLOD(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2364,7 +2364,7 @@ void opNoLOD(char* name, featom* atom)
     }
 }
 
-void opDetailThreshold(char* name, featom* atom)
+void opDetailThreshold(const char* name, featom* atom)
 {
     udword f;
     sliderhandle shandle;
@@ -2399,7 +2399,7 @@ udword opBrightnessProcess(regionhandle reg, sdword ID, udword event, udword dat
     return (0);
 }
 
-void opBrightness(char* name, featom* atom)
+void opBrightness(const char* name, featom* atom)
 {
     udword f;
     sliderhandle shandle;
@@ -2423,7 +2423,7 @@ void opBrightness(char* name, featom* atom)
 }
 
 /*
-void opEffects(char* name, featom* atom)
+void opEffects(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2436,7 +2436,7 @@ void opEffects(char* name, featom* atom)
 }
 */
 
-void opCustomEffects(char* name, featom* atom)
+void opCustomEffects(const char* name, featom* atom)
 {
     feScreenStart(feStack[feStackIndex].baseRegion, "Effects"); //popup
 }
@@ -2511,14 +2511,14 @@ void opResListSet(rdevice* dev)
     fonthandle oldfont;
 
     mode = dev->modes;
-	
+
     nModes = 0;
     while (mode != NULL)
     {
         nModes++;
         mode = mode->next;
     }
-	
+
     opResNumber = nModes;
     opResCurrentSelected = 0;
 
@@ -2600,7 +2600,7 @@ void opResListLoad(void)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void opResolution(char* name, featom* atom)
+void opResolution(const char* name, featom* atom)
 {
     fonthandle oldfont;
 
@@ -2770,7 +2770,7 @@ void opRenderListLoad(void)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void opRender(char* name, featom* atom)
+void opRender(const char* name, featom* atom)
 {
     fescreen* screen;
     featom* npatom;
@@ -2832,7 +2832,7 @@ void opRender(char* name, featom* atom)
     }
 }
 
-void EqualizerCommon(char* name, featom* atom, sdword ID)
+void EqualizerCommon(const char* name, featom* atom, sdword ID)
 {
     udword f;
     sliderhandle shandle;
@@ -2864,7 +2864,7 @@ void EqualizerCommon(char* name, featom* atom, sdword ID)
     }
 }
 
-void opEqualizer1(char* name, featom* atom)
+void opEqualizer1(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2877,7 +2877,7 @@ void opEqualizer1(char* name, featom* atom)
     }
 }
 
-void opEqualizer2(char* name, featom* atom)
+void opEqualizer2(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2889,7 +2889,7 @@ void opEqualizer2(char* name, featom* atom)
     }
 }
 
-void opEqualizer3(char* name, featom* atom)
+void opEqualizer3(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2901,7 +2901,7 @@ void opEqualizer3(char* name, featom* atom)
     }
 }
 
-void opEqualizer4(char* name, featom* atom)
+void opEqualizer4(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2913,7 +2913,7 @@ void opEqualizer4(char* name, featom* atom)
     }
 }
 
-void opEqualizer5(char* name, featom* atom)
+void opEqualizer5(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2925,7 +2925,7 @@ void opEqualizer5(char* name, featom* atom)
     }
 }
 
-void opEqualizer6(char* name, featom* atom)
+void opEqualizer6(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2937,7 +2937,7 @@ void opEqualizer6(char* name, featom* atom)
     }
 }
 
-void opEqualizer7(char* name, featom* atom)
+void opEqualizer7(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2949,7 +2949,7 @@ void opEqualizer7(char* name, featom* atom)
     }
 }
 
-void opEqualizer8(char* name, featom* atom)
+void opEqualizer8(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2961,7 +2961,7 @@ void opEqualizer8(char* name, featom* atom)
     }
 }
 
-void opVoice0(char* name, featom* atom)
+void opVoice0(const char* name, featom* atom)
 {
 #ifdef HW_GAME_DEMO
     featom *hear3;
@@ -2992,7 +2992,7 @@ void opVoice0(char* name, featom* atom)
     }
 }
 
-void opVoice1(char* name, featom* atom)
+void opVoice1(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -3004,7 +3004,7 @@ void opVoice1(char* name, featom* atom)
     }
 }
 
-void opVoice2(char* name, featom* atom)
+void opVoice2(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -3022,7 +3022,7 @@ void opVoice2(char* name, featom* atom)
     }
 }
 
-void opVoice(char* name, featom* atom)
+void opVoice(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -3056,28 +3056,28 @@ void opVoice(char* name, featom* atom)
 }
 
 
-void opHearVoice1(char* name, featom* atom)
+void opHearVoice1(const char* name, featom* atom)
 {
     soundEventHearActor(1);
 
     dbgMessage("Now playing voice 1");
 }
 
-void opHearVoice2(char* name, featom* atom)
+void opHearVoice2(const char* name, featom* atom)
 {
     soundEventHearActor(2);
 
     dbgMessage("Now playing voice 2");
 }
 
-void opHearVoice3(char* name, featom* atom)
+void opHearVoice3(const char* name, featom* atom)
 {
     soundEventHearActor(3);
 
     dbgMessage("Now playing voice 3");
 }
 
-void opVoiceCommands(char* name, featom* atom)
+void opVoiceCommands(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -3091,7 +3091,7 @@ void opVoiceCommands(char* name, featom* atom)
     }
 }
 
-void opVoiceStatus(char* name, featom* atom)
+void opVoiceStatus(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -3105,7 +3105,7 @@ void opVoiceStatus(char* name, featom* atom)
     }
 }
 
-void opVoiceChatter(char* name, featom* atom)
+void opVoiceChatter(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -3119,7 +3119,7 @@ void opVoiceChatter(char* name, featom* atom)
     }
 }
 
-void opMouseSensitivity(char* name, featom* atom)
+void opMouseSensitivity(const char* name, featom* atom)
 {
     udword f;
     sliderhandle shandle;
@@ -3144,7 +3144,7 @@ void opMouseSensitivity(char* name, featom* atom)
 
 }
 
-void opBattleChatterCB(char* name, featom* atom)
+void opBattleChatterCB(const char* name, featom* atom)
 {
     udword f;
     sliderhandle shandle;
@@ -3168,7 +3168,7 @@ void opBattleChatterCB(char* name, featom* atom)
     }
 }
 
-void opNumberEffects(char* name, featom* atom)
+void opNumberEffects(const char* name, featom* atom)
 {
     udword f;
     sliderhandle shandle;
@@ -3192,7 +3192,7 @@ void opNumberEffects(char* name, featom* atom)
     }
 }
 
-void opCPUDifficulty(char* name, featom* atom)
+void opCPUDifficulty(const char* name, featom* atom)
 {
     udword f;
     sliderhandle shandle;
@@ -3214,7 +3214,7 @@ void opCPUDifficulty(char* name, featom* atom)
     }
 }
 
-void opCPUAttacks(char* name, featom* atom)
+void opCPUAttacks(const char* name, featom* atom)
 {
     udword f;
     sliderhandle shandle;
@@ -3243,7 +3243,7 @@ void opCPUAttacks(char* name, featom* atom)
     Outputs     :
     Return      : Nothing
 ----------------------------------------------------------------------------*/
-void opInfoOverlay(char* name, featom* atom)
+void opInfoOverlay(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -3272,27 +3272,27 @@ void opInfoOverlay(char* name, featom* atom)
         ioDisable();
 }
 
-void opTaskbarUp(char* name, featom* atom)
+void opTaskbarUp(const char* name, featom* atom)
 {
 
 }
 
-void opIncreaseChatting(char* name, featom* atom)
+void opIncreaseChatting(const char* name, featom* atom)
 {
 
 }
 
-void opDecreaseChatting(char* name, featom* atom)
+void opDecreaseChatting(const char* name, featom* atom)
 {
 
 }
 
-void opNumberChatlines(char* name, featom* atom)
+void opNumberChatlines(const char* name, featom* atom)
 {
 
 }
 
-void opAutodockHealth(char* name, featom* atom)
+void opAutodockHealth(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -3305,7 +3305,7 @@ void opAutodockHealth(char* name, featom* atom)
 
 }
 
-void opAutodockFuel(char* name, featom* atom)
+void opAutodockFuel(const char* name, featom* atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -3319,7 +3319,7 @@ void opAutodockFuel(char* name, featom* atom)
 }
 
 
-void opAutodockHealthValue(char* name, featom* atom)
+void opAutodockHealthValue(const char* name, featom* atom)
 {
 
     char    temp[20];
@@ -3347,7 +3347,7 @@ void opAutodockHealthValue(char* name, featom* atom)
     }
 }
 
-void opAutodockFuelValue(char* name, featom* atom)
+void opAutodockFuelValue(const char* name, featom* atom)
 
 {
 
@@ -3593,12 +3593,12 @@ void opBlackRect(sdword x, sdword y, char* str)
     primRectSolid2(&rect, colBlack);
 }
 
+extern fonthandle ghDefaultFont;
 void opNoPalDraw(featom* atom, regionhandle region)
 {
     fonthandle oldfont;
     char buf[16];
     color c;
-    extern fonthandle ghDefaultFont;
 
     primRectSolid2(&region->rect, colBlack);
     oldfont = fontMakeCurrent(ghDefaultFont);
@@ -3611,7 +3611,7 @@ void opNoPalDraw(featom* atom, regionhandle region)
     fontMakeCurrent(oldfont);
 }
 
-void opTroubleShoot(char* name, featom* atom)
+void opTroubleShoot(const char* name, featom* atom)
 {
     utyBrowserExec(OP_TroubleShootPage);
 }

@@ -179,7 +179,7 @@ void subRegionsRescale(void);
 
 bool subAnyCardsOnScreen(void);
 
-sdword subTitleAdd(sdword actor, sdword speechEvent, char *text, sdword length, real32 time);
+sdword subTitleAdd(sdword actor, sdword speechEvent, const char *text, sdword length, real32 time);
 
 void subTitlesUpdate(void);
 

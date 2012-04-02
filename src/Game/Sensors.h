@@ -240,10 +240,10 @@ sdword smClickedOnPlayer(rectangle *viewportRect);
 void smPlayerNamesDraw(rectangle *viewportRect);
 
 //activate the sensors manager.  It will stop itself
-void smSensorsBegin(char *name, featom *atom);
+void smSensorsBegin(const char* name, featom* atom);
 
 //explicitly close sensors manager
-void smSensorsClose(char *name, featom *atom);
+void smSensorsClose(const char* name, featom* atom);
 void smSensorsCloseForGood(void);
 
 //kill an object if you're in the sensors manager

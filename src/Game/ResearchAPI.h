@@ -129,13 +129,13 @@ extern udword         SetTechLevel;
 struct Player;
 
 // callback to set dependancies
-void rmSetShipDependCB(char *directory, char *field, void *dataToFillIn);
-void rmSetTechDependCB(char *directory, char *field, void *dataToFillIn);
+void rmSetShipDependCB(const char *directory, char *field, void *dataToFillIn);
+void rmSetTechDependCB(const char *directory, char *field, void *dataToFillIn);
 
 char *RaceSpecificTechTypeToNiceString(TechnologyType tech, ShipRace race);
 char *TechTypeToNiceString(TechnologyType tech);
-char *TechTypeToString    (TechnologyType tech);
-TechnologyType StrToTechType(char *tech);
+const char *TechTypeToString    (TechnologyType tech);
+TechnologyType StrToTechType(const char *tech);
 
 // api function calls
 ResearchTopic *Researching(struct Player *player, TechnologyType tech);

@@ -118,10 +118,10 @@ ping *pingCreate(vector *loc, SpaceObj *owner, pingeval evaluate, ubyte **userDa
 void pingObjectDied(SpaceObj *obj);
 void pingListDraw(Camera *camera, hmatrix *modelView, hmatrix *projection, rectangle *viewPort);
 
-void pingAnomalySelectionPingAdd(char *pingName, SelectCommand *selection);
-void pingAnomalyObjectPingAdd(char *pingName, SpaceObj *owner);
-void pingAnomalyPositionPingAdd(char *pingName, vector *position);
-sdword pingAnomalyPingRemove(char *pingName);
+void pingAnomalySelectionPingAdd(const char *pingName, SelectCommand *selection);
+void pingAnomalyObjectPingAdd(const char *pingName, SpaceObj *owner);
+void pingAnomalyPositionPingAdd(const char *pingName, vector *position);
+sdword pingAnomalyPingRemove(const char *pingName);
 void pingAllPingsDelete(void);
 
 void pingRemovePingByOwner(SpaceObj *owner);

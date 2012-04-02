@@ -290,11 +290,11 @@ void hsContinue(Ship* ship, bool displayEffect)
                 hmatrix coordMatrixForGL, prevModelview;
                 real32 nliphak;
                 hsGetEquation(host, equation);
-                        
+
                 glGetFloatv(GL_MODELVIEW_MATRIX, (GLfloat*)&prevModelview);
                 glPopMatrix();
                 glPushMatrix();
-                
+
                 //put glstack info similar state as before
                 hmatMakeHMatFromMat(&coordMatrixForGL,&host->rotinfo.coordsys);
                 hmatPutVectIntoHMatrixCol4(host->posinfo.position,coordMatrixForGL);
@@ -364,11 +364,11 @@ void hsContinue(Ship* ship, bool displayEffect)
         vecToRotate.x = 0.0f;
         vecToRotate.y = 0.0f;
         vecToRotate.z = -equation[2] * equation[3];
-        
+
         {
             vecToRotate.z *= ship->magnitudeSquared;
         }
-        
+
         vecToRotate.z -= sinfo->collsphereoffset.z;
 
         matMultiplyMatByVec(&vecRotated, &ship->rotinfo.coordsys, &vecToRotate);
@@ -494,16 +494,16 @@ void hsLine(vector* origin, real32 rightlength, real32 uplength, ubyte alpha, co
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
+extern real32 HS_CLIPT_NEG_THRESH;
+extern real32 HS_CLIPT_NEG_SCALAR;
+extern real32 HS_CLIPT_NEG_FINISH;
+extern real32 HS_CLIPT_POS_THRESH;
+extern real32 HS_CLIPT_POS_SCALAR;
+extern real32 HS_CLIPT_POS_START;
 void hsUpdate(Ship* ship)
 {
     real32 minimum = 0.0, delta;
     ShipSinglePlayerGameInfo* ssinfo = ship->shipSinglePlayerGameInfo;
-    extern real32 HS_CLIPT_NEG_THRESH;
-    extern real32 HS_CLIPT_NEG_SCALAR;
-    extern real32 HS_CLIPT_NEG_FINISH;
-    extern real32 HS_CLIPT_POS_THRESH;
-    extern real32 HS_CLIPT_POS_SCALAR;
-    extern real32 HS_CLIPT_POS_START;
 
     if (ssinfo->hsState == HS_INACTIVE ||
         ssinfo->hsState == HS_FINISHED)
@@ -805,11 +805,11 @@ bool hsIsStaticGate(char* label)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
+extern LabelledVector** LabelledVectors;
 void hsStaticInit(sdword nVectors)
 {
     sdword i;
     hsStaticGate* pGate;
-    extern LabelledVector** LabelledVectors;
 
     hsStaticReset();
 

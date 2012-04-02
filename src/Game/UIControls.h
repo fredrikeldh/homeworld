@@ -331,7 +331,7 @@ bool uicClearCurrent(regionhandle reg);
 
 //adjust attributes of the basic control
 void uicTextEntryInit(textentryhandle entry, udword flags);
-void uicTextEntrySet(textentryhandle entry, char *text, sdword cursorPos);
+void uicTextEntrySet(textentryhandle entry, const char *text, sdword cursorPos);
 void uicTextEntryGet(textentryhandle entry, char *dest, sdword maxLength);
 void uicTextBufferResize(textentryhandle entry, sdword size);
 void uicTextEntryCleanUp(textentryhandle entry);

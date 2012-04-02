@@ -74,7 +74,7 @@ real32 nisPlayFactor = 1.0f;
 #endif
 bool nisPaused = FALSE;
 
-#if NIS_PRINT_INFO
+#ifdef NIS_PRINT_INFO
 char nisInfoString[256] = "";
 bool nisPrintInfo = FALSE;
 bool nisNoLockout = FALSE;
@@ -280,7 +280,7 @@ nisSMPTE *nisSMPTECounter = NULL;
 nisstatic *nisStatic[NIS_NumberStatics + NIS_NumberExtraStatics] = {NULL, NULL, NULL, NULL};
 
 //for localization
-char *nisLanguageSubpath[] =
+const char *nisLanguageSubpath[] =
 {
     "",
 #ifdef _WIN32
@@ -1728,7 +1728,7 @@ real32 nisUpdate(nisplaying *NIS, real32 timeElapsed)
     }
 #endif
 
-#if NIS_CAMERA_RELEASE
+#ifdef NIS_CAMERA_RELEASE
     if (keyIsStuck(NIS_CAMERA_RELEASE))
     {
         keyClearSticky(NIS_CAMERA_RELEASE);
@@ -1943,7 +1943,7 @@ real32 nisUpdate(nisplaying *NIS, real32 timeElapsed)
         NIS->iCurrentEvent++;
         event++;
     }
-#if NIS_PRINT_INFO
+#ifdef NIS_PRINT_INFO
     if (keyIsStuck(NIS_PRINT_INFO))
     {                                                       //toggle time display
         keyClearSticky(NIS_PRINT_INFO);
@@ -1955,7 +1955,8 @@ real32 nisUpdate(nisplaying *NIS, real32 timeElapsed)
         sprintf(nisInfoString, "NIS time = %.2f of %.2f, frame = %.0f of %.0f", NIS->timeElapsed, NIS->header->length, NIS->timeElapsed * NIS_FrameRate, NIS->header->length * NIS_FrameRate);
         if (selSelected.numShips == 1)
         {                                                   //print index of selected ship
-            char string[256], *pString;
+            char string[256];
+					const char *pString;
 
             for (index = 0; index < NIS->nObjects; index++)
             {                                               //for each object in motion NIS
@@ -2043,7 +2044,8 @@ sdword nisFindObjectByName(nisheader *header, char *name)
     sdword index, instance = 0;
     udword race = R1;
 //    ShipType type;
-    char *pSlash = NULL, *pType = NULL;
+    char *pSlash = NULL, *temp;
+		const char* pType = NULL;
     char raceString[32];
     char effectName[256];
     spaceobjpath *path = NULL;
@@ -2129,10 +2131,10 @@ sdword nisFindObjectByName(nisheader *header, char *name)
                         ;
                     }
                     strcpy(effectName, pType);              //copy over just the name
-                    pType = strchr(effectName, '.');
-                    if (pType != NULL)                      //remove the extension
+                    temp = strchr(effectName, '.');
+                    if (temp != NULL)                      //remove the extension
                     {
-                        *pType = 0;
+                        *temp = 0;
                     }
                     pType = effectName;
                     break;
@@ -2655,7 +2657,7 @@ void nisDamageLevel(nisplaying *NIS, nisevent *event)
 
 #ifdef _WIN32_FIX_ME
  #pragma warning( 4 : 4047)      // turns off "different levels of indirection warning"
-#endif 
+#endif
 void nisRemainAtEnd(nisplaying *NIS, nisevent *event)
 {
     bitSet(NIS->objectsInMotion[event->shipID].flags, OMF_RemainAtEnd);
@@ -2677,7 +2679,7 @@ void nisRemainAtEnd(nisplaying *NIS, nisevent *event)
 }
 #ifdef _WIN32_FIX_ME
  #pragma warning( 2 : 4047)      // turn back on "different levels of indirection warning"
-#endif 
+#endif
 
 void nisCameraFOV(nisplaying *NIS, nisevent *event)
 {
@@ -3356,47 +3358,47 @@ nisevent *nisNewEventNoObject(nisopcode opcode)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void nisDeathDamageSet(char *directory,char *field,void *dataToFillIn)
+void nisDeathDamageSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisevent *event = nisNewEvent(NEO_DeathDamage);
     event->param[0] = EDT_AccumDamage;
 }
-void nisDeathProjectileSet(char *directory,char *field,void *dataToFillIn)
+void nisDeathProjectileSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisevent *event = nisNewEvent(NEO_DeathProjectile);
     event->param[0] = EDT_ProjectileHit;
 }
-void nisDeathBeamSet(char *directory,char *field,void *dataToFillIn)
+void nisDeathBeamSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisevent *event = nisNewEvent(NEO_DeathBeam);
     event->param[0] = EDT_BeamHit;
 }
-void nisAttackSet(char *directory,char *field,void *dataToFillIn)
+void nisAttackSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisevent *event = nisNewEvent(NEO_Attack);
     sdword enemy = nisFindObjectByName(nisCurrentHeader, field);
     event->param[0] = enemy;
 }
-void nisHaltAttackSet(char *directory,char *field,void *dataToFillIn)
+void nisHaltAttackSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisNewEvent(NEO_HaltAttack);
 }
-void nisFireSet(char *directory,char *field,void *dataToFillIn)
+void nisFireSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisNewEvent(NEO_Fire);
 }
 //set the current object for subsequent events
-void nisCurrentObjectSet(char *directory,char *field,void *dataToFillIn)
+void nisCurrentObjectSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisCurrentObject = nisFindObjectByName(nisCurrentHeader, field);
 }
 //make no object the current object
-void nisCurrentObjectClear(char *directory,char *field,void *dataToFillIn)
+void nisCurrentObjectClear(const char *directory, char *field,void *dataToFillIn)
 {
     nisCurrentObject = -1;
 }
 //sets the time for subsequent events
-void nisCurrentTimeSet(char *directory,char *field,void *dataToFillIn)
+void nisCurrentTimeSet(const char *directory, char *field,void *dataToFillIn)
 {
     unsigned int i;
     sdword nScanned;
@@ -3426,24 +3428,24 @@ void nisCurrentTimeSet(char *directory,char *field,void *dataToFillIn)
     }
 }
 //show an object
-void nisCurrentObjectShow(char *directory,char *field,void *dataToFillIn)
+void nisCurrentObjectShow(const char *directory, char *field,void *dataToFillIn)
 {
     nisNewEvent(NEO_Show);
 }
 //hide an object
-void nisCurrentObjectHide(char *directory,char *field,void *dataToFillIn)
+void nisCurrentObjectHide(const char *directory, char *field,void *dataToFillIn)
 {
     nisNewEvent(NEO_Hide);
 }
-void nisInvincibleSet(char *directory,char *field,void *dataToFillIn)
+void nisInvincibleSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisNewEvent(NEO_Invincible);
 }
-void nisVincibleSet(char *directory,char *field,void *dataToFillIn)
+void nisVincibleSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisNewEvent(NEO_Vincible);
 }
-void nisSoundEventSet(char *directory,char *field,void *dataToFillIn)
+void nisSoundEventSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisevent *event = nisNewEvent(NEO_SoundEvent);
     event->param[0] = event->param[1] = 0;
@@ -3459,7 +3461,7 @@ void nisSoundEventSet(char *directory,char *field,void *dataToFillIn)
 char *nisSeparateExpression(char *in, char *out)
 {
     sdword parenNumber = 0;
-    static char *delimiters = ", \t";
+    static const char *delimiters = ", \t";
 
     while (*in)
     {
@@ -3489,7 +3491,7 @@ char *nisSeparateExpression(char *in, char *out)
     }
     return(in);
 }
-void nisSpeechEventSet(char *directory,char *field,void *dataToFillIn)
+void nisSpeechEventSet(const char *directory, char *field,void *dataToFillIn)
 {
     char *actorString;
     char *nextString;
@@ -3526,7 +3528,7 @@ void nisSpeechEventSet(char *directory,char *field,void *dataToFillIn)
         event->param[1] |= NIS_ActorMask;
     }
 }
-void nisFleetSpeechEventSet(char *directory,char *field,void *dataToFillIn)
+void nisFleetSpeechEventSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisevent *event = nisNewEvent(NEO_FleetSpeechEvent);
     char *nextString;
@@ -3549,7 +3551,7 @@ void nisFleetSpeechEventSet(char *directory,char *field,void *dataToFillIn)
         sscanf(nextString + 1, SMEMSIZE_FORMAT, &event->param[1]);
     }
 }
-void nisAnimaticSpeechEventSet(char* directory, char* field, void* dataToFillIn)
+void nisAnimaticSpeechEventSet(const char *directory, char *field, void* dataToFillIn)
 {
     nisevent* event = nisNewAnimaticEvent(NEO_AnimaticSpeechEvent);
     char *nextString;
@@ -3575,7 +3577,7 @@ void nisAnimaticSpeechEventSet(char* directory, char* field, void* dataToFillIn)
 #ifdef _WIN32_FIX_ME
  #pragma warning( 4 : 4047)      // turns off "different levels of indirection warning"
 #endif
-void nisRemainAtEndSet(char *directory,char *field,void *dataToFillIn)
+void nisRemainAtEndSet(const char *directory, char *field,void *dataToFillIn)
 {
     char optionalTeamName[50];
     nisevent *event;
@@ -3597,12 +3599,12 @@ void nisRemainAtEndSet(char *directory,char *field,void *dataToFillIn)
  #pragma warning( 2 : 4047)      // turn back on "different levels of indirection warning"
 #endif
 
-void nisCameraFOVSet(char *directory,char *field,void *dataToFillIn)
+void nisCameraFOVSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisevent *event = nisNewEvent(NEO_CameraFOV);
     sscanf(field, SMEMSIZE_FORMAT, &event->param[0]);
 }
-void nisRaceSwap(char *directory,char *field,void *dataToFillIn)
+void nisRaceSwap(const char *directory, char *field,void *dataToFillIn)
 {
     sdword index;
 
@@ -3623,7 +3625,7 @@ void nisRaceSwap(char *directory,char *field,void *dataToFillIn)
     }
     bitSet(nisCurrentHeader->flags, NHF_RacesSwapped);      //and remember that we swapped it
 }
-void nisCameraCutSet(char *directory,char *field,void *dataToFillIn)
+void nisCameraCutSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisevent *event = nisNewEventNoObject(NEO_CameraCut);
     sdword nScanned;
@@ -3647,19 +3649,19 @@ void nisCameraCutSet(char *directory,char *field,void *dataToFillIn)
     }
     event->param[0] = Real32ToSdword(value);
 }
-void nisBlackScreenSet(char *directory, char *field, void *dataToFillIn)
+void nisBlackScreenSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisNewEventNoObject(NEO_BlackScreenStart);
 }
-void nisEndBlackScreenSet(char *directory, char *field, void *dataToFillIn)
+void nisEndBlackScreenSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisNewEventNoObject(NEO_BlackScreenEnd);
 }
-void nisTextFontSet(char *directory, char *field, void *dataToFillIn)
+void nisTextFontSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisCurrentTextCardFont = frFontRegister(field);
 }
-void nisTextColorSet(char *directory, char *field, void *dataToFillIn)
+void nisTextColorSet(const char *directory, char *field, void *dataToFillIn)
 {
     sdword nScanned, red, green, blue;
 
@@ -3670,7 +3672,7 @@ void nisTextColorSet(char *directory, char *field, void *dataToFillIn)
 #endif
     nisCurrentTextCardColor = colRGB(red, green, blue);
 }
-void nisTextPositionSet(char *directory, char *field, void *dataToFillIn)
+void nisTextPositionSet(const char *directory, char *field, void *dataToFillIn)
 {
     sdword nScanned, x, y;
 
@@ -3683,7 +3685,7 @@ void nisTextPositionSet(char *directory, char *field, void *dataToFillIn)
     nisCurrentTextCardX = x;
     nisCurrentTextCardY = y;
 }
-void nisTextScrollSet(char *directory, char *field, void *dataToFillIn)
+void nisTextScrollSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisevent *event = nisNewEventNoObject(NEO_TextScroll);
     sdword nScanned;
@@ -3711,7 +3713,7 @@ void nisTextScrollSet(char *directory, char *field, void *dataToFillIn)
     event->param[0] = Real32ToSdword(distance);
     event->param[1] = Real32ToSdword(duration);
 }
-void nisTextFadeSet(char *directory, char *field, void *dataToFillIn)
+void nisTextFadeSet(const char *directory, char *field, void *dataToFillIn)
 {
     sdword nScanned;
     real32 fade;
@@ -3742,7 +3744,7 @@ void nisTextFadeSet(char *directory, char *field, void *dataToFillIn)
         nisCurrentTextFadeIn = fade;
     }
 }
-void nisTextMarginSet(char *directory, char *field, void *dataToFillIn)
+void nisTextMarginSet(const char *directory, char *field, void *dataToFillIn)
 {
     sdword nScanned;
 
@@ -3751,7 +3753,7 @@ void nisTextMarginSet(char *directory, char *field, void *dataToFillIn)
     dbgAssertOrIgnore(nScanned == 1);
 #endif
 }
-void nisTextDurationSet(char *directory, char *field, void *dataToFillIn)
+void nisTextDurationSet(const char *directory, char *field, void *dataToFillIn)
 {
     sdword nScanned;
     real32 value;
@@ -3775,7 +3777,7 @@ void nisTextDurationSet(char *directory, char *field, void *dataToFillIn)
     }
     nisCurrentDuration = value;
 }
-void nisTextCardSet(char *directory, char *field, void *dataToFillIn)
+void nisTextCardSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisevent *event = nisNewEventNoObject(NEO_TextCard);
     nistextcard *card;
@@ -3827,7 +3829,7 @@ void nisTextCardSet(char *directory, char *field, void *dataToFillIn)
     event->param[0] = (memsize)card;
     fontMakeCurrent(fhSave);
 }
-void nisCameraBlendInSet(char *directory, char *field, void *dataToFillIn)
+void nisCameraBlendInSet(const char *directory, char *field, void *dataToFillIn)
 {
     sdword nScanned;
     real32 time0, time1 = -1.0f;
@@ -3887,12 +3889,12 @@ void nisCameraBlendInSet(char *directory, char *field, void *dataToFillIn)
     nisCameraCutStage2 = time1;
 }
 /*
-void nisCameraBlendOutSet(char *directory, char *field, void *dataToFillIn)
+void nisCameraBlendOutSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisCameraCutOut = TRUE;
 }
 */
-void nisScissorBlendSet(char *directory, char *field, void *dataToFillIn)
+void nisScissorBlendSet(const char *directory, char *field, void *dataToFillIn)
 {
     sdword nScanned;
     real32 value;
@@ -3931,15 +3933,15 @@ void nisScissorBlendSet(char *directory, char *field, void *dataToFillIn)
         event->param[0] = Real32ToSdword(value);
     }
 }
-void nisFocusAtEndSet(char *directory,char *field,void *dataToFillIn)
+void nisFocusAtEndSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisNewEvent(NEO_FocusAtEnd);
 }
-void nisFocusSet(char *directory,char *field,void *dataToFillIn)
+void nisFocusSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisNewEventNoObject(NEO_Focus);
 }
-void nisMusicStartSet(char *directory,char *field,void *dataToFillIn)
+void nisMusicStartSet(const char *directory, char *field,void *dataToFillIn)
 {
     sdword trackNumber, nScanned;
     nisevent *event = nisNewEventNoObject(NEO_StartMusic);
@@ -3953,7 +3955,7 @@ void nisMusicStartSet(char *directory,char *field,void *dataToFillIn)
 #endif
     event->param[0] = trackNumber;
 }
-void nisMusicStopSet(char *directory,char *field,void *dataToFillIn)
+void nisMusicStopSet(const char *directory, char *field,void *dataToFillIn)
 {
     real32 fadeOut;
     sdword nScanned;
@@ -3984,13 +3986,13 @@ void nisMusicStopSet(char *directory,char *field,void *dataToFillIn)
 #endif
     event->param[0] = Real32ToSdword(fadeOut);
 }
-void nisCentreShipSet(char *directory,char *field,void *dataToFillIn)
+void nisCentreShipSet(const char *directory, char *field,void *dataToFillIn)
 {
     dbgAssertOrIgnore(nisCurrentObject >= 0);
     dbgAssertOrIgnore(nisCurrentObject < nisCurrentHeader->nObjectPaths);
     bitSet(nisCurrentHeader->objectPath[nisCurrentObject].race, NIS_CentreShip);
 }
-void nisFadeSetSet(char *directory,char *field,void *dataToFillIn)
+void nisFadeSetSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisevent *event = nisNewEventNoObject(NEO_BlackFadeSet);
     real32 level;
@@ -4010,7 +4012,7 @@ void nisFadeSetSet(char *directory,char *field,void *dataToFillIn)
 #endif
     event->param[0] = Real32ToSdword(level);
 }
-void nisFadeToSet(char *directory,char *field,void *dataToFillIn)
+void nisFadeToSet(const char *directory, char *field,void *dataToFillIn)
 {
     nisevent *event = nisNewEventNoObject(NEO_BlackFadeTo);
     real32 level, duration;
@@ -4058,7 +4060,7 @@ void nisFadeToSet(char *directory,char *field,void *dataToFillIn)
     event->param[0] = Real32ToSdword(level);
     event->param[1] = Real32ToSdword(duration);
 }
-void nisColorSchemeSet(char *directory, char *field, void *dataToFillIn)
+void nisColorSchemeSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisevent *event = nisNewEvent(NEO_ColorScheme);
     sdword nScanned, value;
@@ -4070,20 +4072,20 @@ void nisColorSchemeSet(char *directory, char *field, void *dataToFillIn)
 #endif
     event->param[0] = value;
 }
-void nisMeshAnimationStartSet(char *directory, char *field, void *dataToFillIn)
+void nisMeshAnimationStartSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisevent *event = nisNewEvent(NEO_MeshAnimationStart);
     event->param[0] = (memsize)memStringDupe(field);
 }
-void nisMeshAnimationStopSet(char *directory, char *field, void *dataToFillIn)
+void nisMeshAnimationStopSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisNewEvent(NEO_MeshAnimationStop);
 }
-void nisMeshAnimationPauseSet(char *directory, char *field, void *dataToFillIn)
+void nisMeshAnimationPauseSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisNewEvent(NEO_MeshAnimationPause);
 }
-void nisMeshAnimationSeekSet(char *directory, char *field, void *dataToFillIn)
+void nisMeshAnimationSeekSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisevent *event = nisNewEvent(NEO_MeshAnimationSeek);
     real32 seekTime;
@@ -4114,11 +4116,11 @@ void nisMeshAnimationSeekSet(char *directory, char *field, void *dataToFillIn)
 #endif
     event->param[0] = Real32ToSdword(seekTime);
 }
-void nisBlendCameraToFocusSet(char *directory, char *field, void *dataToFillIn)
+void nisBlendCameraToFocusSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisNewEventNoObject(NEO_BlendCameraEndPoint);
 }
-void nisVolumesSet(char *directory, char *field, void *dataToFillIn)
+void nisVolumesSet(const char *directory, char *field, void *dataToFillIn)
 {
     sdword nScanned;
     float level;
@@ -4130,23 +4132,23 @@ void nisVolumesSet(char *directory, char *field, void *dataToFillIn)
     dbgAssertOrIgnore(level >= 0.0f && level <= 1.0f);
     event->param[0] = Real32ToSdword(level);
 }
-void nisTrailZeroSet(char *directory, char *field, void *dataToFillIn)
+void nisTrailZeroSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisNewEvent(NEO_TrailZeroLength);
 }
-void nisTrailMoveSet(char *directory, char *field, void *dataToFillIn)
+void nisTrailMoveSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisNewEvent(NEO_TrailMove);
 }
-void nisUniversePauseSet(char *directory, char *field, void *dataToFillIn)
+void nisUniversePauseSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisNewEventNoObject(NEO_UniversePauseToggle);
 }
-void nisUniverseHideSet(char *directory, char *field, void *dataToFillIn)
+void nisUniverseHideSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisNewEventNoObject(NEO_UniverseHideToggle);
 }
-void nisNewEnvironmentSet(char *directory, char *field, void *dataToFillIn)
+void nisNewEnvironmentSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisevent *event = nisNewEventNoObject(NEO_NewEnvironment);
     char *name, *scan;
@@ -4164,7 +4166,7 @@ void nisNewEnvironmentSet(char *directory, char *field, void *dataToFillIn)
     sscanf(scan, "%f", &env->phi);
     event->param[0] = (memsize)env;
 }
-void nisLookyObjectSet(char *directory, char *field, void *dataToFillIn)
+void nisLookyObjectSet(const char *directory, char *field, void *dataToFillIn)
 {
     dbgAssertOrIgnore(nisCurrentObject != -1);
 
@@ -4173,7 +4175,7 @@ void nisLookyObjectSet(char *directory, char *field, void *dataToFillIn)
 //scan in formatted like this:
 //<hh>:<mm>:<ss>:<ff> <x> <y> [<bRightJustified>] [<red>] [<green>] [<blue>] [<font>] [<format>]
 //defaults are:                 ^TRUE^             ^255^    ^255^     ^255^  ^default^  ^"%s"^
-void nisSMPTEOnSet(char *directory, char *field, void *dataToFillIn)
+void nisSMPTEOnSet(const char *directory, char *field, void *dataToFillIn)
 {
     char timeString[80];
     char formatString[80] = "%s";
@@ -4213,14 +4215,14 @@ void nisSMPTEOnSet(char *directory, char *field, void *dataToFillIn)
     newSMPTE->c = colRGB(red, green, blue);
     event->param[0] = (memsize)newSMPTE;
 }
-void nisSMPTEOffSet(char *directory, char *field, void *dataToFillIn)
+void nisSMPTEOffSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisNewEventNoObject(NEO_SMPTEOff);
 }
 //scan a string formatted like this:
 //nLines, nLinesVar, width, widthVar, y, yVar[, hue, hueVar[, lum, lumVar[, sat, satVar[, alpha, alphaVar[, bTextured]]]]
 //defaults are:                                 ^0^   ^0^     ^1^   ^0^     ^0^   ^0^      ^1^     ^0^       ^FALSE^
-void nisStaticOnSet(char *directory, char *field, void *dataToFillIn)
+void nisStaticOnSet(const char *directory, char *field, void *dataToFillIn)
 {
     sdword nScanned;
     nisstatic *newStatic;
@@ -4270,7 +4272,7 @@ void nisStaticOnSet(char *directory, char *field, void *dataToFillIn)
     newStatic->bTextured = scriptStringToBool(bTextureString);
     event->param[0] = (memsize)newStatic;
 }
-void nisStaticOffSet(char *directory, char *field, void *dataToFillIn)
+void nisStaticOffSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisevent *event = nisNewEventNoObject(NEO_StaticOff);
     sdword nScanned;
@@ -4280,7 +4282,7 @@ void nisStaticOffSet(char *directory, char *field, void *dataToFillIn)
     dbgAssertOrIgnore(nScanned == 1);
     dbgAssertOrIgnore(event->param[0] >= 0 && event->param[0] < NIS_NumberStatics);
 }
-void nisHideDerelictSet(char *directory, char *field, void *dataToFillIn)
+void nisHideDerelictSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisevent *event = nisNewEventNoObject(dataToFillIn == NULL ? NEO_HideDerelict : NEO_ShowDerelict);
     DerelictType type = StrToDerelictType(field);
@@ -4288,7 +4290,7 @@ void nisHideDerelictSet(char *directory, char *field, void *dataToFillIn)
     dbgAssertOrIgnore(type != -1);
     event->param[0] = type;
 }
-void nisNewNISSet(char *directory, char *field, void *dataToFillIn)
+void nisNewNISSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisevent *event = nisNewEventNoObject(NEO_StartNewNIS);
     char nisName[80], scriptName[80];
@@ -4317,7 +4319,7 @@ void nisNewNISSet(char *directory, char *field, void *dataToFillIn)
     dbgAssertOrIgnore(fileExists(fileName, 0));
     event->param[1] = (memsize)memStringDupe(fileName);
 }
-void nisAttributesSet(char *directory, char *field, void *dataToFillIn)
+void nisAttributesSet(const char *directory, char *field, void *dataToFillIn)
 {
     sdword nScanned, attributes;
     nisevent *event = nisNewEvent(NEO_Attributes);
@@ -4326,7 +4328,7 @@ void nisAttributesSet(char *directory, char *field, void *dataToFillIn)
     dbgAssertOrIgnore(nScanned == 1);
     event->param[0] = attributes;
 }
-void nisAttackKasSelectionSet(char *directory, char *field, void *dataToFillIn)
+void nisAttackKasSelectionSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisevent *event = nisNewEvent(NEO_AttackKasSelection);
     GrowSelection *selection;
@@ -4336,12 +4338,12 @@ void nisAttackKasSelectionSet(char *directory, char *field, void *dataToFillIn)
     dbgAssertOrIgnore(selection->selection->numShips > 0);          //verify there are ships in it
     event->param[0] = (memsize)(selection->selection);
 }
-void nisKeepMovingAtEndSet(char *directory, char *field, void *dataToFillIn)
+void nisKeepMovingAtEndSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisNewEvent(NEO_KeepMovingAtEnd);
 }
 
-void nisMinimumLODSet(char *directory, char *field, void *dataToFillIn)
+void nisMinimumLODSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisevent *event = nisNewEvent(NEO_MinimumLOD);
     sdword nScanned;
@@ -4352,7 +4354,7 @@ void nisMinimumLODSet(char *directory, char *field, void *dataToFillIn)
     dbgAssertOrIgnore(event->param[0] >= 0 && event->param[0] < 10);
 }
 
-void nisDamageLevelSet(char *directory, char *field, void *dataToFillIn)
+void nisDamageLevelSet(const char *directory, char *field, void *dataToFillIn)
 {
     nisevent *event = nisNewEvent(NEO_DamageLevel);
     sdword nScanned;
@@ -4534,7 +4536,7 @@ sdword nisGenericObjectRegister(nisheader *header, char *name)
     Outputs     : Allocates memory for and returns the loaded NIS
     Return      :                           ^^^^^^^^^^^^^^^^^^^^
 ----------------------------------------------------------------------------*/
-nisheader *nisLoad(char *fileName, char *scriptName)
+nisheader *nisLoad(const char *fileName, const char *scriptName)
 {
     nisheader header, *newHeader;
     filehandle f;
@@ -4645,7 +4647,7 @@ nisheader *nisLoad(char *fileName, char *scriptName)
 			objPath->parameters[j].tension    = FIX_ENDIAN_FLOAT_32( objPath->parameters[j].tension );
 			objPath->parameters[j].continuity = FIX_ENDIAN_FLOAT_32( objPath->parameters[j].continuity );
 			objPath->parameters[j].bias       = FIX_ENDIAN_FLOAT_32( objPath->parameters[j].bias );
-			
+
 			for( k = 0; k < 6; k++ )
 			{
 				objPath->curve[k][j] = FIX_ENDIAN_FLOAT_32( objPath->curve[k][j] );
@@ -4806,7 +4808,7 @@ foundOne:;
 			camPath->parameters[j].tension    = FIX_ENDIAN_FLOAT_32( camPath->parameters[j].tension );
 			camPath->parameters[j].continuity = FIX_ENDIAN_FLOAT_32( camPath->parameters[j].continuity );
 			camPath->parameters[j].bias       = FIX_ENDIAN_FLOAT_32( camPath->parameters[j].bias );
-			
+
 			for( k = 0; k < 6; k++ )
 			{
 				camPath->curve[k][j] = FIX_ENDIAN_FLOAT_32( camPath->curve[k][j] );
@@ -5089,7 +5091,7 @@ void nisTextCardListDraw(void)
     Outputs     :
     Return      : void
 ----------------------------------------------------------------------------*/
-char *nisIStrings[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
+const char *nisIStrings[] = {"0", "1", "2", "3", "4", "5", "6", "7", "8", "9"};
 void nisSMPTECounterDraw(nisplaying *NIS, nisSMPTE *SMPTE)
 {
     real32 time;

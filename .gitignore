@@ -23,3 +23,10 @@ tools/biggie/biggie
 
 cache
 build
+
+/src/Missions/Generated/*.kp
+/src/Missions/Generated/*.c
+/src/Missions/Generated/*.h
+
+/src/log.txt
+/src/panic.report

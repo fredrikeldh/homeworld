@@ -1,4 +1,5 @@
 
+#include "../gles2.h"
 #include "point.h"
 
 PointSetup::PointSetup() :
@@ -13,7 +14,7 @@ void PointSetup::SetSize(GLfloat  size)
 		SetError(GL_INVALID_VALUE);
 		return;
 	}
-	
+
 	point_size = size;
 }
 

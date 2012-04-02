@@ -107,7 +107,7 @@ extern fonthandle selGroupFont3;
 //hot-key number stuff
 extern color selHotKeyNumberColor;
 extern udword selNumberMargin;
-extern char *selHotKeyString[10];
+extern const char *selHotKeyString[10];
 
 #if PIE_MOVE_NEARTO
 //movement mechanism 'move near to' stuff

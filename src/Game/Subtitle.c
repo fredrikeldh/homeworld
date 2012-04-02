@@ -99,17 +99,17 @@ bool8 subCloseCaptionsEnabled = TRUE;
 /*-----------------------------------------------------------------------------
     Script parsing table for subtitle.script.
 -----------------------------------------------------------------------------*/
-void subThemeColorSet(char *directory, char *field, void *dataToFillIn);
-void subThemeDropshadowSet(char *directory, char *field, void *dataToFillIn);
-void subThemeMarginSet(char *directory, char *field, void *dataToFillIn);
-void subThemeFontSet(char *directory, char *field, void *dataToFillIn);
-void subThemeFadeSet(char *directory, char *field, void *dataToFillIn);
-void subRegionBoundsSet(char *directory, char *field, void *dataToFillIn);
-void subRegionScaleRezSet(char *directory, char *field, void *dataToFillIn);
-void subRegionMaxLinesSet(char *directory, char *field, void *dataToFillIn);
-void subThemeCentredSet(char *directory, char *field, void *dataToFillIn);
-void subThemePictureSet(char *directory, char *field, void *dataToFillIn);
-void subRegionIconOffsetSet(char *directory, char *field, void *dataToFillIn);
+void subThemeColorSet(const char *directory,char *field, void *dataToFillIn);
+void subThemeDropshadowSet(const char *directory,char *field, void *dataToFillIn);
+void subThemeMarginSet(const char *directory,char *field, void *dataToFillIn);
+void subThemeFontSet(const char *directory,char *field, void *dataToFillIn);
+void subThemeFadeSet(const char *directory,char *field, void *dataToFillIn);
+void subRegionBoundsSet(const char *directory,char *field, void *dataToFillIn);
+void subRegionScaleRezSet(const char *directory,char *field, void *dataToFillIn);
+void subRegionMaxLinesSet(const char *directory,char *field, void *dataToFillIn);
+void subThemeCentredSet(const char *directory,char *field, void *dataToFillIn);
+void subThemePictureSet(const char *directory,char *field, void *dataToFillIn);
+void subRegionIconOffsetSet(const char *directory,char *field, void *dataToFillIn);
 scriptEntry subScriptTable[] =
 {
     //define theme parameters
@@ -170,7 +170,7 @@ bool subAnyCardsOnScreen(void)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void subThemeColorSet(char *directory, char *field, void *dataToFillIn)
+void subThemeColorSet(const char *directory,char *field, void *dataToFillIn)
 {
     udword nScanned, iTheme, red, green, blue;
 
@@ -200,7 +200,7 @@ void subThemeColorSet(char *directory, char *field, void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void subThemeDropshadowSet(char *directory, char *field, void *dataToFillIn)
+void subThemeDropshadowSet(const char *directory,char *field, void *dataToFillIn)
 {
     sdword nScanned, iTheme;
     char boolString[UBYTE_Max];
@@ -227,7 +227,7 @@ void subThemeDropshadowSet(char *directory, char *field, void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void subThemeCentredSet(char *directory, char *field, void *dataToFillIn)
+void subThemeCentredSet(const char *directory,char *field, void *dataToFillIn)
 {
     sdword nScanned, iTheme;
     char boolString[UBYTE_Max];
@@ -254,7 +254,7 @@ void subThemeCentredSet(char *directory, char *field, void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void subThemePictureSet(char *directory, char *field, void *dataToFillIn)
+void subThemePictureSet(const char *directory,char *field, void *dataToFillIn)
 {
     sdword nScanned, iTheme, iColorScheme;
     char pictureString[UBYTE_Max];
@@ -297,7 +297,7 @@ void subThemePictureSet(char *directory, char *field, void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void subThemeMarginSet(char *directory, char *field, void *dataToFillIn)
+void subThemeMarginSet(const char *directory,char *field, void *dataToFillIn)
 {
     sdword nScanned, iTheme, margin;
 
@@ -323,7 +323,7 @@ void subThemeMarginSet(char *directory, char *field, void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void subThemeFadeSet(char *directory, char *field, void *dataToFillIn)
+void subThemeFadeSet(const char *directory,char *field, void *dataToFillIn)
 {
     sdword nScanned, iTheme;
     real32 fadeTime;
@@ -358,7 +358,7 @@ void subThemeFadeSet(char *directory, char *field, void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void subThemeFontSet(char *directory, char *field, void *dataToFillIn)
+void subThemeFontSet(const char *directory,char *field, void *dataToFillIn)
 {
     sdword nScanned, iTheme;
     char fontName[1024];
@@ -385,7 +385,7 @@ void subThemeFontSet(char *directory, char *field, void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void subRegionBoundsSet(char *directory, char *field, void *dataToFillIn)
+void subRegionBoundsSet(const char *directory,char *field, void *dataToFillIn)
 {
     sdword nScanned, iRegion;
     rectangle rect;
@@ -419,7 +419,7 @@ void subRegionBoundsSet(char *directory, char *field, void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void subRegionScaleRezSet(char *directory, char *field, void *dataToFillIn)
+void subRegionScaleRezSet(const char *directory,char *field, void *dataToFillIn)
 {
     sdword nScanned, iRegion;
     char bScaleRezX[UBYTE_Max], bScaleRezY[UBYTE_Max];
@@ -448,7 +448,7 @@ void subRegionScaleRezSet(char *directory, char *field, void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void subRegionMaxLinesSet(char *directory, char *field, void *dataToFillIn)
+void subRegionMaxLinesSet(const char *directory,char *field, void *dataToFillIn)
 {
     sdword nScanned, iRegion, maxLines;
 
@@ -475,7 +475,7 @@ void subRegionMaxLinesSet(char *directory, char *field, void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void subRegionIconOffsetSet(char *directory, char *field, void *dataToFillIn)
+void subRegionIconOffsetSet(const char *directory,char *field, void *dataToFillIn)
 {
     sdword nScanned, iRegion, x, y;
 
@@ -1213,7 +1213,7 @@ void subTitlesUpdate(void)
     Outputs     :
     Return      : ?
 ----------------------------------------------------------------------------*/
-sdword subTitleAdd(sdword actor, sdword speechEvent, char *text, sdword length, real32 time)
+sdword subTitleAdd(sdword actor, sdword speechEvent, const char *text, sdword length, real32 time)
 {
 /*
 #if SUB_VERBOSE_LEVEL >= 1

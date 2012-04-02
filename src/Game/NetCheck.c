@@ -32,16 +32,16 @@ void netlogwrite(const void * ptr, size_t size, size_t count)
 {
 	if( !netlogfile )
 		return;
-	
+
 	fwrite(ptr, size, count, netlogfile);
 }
 
 void netlogprintf(const char *restrict format, ...)
 {
+	va_list args;
 	if( !netlogfile )
 		return;
-	
-	va_list args;
+
 	va_start(args, format);
 	vfprintf(netlogfile, format, args);
 }
@@ -170,7 +170,7 @@ void godSyncShutDown()
 //pass in FALSE to generate another frame and keep it in memory
 //pass in TRUE to write the whole memory dump to disk without
 //generating a new snapshot
-void syncDebugDump(char *filename1,sdword counter,bool save)
+void syncDebugDump(const char *filename1,sdword counter,bool save)
 {
     filehandle syncFH;
     FILE *syncFP = NULL;
@@ -287,7 +287,7 @@ void syncDebugDump(char *filename1,sdword counter,bool save)
             }
             else
             {
-                us->ship[j].dockingship=-1;
+                us->ship[j].dockingship=(void*)-1;
             }
             us->ship[j].navLightInfo=0;
 
@@ -302,7 +302,7 @@ void syncDebugDump(char *filename1,sdword counter,bool save)
             }
             else
             {
-                us->ship[j].rowGetOutOfWay=-1;
+                us->ship[j].rowGetOutOfWay=(void*)-1;
             }
 
             if(us->ship[j].playerowner != NULL)
@@ -311,7 +311,7 @@ void syncDebugDump(char *filename1,sdword counter,bool save)
             }
             else
             {
-                us->ship[j].playerowner = -1;
+                us->ship[j].playerowner = (void*)-1;
             }
 
             if(us->ship[j].gettingrocked != NULL)
@@ -320,7 +320,7 @@ void syncDebugDump(char *filename1,sdword counter,bool save)
             }
             else
             {
-                us->ship[j].gettingrocked=-1;
+                us->ship[j].gettingrocked=(void*)-1;
             }
             if(us->ship[j].recentAttacker != NULL)
             {
@@ -328,7 +328,7 @@ void syncDebugDump(char *filename1,sdword counter,bool save)
             }
             else
             {
-                us->ship[j].recentAttacker=-1;
+                us->ship[j].recentAttacker=(void*)-1;
             }
             if(us->ship[j].firingAtUs != NULL)
             {
@@ -336,7 +336,7 @@ void syncDebugDump(char *filename1,sdword counter,bool save)
             }
             else
             {
-                us->ship[j].firingAtUs=-1;
+                us->ship[j].firingAtUs=(void*)-1;
             }
 
             us->ship[j].flightmanInfo=0;
@@ -347,7 +347,7 @@ void syncDebugDump(char *filename1,sdword counter,bool save)
             }
             else
             {
-                us->ship[j].command = -1;
+                us->ship[j].command = (void*)-1;
             }
 
             //turn off this COMPUTER PLAYER specific variale!
@@ -363,7 +363,7 @@ void syncDebugDump(char *filename1,sdword counter,bool save)
 
             if(us->ship[j].dockvars.dockship!=NULL)
             {
-                us->ship[j].dockvars.dockship = us->ship[j].dockvars.dockship->shipID.shipNumber;
+                us->ship[j].dockvars.dockship = (void*)us->ship[j].dockvars.dockship->shipID.shipNumber;
             }
             else
             {
@@ -669,7 +669,7 @@ void recPackRecordPacket(ubyte *packet,udword sizeofPacket)
     fileClose(fh);
 }
 
-void recPackRecordPacketFilename(ubyte *packet,udword sizeofPacket,char *filename)
+void recPackRecordPacketFilename(ubyte *packet,udword sizeofPacket,const char *filename)
 {
     udword size = sizeofPacket;
     udword validcheck = VALIDCHECK;
@@ -1011,7 +1011,8 @@ void netcheckShow(HWPacketHeader *packet)
         }
         else
 #endif
-            fprintf(netlogfile,"Packet:%d Rand:%d Checksum:%f %d CDET:%d\n",packetnum,randcheck,univcheck,numShipsInChecksum,blobcheck);
+            fprintf(netlogfile,"Packet:%d Rand:%d Checksum:%f %d CDET:%d\n",
+				(int)packetnum,(int)randcheck,univcheck,(int)numShipsInChecksum,(int)blobcheck);
     }
 }
 

@@ -73,8 +73,8 @@ trackvalue;
     Functions:
 =============================================================================*/
 #if NUMBER_TRACKING
-void trkTrackValueAddFn(char *name, real32 *number, real32 *timer, color c);
-void trkTrackValueRemoveFn(char *name);
+void trkTrackValueAddFn(const char *name, real32 *number, real32 *timer, color c);
+void trkTrackValueRemoveFn(const char *name);
 void trkTrackValueRemoveAllFn(void);
 void trkTrackValuesDisplayFn(void);
 #endif

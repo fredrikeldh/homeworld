@@ -174,18 +174,18 @@ bool univLoadFreeLog = FALSE;
     Private Function prototypes:
 =============================================================================*/
 
-static void loadMexDataCB(char *directory,char *field,void *dataToFillIn);
-//static void setRaceCB(char *directory,char *field,void *dataToFillIn);
-static void setClassCB(char *directory,char *field,void *dataToFillIn);
-static void scriptSetFramesCB(char *directory,char *field,void *dataToFillIn);
-static void LODScriptLoad(char *directory,char *field,void *dataToFillIn);
-static void setGunBindInfo(char *directory,char *field,void *dataToFillIn);
-static void setAnimationBindInfo(char *directory,char *field,void *dataToFillIn);
-static void setMadStartInfo(char *directory,char *field,void *dataToFillIn);
-static void setGunAnimInfo(char *directory,char *field,void *dataToFillIn);
-static void setDockAnimInfo(char *directory,char *field,void *dataToFillIn);
-static void setMothershipDoorAnimInfo(char *directory,char *field,void *dataToFillIn);
-static void setSpecialCaseAnimInfo(char *directory,char *field,void *dataToFillIn);
+static void loadMexDataCB(const char *directory,char *field,void *dataToFillIn);
+//static void setRaceCB(const char *directory,char *field,void *dataToFillIn);
+static void setClassCB(const char *directory,char *field,void *dataToFillIn);
+static void scriptSetFramesCB(const char *directory,char *field,void *dataToFillIn);
+static void LODScriptLoad(const char *directory,char *field,void *dataToFillIn);
+static void setGunBindInfo(const char *directory,char *field,void *dataToFillIn);
+static void setAnimationBindInfo(const char *directory,char *field,void *dataToFillIn);
+static void setMadStartInfo(const char *directory,char *field,void *dataToFillIn);
+static void setGunAnimInfo(const char *directory,char *field,void *dataToFillIn);
+static void setDockAnimInfo(const char *directory,char *field,void *dataToFillIn);
+static void setMothershipDoorAnimInfo(const char *directory,char *field,void *dataToFillIn);
+static void setSpecialCaseAnimInfo(const char *directory,char *field,void *dataToFillIn);
 
 /*=============================================================================
     Private Data:
@@ -489,7 +489,7 @@ scriptEntry ShipStaticCapLimits[] =
     { "MaxJobsPerClass[Fighter]",       scriptSetSdwordCB, &cmMaxJobsPerClass[CLASS_Fighter]},
     { "MaxJobsPerClass[Resource]",      scriptSetSdwordCB, &cmMaxJobsPerClass[CLASS_Resource]},
     { "MaxJobsPerClass[NonCombat]",     scriptSetSdwordCB, &cmMaxJobsPerClass[CLASS_NonCombat]},
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -972,7 +972,7 @@ scriptStructEntry MineStaticScriptTable[] =
     information in the static structures.  They are called by scriptSetStruct
 =============================================================================*/
 //bind a hierarchy element to a gun and set the hierarchy size
-static void setGunBindInfo(char *directory,char *field,void *dataToFillIn)
+static void setGunBindInfo(const char *directory,char *field,void *dataToFillIn)
 {
     ShipStaticInfo *info = (ShipStaticInfo *)dataToFillIn;
     char *hString, *string, *gString;
@@ -1044,10 +1044,10 @@ static void setGunBindInfo(char *directory,char *field,void *dataToFillIn)
     dbgMessagef("setGunBindInfo: bound '%s' to '%s' %d times", hString, gString, nBound++);
 #endif
 }
-static void setAnimationBindInfo(char *directory,char *field,void *dataToFillIn)
+static void setAnimationBindInfo(const char *directory,char *field,void *dataToFillIn)
 {
     ShipStaticInfo *info = (ShipStaticInfo *)dataToFillIn;
-    char *shipName;
+    const char *shipName;
     char fileName[256];
 
     shipName = ShipTypeToStr(info->shiptype);
@@ -1058,7 +1058,7 @@ static void setAnimationBindInfo(char *directory,char *field,void *dataToFillIn)
     info->hierarchySize = lodHierarchySizeCompute(info->staticheader.LOD);
 }
 
-static void setMadStartInfo(char *directory,char *field,void *dataToFillIn)
+static void setMadStartInfo(const char *directory,char *field,void *dataToFillIn)
 {
     ShipStaticInfo *info = (ShipStaticInfo *)dataToFillIn;
     char madAnimName[256];
@@ -1097,7 +1097,7 @@ static void setMadStartInfo(char *directory,char *field,void *dataToFillIn)
     sdword *gunCloseIndexes;
     sdword *gunCloseDamagedIndexes;
  */
-static void setGunAnimInfo(char *directory,char *field,void *dataToFillIn)
+static void setGunAnimInfo(const char *directory,char *field,void *dataToFillIn)
 {
     ShipStaticInfo *info = (ShipStaticInfo *)dataToFillIn;
     sdword i;
@@ -1170,7 +1170,7 @@ static void setGunAnimInfo(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-static void setDockAnimInfo(char *directory,char *field,void *dataToFillIn)
+static void setDockAnimInfo(const char *directory,char *field,void *dataToFillIn)
 {
     ShipStaticInfo *info = (ShipStaticInfo *)dataToFillIn;
     sdword i;
@@ -1242,7 +1242,7 @@ static void setDockAnimInfo(char *directory,char *field,void *dataToFillIn)
     }
 
 }
-void setMothershipDoorAnimInfo(char *directory,char *field,void *dataToFillIn)
+void setMothershipDoorAnimInfo(const char *directory,char *field,void *dataToFillIn)
 {
      ShipStaticInfo *info = (ShipStaticInfo *)dataToFillIn;
      sdword i;
@@ -1282,7 +1282,7 @@ void setMothershipDoorAnimInfo(char *directory,char *field,void *dataToFillIn)
          }
      }
 }
-void setSpecialCaseAnimInfo(char *directory,char *field,void *dataToFillIn)
+void setSpecialCaseAnimInfo(const char *directory,char *field,void *dataToFillIn)
 {
     ShipStaticInfo *info = (ShipStaticInfo *)dataToFillIn;
     sdword i;
@@ -1355,7 +1355,7 @@ void setSpecialCaseAnimInfo(char *directory,char *field,void *dataToFillIn)
     }
 
 }
-static void LODScriptLoad(char *directory,char *field,void *dataToFillIn)
+static void LODScriptLoad(const char *directory,char *field,void *dataToFillIn)
 {
     if (strcmp(field,"DefaultShip") == 0)
     {
@@ -1366,7 +1366,7 @@ static void LODScriptLoad(char *directory,char *field,void *dataToFillIn)
         *((lodinfo **)dataToFillIn) = lodTableReadScript(directory, field);
     }
 }
-static void loadMexDataCB(char *directory,char *field,void *dataToFillIn)
+static void loadMexDataCB(const char *directory,char *field,void *dataToFillIn)
 {
     char fullfilename[80];
 
@@ -1398,12 +1398,12 @@ static void loadMexDataCB(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-static void setClassCB(char *directory,char *field,void *dataToFillIn)
+static void setClassCB(const char *directory,char *field,void *dataToFillIn)
 {
     *((ShipClass *)dataToFillIn) = StrToShipClass(field);
 }
 
-static void scriptSetFramesCB(char *directory,char *field,void *dataToFillIn)
+static void scriptSetFramesCB(const char *directory,char *field,void *dataToFillIn)
 {
     sscanf(field,"%d",(sdword *)dataToFillIn);
     *((sdword *)dataToFillIn) *= UNIVERSE_UPDATE_RATE;
@@ -1557,7 +1557,7 @@ void InitStatAsteroidInfo(AsteroidStaticInfo *asteroidStatInfo,AsteroidType aste
     char shipname[80];
     char directory[80];
     char fullshipname[160];
-    char *asteroidtypestr;
+    const char *asteroidtypestr;
 
     asteroidStatInfo->asteroidtype = asteroidtype;
 
@@ -1601,7 +1601,7 @@ void InitStatDustCloudInfo(DustCloudStaticInfo *dustcloudStatInfo, DustCloudType
     char shipname[80];
     char directory[80];
     char fullshipname[160];
-    char *dustcloudtypestr;
+    const char *dustcloudtypestr;
 
     dbgAssertOrIgnore(dustcloudtype < NUM_DUSTCLOUDTYPES);
 
@@ -1657,7 +1657,7 @@ void InitStatGasCloudInfo(GasCloudStaticInfo *gascloudStatInfo, GasCloudType gas
     char shipname[80];
     char directory[80];
     char fullshipname[160];
-    char *gascloudtypestr;
+    const char *gascloudtypestr;
 
     gascloudStatInfo->gascloudtype = gascloudtype;
 
@@ -1698,7 +1698,7 @@ void InitStatNebulaInfo(NebulaStaticInfo* nebulaStatInfo, NebulaType nebulatype)
     char shipname[80];
     char directory[80];
     char fullshipname[160];
-    char* nebulatypestr;
+    const char* nebulatypestr;
 
     dbgAssertOrIgnore(nebulatype < NUM_NEBULATYPES);
 
@@ -1788,7 +1788,7 @@ void InitStatDerelictInfo(DerelictStaticInfo *derelictStatInfo, DerelictType der
     char shipname[80];
     char directory[80];
     char fullshipname[160];
-    char *derelicttypestr;
+    const char *derelicttypestr;
 
     if (derelicttype == HyperspaceGate)
     {
@@ -1839,7 +1839,7 @@ void InitStatDerelictInfo(DerelictStaticInfo *derelictStatInfo, DerelictType der
     Outputs     : reads in the representative .shp file into derelictStatInfo.
     Return      : void
 ----------------------------------------------------------------------------*/
-void InitStatDerelictInfoByPath(DerelictStaticInfo *derelictStatInfo, DerelictType derelicttype, char *directory, char *shipFile)
+void InitStatDerelictInfoByPath(DerelictStaticInfo *derelictStatInfo, DerelictType derelicttype, const char *directory, char *shipFile)
 {
     bool8 teamColor[MAX_MULTIPLAYER_PLAYERS];
 
@@ -1867,7 +1867,7 @@ void InitStatMissileInfo(MissileStaticInfo *missileStatInfo,ShipRace race)
 {
     char directory[80];
     char fullshipname[100];
-    char *shipname = "Missile.shp";
+    const char *shipname = "Missile.shp";
 
     strcpy(directory,ShipRaceToStr(race));
 //    strcat(directory,"\\Missile\\");
@@ -1915,7 +1915,7 @@ void InitStatMineInfo(MissileStaticInfo *mineStatInfo,ShipRace race)
 {
     char directory[80];
     char fullshipname[100];
-    char *shipname = "Mine.shp";
+    const char *shipname = "Mine.shp";
 
     strcpy(directory,ShipRaceToStr(race));
 //    strcat(directory,"\\Mine\\");
@@ -1997,7 +1997,7 @@ void InitStatShipInfo(ShipStaticInfo *statinfo,ShipType type,ShipRace race)
     char shipname[80];
     char directory[80];
     char fullshipname[160];
-    char *shiptypestr;
+    const char *shiptypestr;
     sdword i;
     bool stubbedOut;
 

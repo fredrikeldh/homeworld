@@ -52,7 +52,7 @@
 
 char DefaultScenario[100] = "Default";
 
-void spScenarioWindowInit(char *name, featom *atom);
+void spScenarioWindowInit(const char *name, featom *atom);
 void spScenarioNameDraw(featom *atom, regionhandle region);
 void spScenarioBitmap(featom *atom, regionhandle region);
 
@@ -76,9 +76,9 @@ listwindowhandle spScenarioListWindow = NULL;
 //regionhandle     spScenarioBitmapWindow = NULL;
 
 #ifdef _WIN32
-char *scenarioRootPath = "MultiPlayer\\";
+const char *scenarioRootPath = "MultiPlayer\\";
 #else
-char *scenarioRootPath = "MultiPlayer/";
+const char *scenarioRootPath = "MultiPlayer/";
 #endif
 
 lifheader *scenarioImage;
@@ -112,8 +112,8 @@ fonthandle spDescriptionFont = FONT_InvalidFontHandle;//font to print in
 bool spDescriptionShadow = FALSE;                      //print with a dropshadow?
 color spDescriptionColor = colWhite;            //print in what color?
 GameType *gameTypeFromDescription = NULL;
-static void spMissionDescriptionSet(char *directory,char *field,void *dataToFillIn);
-static void spDescriptionFontSet(char *directory,char *field,void *dataToFillIn);
+static void spMissionDescriptionSet(const char *directory,char *field,void *dataToFillIn);
+static void spDescriptionFontSet(const char *directory,char *field,void *dataToFillIn);
 extern scriptStructEntry StaticMGInfoScriptTable[];
 scriptEntry spDescriptionTweaks[] =
 {
@@ -121,7 +121,7 @@ scriptEntry spDescriptionTweaks[] =
     {"Font", spDescriptionFontSet, NULL},
     {"Color", scriptSetRGBCB, &spDescriptionColor},
     {"DropShadow", scriptSetBool8, &spDescriptionShadow},
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -131,7 +131,7 @@ scriptEntry spDescriptionTweaksFrench[] =
     {"Font", spDescriptionFontSet, NULL},
     {"Color", scriptSetRGBCB, &spDescriptionColor},
     {"DropShadow", scriptSetBool8, &spDescriptionShadow},
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -141,7 +141,7 @@ scriptEntry spDescriptionTweaksGerman[] =
     {"Font", spDescriptionFontSet, NULL},
     {"Color", scriptSetRGBCB, &spDescriptionColor},
     {"DropShadow", scriptSetBool8, &spDescriptionShadow},
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -151,7 +151,7 @@ scriptEntry spDescriptionTweaksSpanish[] =
     {"Font", spDescriptionFontSet, NULL},
     {"Color", scriptSetRGBCB, &spDescriptionColor},
     {"DropShadow", scriptSetBool8, &spDescriptionShadow},
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -161,7 +161,7 @@ scriptEntry spDescriptionTweaksItalian[] =
     {"Font", spDescriptionFontSet, NULL},
     {"Color", scriptSetRGBCB, &spDescriptionColor},
     {"DropShadow", scriptSetBool8, &spDescriptionShadow},
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -252,7 +252,7 @@ void spScenarioNameDraw(featom *atom, regionhandle region)
     Outputs     : Allocated memory for and duplicates a string.
     Return      : Pointer to title string.
 ----------------------------------------------------------------------------*/
-char *spTitleFind(char *directory, char *fileName)
+char *spTitleFind(const char *directory, char *fileName)
 {
     char string[256], fullName[PATH_MAX];
     char *ptr;
@@ -261,7 +261,7 @@ char *spTitleFind(char *directory, char *fileName)
 
     // <directory>/<filename>/<filename>.level
     memStrncpy(fullName, directory, PATH_MAX - 1);
-    
+
 #ifdef _WIN32
     strcat(fullName,"\\");
 #else
@@ -287,7 +287,7 @@ char *spTitleFind(char *directory, char *fileName)
 
     // go through the .level file and find the title which is expected to look
     // like ^[<title text>]$ but some editors leave trailing whitespace at the
-    // end which we need to take account of 
+    // end which we need to take account of
     for (;;)
     {
         status = fileLineRead(handle,string,256);
@@ -308,14 +308,14 @@ char *spTitleFind(char *directory, char *fileName)
             // could use strchr here to find the closing square bracket but there is
             // always the possibility someone has created a map with square brackets
             // in the name so for the sake of backwards compatibility...
-            
+
             // look for ']' starting at end of string
             ptr = string + strlen(string) - 1; // last character
             while (*ptr != ']' && ptr > string)
             {
                 ptr--;
             }
-            
+
             // title must be at least one character so string must be at least three
             // with enclosing square brackets: "t" -> "[t]"
             if (strlen(string) >= 3 && *ptr == ']')
@@ -458,7 +458,7 @@ void spTitleListLoad(void)
             spScenarioListLength += SP_ScenarioListGrowth;
             spScenarios = memRealloc(spScenarios, spScenarioListLength * sizeof(spscenario), "spScenarios", NonVolatile);
         }
-		
+
         dbgAssertOrIgnore(spNumberScenarios < spScenarioListLength);
         spScenarios[spNumberScenarios].fileSpec = memStringDupe(fileName);
         spScenarios[spNumberScenarios].bitmapfileSpec = memStringDupe(bitmapfileName);
@@ -551,7 +551,7 @@ alreadyLoadedFromFileSystem:;
 
             fileName[0] = 0;
             numplayers = 0;
-			
+
             for (pString = dir_entry->d_name; *pString != 0; pString++)
             {                                                   //search for a numeral character
                 if (strchr("0123456789", *pString) != NULL)
@@ -575,7 +575,7 @@ alreadyLoadedFromFileSystem:;
             {
                 continue;
             }
-            
+
             for (index = 0; index < spNumberScenarios; index++)
             {
                 if (strcasecmp(spScenarios[index].fileSpec, fileName))
@@ -595,7 +595,7 @@ alreadyLoadedFromFileSystem:;
                 spScenarioListLength += SP_ScenarioListGrowth;
                 spScenarios = memRealloc(spScenarios, spScenarioListLength * sizeof(spscenario), "spScenarios", NonVolatile);
             }
-			
+
             dbgAssertOrIgnore(spNumberScenarios < spScenarioListLength);
             spScenarios[spNumberScenarios].fileSpec = memStringDupe(fileName);
             spScenarios[spNumberScenarios].bitmapfileSpec = memStringDupe(bitmapfileName);
@@ -678,7 +678,7 @@ void spNewItem(void);
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void spScenarioWindowInit(char *name, featom *atom)
+void spScenarioWindowInit(const char *name, featom *atom)
 {
     fonthandle  oldfont;
     sdword      index;
@@ -805,7 +805,7 @@ void spDescriptionDefaultsAndFreeText(void)
     Outputs     : DonePicking stores chosen file name in parameter to spScenarioPick
     Return      : void
 ----------------------------------------------------------------------------*/
-void spDonePicking(char *name, featom *atom)
+void spDonePicking(const char *name, featom *atom)
 {
     sdword index;
     sdword spCurrentSelectedCandidate = spCurrentSelected;
@@ -850,7 +850,7 @@ void spDonePicking(char *name, featom *atom)
     spPickerStarted = FALSE;
 }
 
-void spBackPicking(char *name, featom *atom)
+void spBackPicking(const char *name, featom *atom)
 {
     spDescriptionDefaultsAndFreeText();
 
@@ -938,7 +938,7 @@ void spGetScenarioDetails(char* bitmapFile, char *textFile, char *scenarioFile)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-static void spMissionDescriptionSet(char *directory,char *field,void *dataToFillIn)
+static void spMissionDescriptionSet(const char *directory,char *field,void *dataToFillIn)
 {
     if (spDescription == NULL)
     {
@@ -959,7 +959,7 @@ static void spMissionDescriptionSet(char *directory,char *field,void *dataToFill
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-static void spDescriptionFontSet(char *directory,char *field,void *dataToFillIn)
+static void spDescriptionFontSet(const char *directory,char *field,void *dataToFillIn)
 {
     spDescriptionFont = frFontRegister(field);
 }

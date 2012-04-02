@@ -14,13 +14,15 @@ namespace gles1
 }
 // use define since typedef does not work as a friend even with gcc 4.6!
 #define RENDER_PROCESSOR gles1::IRenderState
-#elif defined HW_USE_GLES2
+#elif defined(HW_USE_GLES2)
 namespace gles2
 {
 	class IRenderState;
 }
 // use define since typedef does not work as a friend even with gcc 4.6!
 #define RENDER_PROCESSOR gles2::IRenderState
+#else
+#error yo
 #endif
 
 #if __GNUC__ <= 4 && __GNUC_MINOR__ < 6
@@ -47,15 +49,15 @@ private:
 		CLAZZ(CLAZZ&&) = default; \
 		CLAZZ& operator=(CLAZZ&&) = default;
 #endif //__GNUC__ <= 4 && __GNUC_MINOR__ < 6
-	
+
 #define ENABLE_COPY(CLAZZ) \
 	CLAZZ(CLAZZ const &) = default; \
 	CLAZZ& operator=(CLAZZ const &) = default;
-	
+
 #define DISABLE_COPY(CLAZZ) \
 	CLAZZ(CLAZZ const &) = delete; \
 	CLAZZ& operator=(CLAZZ const &) = delete;
-	
+
 
 #define ENABLE_MOVE_AND_COPY(CLAZZ) \
 	ENABLE_MOVE(CLAZZ) \
@@ -66,13 +68,10 @@ private:
 	DISABLE_COPY(CLAZZ)
 
 template<typename T>
-static T clamp(T Value, T Min, T Max)
+T clamp(T Value, T Min, T Max)
 {
 	return (Value < Min)? Min : (Value > Max)? Max : Value;
 }
-
-template<typename T>
-static T& Get();
 
 #include "glinclude.h"
 #include "GLPart.h"

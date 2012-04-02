@@ -152,7 +152,7 @@ sdword SpaceObjRegistryGetID(SpaceObj *obj)
     {
         return SpaceObjRegistryObjPresent(obj);
     }
-    
+
     return -1;
 }
 
@@ -179,7 +179,7 @@ Ship *SpaceObjRegistryGetShip(sdword id)
         dbgAssertOrIgnore(ship->objtype == OBJ_ShipType);
         return ship;
     }
-    
+
     return NULL;
 }
 
@@ -194,7 +194,7 @@ Resource *SpaceObjRegistryGetResource(sdword id)
         dbgAssertOrIgnore(resource->flags & SOF_Resource);
         return resource;
     }
-    
+
     return NULL;
 }
 
@@ -209,7 +209,7 @@ Bullet *SpaceObjRegistryGetBullet(sdword id)
         dbgAssertOrIgnore(bullet->objtype == OBJ_BulletType);
         return bullet;
     }
-    
+
     return NULL;
 }
 
@@ -224,7 +224,7 @@ TargetPtr SpaceObjRegistryGetTarget(sdword id)
         dbgAssertOrIgnore(target->flags & SOF_Targetable);
         return target;
     }
-    
+
     return NULL;
 }
 
@@ -265,15 +265,15 @@ sdword BlobRegistryGetIDWrapper(blob *tblob, bool check_valid_id)
     if (tblob != NULL)
     {
         sdword id = BlobRegistryBlobPresent(tblob);
-        
+
         if (check_valid_id)
         {
             dbgAssertOrIgnore(id != -1);
         }
-        
+
         return id;
     }
-    
+
     return -1;
 }
 
@@ -318,7 +318,7 @@ void SaveThisChunk(SaveChunk *thischunk)
     }
 }
 
-SaveChunk *CreateChunk(TypeOfSaveChunk type,sdword contentsSize,void *contents)
+SaveChunk *CreateChunk(TypeOfSaveChunk type,sdword contentsSize,const void *contents)
 {
     SaveChunk *chunk = memAlloc(sizeofSaveChunk(contentsSize),"savechunk",Pyrophoric);
 
@@ -452,7 +452,7 @@ void LoadMissionNumber()
 {
     MissionEnum saveGameMissionEnum = MISSION_ENUM_NOT_INITIALISED;
     sdword saveGameMissionReference = LoadInfoNumber();
-    
+
     switch (saveGameVersionNumber)
     {
         case SAVE_VERSION_NUMBER_ORIGINAL:
@@ -483,17 +483,17 @@ void LoadMissionNumber()
                 case 14:  saveGameMissionEnum = MISSION_14_BRIDGE_OF_SIGHS;            break;
                 case 15:  saveGameMissionEnum = MISSION_15_CHAPEL_PERILOUS;            break;
                 case 16:  saveGameMissionEnum = MISSION_16_HIIGARA;                    break;
-                
+
                 default:  break;
             }
-            
+
             break;
-        
+
         case SAVE_VERSION_NUMBER_HWSDL_2:
             // use mission value as-is; it's a MissionEnum
             saveGameMissionEnum = (MissionEnum) saveGameMissionReference;
             break;
-        
+
         default:
             break;
     }
@@ -673,7 +673,7 @@ void LoadPreGameInfo(void)
     Outputs     :
     Return      : TRUE on success
 ----------------------------------------------------------------------------*/
-bool SaveGame(char *filename)
+bool SaveGame(const char *filename)
 {
     sdword i;
 
@@ -745,7 +745,7 @@ bool SaveGame(char *filename)
         savefilestatus = 0;
         return FALSE;
     }
-    
+
     return TRUE;        // save successful
 }
 
@@ -781,7 +781,7 @@ sdword VerifySaveFile(char *filename)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void PreLoadGame(char *filename)
+void PreLoadGame(const char *filename)
 {
     sdword verify;
 
@@ -802,7 +802,7 @@ void PreLoadGame(char *filename)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void LoadGame(char *filename)
+void LoadGame(const char *filename)
 {
     sdword i;
 
@@ -837,7 +837,7 @@ void LoadGame(char *filename)
     {
         tutLoadTutorialGame();
     }
-    
+
     LoadMaxSelectionAndFix(&selSelected);
     for (i=0;i<SEL_NumberHotKeyGroups;i++)
     {
@@ -1413,7 +1413,7 @@ void LoadShipSinglePlayerGameInfo(Ship *ship)
     memFree(chunk);
 }
 
-void Save_String(char *string)
+void Save_String(const char *string)
 {
     SaveChunk *chunk;
 

@@ -54,7 +54,7 @@ ranstream ranStream[RANDOM_NUMBER_STREAMS];
     Return      : New random number.
 ----------------------------------------------------------------------------*/
 #if RANDOM_DEBUG_CALL_SEQ
-udword ranRandomFn(sdword ranIndex, char *file, sdword line)
+udword ranRandomFn(sdword ranIndex, const char *file, sdword line)
 #else
 udword ranRandomFn(sdword ranIndex)
 #endif
@@ -64,7 +64,7 @@ udword ranRandomFn(sdword ranIndex)
 
 #if RANDOM_DEBUG_CALL_SEQ
     char *fileNameFull;
-    char *truncatedFile;
+    const char *truncatedFile;
     FILE *fp;
 
     if ((ranCallerDebug || logEnable == LOG_ON || logEnable == LOG_VERBOSE) && ranIndex == RANDOM_GAME && file != NULL)

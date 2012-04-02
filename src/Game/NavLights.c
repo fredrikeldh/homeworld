@@ -90,6 +90,8 @@ void navLightStaticInfoDelete(NAVLightStaticInfo *staticInfo)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
+extern bool bFade;
+extern real32 meshFadeAlpha;
 void RenderNAVLights(Ship *ship)
 {
    sdword i;
@@ -101,8 +103,6 @@ void RenderNAVLights(Ship *ship)
    NAVLightStaticInfo *navLightStaticInfo;
    real32 fade;
    bool lightOn;
-   extern bool bFade;
-   extern real32 meshFadeAlpha;
 
    fade = bFade ? meshFadeAlpha : 1.0f;
 
@@ -126,7 +126,7 @@ void RenderNAVLights(Ship *ship)
 			{
 				navLight->lastTimeFlashed = universe.totaltimeelapsed + navLightStatic->startdelay;
 			}
-			
+
 			if(universe.totaltimeelapsed > navLight->lastTimeFlashed)
 			{
 				if(navLight->lightstate == 1)
@@ -137,7 +137,7 @@ void RenderNAVLights(Ship *ship)
 				{
 					navLight->lastTimeFlashed = universe.totaltimeelapsed + navLightStatic->flashrateon;
 				}
-				
+
 				navLight->lightstate = 1 - navLight->lightstate;
 			}
 

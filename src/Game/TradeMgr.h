@@ -73,7 +73,7 @@ void tmClearTechs(void);
 
 
 sdword tmTradeBegin(regionhandle region, sdword ID, udword event, udword data);
-void tmLeave(char *string, featom *atom);
+void tmLeave(const char *string, featom *atom);
 
 void tmCostListDraw(featom *atom, regionhandle region);
 void tmDialogDraw(featom *atom, regionhandle region);
@@ -82,20 +82,20 @@ void tmTechInfoDraw(featom *atom, regionhandle region);
 
 
 
-void AllowPlayerToResearch(char *techname);
-void AllowPlayerToPurchase(char *techname);
-void PlayerAcquiredTechnology(char *techname);
-sdword CanPlayerResearch(char *techname);
-sdword CanPlayerPurchase(char *techname);
-sdword DoesPlayerHave(char *techname);
-sdword GetBaseTechnologyCost(char *techname);
-void SetBaseTechnologyCost(char *techname, sdword cost);
+void AllowPlayerToResearch(const char *techname);
+void AllowPlayerToPurchase(const char *techname);
+void PlayerAcquiredTechnology(const char *techname);
+sdword CanPlayerResearch(const char *techname);
+sdword CanPlayerPurchase(const char *techname);
+sdword DoesPlayerHave(const char *techname);
+sdword GetBaseTechnologyCost(const char *techname);
+void SetBaseTechnologyCost(const char *techname, sdword cost);
 
 
 
 void tmEnableTraderGUI(void);
 bool tmTraderGUIActive(void);
-void tmSetDialog(sdword phrasenum, char *sentence);
+void tmSetDialog(sdword phrasenum, const char *sentence);
 void tmSetPriceScale(udword percent);
 uword tmGetPriceScale(void);
 void tmSetTradeDisabled(bool trade);

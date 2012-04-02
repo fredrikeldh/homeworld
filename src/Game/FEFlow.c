@@ -107,7 +107,7 @@ void feTestQuit(char *string)
     feCurrentScreenDelete();
 }
 */
-void uicTestTextEntry(char *name, featom *atom)
+void uicTestTextEntry(const char *name, featom *atom)
 {
     uictextentry *entry = (uictextentry *)atom->pData;
     regVerify(&entry->reg);
@@ -150,7 +150,7 @@ void uicTestTextEntry(char *name, featom *atom)
     Outputs     : Searches the feCallback list for a match and executes match
     Return      : void
 ----------------------------------------------------------------------------*/
-void feFunctionExecute(char *name, featom *atom, bool firstcall)
+void feFunctionExecute(const char *name, featom *atom, bool firstcall)
 {
     sdword index;
 
@@ -183,7 +183,7 @@ void feFunctionExecute(char *name, featom *atom, bool firstcall)
     Outputs     : ..
     Return      : point to link if found, NULL if not found
 ----------------------------------------------------------------------------*/
-felink *feLinkFindInScreen(fescreen *screen, char *linkName)
+felink *feLinkFindInScreen(fescreen *screen, const char *linkName)
 {
     sdword index;
 
@@ -205,7 +205,7 @@ felink *feLinkFindInScreen(fescreen *screen, char *linkName)
     Outputs     : ..
     Return      : point to atom if found, NULL if not found
 ----------------------------------------------------------------------------*/
-featom *feAtomFindInScreen(fescreen *screen, char *atomName)
+featom *feAtomFindInScreen(fescreen *screen, const char *atomName)
 {
     sdword index;
 
@@ -236,7 +236,7 @@ featom *feAtomFindInScreen(fescreen *screen, char *atomName)
     Outputs     : ..
     Return      : point to atom if found, NULL if not found
 ----------------------------------------------------------------------------*/
-featom *feAtomFindNextInScreen(fescreen *screen, featom *atom, char *atomName)
+featom *feAtomFindNextInScreen(fescreen *screen, featom *atom, const char *atomName)
 {
     sdword index;
 
@@ -337,7 +337,7 @@ void feWheelPositive(listwindowhandle listwindow)
     Outputs     : none
     Return      : none
 ----------------------------------------------------------------------------*/
-void feStandardScrollBarFunction(char *string, featom *atom)
+void feStandardScrollBarFunction(const char *string, featom *atom)
 {
     sword            ind;
     sdword           i;
@@ -834,7 +834,7 @@ void feBaseRegionDraw(regionhandle region)
     Outputs     : ..
     Return      : Pointer to callback function or NULL if none
 ----------------------------------------------------------------------------*/
-fedrawfunction feDrawCallbackFind(char *name)
+fedrawfunction feDrawCallbackFind(const char *name)
 {
     sdword index;
 
@@ -1586,7 +1586,7 @@ sdword feResRepositionCentredY(sdword y)
     Name        : feResRepositionScaled[X|Y]
     Description : adjusts a frontend screen's [x|y] coordinate for hires modes
                   where the menu/image is scaled to fit, remembering that for
-                  widescreen modes we also need to recentre too 
+                  widescreen modes we also need to recentre too
     Inputs      : coordinate relative to 640x480
     Outputs     :
     Return      : hires adjusted coordinate
@@ -1602,7 +1602,7 @@ sdword feResRepositionScaledX(sdword x)
 sdword feResRepositionScaledY(sdword y)
 {
     real32 scale = FE_SCALE_TO_FIT_FACTOR_RELIC_SCREEN;
-    
+
     return (y * scale)                                                    // resize
          + ((MAIN_WindowHeight - (FE_RELIC_SCREEN_HEIGHT * scale)) / 2);  // widescreen centring
 }
@@ -1710,7 +1710,7 @@ bool feAtomOnScreen(featom* atom)
     Outputs     : allocates and loads entire file.  Pointers fized up.
     Return      : pointer to the header newly loaded.
 ----------------------------------------------------------------------------*/
-fibfileheader *feScreensLoad(char *fileName)
+fibfileheader *feScreensLoad(const char *fileName)
 {
     ubyte *loadAddress;
     fibfileheader *header;
@@ -1765,8 +1765,8 @@ fibfileheader *feScreensLoad(char *fileName)
         {
             dbgMessagef("WARNING atoms %s not byte aligned",fileName);
         }
-        screen->links = (memsize)loadAddress + (ubyte *)screen->links;      //update list pointers
-        screen->atoms = (memsize)loadAddress + (ubyte *)screen->atoms;
+        screen->links = (void*)((memsize)loadAddress + (ubyte *)screen->links);      //update list pointers
+        screen->atoms = (void*)((memsize)loadAddress + (ubyte *)screen->atoms);
         for (index = 0; index < screen->nLinks; index++)
         {                                                   //for each link in screen
 
@@ -1912,7 +1912,7 @@ fibfileheader *feScreensLoad(char *fileName)
     Outputs     : adds the name and
     Return      : new number of callbacks
 ----------------------------------------------------------------------------*/
-sdword feCallbackAdd(char *controlName, fefunction function)
+sdword feCallbackAdd(const char *controlName, fefunction function)
 {
     sdword index;
 
@@ -1961,7 +1961,7 @@ sdword feCallbackAddMultiple(fecallback *table)
     Outputs     : adds the name and
     Return      : new number of callbacks
 ----------------------------------------------------------------------------*/
-sdword feDrawCallbackAdd(char *controlName, fedrawfunction function)
+sdword feDrawCallbackAdd(const char *controlName, fedrawfunction function)
 {
     sdword index;
 
@@ -2174,7 +2174,7 @@ extern regionhandle regClickedCentre;
     Note        : Because this screen can link to other screens, be careful you
                     don't try to delete regions which do not exist.
 ----------------------------------------------------------------------------*/
-regionhandle feScreenStart(regionhandle parent, char *screenName)
+regionhandle feScreenStart(regionhandle parent, const char *screenName)
 {
     regionhandle baseRegion, temp;
     fescreen *newScreen;
@@ -2396,7 +2396,7 @@ udword feMenuItemProcess(regionhandle region, smemsize ID, udword event, udword 
     fescreen *screentodraw;
     felink *link;
     regionhandle baseRegion;
-    char *name;
+    const char *name;
 
     dbgAssertOrIgnore(atom->type == FA_MenuItem);
 
@@ -2545,7 +2545,7 @@ udword feMenuBaseRegionProcess(regionhandle region, sdword ID, udword event, udw
     Note        : This is bound to the FEMan function(Dissapear) which should
                     only ever be used in menus.
 ----------------------------------------------------------------------------*/
-void feMenuDisappear(char *string, featom *atom)
+void feMenuDisappear(const char *string, featom *atom)
 {
     feMenuLevel--;
     feCurrentScreenDelete();                                //kill this menu
@@ -2573,7 +2573,7 @@ void feMenuDisappear(char *string, featom *atom)
     Note        : This is bound to the FEMan function(Dissapear) which should
                     only ever be used in screens.
 ----------------------------------------------------------------------------*/
-void feScreenDisappear(char *string, featom *atom)
+void feScreenDisappear(const char *string, featom *atom)
 {
     feCurrentScreenDelete();                                //kill this screen
 }
@@ -2819,7 +2819,7 @@ regionhandle feMenuStart(regionhandle parent, fescreen *screen, sdword x, sdword
     Return      : pointer to named screen
     Note        : Generates an error if screen not found
 ----------------------------------------------------------------------------*/
-fescreen *feScreenFind(char *name)
+fescreen *feScreenFind(const char *name)
 {
     sdword index;
 
@@ -3073,7 +3073,7 @@ fescreen *feScreenPop(void)
     Note        : the radio button can be in any screen and the topmost one will
                     be checked (if it exists in multiple screens).
 ----------------------------------------------------------------------------*/
-void feRadioButtonSet(char *name, sdword index)
+void feRadioButtonSet(const char *name, sdword index)
 {
     featom *atom = NULL;
     buttonhandle button;
@@ -3121,7 +3121,7 @@ void feRadioButtonSet(char *name, sdword index)
     Outputs     : sets the checked bit of button
     Return      : void
 ----------------------------------------------------------------------------*/
-void feToggleButtonSet(char *name, sdword bPressed)
+void feToggleButtonSet(const char *name, sdword bPressed)
 {
     featom *atom = NULL;
     buttonhandle button;
@@ -3161,7 +3161,7 @@ void feToggleButtonSet(char *name, sdword bPressed)
     }
 }
 
-regionhandle feRegionFindByFunctionAux(char* name, regionhandle baseRegion)
+regionhandle feRegionFindByFunctionAux(const char* name, regionhandle baseRegion)
 {
     regionhandle reg = baseRegion;
 
@@ -3197,7 +3197,7 @@ regionhandle feRegionFindByFunctionAux(char* name, regionhandle baseRegion)
     Outputs     : natin
     Return      : handle of region
 ----------------------------------------------------------------------------*/
-regionhandle feRegionFindByFunction(char *name)
+regionhandle feRegionFindByFunction(const char *name)
 {
     regionhandle reg;
 

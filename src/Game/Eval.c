@@ -35,7 +35,7 @@ typedef int (*ftpr)(const void *, const void *);
 
 typedef struct {
   int order;
-  char *s;
+  const char *s;
 } FUNC_ITEM;
 
 /* these are the possible tokens (objects): */
@@ -907,7 +907,7 @@ ERR_TYPE evalSyntaxOK(char *str)
 
 /* ----- */
 
-char *evalErrorStringTable[] =
+const char *evalErrorStringTable[] =
 {
     "OK",
     "Divide by zero",
@@ -915,7 +915,7 @@ char *evalErrorStringTable[] =
     "Syntax"
 };
 //return a string for an error code
-char *evalErrorString(ERR_TYPE type)
+const char *evalErrorString(ERR_TYPE type)
 {
     if (type > SYNTAX || type < 0)
     {

@@ -130,7 +130,7 @@ void kasTeamDied(struct AITeam *team)
 //  sets state of current team to new state (for subsequently WATCHing) and executes its
 //  init function right now
 //
-void kasJump(char *stateName, KASInitFunction initFunction, KASWatchFunction watchFunction)
+void kasJump(const char *stateName, KASInitFunction initFunction, KASWatchFunction watchFunction)
 {
 #ifdef HW_BUILD_FOR_DEBUGGING
     char teamName[KAS_TEAM_NAME_MAX_LENGTH+1];
@@ -149,7 +149,7 @@ void kasJump(char *stateName, KASInitFunction initFunction, KASWatchFunction wat
 //
 //  "creates" an FSM (Finite State Machine) and hands control of a team to it
 //
-void kasFSMCreate(char *fsmName, KASInitFunction initFunction, KASWatchFunction watchFunction, AITeam *teamP)
+void kasFSMCreate(const char *fsmName, KASInitFunction initFunction, KASWatchFunction watchFunction, AITeam *teamP)
 {
 	char teamName[KAS_TEAM_NAME_MAX_LENGTH+1];
     AITeam *saveP;
@@ -229,7 +229,7 @@ void kasExecute(void)
 //
 //  starts a mission
 //
-void kasMissionStart(char *name, KASInitFunction initFunction, KASWatchFunction watchFunction)
+void kasMissionStart(const char *name, KASInitFunction initFunction, KASWatchFunction watchFunction)
 {
     aiplayerLog((0,"\nKAS: Starting %s", name));
     memStrncpy(CurrentMissionName, name, KAS_MISSION_NAME_MAX_LENGTH);
@@ -244,7 +244,7 @@ void kasMissionStart(char *name, KASInitFunction initFunction, KASWatchFunction 
 //
 //  return reference to labelled team
 //
-AITeam *kasAITeamPtr(char *label)
+AITeam *kasAITeamPtr(const char *label)
 {
     sdword i = 0;
     AITeam *aiteamp = NULL;
@@ -260,7 +260,7 @@ AITeam *kasAITeamPtr(char *label)
     // special reference to sender of last message received
     if (!strcasecmp(label, "MsgSender"))
         return CurrentTeamP->msgSender;
-        
+
 #ifdef HW_BUILD_FOR_DEBUGGING
     dbgFatalf(DBG_Loc,"\nKAS: unresolved reference to team %s", label);
 #endif
@@ -271,7 +271,7 @@ AITeam *kasAITeamPtr(char *label)
 //
 //  return reference to labelled team's ships (contrast with kasAITeamPtr)
 //
-GrowSelection *kasAITeamShipsPtr(char *label)
+GrowSelection *kasAITeamShipsPtr(const char *label)
 {
     sdword i = 0;
     AITeam *aiteamp;
@@ -287,7 +287,7 @@ GrowSelection *kasAITeamShipsPtr(char *label)
     if (!strcasecmp(label, "MsgSender"))
         if (CurrentTeamP->msgSender)
             return &CurrentTeamP->msgSender->shipList;
-            
+
 #ifdef HW_BUILD_FOR_DEBUGGING
     dbgFatalf(DBG_Loc,"\nKAS: unresolved reference to team %s", label);
 #endif
@@ -298,7 +298,7 @@ GrowSelection *kasAITeamShipsPtr(char *label)
 //
 //  return reference to labelled grow selection's vector
 //
-hvector *kasShipsVectorPtr(char *label)
+hvector *kasShipsVectorPtr(const char *label)
 {
     static hvector errorPos= {0, 0, 0, 1};  // safe fallback
     static hvector location;
@@ -329,7 +329,7 @@ hvector *kasShipsVectorPtr(char *label)
 //
 // return reference to labelled team's location
 //
-hvector *kasTeamsVectorPtr(char *label)
+hvector *kasTeamsVectorPtr(const char *label)
 {
     static hvector errorPos = {0,0,0,1};
     static hvector location;
@@ -360,7 +360,7 @@ hvector *kasTeamsVectorPtr(char *label)
 //
 // return reference to labelled volume's center
 //
-hvector *kasVolumeVectorPtr(char *label)
+hvector *kasVolumeVectorPtr(const char *label)
 {
     static hvector returnhvec;
     vector volcenter;
@@ -413,7 +413,7 @@ hvector *kasThisTeamsVectorPtr(void)
 //
 //  return reference to labelled path
 //
-Path *kasPathPtrNoErrorChecking(char *label)
+Path *kasPathPtrNoErrorChecking(const char *label)
 {
     sdword i = 0;
     while (i < LabelledPathsUsed)
@@ -428,7 +428,7 @@ Path *kasPathPtrNoErrorChecking(char *label)
 //
 //  return reference to labelled path
 //
-Path *kasPathPtr(char *label)
+Path *kasPathPtr(const char *label)
 {
     sdword i = 0;
     while (i < LabelledPathsUsed)
@@ -445,7 +445,7 @@ Path *kasPathPtr(char *label)
 //
 //  return reference to labelled volume
 //
-Volume *kasVolumePtr(char *label)
+Volume *kasVolumePtr(const char *label)
 {
     sdword i = 0;
     while (i < LabelledVolumesUsed)
@@ -454,7 +454,7 @@ Volume *kasVolumePtr(char *label)
             return LabelledVolumes[i]->volume;
         ++i;
     }
-    
+
 #ifdef HW_BUILD_FOR_DEBUGGING
     dbgFatalf(DBG_Loc,"\nKAS: unresolved reference to volume %s", label);
 #endif
@@ -465,7 +465,7 @@ Volume *kasVolumePtr(char *label)
 //
 //  return reference to labelled point
 //
-hvector *kasVectorPtrIfExists(char *label)
+hvector *kasVectorPtrIfExists(const char *label)
 {
     sdword i = 0;
     while (i < LabelledVectorsUsed)
@@ -477,10 +477,10 @@ hvector *kasVectorPtrIfExists(char *label)
     return NULL;
 }
 
-hvector *kasVectorPtr(char *label)
+hvector *kasVectorPtr(const char *label)
 {
     hvector *vec = kasVectorPtrIfExists(label);
-    
+
 #ifdef HW_BUILD_FOR_DEBUGGING
     if (label == NULL)
     {
@@ -491,7 +491,7 @@ hvector *kasVectorPtr(char *label)
     return vec;
 }
 
-GrowSelection *kasGetGrowSelectionPtrIfExists(char *label)
+GrowSelection *kasGetGrowSelectionPtrIfExists(const char *label)
 {
     sdword i = 0;
 
@@ -509,7 +509,7 @@ GrowSelection *kasGetGrowSelectionPtrIfExists(char *label)
 //  on first reference to a new GrowSelection, create one and return its pointer
 //  otherwise, return the pointer
 //
-GrowSelection *kasGrowSelectionPtr(char *label)
+GrowSelection *kasGrowSelectionPtr(const char *label)
 {
     sdword i = 0;
 
@@ -551,7 +551,7 @@ void kasGrowSelectionClear(GrowSelection *ships)
 //
 //  add new labelled path (with no points, yet), return pointer to it
 //
-Path *kasLabelledPathAdd(char *label, sdword numPoints, sdword closed)
+Path *kasLabelledPathAdd(const char *label, sdword numPoints, sdword closed)
 {
     if (!LabelledPaths)
     {
@@ -576,7 +576,7 @@ Path *kasLabelledPathAdd(char *label, sdword numPoints, sdword closed)
 //
 //  add new labelled volume (with no contents, yet), return pointer to it
 //
-Volume *kasLabelledVolumeAdd(char *label)
+Volume *kasLabelledVolumeAdd(const char *label)
 {
     if (!LabelledVolumes)
     {
@@ -601,7 +601,7 @@ Volume *kasLabelledVolumeAdd(char *label)
 //
 //  add new labelled vector, return pointer to it
 //
-hvector *kasLabelledVectorAdd(char *label, real32 x, real32 y, real32 z, real32 w)
+hvector *kasLabelledVectorAdd(const char *label, real32 x, real32 y, real32 z, real32 w)
 {
     if (!LabelledVectors)
     {
@@ -712,7 +712,7 @@ char *kasAITeamName(AITeam *team, char *teamName)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void kasAddShipToTeam(Ship *ship,char *label)
+void kasAddShipToTeam(Ship *ship, const char *label)
 {
     sdword i;
     AITeam *teamp;
@@ -1396,7 +1396,7 @@ sdword kasConvertFuncPtrToOffset(void *func)
 
         func_list
             = MissionEnumToFunctionList(spGetCurrentMission());
-            
+
         func_list_size
             = func_list
             ? FunctionListSize(spGetCurrentMission())
@@ -1412,7 +1412,7 @@ sdword kasConvertFuncPtrToOffset(void *func)
     }
 }
 
-void *kasConvertOffsetToFuncPtr(sdword offset)
+const void *kasConvertOffsetToFuncPtr(sdword offset)
 {
     if (offset == -1)
     {

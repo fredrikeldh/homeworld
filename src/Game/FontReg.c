@@ -113,7 +113,7 @@ void frShutdown(void)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-fonthandle frFontRegister(char *fileName)
+fonthandle frFontRegister(const char *fileName)
 {
     sdword index, freeIndex = -1;
     char fullName[80];

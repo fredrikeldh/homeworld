@@ -21,7 +21,7 @@ typedef enum { ALL_OK, DIV_ZERO, RANGE, SYNTAX } ERR_TYPE;
 
 ERR_TYPE evalSyntaxOK(char *);
 double evalEvaluate(char *str, ERR_TYPE *);
-char *evalErrorString(ERR_TYPE type);
+const char *evalErrorString(ERR_TYPE type);
 char *evalNum2Str(double n, char *s);
 
 #endif

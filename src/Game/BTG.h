@@ -75,7 +75,7 @@ real32 btgGetTheta(void);
 real32 btgGetPhi(void);
 void btgCloseTextures(void);
 void btgLoadTextures(void);
-void btgLoad(char* filename);
+void btgLoad(const char* filename);
 void btgConvertVerts(void);
 void btgRender(void);
 void btgSetColourMultiplier(real32 t);

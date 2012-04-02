@@ -421,7 +421,7 @@ real32 armourPiercingModifier = 1.5f;
     Private tweak-specific script set functions
 =============================================================================*/
 
-void scriptSetBarsToDo(char *directory,char *field,void *dataToFillIn)
+void scriptSetBarsToDo(const char *directory,char *field,void *dataToFillIn)
 {
     HorseRaceBars *barsToDo = (HorseRaceBars *)dataToFillIn;
     sdword i;
@@ -448,13 +448,13 @@ void scriptSetBarsToDo(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-void scriptSetBlobPropertyOverlap(char *directory,char *field,void *dataToFillIn)
+void scriptSetBlobPropertyOverlap(const char *directory,char *field,void *dataToFillIn)
 {
     sscanf(field,"%f",&((BlobProperties *)dataToFillIn)->bobOverlapFactor);
     ((BlobProperties *)dataToFillIn)->bobSqrtOverlapFactor = sqrt(((BlobProperties *)dataToFillIn)->bobOverlapFactor);
 }
 
-void scriptSetBlobBiggestRadius(char *directory,char *field,void *dataToFillIn)
+void scriptSetBlobBiggestRadius(const char *directory,char *field,void *dataToFillIn)
 {
     sscanf(field,"%f",&((BlobProperties *)dataToFillIn)->bobBiggestRadius);
     ((BlobProperties *)dataToFillIn)->bobBiggestRadiusDefault = ((BlobProperties *)dataToFillIn)->bobBiggestRadius;

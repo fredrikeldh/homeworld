@@ -515,7 +515,7 @@ scriptEntry smTweaks[] =
     { "FOW_DustGasK3",              scriptSetReal32CB, &smFOW_DustGasK3 },
     { "FOW_DustGasK4",              scriptSetReal32CB, &smFOW_DustGasK4 },
     { "smFOWBlobUpdateTime",        scriptSetReal32CB, &smFOWBlobUpdateTime },
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -814,6 +814,7 @@ void smTickTextDraw(void)
 //render utility functions
 //bool8 rndShipVisible(SpaceObj* spaceobj, Camera* camera);
 //string of ship types to be rendered as meshes
+extern bool8 g_WireframeHack;
 void smBlobDrawClear(Camera *camera, blob *thisBlob, hmatrix *modelView, hmatrix *projection, color background)
 {
     sdword index, i;
@@ -923,7 +924,6 @@ void smBlobDrawClear(Camera *camera, blob *thisBlob, hmatrix *modelView, hmatrix
                                 if (rndShipVisible(obj, camera))
                                 {
                                     bool wireOn;
-                                    extern bool8 g_WireframeHack;
 
                                     wireOn = g_WireframeHack;
                                     g_WireframeHack = FALSE;
@@ -1120,7 +1120,6 @@ justRenderAsDot:
                         if (rndShipVisible(obj, camera))
                         {
                             bool wireOn;
-                            extern bool8 g_WireframeHack;
 
                             wireOn = g_WireframeHack;
                             g_WireframeHack = FALSE;
@@ -2864,7 +2863,7 @@ void smHotkeyGroupsDraw(void)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void smPan(char *name, featom *atom)
+void smPan(const char *name, featom *atom)
 {
     if (uicDragX == 0 && uicDragY == 0)
     {                                                       //if it's just a click
@@ -3578,7 +3577,7 @@ altCase:
     Outputs     :
     Return      : void
 ----------------------------------------------------------------------------*/
-void smDispatch(char *name, featom *atom)
+void smDispatch(const char *name, featom *atom)
 {
 #if SM_VERBOSE_LEVEL >= 1
     dbgMessage("smDispatch");
@@ -3639,7 +3638,7 @@ void smUpdateHyperspaceStatus(bool goForLaunch)
     }
 }
 
-void smHyperspace(char *name, featom *atom)
+void smHyperspace(const char *name, featom *atom)
 {
     regionhandle region = (regionhandle)atom->region;
 
@@ -3749,7 +3748,7 @@ void smHyperspace(char *name, featom *atom)
     }
 }
 
-void smTacticalOverlayToggle(char *name, featom *atom)
+void smTacticalOverlayToggle(const char *name, featom *atom)
 {
     smTacticalOverlay ^= TRUE;
 #if SM_VERBOSE_LEVEL >= 1
@@ -3757,7 +3756,7 @@ void smTacticalOverlayToggle(char *name, featom *atom)
 #endif
 }
 
-void smNonResourceToggle(char *name, featom *atom)
+void smNonResourceToggle(const char *name, featom *atom)
 {
     smNonResources ^= TRUE;
 #if SM_VERBOSE_LEVEL >= 1
@@ -3765,7 +3764,7 @@ void smNonResourceToggle(char *name, featom *atom)
 #endif
 }
 
-void smResourceToggle(char *name, featom *atom)
+void smResourceToggle(const char *name, featom *atom)
 {
     smResources ^= TRUE;
 #if SM_VERBOSE_LEVEL >= 1
@@ -3773,7 +3772,7 @@ void smResourceToggle(char *name, featom *atom)
 #endif
 }
 
-void smSensorsClose(char *name, featom *atom)
+void smSensorsClose(const char *name, featom *atom)
 {
     vector direction,dist;
     real32 dStart;
@@ -3857,14 +3856,14 @@ void smSensorsClose(char *name, featom *atom)
     bitClear(tbDisable,TBDISABLE_SENSORS_USE);
 }
 
-void smSensorsSkip(char *name, featom *atom)
+void smSensorsSkip(const char *name, featom *atom)
 {
     subMessageEnded = 2;                                 //the fleet intel thing was skipped
     speechEventActorStop(ACTOR_ALL_ACTORS, smSkipFadeoutTime);
     subTitlesFadeOut(&subRegion[STR_LetterboxBar], smSkipFadeoutTime);
 }
 
-void smCancelDispatch(char *name, featom *atom)
+void smCancelDispatch(const char *name, featom *atom)
 {
 #if SM_VERBOSE_LEVEL >= 1
     dbgMessage("smCancelDispatch");
@@ -3889,7 +3888,7 @@ void smToggleSensorsLevel(void)
 #endif //SM_TOGGLE_SENSOR_LEVEL
 
 
-void smCancelMoveOrClose(char *name, featom *atom)
+void smCancelMoveOrClose(const char *name, featom *atom)
 {
     MP_HyperSpaceFlag = FALSE;          //no matter what, set to FALSE
     if (piePointSpecMode != PSM_Idle)
@@ -3980,7 +3979,7 @@ void smShutdown(void)
     Outputs     :
     Return      : void
 ----------------------------------------------------------------------------*/
-void smSensorsBegin(char *name, featom *atom)
+void smSensorsBegin(const char *name, featom *atom)
 {
     regionhandle baseRegion, reg;
     sdword index, diff;
@@ -3990,7 +3989,7 @@ void smSensorsBegin(char *name, featom *atom)
     sdword smViewExpandRight;
     sdword smViewExpandTop;
     sdword smViewExpandBottom;
-    char *screenName;
+    const char *screenName;
 
     bitClear(ghMainRegion->status, RSF_MouseInside);
     mrHoldLeft = mrHoldRight = mrNULL;                      //prevent a wierd bug

@@ -81,10 +81,10 @@ char globalScriptFileName[50];  //file name of file loaded in a script callback 
     Private Function prototypes:
 =============================================================================*/
 
-void scriptSetDockPointCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetDockOverideCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetNAVLightCB(char *directory,char *field,void *dataToFillIn);
-//static void setEffectPointer(char *directory,char *field,void *dataToFillIn);
+void scriptSetDockPointCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetDockOverideCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetNAVLightCB(const char *directory,char *field,void *dataToFillIn);
+//static void setEffectPointer(const char *directory,char *field,void *dataToFillIn);
 
 /*=============================================================================
     Private Data:
@@ -218,21 +218,21 @@ scriptEntry *findEntry(scriptEntry info[],char *name)
     the ascii representation of the number.
 =============================================================================*/
 
-void scriptSetRGBCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetRGBCB(const char *directory,char *field,void *dataToFillIn)
 {
     udword red, green, blue;
     sscanf(field,"%d,%d,%d",&red, &green, &blue);
     *((color *)dataToFillIn) = colRGB(red, green, blue);
 }
 
-void scriptSetRGBACB(char *directory,char *field,void *dataToFillIn)
+void scriptSetRGBACB(const char *directory,char *field,void *dataToFillIn)
 {
     udword red, green, blue, alpha;
     sscanf(field,"%d,%d,%d,%d",&red, &green, &blue, &alpha);
     *((color *)dataToFillIn) = colRGBA(red, green, blue, alpha);
 }
 
-void scriptSetReal32CB(char *directory,char *field,void *dataToFillIn)
+void scriptSetReal32CB(const char *directory,char *field,void *dataToFillIn)
 {
     sscanf(field,"%f",(real32 *)dataToFillIn);
 }
@@ -252,7 +252,7 @@ void CheckValidTacticsClass(TacticsType tactic,ShipClass shipclass,char *field)
 }
 #endif
 
-void scriptSetReal32CB_ARRAY(char *directory, char *field, void *dataToFillIn)
+void scriptSetReal32CB_ARRAY(const char *directory, char *field, void *dataToFillIn)
 {
     char tactic_buffer[32];
     char class_buffer[64];
@@ -275,21 +275,22 @@ void scriptSetReal32CB_ARRAY(char *directory, char *field, void *dataToFillIn)
     dataToFillIn = (tactic * (NUM_CLASSES + 1)) + shipclass + (real32*)dataToFillIn;
     *(real32*)dataToFillIn = value;
 }
-void scriptSetShipProbCB(char *directory, char *field, real32 *dataToFillIn)
+void scriptSetShipProbCB(const char *directory, char *field, void *dataToFillIn)
 {
     char shipname[64];
     real32 prob;
     ShipType shiptype;
+	real32* realData = (real32*)dataToFillIn;
 
     sscanf(field,"%s %f", shipname, &prob);
 
     shiptype = StrToShipType(shipname);
 
-    dataToFillIn += shiptype;
-    *dataToFillIn = prob;
+    realData += shiptype;
+    *realData = prob;
 }
 
-void scriptSetHyperspaceCostCB(char *directory, char *field, real32 *dataToFillIn)
+void scriptSetHyperspaceCostCB(const char *directory, char *field, void *dataToFillIn)
 {
     char shipname[200];
     real32 mincost,slopecost,maxcost,mindistance;
@@ -309,7 +310,7 @@ void scriptSetHyperspaceCostCB(char *directory, char *field, real32 *dataToFillI
     costData->canMpHyperspace = TRUE;
 }
 
-void scriptSetSpecialDoorOffsetCB(char *directory, char *field, real32 *dataToFillIn)
+void scriptSetSpecialDoorOffsetCB(const char *directory, char *field, void *dataToFillIn)
 {
     char shipname[200];
     char racename[50];
@@ -339,28 +340,29 @@ void scriptSetSpecialDoorOffsetCB(char *directory, char *field, real32 *dataToFi
 }
 
 
-void scriptSetShipGroupSizeCB(char *directory, char *field, sdword *dataToFillIn)
+void scriptSetShipGroupSizeCB(const char *directory, char *field, void *dataToFillIn)
 {
     char shipname[64];
     sdword numingroup;
     ShipType shiptype;
+	sdword* data = (sdword*)dataToFillIn;
 
     sscanf(field,"%s %d", shipname, &numingroup);
 
     shiptype = StrToShipType(shipname);
 
-    dataToFillIn += shiptype;
-    *dataToFillIn = numingroup;
+    data += shiptype;
+    *data = numingroup;
 }
 
 
-void scriptSetReal32SqrCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetReal32SqrCB(const char *directory,char *field,void *dataToFillIn)
 {
     sscanf(field,"%f",(real32 *)dataToFillIn);
     *((real32 *)dataToFillIn) *= *((real32 *)dataToFillIn);
 }
 
-void scriptSetSbyteCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetSbyteCB(const char *directory,char *field,void *dataToFillIn)
 {
     sdword readval;
 
@@ -369,7 +371,7 @@ void scriptSetSbyteCB(char *directory,char *field,void *dataToFillIn)
     *((sbyte *)dataToFillIn) = (sbyte)readval;
 }
 
-void scriptSetUbyteCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetUbyteCB(const char *directory,char *field,void *dataToFillIn)
 {
     udword readval;
 
@@ -378,7 +380,7 @@ void scriptSetUbyteCB(char *directory,char *field,void *dataToFillIn)
     *((ubyte *)dataToFillIn) = (ubyte)readval;
 }
 
-void scriptSetSwordCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetSwordCB(const char *directory,char *field,void *dataToFillIn)
 {
     sdword readval;
 
@@ -387,7 +389,7 @@ void scriptSetSwordCB(char *directory,char *field,void *dataToFillIn)
     *((sword *)dataToFillIn) = (sword)readval;
 }
 
-void scriptSetUwordCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetUwordCB(const char *directory,char *field,void *dataToFillIn)
 {
     udword readval;
 
@@ -396,12 +398,12 @@ void scriptSetUwordCB(char *directory,char *field,void *dataToFillIn)
     *((uword *)dataToFillIn) = (uword)readval;
 }
 
-void scriptSetSdwordCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetSdwordCB(const char *directory,char *field,void *dataToFillIn)
 {
     sscanf(field,"%d",(sdword *)dataToFillIn);
 }
 
-void scriptSetUdwordCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetUdwordCB(const char *directory,char *field,void *dataToFillIn)
 {
     sscanf(field,"%u",(udword *)dataToFillIn);
 }
@@ -431,17 +433,17 @@ bool scriptStringToBool(char *boolString)
     return(FALSE);
 }
 
-void scriptSetBool8(char *directory,char *field,void *dataToFillIn)
+void scriptSetBool8(const char *directory,char *field,void *dataToFillIn)
 {
     *((bool8 *)dataToFillIn) = scriptStringToBool(field);
 }
 
-void scriptSetBool(char *directory,char *field,void *dataToFillIn)
+void scriptSetBool(const char *directory,char *field,void *dataToFillIn)
 {
     *((bool *)dataToFillIn) = scriptStringToBool(field);
 }
 
-void scriptSetBitUdword(char *directoryy,char *field,void *dataToFillIn)
+void scriptSetBitUdword(const char *directoryy,char *field,void *dataToFillIn)
 {
     udword readval;
 
@@ -453,7 +455,7 @@ void scriptSetBitUdword(char *directoryy,char *field,void *dataToFillIn)
     }
 }
 
-void scriptSetBitUword(char *directory,char *field,void *dataToFillIn)
+void scriptSetBitUword(const char *directory,char *field,void *dataToFillIn)
 {
     udword readval;
 
@@ -465,17 +467,17 @@ void scriptSetBitUword(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-void scriptSetStringCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetStringCB(const char *directory,char *field,void *dataToFillIn)
 {
     strcpy((char *)dataToFillIn,field);
 }
 
-void scriptSetStringPtrCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetStringPtrCB(const char *directory,char *field,void *dataToFillIn)
 {
     *((char **)dataToFillIn) = memStringDupe(field);
 }
 
-void scriptSetCosAngCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetCosAngCB(const char *directory,char *field,void *dataToFillIn)
 {
     real32 ang;
 
@@ -483,7 +485,7 @@ void scriptSetCosAngCB(char *directory,char *field,void *dataToFillIn)
     *((real32 *)dataToFillIn) = (real32)cos(DEG_TO_RAD(ang));
 }
 
-void scriptSetCosAngSqrCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetCosAngSqrCB(const char *directory,char *field,void *dataToFillIn)
 {
     real32 ang;
     real32 cosine;
@@ -493,7 +495,7 @@ void scriptSetCosAngSqrCB(char *directory,char *field,void *dataToFillIn)
     *((real32 *)dataToFillIn) = cosine*cosine;
 }
 
-void scriptSetCosAngCB_ARRAY(char *directory, char *field, void *dataToFillIn)
+void scriptSetCosAngCB_ARRAY(const char *directory, char *field, void *dataToFillIn)
 {
     char tactic_buffer[32];
     char class_buffer[64];
@@ -517,7 +519,7 @@ void scriptSetCosAngCB_ARRAY(char *directory, char *field, void *dataToFillIn)
     *(real32*)dataToFillIn = (real32)cos(DEG_TO_RAD(value));
 }
 
-void scriptSetSinAngCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetSinAngCB(const char *directory,char *field,void *dataToFillIn)
 {
     real32 ang;
 
@@ -525,7 +527,7 @@ void scriptSetSinAngCB(char *directory,char *field,void *dataToFillIn)
     *((real32 *)dataToFillIn) = (real32)sin(DEG_TO_RAD(ang));
 }
 
-void scriptSetTanAngCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetTanAngCB(const char *directory,char *field,void *dataToFillIn)
 {
     real32 ang;
 
@@ -533,7 +535,7 @@ void scriptSetTanAngCB(char *directory,char *field,void *dataToFillIn)
     *((real32 *)dataToFillIn) = (real32)tan(DEG_TO_RAD(ang));
 }
 
-void scriptSetAngCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetAngCB(const char *directory,char *field,void *dataToFillIn)
 {
     real32 ang;
 
@@ -541,43 +543,43 @@ void scriptSetAngCB(char *directory,char *field,void *dataToFillIn)
     *((real32 *)dataToFillIn) = DEG_TO_RAD(ang);
 }
 
-void scriptSetGunTypeCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetGunTypeCB(const char *directory,char *field,void *dataToFillIn)
 {
     *((ShipClass *)dataToFillIn) = StrToGunType(field);
 }
 
-void scriptSetGunSoundTypeCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetGunSoundTypeCB(const char *directory,char *field,void *dataToFillIn)
 {
     *((ShipClass *)dataToFillIn) = StrToGunSoundType(field);
 }
 
-void scriptSetBulletTypeCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetBulletTypeCB(const char *directory,char *field,void *dataToFillIn)
 {
     *((ShipClass *)dataToFillIn) = StrToBulletType(field);
 }
 
-void scriptSetShipTypeCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetShipTypeCB(const char *directory,char *field,void *dataToFillIn)
 {
     *((ShipClass *)dataToFillIn) = StrToShipType(field);
 }
 
-void scriptSetShipRaceCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetShipRaceCB(const char *directory,char *field,void *dataToFillIn)
 {
     *((ShipClass *)dataToFillIn) = StrToShipRace(field);
 }
 
-void scriptSetShipClassCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetShipClassCB(const char *directory,char *field,void *dataToFillIn)
 {
     *((ShipClass *)dataToFillIn) = StrToShipClass(field);
 }
 
-void scriptSetVectorCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetVectorCB(const char *directory,char *field,void *dataToFillIn)
 {
     vector newvec;
     sscanf(field,"%f,%f,%f",&newvec.x, &newvec.y, &newvec.z);
     *((vector *)dataToFillIn) = newvec;
 }
-void scriptSetLWToHWMonkeyVectorCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetLWToHWMonkeyVectorCB(const char *directory,char *field,void *dataToFillIn)
 {
     vector newvec;
     sscanf(field,"%f,%f,%f",&newvec.z, &newvec.x, &newvec.y);
@@ -585,19 +587,19 @@ void scriptSetLWToHWMonkeyVectorCB(char *directory,char *field,void *dataToFillI
     *((vector *)dataToFillIn) = newvec;
 }
 
-void scriptSetFormationCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetFormationCB(const char *directory,char *field,void *dataToFillIn)
 {
     *((TypeOfFormation *)dataToFillIn) = StrToTypeOfFormation(field);
 }
 
-void scriptSetTacticsCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetTacticsCB(const char *directory,char *field,void *dataToFillIn)
 {
     *((TacticsType *)dataToFillIn) = StrToTacticsType(field);
 }
 
 
 #ifdef USE_SPHERE_TABLES
-void scriptSetSphereDeclinationCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetSphereDeclinationCB(const char *directory,char *field,void *dataToFillIn)
 {
     SphereDeclination *dec = (SphereDeclination *)dataToFillIn;
     real32 ang;
@@ -776,7 +778,7 @@ bool parseLine(char *line,char **returnName,char **returnValue)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void scriptSetStruct(char *directory,char *filename,scriptStructEntry info[],ubyte *structureToFillIn)
+void scriptSetStruct(const char *directory,const char *filename,scriptStructEntry info[],ubyte *structureToFillIn)
 {
     filehandle fh;
     char line[MAX_LINE_CHARS];
@@ -812,7 +814,7 @@ void scriptSetStruct(char *directory,char *filename,scriptStructEntry info[],uby
             if (foundentry != NULL)
             {
                 strcpy(globalScriptFileName,filename);
-                foundentry->setVarCB(directory,value,structureToFillIn + (foundentry->offset1 - foundentry->offset2) );
+                foundentry->setVarCB(directory,value,structureToFillIn + ((size_t)foundentry->offset1 - (size_t)foundentry->offset2) );
             }
         }
     }
@@ -837,7 +839,7 @@ void scriptSetStruct(char *directory,char *filename,scriptStructEntry info[],uby
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void scriptSet(char *directory,char *filename,scriptEntry info[])
+void scriptSet(const char *directory,const char *filename,scriptEntry info[])
 {
     filehandle fh;
     char line[MAX_LINE_CHARS];
@@ -889,7 +891,7 @@ void scriptSet(char *directory,char *filename,scriptEntry info[])
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void scriptSetFileSystem(char *directory,char *filename,scriptEntry info[])
+void scriptSetFileSystem(const char *directory,const char *filename,scriptEntry info[])
 {
     FILE *fh;
     char line[MAX_LINE_CHARS];
@@ -944,7 +946,7 @@ extern real32 ASTEROID_HARVEST_RANGE;
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void scriptSetGunStatics(char *directory,char *filename,struct ShipStaticInfo *shipstatinfo)
+void scriptSetGunStatics(const char *directory,const char *filename,struct ShipStaticInfo *shipstatinfo)
 {
     filehandle fh;
     char line[MAX_LINE_CHARS];
@@ -1070,7 +1072,7 @@ void scriptSetGunStatics(char *directory,char *filename,struct ShipStaticInfo *s
                         if (foundentry != NULL)
                         {
                             structureToFillIn = (ubyte *)&gunstaticinfo->gunstatics[processingGun];
-                            foundentry->setVarCB(directory,value,structureToFillIn + (foundentry->offset1 - foundentry->offset2) );
+                            foundentry->setVarCB(directory,value,structureToFillIn + ((size_t)foundentry->offset1 - (size_t)foundentry->offset2) );
                         }
                     }
                     break;
@@ -1159,7 +1161,7 @@ done:
 }
 
 // Reads in the parameters for the nav light.
-void scriptSetNAVLightCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetNAVLightCB(const char *directory,char *field,void *dataToFillIn)
 {
     char navlighttypestr[30];
     char navlighttexturename[50];
@@ -1192,7 +1194,7 @@ void scriptSetNAVLightCB(char *directory,char *field,void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void scriptSetNAVLightStatics(char *directory,char *filename,struct ShipStaticInfo *shipstatinfo)
+void scriptSetNAVLightStatics(const char *directory,const char *filename,struct ShipStaticInfo *shipstatinfo)
 {
     filehandle fh;
     char line[MAX_LINE_CHARS];
@@ -1283,7 +1285,7 @@ done:
     fileClose(fh);
 }
 
-void scriptSetDockPointCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetDockPointCB(const char *directory,char *field,void *dataToFillIn)
 {
     char docktypestr[30] = "";
 
@@ -1312,7 +1314,7 @@ void scriptSetDockPointCB(char *directory,char *field,void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void scriptSetDockStatics(char *directory,char *filename,struct ShipStaticInfo *shipstatinfo)
+void scriptSetDockStatics(const char *directory,const char *filename,struct ShipStaticInfo *shipstatinfo)
 {
     filehandle fh;
     char line[MAX_LINE_CHARS];
@@ -1403,7 +1405,7 @@ done:
 /************ Overide Docking script setting *******************/
 
 //CB function to set override points
-void scriptSetDockOverideCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetDockOverideCB(const char *directory,char *field,void *dataToFillIn)
 {
     char shiptypestr[30];
     char shipracestr[30];
@@ -1453,7 +1455,7 @@ void scriptSetDockOverideCB(char *directory,char *field,void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void scriptSetDockOverideStatics(char *directory,char *filename,struct ShipStaticInfo *shipstatinfo)
+void scriptSetDockOverideStatics(const char *directory,const char *filename,struct ShipStaticInfo *shipstatinfo)
 {
     filehandle fh;
     char line[MAX_LINE_CHARS];
@@ -1542,7 +1544,7 @@ done:
 }
 
 
-void scriptSetSalvageStatCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetSalvageStatCB(const char *directory,char *field,void *dataToFillIn)
 {
     StaticInfoHealthGuidanceShipDerelict *statinfo = (StaticInfoHealthGuidanceShipDerelict *)dataToFillIn;
 
@@ -1554,7 +1556,7 @@ void scriptSetSalvageStatCB(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-void scriptSetSalvagePointCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetSalvagePointCB(const char *directory,char *field,void *dataToFillIn)
 {
     char saltypestr[30] = "";
     SalvageStaticPoint *salvagestaticpoint = (SalvageStaticPoint *)dataToFillIn;
@@ -1587,7 +1589,7 @@ void scriptSetSalvagePointCB(char *directory,char *field,void *dataToFillIn)
     Return      :
 ----------------------------------------------------------------------------*/
 
-void scriptSetSalvageStatics(char *directory,char *filename,struct StaticInfoHealthGuidanceShipDerelict *statinfo)
+void scriptSetSalvageStatics(const char *directory,const char *filename,struct StaticInfoHealthGuidanceShipDerelict *statinfo)
 {
     filehandle fh;
     char line[MAX_LINE_CHARS];
@@ -1720,7 +1722,7 @@ done:
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-struct SphereStaticInfo *scriptSetSphereStaticInfo(char *directory,char *filename)
+struct SphereStaticInfo *scriptSetSphereStaticInfo(const char *directory,char *filename)
 {
     filehandle fh;
     char line[MAX_LINE_CHARS];
@@ -1986,7 +1988,7 @@ void mgGameTypeScriptInit()
                     if (foundentry != NULL)
                     {
                         structureToFillIn = (ubyte *)&preSetGames->gameType[gameNum];
-                        foundentry->setVarCB("",value,structureToFillIn + (foundentry->offset1 - foundentry->offset2) );
+                        foundentry->setVarCB("",value,structureToFillIn + ((size_t)foundentry->offset1 - (size_t)foundentry->offset2) );
                     }
                 }
                 break;

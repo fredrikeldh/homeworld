@@ -153,7 +153,7 @@ void primBlurryPoint2(sdword x, sdword y, color c);
 void primBlurryPoint22(sdword x, sdword y, color c);
 
 //report errors
-void primErrorMessagePrintFunction(char *file, sdword line);
+void primErrorMessagePrintFunction(const char *file, sdword line);
 
 //utility functions
 real32 primPointLineIntersection(real32 xp, real32 yp, real32 x0, real32 y0, real32 x1, real32 y1);

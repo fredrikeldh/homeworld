@@ -78,7 +78,7 @@ typedef struct {
 // support functions in KAS.c
 void kasFSMAdd(char *name);
 void kasFSMStart(char *name);
-void kasFSMEnd(char *name);
+void kasFSMEnd(const char *name);
 int kasFSMValid(char *name);
 void kasFSMCreateStart(char *name);
 void kasFSMCreateEnd(void);
@@ -87,7 +87,7 @@ void kasStateListAdd(char *name);
 void kasStateListEnd(void);
 int kasStateValid(char *name);
 void kasStateStart(char *name);
-void kasStateEnd(char *name);
+void kasStateEnd(const char *name);
 void kasInitializeStart(void);
 void kasInitializeEnd(void);
 void kasWatchStart(void);
@@ -104,8 +104,8 @@ void kasFunctionParamPathPtr(void);
 void kasFunctionParamVectorPtr(void);
 void kasFunctionParamVolumePtr(void);
 void kasHeaders(int ctype);
-char *kasParamTypeToC(int type);
-char *kasParamTypeToString(int type);
+const char *kasParamTypeToC(int type);
+const char *kasParamTypeToString(int type);
 void kasLocalizationStart(void);
 void kasLocalizationEnd(void);
 void kasLStringClearAll(void);
@@ -115,8 +115,11 @@ void kasLStringDefineEnd(void);
 void kasLStringValue(char *value);
 void kasLStringReference(char *name);
 
-char* stateHelpGet ();
+char* stateHelpGet (void);
 
-char* levelNameGet ();
+char* levelNameGet (void);
+
+extern int lineNumGet(void);
+extern const char *curFilenameGet(void);
 
 #endif

@@ -73,10 +73,10 @@ extern udword kbKeySavedKeys[20];
     Function Prototypes :
 =============================================================================*/
 
-void kbListWindowCB(char *string, featom *atom);
-void kbKeyResetToDefault(char *string, featom *atom);
+void kbListWindowCB(const char* name, featom* atom);
+void kbKeyResetToDefault(const char* name, featom* atom);
 
-void kbPoolListWindowCB(char *string, featom *atom);
+void kbPoolListWindowCB(const char* name, featom* atom);
 
 sdword kbCheckBindings(sdword keypressed);
 

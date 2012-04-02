@@ -152,7 +152,7 @@ fibfileheader;
 //structure for a screen
 typedef struct tagfescreen
 {
-    char *name;                                 //name of screen for link purposes
+    const char *name;                                 //name of screen for link purposes
     udword flags;                               //flags for this screen
     uword nLinks;                               //number of links in this screen
     uword nAtoms;                               //number of atoms in screen
@@ -164,9 +164,9 @@ fescreen;
 //structure for a link
 typedef struct tagfelink
 {
-    char *name;                                 //optional name of this link
+    const char *name;                                 //optional name of this link
     udword flags;                               //flags controlling behaviour of link
-    char *linkToName;                           //name of screen to link to
+    const char *linkToName;                           //name of screen to link to
 }
 felink;
 
@@ -181,7 +181,7 @@ fescrollinfo;
 //structure for an atom of a screen
 typedef struct tagfeatom
 {
-    char  *name;                                //optional name of control
+    const char  *name;                                //optional name of control
     udword flags;                               //flags to control behavior
     udword status;                              //status flags for this atom, checked etc.
     ubyte  type;                                //type of control (button, scroll bar, etc.)
@@ -205,13 +205,13 @@ typedef struct tagfeatom
 featom;
 
 //type of a function callback for a front end
-typedef void (*fefunction)(char *name, featom *atom);
+typedef void (*fefunction)(const char *name, featom *atom);
 
 //structure for a namestring/callback mapping
 typedef struct
 {
     fefunction function;
-    char *name;
+    const char *name;
 }
 fecallback;
 
@@ -222,7 +222,7 @@ typedef void (*fedrawfunction)(featom *atom, regionhandle region);
 typedef struct
 {
     fedrawfunction function;
-    char *name;
+    const char *name;
 }
 fedrawcallback;
 
@@ -300,16 +300,16 @@ sdword feStartup(void);
 void feReset(void);
 void feShutdown(void);
 
-void feFunctionExecute(char *name, featom *atom, bool firstcall);
+void feFunctionExecute(const char *name, featom *atom, bool firstcall);
 
 bool feShouldSaveMouseCursor(void);
 
 //load in a front end screen
-fibfileheader *feScreensLoad(char *fileName);
+fibfileheader *feScreensLoad(const char *fileName);
 sdword feScreensDelete(fibfileheader *screens);
 
 //execute a screen
-regionhandle feScreenStart(regionhandle parent, char *screenName);
+regionhandle feScreenStart(regionhandle parent, const char *screenName);
 regionhandle feMenuStart(regionhandle parent, fescreen *screen, sdword x, sdword y);
 void feCurrentScreenDelete(void);
 
@@ -320,9 +320,9 @@ void feAllScreensDelete(void);
 void feAllMenusDelete(void);
 
 //add a callback for a menu item etc.
-sdword feCallbackAdd(char *controlName, fefunction function);
+sdword feCallbackAdd(const char *controlName, fefunction function);
 sdword feCallbackAddMultiple(fecallback *table);
-sdword feDrawCallbackAdd(char *controlName, fedrawfunction function);
+sdword feDrawCallbackAdd(const char *controlName, fedrawfunction function);
 sdword feDrawCallbackAddMultiple(fedrawcallback *table);
 
 void feAllCallOnCreate(fescreen *screen);
@@ -332,10 +332,10 @@ sdword feScreenEntryAdd(fescreen *screen);
 sdword feScreenEntryRemove(fescreen *screen);
 
 //find things
-fescreen *feScreenFind(char *name);
-featom *feAtomFindInScreen(fescreen *screen, char *atomName);
-featom *feAtomFindNextInScreen(fescreen *screen, featom *atom, char *atomName);
-regionhandle feRegionFindByFunction(char *name);
+fescreen *feScreenFind(const char *name);
+featom *feAtomFindInScreen(fescreen *screen, const char *atomName);
+featom *feAtomFindNextInScreen(fescreen *screen, featom *atom, const char *atomName);
+regionhandle feRegionFindByFunction(const char *name);
 
 //manipulating screen stack
 fescreen *feScreenPush(void);
@@ -348,12 +348,12 @@ void feBaseRegionDraw(regionhandle region);
 void feDividerDraw(regionhandle region);
 
 //control-type specific calls
-void feRadioButtonSet(char *name, sdword index);
-void feToggleButtonSet(char *name, sdword bPressed);
+void feRadioButtonSet(const char *name, sdword index);
+void feToggleButtonSet(const char *name, sdword bPressed);
 
 //misc...
-void feScreenDisappear(char *string, featom *atom);
-void feMenuDisappear(char *string, featom *atom);
+void feScreenDisappear(const char *string, featom *atom);
+void feMenuDisappear(const char *string, featom *atom);
 regionhandle feRegionsAdd(regionhandle parent, fescreen *screen, bool moveToFront);
 regionhandle feFindRadioButtonRegion(regionhandle temp, bool selected);
 

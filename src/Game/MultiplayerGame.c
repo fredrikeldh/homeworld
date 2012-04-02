@@ -31,7 +31,7 @@
 #include "SaveGame.h"             // for ConvertNumToPointerInList
 #include "ScenPick.h"
 #include "Scroller.h"
-#include "ServerStatus.h"
+#include "ThirdParty/Titan/ServerStatus.h"
 #include "StatScript.h"
 #include "StringSupport.h"
 #include "Titan.h"
@@ -342,7 +342,7 @@ typedef void (*mgCommandFunc)(char *name, char *retmessage);
 
 typedef struct mgCommandInfo
 {
-    char           *Command;
+    const char      *Command;
     mgCommandFunc   callback;
     bool            hasnamearg;
     bool            captainonly;
@@ -513,93 +513,93 @@ udword mgPlayerLimit = 0;
 =============================================================================*/
 
 //  Callbacks for the connection type screen.
-void mgConnectionBack               (char *name, featom *atom);
-void mgSkirmish                     (char *name, featom *atom);
-void mgLANIPX                       (char *name, featom *atom);
-void mgInternetWON                  (char *name, featom *atom);
+void mgConnectionBack               (const char *name, featom *atom);
+void mgSkirmish                     (const char *name, featom *atom);
+void mgLANIPX                       (const char *name, featom *atom);
+void mgInternetWON                  (const char *name, featom *atom);
 
 // Callbacks for the Login screen to Internet WON
-void mgPasswordEntry                (char *name, featom *atom);
-void mgChangePassword               (char *name, featom *atom);
-void mgNewAccount                   (char *name, featom *atom);
-void mgLaunchWON                    (char *name, featom *atom);
-void mgFirewallButton               (char *name, featom *atom);
+void mgPasswordEntry                (const char *name, featom *atom);
+void mgChangePassword               (const char *name, featom *atom);
+void mgNewAccount                   (const char *name, featom *atom);
+void mgLaunchWON                    (const char *name, featom *atom);
+void mgFirewallButton               (const char *name, featom *atom);
 
 // Shared between the internet screen and the lan screen
-void mgNameEntry                    (char *name, featom *atom);
-void mgBackToConnection             (char *name, featom *atom);
+void mgNameEntry                    (const char *name, featom *atom);
+void mgBackToConnection             (const char *name, featom *atom);
 
 // Callbacks for the Password Changer Screen.
-void mgOldPasswordChangeEntry       (char *name, featom *atom);
-void mgNewPasswordChangeEntry       (char *name, featom *atom);
-void mgConfirmPasswordChangeEntry   (char *name, featom *atom);
-void mgChangePasswordBack           (char *name, featom *atom);
-void mgChangePasswordNow            (char *name, featom *atom);
+void mgOldPasswordChangeEntry       (const char *name, featom *atom);
+void mgNewPasswordChangeEntry       (const char *name, featom *atom);
+void mgConfirmPasswordChangeEntry   (const char *name, featom *atom);
+void mgChangePasswordBack           (const char *name, featom *atom);
+void mgChangePasswordNow            (const char *name, featom *atom);
 
 // Callbacks from the new account Screen.
-void mgNewAccountPassword           (char *name, featom *atom);
-void mgNewAccountConfirm            (char *name, featom *atom);
-void mgNewAccountBack               (char *name, featom *atom);
-void mgCreateNewAccountNow          (char *name, featom *atom);
+void mgNewAccountPassword           (const char *name, featom *atom);
+void mgNewAccountConfirm            (const char *name, featom *atom);
+void mgNewAccountBack               (const char *name, featom *atom);
+void mgCreateNewAccountNow          (const char *name, featom *atom);
 
 // Callbacks for the channel chatting screen.
-void mgChatTextEntry                (char *name, featom *atom);
-void mgViewChannels                 (char *name, featom *atom);
-void mgViewGames                    (char *name, featom *atom);
-void mgCreateGame                   (char *name, featom *atom);
-void mgBackToLogin                  (char *name, featom *atom);
-void mgChangeColors                 (char *name, featom *atom);
-void mgChatWindowInit               (char *name, featom *atom);
-void mgUserNameWindowInit           (char *name, featom *atom);
+void mgChatTextEntry                (const char *name, featom *atom);
+void mgViewChannels                 (const char *name, featom *atom);
+void mgViewGames                    (const char *name, featom *atom);
+void mgCreateGame                   (const char *name, featom *atom);
+void mgBackToLogin                  (const char *name, featom *atom);
+void mgChangeColors                 (const char *name, featom *atom);
+void mgChatWindowInit               (const char *name, featom *atom);
+void mgUserNameWindowInit           (const char *name, featom *atom);
 void mgCurrentChannelDraw           (featom *atom, regionhandle region);
 
 // Callbacks for the Channel Picker screen.
-void mgJoinChannel                  (char *name, featom *atom);
-void mgCreateChannel                (char *name, featom *atom);
-void mgBackToChannelChat            (char *name, featom *atom);
-void mgListOfChannelsInit           (char *name, featom *atom);
+void mgJoinChannel                  (const char *name, featom *atom);
+void mgCreateChannel                (const char *name, featom *atom);
+void mgBackToChannelChat            (const char *name, featom *atom);
+void mgListOfChannelsInit           (const char *name, featom *atom);
 
 // Callbacks for the Channel Creation Screen.
-void mgChannelNameEntry             (char *name, featom *atom);
-void mgChannelDescriptionEntry      (char *name, featom *atom);
-void mgChannelProtected             (char *name, featom *atom);
-void mgChannelPasswordEntry         (char *name, featom *atom);
-void mgChannelConfirmEntry          (char *name, featom *atom);
-void mgCreateChannelNow             (char *name, featom *atom);
-void mgBackToAvailableChannels      (char *name, featom *atom);
+void mgChannelNameEntry             (const char *name, featom *atom);
+void mgChannelDescriptionEntry      (const char *name, featom *atom);
+void mgChannelProtected             (const char *name, featom *atom);
+void mgChannelPasswordEntry         (const char *name, featom *atom);
+void mgChannelConfirmEntry          (const char *name, featom *atom);
+void mgCreateChannelNow             (const char *name, featom *atom);
+void mgBackToAvailableChannels      (const char *name, featom *atom);
 
 // Callbacks for the Available Games screen.
-void mgPingAllGames                 (char *name, featom *atom);
-void mgSeeDetails                   (char *name, featom *atom);
-void mgJoinGame                     (char *name, featom *atom);
-void mgListOfGamesInit              (char *name, featom *atom);
-void mgListOfGamesBack              (char *name, featom *atom);
+void mgPingAllGames                 (const char *name, featom *atom);
+void mgSeeDetails                   (const char *name, featom *atom);
+void mgJoinGame                     (const char *name, featom *atom);
+void mgListOfGamesInit              (const char *name, featom *atom);
+void mgListOfGamesBack              (const char *name, featom *atom);
 bool Refresh                        (udword num, void *data, struct BabyCallBack *baby);
 bool PingAllGames                   (udword num, void *data, struct BabyCallBack *baby);
 bool PingAllServers                 (udword num, void *data, struct BabyCallBack *baby);
 
 // Callbacks for the waiting for game screens.
-void mgGameChatWindowInit           (char *name, featom *atom);
-void mgGameUserNameWindowInit       (char *name, featom *atom);
-void mgViewDetails                  (char *name, featom *atom);
-void mgLeaveGame                    (char *name, featom *atom);
-void mgSetupGame                    (char *name, featom *atom);
-void mgStartGame                    (char *name, featom *atom);
-void mgGameChatTextEntry            (char *name, featom *atom);
+void mgGameChatWindowInit           (const char *name, featom *atom);
+void mgGameUserNameWindowInit       (const char *name, featom *atom);
+void mgViewDetails                  (const char *name, featom *atom);
+void mgLeaveGame                    (const char *name, featom *atom);
+void mgSetupGame                    (const char *name, featom *atom);
+void mgStartGame                    (const char *name, featom *atom);
+void mgGameChatTextEntry            (const char *name, featom *atom);
 void mgCurrentGameDraw              (featom *atom, regionhandle region);
 
 // Callbacks for the Basic Game Options game screen.
-void mgCreateGameNow                (char *name, featom *atom);
-void mgGameNameTextEntry            (char *name, featom *atom);
-void mgChooseScenario               (char *name, featom *atom);
-//void mgAddOpponent                  (char *name, featom *atom);
-//void mgRemoveOpponent               (char *name, featom *atom);
+void mgCreateGameNow                (const char *name, featom *atom);
+void mgGameNameTextEntry            (const char *name, featom *atom);
+void mgChooseScenario               (const char *name, featom *atom);
+//void mgAddOpponent                  (const char *name, featom *atom);
+//void mgRemoveOpponent               (const char *name, featom *atom);
 void mgAddCPUOpponent               (featom *atom, regionhandle region);
 void mgRemoveCPUOpponent            (featom *atom, regionhandle region);
-void mgPickGameType                 (char *name, featom *atom);
-void mgStartingFleet                (char *name, featom *atom);
-void mgStartShip                    (char *name, featom *atom);
-void mgGameType                     (char *name, featom *atom);
+void mgPickGameType                 (const char *name, featom *atom);
+void mgStartingFleet                (const char *name, featom *atom);
+void mgStartShip                    (const char *name, featom *atom);
+void mgGameType                     (const char *name, featom *atom);
 void mgNumberOfComputers            (featom *atom, regionhandle region);
 //void mgLeftArrowDraw(featom *atom, regionhandle region);
 //void mgRightArrowDraw(featom *atom, regionhandle region);
@@ -607,72 +607,72 @@ void mgNumberOfComputers            (featom *atom, regionhandle region);
 //void mgRightArrowDraw(featom *atom, regionhandle region);
 
 // Callbacks for the Advanced Options game Screen.
-void mgHyperspace                   (char *name, featom *atom);
-void mgAlliedVictory                (char *name, featom *atom);
-void mgLastMotherShip               (char *name, featom *atom);
-void mgCaptureCapitalShip           (char *name, featom *atom);
-void mgResearchEnabled              (char *name, featom *atom);
-//void mgBountiesEnabled              (char *name, featom *atom);
-void mgBountySize                   (char *name, featom *atom);
-void mgPasswordProtected            (char *name, featom *atom);
-void mgGamePassword                 (char *name, featom *atom);
-void mgGamePasswordConfirm          (char *name, featom *atom);
-void mgUnitCapsEnabled              (char *name, featom *atom);
-void mgFuelBurnEnabled              (char *name, featom *atom);
-void mgCratesEnabled                (char *name, featom *atom);
+void mgHyperspace                   (const char *name, featom *atom);
+void mgAlliedVictory                (const char *name, featom *atom);
+void mgLastMotherShip               (const char *name, featom *atom);
+void mgCaptureCapitalShip           (const char *name, featom *atom);
+void mgResearchEnabled              (const char *name, featom *atom);
+//void mgBountiesEnabled              (const char *name, featom *atom);
+void mgBountySize                   (const char *name, featom *atom);
+void mgPasswordProtected            (const char *name, featom *atom);
+void mgGamePassword                 (const char *name, featom *atom);
+void mgGamePasswordConfirm          (const char *name, featom *atom);
+void mgUnitCapsEnabled              (const char *name, featom *atom);
+void mgFuelBurnEnabled              (const char *name, featom *atom);
+void mgCratesEnabled                (const char *name, featom *atom);
 
 // Callbacks for the Resourcing Options game Screen.
 
-void mgHarvestingEnabled            (char *name, featom *atom);
-void mgStartingResources            (char *name, featom *atom);
-void mgResourceInjections           (char *name, featom *atom);
-void mgResourceInjectionInterval    (char *name, featom *atom);
-void mgResourceInjectionAmount      (char *name, featom *atom);
-void mgResourceLumpSum              (char *name, featom *atom);
-void mgResourceLumpSumInterval      (char *name, featom *atom);
-void mgResourceLumpSumAmount        (char *name, featom *atom);
+void mgHarvestingEnabled            (const char *name, featom *atom);
+void mgStartingResources            (const char *name, featom *atom);
+void mgResourceInjections           (const char *name, featom *atom);
+void mgResourceInjectionInterval    (const char *name, featom *atom);
+void mgResourceInjectionAmount      (const char *name, featom *atom);
+void mgResourceLumpSum              (const char *name, featom *atom);
+void mgResourceLumpSumInterval      (const char *name, featom *atom);
+void mgResourceLumpSumAmount        (const char *name, featom *atom);
 
 // Callbacks shared by all of the Game Options screens
-void mgBackFromOptions              (char *name, featom *atom);
-void mgBasicOptions                 (char *name, featom *atom);
-void mgAdvancedOptions              (char *name, featom *atom);
-void mgResourceOptions              (char *name, featom *atom);
+void mgBackFromOptions              (const char *name, featom *atom);
+void mgBasicOptions                 (const char *name, featom *atom);
+void mgAdvancedOptions              (const char *name, featom *atom);
+void mgResourceOptions              (const char *name, featom *atom);
 
 // Callbacks for the Player options screen.
-void mgSetColorsNow                 (char *name, featom *atom);
-void mgBackFromPlayerOptions        (char *name, featom *atom);
+void mgSetColorsNow                 (const char *name, featom *atom);
+void mgBackFromPlayerOptions        (const char *name, featom *atom);
 
 // Callbacks for the Connecting Status screen.
-void mgConnectingStatusInit         (char *name, featom *atom);
-void mgConnectingCancel             (char *name, featom *atom);
+void mgConnectingStatusInit         (const char *name, featom *atom);
+void mgConnectingCancel             (const char *name, featom *atom);
 
 // Callbacks for the game entry screen.
-void mgGamePasswordEntry            (char *name, featom *atom);
-void mgBackFromPassword             (char *name, featom *atom);
-void mgGoPassword                   (char *name, featom *atom);
+void mgGamePasswordEntry            (const char *name, featom *atom);
+void mgBackFromPassword             (const char *name, featom *atom);
+void mgGoPassword                   (const char *name, featom *atom);
 
-void mgBackFromRoomPassword         (char *name, featom *atom);
-void mgGoRoomPassword               (char *name, featom *atom);
+void mgBackFromRoomPassword         (const char *name, featom *atom);
+void mgGoRoomPassword               (const char *name, featom *atom);
 
 // Callbacks for the quit WON question screen.
-void mgYesQuitWON                   (char *name, featom *atom);
-void mgDontQuitWON                  (char *name, featom *atom);
+void mgYesQuitWON                   (const char *name, featom *atom);
+void mgDontQuitWON                  (const char *name, featom *atom);
 
 // Callbacks for downloading patch
-void mgYesDownloadPatch             (char *name, featom *atom);
-void mgNoDownloadPatch              (char *name, featom *atom);
+void mgYesDownloadPatch             (const char *name, featom *atom);
+void mgNoDownloadPatch              (const char *name, featom *atom);
 void mgDrawPatchProgress            (featom *atom, regionhandle region);
-void mgAbortDownloadPatch           (char *name, featom *atom);
+void mgAbortDownloadPatch           (const char *name, featom *atom);
 
 // Callbacks from the message box screen.
-void mgMessageOk                    (char *name, featom *atom);
+void mgMessageOk                    (const char *name, featom *atom);
 void mgDrawMessageBox               (featom *atom, regionhandle region);
 
 // Callbacks for choose servers
 
-void mgGoChooseServer               (char *name, featom *atom);
-void mgCancelChooseServer           (char *name, featom *atom);
-void mgListOfServersInit            (char *name, featom *atom);
+void mgGoChooseServer               (const char *name, featom *atom);
+void mgCancelChooseServer           (const char *name, featom *atom);
+void mgListOfServersInit            (const char *name, featom *atom);
 
 /*=============================================================================
     Function Prototypes for the draw callbacks:
@@ -1791,7 +1791,7 @@ void mgAddChatToRoomChat(chatlist *newchat, listwindowhandle listwindow, LinkedL
     Callbacks for the connection type screen.:
 =============================================================================*/
 
-void mgConnectionBack(char *name, featom *atom)
+void mgConnectionBack(const char *name, featom *atom)
 {
     mgBaseRegion = NULL;
     mgScreensDisappear();
@@ -1802,7 +1802,7 @@ void mgConnectionBack(char *name, featom *atom)
     currentScreen = -1;
 }
 
-void mgSkirmish(char *name, featom *atom)
+void mgSkirmish(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1811,12 +1811,12 @@ void mgSkirmish(char *name, featom *atom)
     LANGame = FALSE;
     IPGame = 1; // DO NOT USE TRUE for CPP reasons
     tpGameCreated.numPlayers    = 1;
-    
+
     // use the previous number of computer players unless it takes us over the limit
     if (tpGameCreated.numComputers + tpGameCreated.numPlayers > MAX_MULTIPLAYER_PLAYERS) {
         tpGameCreated.numComputers = 1;
     }
-    
+
     mgShowScreen(MGS_Skirmish_Basic, TRUE);
 
 #ifdef _MACOSX_FIX_LAN
@@ -1824,7 +1824,7 @@ void mgSkirmish(char *name, featom *atom)
 #endif
 }
 
-void mgInternetWON(char *name, featom *atom)
+void mgInternetWON(const char *name, featom *atom)
 {
 #if defined(HW_GAME_DEMO) || defined(HW_GAME_RAIDER_RETREAT)
     bitSet(atom->flags, FAF_Disabled);
@@ -1850,7 +1850,7 @@ void mgInternetWON(char *name, featom *atom)
 #endif
 }
 
-void mgLANIPX(char *name, featom *atom)
+void mgLANIPX(const char *name, featom *atom)
 {
     //mgShowScreen(MGS_LAN_Login,TRUE);
 
@@ -1901,7 +1901,7 @@ void mgLANIPX(char *name, featom *atom)
     Callbacks for the Login screen to Internet WON:
 =============================================================================*/
 
-void mgFirewallButton(char *name, featom *atom)
+void mgFirewallButton(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1969,7 +1969,7 @@ void mgVerifyValidNameChars(textentryhandle entry, bool login)
     }
 }
 
-void mgNameEntry(char *name, featom *atom)
+void mgNameEntry(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2005,7 +2005,7 @@ void mgNameEntry(char *name, featom *atom)
     }
 }
 
-void mgPasswordEntry(char *name, featom *atom)
+void mgPasswordEntry(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2028,7 +2028,7 @@ void mgPasswordEntry(char *name, featom *atom)
     }
 }
 
-void mgChangePassword(char *name, featom *atom)
+void mgChangePassword(const char *name, featom *atom)
 {
     mgConnectingScreenGoto = MGS_Internet_Login;
 
@@ -2045,7 +2045,7 @@ void mgChangePassword(char *name, featom *atom)
     mgShowScreen(MGS_Password_Change,TRUE);
 }
 
-void mgNewAccount(char *name, featom *atom)
+void mgNewAccount(const char *name, featom *atom)
 {
     mgConnectingScreenGoto = MGS_Internet_Login;
 
@@ -2060,7 +2060,7 @@ void mgNewAccount(char *name, featom *atom)
     mgShowScreen( MGS_New_Account, TRUE);
 }
 
-void mgLaunchWON(char *name, featom *atom)
+void mgLaunchWON(const char *name, featom *atom)
 {
 #if defined(HW_GAME_DEMO) || defined(HW_GAME_RAIDER_RETREAT)
     bitSet(atom->flags, FAF_Disabled);
@@ -2136,7 +2136,7 @@ void mgLaunchWON(char *name, featom *atom)
 #endif
 }
 
-void mgBackToConnection(char *name, featom *atom)
+void mgBackToConnection(const char *name, featom *atom)
 {
     // closedown the titan engine
     titanShutdown();
@@ -2150,7 +2150,7 @@ void mgBackToConnection(char *name, featom *atom)
 =============================================================================*/
 
 
-void mgOldPasswordChangeEntry(char*name, featom *atom)
+void mgOldPasswordChangeEntry(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2171,7 +2171,7 @@ void mgOldPasswordChangeEntry(char*name, featom *atom)
     }
 }
 
-void mgNewPasswordChangeEntry(char*name, featom *atom)
+void mgNewPasswordChangeEntry(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2192,7 +2192,7 @@ void mgNewPasswordChangeEntry(char*name, featom *atom)
     }
 }
 
-void mgConfirmPasswordChangeEntry(char *name, featom *atom)
+void mgConfirmPasswordChangeEntry(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2213,14 +2213,14 @@ void mgConfirmPasswordChangeEntry(char *name, featom *atom)
     }
 }
 
-void mgChangePasswordBack(char*name,featom *atom)
+void mgChangePasswordBack(const char *name, featom *atom)
 {
     strcpy(utyName, tempname);
 
     mgShowScreen(MGS_Internet_Login,TRUE);
 }
 
-void mgChangePasswordNow(char *name, featom *atom)
+void mgChangePasswordNow(const char *name, featom *atom)
 {
     if (strlen(mgNameEntryBox->textBuffer) < 2)
         return;
@@ -2253,7 +2253,7 @@ void mgChangePasswordNow(char *name, featom *atom)
     Callbacks for the New account screen:
 =============================================================================*/
 
-void mgNewAccountPassword(char *name, featom *atom)
+void mgNewAccountPassword(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2274,7 +2274,7 @@ void mgNewAccountPassword(char *name, featom *atom)
     }
 }
 
-void mgNewAccountConfirm(char *name, featom *atom)
+void mgNewAccountConfirm(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2295,12 +2295,12 @@ void mgNewAccountConfirm(char *name, featom *atom)
     }
 }
 
-void mgNewAccountBack(char *name, featom *atom)
+void mgNewAccountBack(const char *name, featom *atom)
 {
     mgShowScreen(MGS_Internet_Login,TRUE);
 }
 
-void mgCreateNewAccountNow(char *name, featom *atom)
+void mgCreateNewAccountNow(const char *name, featom *atom)
 {
     if (strlen(mgNameEntryBox->textBuffer) < 2)
         return;
@@ -2333,7 +2333,7 @@ void mgCreateNewAccountNow(char *name, featom *atom)
     Callbacks for the channel chatting screen.:
 =============================================================================*/
 
-void mgChatTextEntry(char*name,featom *atom)
+void mgChatTextEntry(const char *name, featom *atom)
 {
     chatlist *newchat;
     userlist *user;
@@ -2453,17 +2453,17 @@ void mgChatTextEntry(char*name,featom *atom)
     }
 }
 
-void mgViewChannels(char *name,featom *atom)
+void mgViewChannels(const char *name, featom *atom)
 {
     mgShowScreen(MGS_Available_Channels,TRUE);
 }
 
-void mgViewGames(char *name,featom *atom)
+void mgViewGames(const char *name, featom *atom)
 {
     mgShowScreen(MGS_Available_Games,TRUE);
 }
 
-void mgCreateGame(char *name,featom *atom)
+void mgCreateGame(const char *name, featom *atom)
 {
     mgCreatingNetworkGame = TRUE;
 
@@ -2473,12 +2473,12 @@ void mgCreateGame(char *name,featom *atom)
     mgShowScreen(MGS_Basic_Options,TRUE);
 }
 
-void mgBackToLogin(char *name,featom *atom)
+void mgBackToLogin(const char *name, featom *atom)
 {
     mgShowScreen(MGS_Quit_WON, FALSE);
 }
 
-void mgChangeColors(char *name, featom *atom)
+void mgChangeColors(const char *name, featom *atom)
 {
     // save the colors so if they change their minds it is backed up
     BaseColorSave   = utyBaseColor;
@@ -2496,7 +2496,7 @@ void mgDrawChatWindowItem(rectangle *rect, listitemhandle data)
     sdword x = rect->x0 + MG_HorzSpacing,
            y = rect->y0 + MG_VertSpacing / 2;
     color  c = mgNormalChatColor;
-    
+
     fonthandle  oldfont  = fontMakeCurrent(mgChatWindowFont);
     chatlist   *chatinfo = (chatlist *)data->data;
 
@@ -2552,7 +2552,7 @@ void mgDrawChatWindowItem(rectangle *rect, listitemhandle data)
     fontMakeCurrent(oldfont);
 }
 
-void mgChatWindowInit(char *name, featom *atom)
+void mgChatWindowInit(const char *name, featom *atom)
 {
     fonthandle oldfont;
     Node      *walk;
@@ -2613,7 +2613,7 @@ void mgDrawUserNameWindowItem(rectangle *rect, listitemhandle data)
     fontMakeCurrent(oldfont);
 }
 
-void mgUserNameWindowInit(char *name, featom *atom)
+void mgUserNameWindowInit(const char *name, featom *atom)
 {
     fonthandle oldfont;
     Node      *walk;
@@ -2693,7 +2693,7 @@ void mgJoinChannelNow(wchar_t *channelname,wchar_t *description)
     mgConnectingScreenGoto = MGS_Available_Channels;
 }
 
-void mgJoinChannel(char*name,featom*atom)
+void mgJoinChannel(const char *name, featom *atom)
 {
 #ifndef _MACOSX_FIX_LAN
     sdword       i;
@@ -2724,12 +2724,12 @@ void mgJoinChannel(char*name,featom*atom)
 #endif
 }
 
-void mgCreateChannel(char*name,featom*atom)
+void mgCreateChannel(const char *name, featom *atom)
 {
     mgShowScreen(MGS_Create_Channel,TRUE);
 }
 
-void mgBackToChannelChat(char*name,featom *atom)
+void mgBackToChannelChat(const char *name, featom *atom)
 {
     donerefreshing=TRUE;
 
@@ -2830,7 +2830,7 @@ void mgDrawListOfChannelsItem(rectangle *rect, listitemhandle data)
     fontMakeCurrent(oldfont);
 }
 
-void mgListOfChannelsInit(char *name, featom *atom)
+void mgListOfChannelsInit(const char *name, featom *atom)
 {
     fonthandle  oldfont;
     sdword      titleheight, itemheight;
@@ -2891,7 +2891,7 @@ void mgListOfChannelsInit(char *name, featom *atom)
     Callbacks for the Channel Creation Screen.:
 =============================================================================*/
 
-void mgChannelNameEntry(char*name,featom *atom)
+void mgChannelNameEntry(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2912,7 +2912,7 @@ void mgChannelNameEntry(char*name,featom *atom)
     }
 }
 
-void mgChannelDescriptionEntry(char*name, featom *atom)
+void mgChannelDescriptionEntry(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2933,7 +2933,7 @@ void mgChannelDescriptionEntry(char*name, featom *atom)
     }
 }
 
-void mgChannelProtected(char*name,featom *atom)
+void mgChannelProtected(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2949,7 +2949,7 @@ void mgChannelProtected(char*name,featom *atom)
     }
 }
 
-void mgChannelPasswordEntry(char*name, featom *atom)
+void mgChannelPasswordEntry(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -2970,7 +2970,7 @@ void mgChannelPasswordEntry(char*name, featom *atom)
     }
 }
 
-void mgChannelConfirmEntry(char*name, featom *atom)
+void mgChannelConfirmEntry(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -3012,7 +3012,7 @@ bool channelAlreadyExists(wchar_t *channelname)
     return FALSE;
 }
 
-void mgCreateChannelNow(char*name,featom *atom)
+void mgCreateChannelNow(const char *name, featom *atom)
 {
     static wchar_t widechannelname[MAX_CHANNEL_NAME_LEN];
     static wchar_t widechanneldescription[MAX_CHANNEL_DESCRIPTION_LEN];
@@ -3058,7 +3058,7 @@ void mgCreateChannelNow(char*name,featom *atom)
     listDeleteAll(&listofusersinfo);
 }
 
-void mgBackToAvailableChannels(char *name, featom *atom)
+void mgBackToAvailableChannels(const char *name, featom *atom)
 {
     mgShowScreen(MGS_Available_Channels,TRUE);
 }
@@ -3070,7 +3070,7 @@ void mgBackToAvailableChannels(char *name, featom *atom)
 Node    *pingwalk;
 bool     firstping=FALSE;
 
-void mgPingAllGames(char*name,featom *atom)
+void mgPingAllGames(const char *name, featom *atom)
 {
     Node       *walk, *isthere;
     newping    *pinginfo;
@@ -3133,7 +3133,7 @@ void mgPingAllGames(char*name,featom *atom)
     }
 }
 
-void mgSeeDetails(char*name,featom*atom)
+void mgSeeDetails(const char *name, featom *atom)
 {
 
 }
@@ -3174,7 +3174,7 @@ void mgRequestJoinGame(tpscenario *game)
     listDeleteAll(&listofplayersold);
 }
 
-void mgJoinGame(char*name,featom*atom)
+void mgJoinGame(const char *name, featom *atom)
 {
     gamelist *gameinfo;
 
@@ -3198,7 +3198,7 @@ void mgJoinGame(char*name,featom*atom)
                 return;
             }
         }
-        
+
 #ifndef _MACOSX_FIX_LAN
         if (wcslen(gameinfo->game.directoryCustomInfo.stringdata)>1)
         {
@@ -3213,7 +3213,7 @@ void mgJoinGame(char*name,featom*atom)
     }
 }
 
-void mgListOfGamesBack(char *name, featom *atom)
+void mgListOfGamesBack(const char *name, featom *atom)
 {
     if (WaitingForGame)
     {
@@ -3534,7 +3534,7 @@ void mgListOfGamesItemDraw(rectangle *rect, listitemhandle data)
 }
 
 // initilize the list of games window structure to needed settings
-void mgListOfGamesInit(char *name, featom *atom)
+void mgListOfGamesInit(const char *name, featom *atom)
 {
     fonthandle      oldfont;
     sdword          titleheight, itemheight;
@@ -3714,7 +3714,7 @@ void mgGameChatItemDraw(rectangle *rect, listitemhandle data)
     sdword x = rect->x0 + MG_HorzSpacing,
            y = rect->y0 + MG_VertSpacing / 2;
     color  c = mgNormalChatColor;
-    
+
     fonthandle  oldfont  = fontMakeCurrent(mgGameChatFont);
     chatlist   *chatinfo = (chatlist *)data->data;
 
@@ -3764,7 +3764,7 @@ void mgGameChatItemDraw(rectangle *rect, listitemhandle data)
     fontMakeCurrent(oldfont);
 }
 
-void mgGameChatWindowInit(char *name, featom *atom)
+void mgGameChatWindowInit(const char *name, featom *atom)
 {
     fonthandle      oldfont;
     Node           *walk;
@@ -3821,7 +3821,7 @@ void mgGameUserNameItemDraw(rectangle *rect, listitemhandle data)
     fontMakeCurrent(oldfont);
 }
 
-void mgGameUserNameWindowInit(char *name, featom *atom)
+void mgGameUserNameWindowInit(const char *name, featom *atom)
 {
     fonthandle      oldfont;
     Node           *walk;
@@ -3864,12 +3864,12 @@ void mgGameUserNameWindowInit(char *name, featom *atom)
     }
 }
 
-void mgViewDetails(char*name,featom *atom)
+void mgViewDetails(const char *name, featom *atom)
 {
     mgShowScreen(MGS_Basic_Options_View,TRUE);
 }
 
-void mgLeaveGame(char*name,featom*atom)
+void mgLeaveGame(const char *name, featom *atom)
 {
     mgPlayerLimit = 0;
     if (GameCreator)
@@ -3891,7 +3891,7 @@ void mgLeaveGame(char*name,featom*atom)
     }
 }
 
-void mgSetupGame(char*name,featom*atom)
+void mgSetupGame(const char *name, featom *atom)
 {
     BackupGameCreated = tpGameCreated;
     spCurrentSelectedBack = spCurrentSelected;
@@ -3930,7 +3930,7 @@ void mgReallyStartGame(unsigned char *routingaddress)
     }
 }
 
-void mgStartGame(char*name,featom*atom)
+void mgStartGame(const char *name, featom *atom)
 {
     if (tpGameCreated.numPlayers == 0)
     {
@@ -3968,7 +3968,7 @@ void mgStartGame(char*name,featom*atom)
     }
 }
 
-void mgGameChatTextEntry(char *name, featom *atom)
+void mgGameChatTextEntry(const char *name, featom *atom)
 {
     chatlist *newchat;
     gameplayerinfo *user;
@@ -4163,7 +4163,7 @@ bool mgInvalidGamePassword()
     return FALSE;
 }
 
-void mgCreateGameNow(char *name, featom *atom)
+void mgCreateGameNow(const char *name, featom *atom)
 {
     DirectoryCustomInfoMax buildDirectoryCustomInfo;
 
@@ -4260,7 +4260,7 @@ void mgCreateGameNow(char *name, featom *atom)
     }
 }
 
-void mgGameNameTextEntry(char *name, featom *atom)
+void mgGameNameTextEntry(const char *name, featom *atom)
 {
     static char asciigamename[MAX_GAMENAME_LENGTH];
 
@@ -4286,7 +4286,7 @@ void mgGameNameTextEntry(char *name, featom *atom)
     }
 }
 
-void mgChooseScenario(char *name, featom *atom)
+void mgChooseScenario(const char *name, featom *atom)
 {
     spScenarioPick(NULL);
 }
@@ -4627,12 +4627,12 @@ void mgRemoveCPUOpponent(featom *atom, regionhandle region)
     mgDrawArrow(region, TRUE, FALSE);
 }
 
-void mgPickGameType(char *name, featom *atom)
+void mgPickGameType(const char *name, featom *atom)
 {
     mgSetGameType("Give Babies A Chance");
 }
 
-void mgStartingFleet(char *name, featom *atom)
+void mgStartingFleet(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -4645,7 +4645,7 @@ void mgStartingFleet(char *name, featom *atom)
     mgGameTypesOtherButtonPressed();
 }
 
-void mgStartShip(char *name, featom *atom)
+void mgStartShip(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -4663,7 +4663,7 @@ void mgStartShip(char *name, featom *atom)
 
 
 
-void mgGameType(char *name, featom *atom)
+void mgGameType(const char *name, featom *atom)
 {
 #if defined(HW_GAME_DEMO) || defined(HW_GAME_RAIDER_RETREAT)
     //disable this function in demos
@@ -4706,7 +4706,7 @@ void mgNumberOfComputers(featom *atom, regionhandle region)
     Callbacks for the Advanced Game Options Screen:
 =============================================================================*/
 
-void mgLastMotherShip(char *name, featom *atom)
+void mgLastMotherShip(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -4728,7 +4728,7 @@ void mgLastMotherShip(char *name, featom *atom)
     mgGameTypesOtherButtonPressed();
 }
 
-void mgCaptureCapitalShip(char *name, featom *atom)
+void mgCaptureCapitalShip(const char *name, featom *atom)
 {
 #if defined(HW_GAME_DEMO) || defined(HW_GAME_RAIDER_RETREAT)
     //disable this function in demos
@@ -4756,7 +4756,7 @@ void mgCaptureCapitalShip(char *name, featom *atom)
 #endif
 }
 
-void mgHyperspace(char *name, featom *atom)
+void mgHyperspace(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -4776,7 +4776,7 @@ void mgHyperspace(char *name, featom *atom)
     mgGameTypesOtherButtonPressed();
 }
 
-void mgAlliedVictory(char *name, featom *atom)
+void mgAlliedVictory(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -4792,7 +4792,7 @@ void mgAlliedVictory(char *name, featom *atom)
     mgGameTypesOtherButtonPressed();
 }
 
-void mgResearchEnabled(char *name, featom *atom)
+void mgResearchEnabled(const char *name, featom *atom)
 {
 #if defined(HW_GAME_DEMO) || defined(HW_GAME_RAIDER_RETREAT)
     //disable this function in demos
@@ -4814,7 +4814,7 @@ void mgResearchEnabled(char *name, featom *atom)
 #endif
 }
 #if 0
-void mgBountiesEnabled(char *name, featom *atom)
+void mgBountiesEnabled(const char *name, featom *atom)
 {
 #if defined(HW_GAME_DEMO) || defined(HW_GAME_RAIDER_RETREAT)
     //disable this function in demos
@@ -4837,7 +4837,7 @@ void mgBountiesEnabled(char *name, featom *atom)
 }
 #endif
 
-void mgBountySize(char *name, featom *atom)
+void mgBountySize(const char *name, featom *atom)
 {
 #if defined(HW_GAME_DEMO) || defined(HW_GAME_RAIDER_RETREAT)
     //disable this function in demos
@@ -4856,7 +4856,7 @@ void mgBountySize(char *name, featom *atom)
 #endif
 }
 
-void mgPasswordProtected(char *name, featom *atom)
+void mgPasswordProtected(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -4871,7 +4871,7 @@ void mgPasswordProtected(char *name, featom *atom)
     }
 }
 
-void mgGamePassword(char *name, featom *atom)
+void mgGamePassword(const char *name, featom *atom)
 {
     static char asciipassword[MAX_PASSWORD_LENGTH];
 
@@ -4896,7 +4896,7 @@ void mgGamePassword(char *name, featom *atom)
     }
 }
 
-void mgGamePasswordConfirm(char *name, featom *atom)
+void mgGamePasswordConfirm(const char *name, featom *atom)
 {
     static char asciipassword[MAX_PASSWORD_LENGTH];
 
@@ -4925,7 +4925,7 @@ void mgGamePasswordConfirm(char *name, featom *atom)
     }
 }
 
-void mgUnitCapsEnabled(char *name, featom *atom)
+void mgUnitCapsEnabled(const char *name, featom *atom)
 {
 #if defined(HW_GAME_DEMO) || defined(HW_GAME_RAIDER_RETREAT)
     //disable this function in demos
@@ -4947,7 +4947,7 @@ void mgUnitCapsEnabled(char *name, featom *atom)
 #endif
 }
 
-void mgFuelBurnEnabled(char *name, featom *atom)
+void mgFuelBurnEnabled(const char *name, featom *atom)
 {
 #if defined(HW_GAME_DEMO) || defined(HW_GAME_RAIDER_RETREAT)
     //disable this function in demos
@@ -4969,7 +4969,7 @@ void mgFuelBurnEnabled(char *name, featom *atom)
 #endif
 }
 
-void mgCratesEnabled(char *name, featom *atom)
+void mgCratesEnabled(const char *name, featom *atom)
 {
 #if defined(HW_GAME_DEMO) || defined(HW_GAME_RAIDER_RETREAT)
     //disable this function in demos
@@ -4995,7 +4995,7 @@ void mgCratesEnabled(char *name, featom *atom)
     Callbacks for the Resourcing Options Game Screen:
 =============================================================================*/
 
-void mgHarvestingEnabled(char *name, featom *atom)
+void mgHarvestingEnabled(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -5011,7 +5011,7 @@ void mgHarvestingEnabled(char *name, featom *atom)
     mgGameTypesOtherButtonPressed();
 }
 
-void mgStartingResources(char *name, featom *atom)
+void mgStartingResources(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -5024,7 +5024,7 @@ void mgStartingResources(char *name, featom *atom)
     mgGameTypesOtherButtonPressed();
 }
 
-void mgResourceInjections(char *name, featom *atom)
+void mgResourceInjections(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -5040,7 +5040,7 @@ void mgResourceInjections(char *name, featom *atom)
     mgGameTypesOtherButtonPressed();
 }
 
-void mgResourceInjectionInterval(char *name, featom *atom)
+void mgResourceInjectionInterval(const char *name, featom *atom)
 {
     char    temp[20];
     udword  timemins;
@@ -5073,7 +5073,7 @@ void mgResourceInjectionInterval(char *name, featom *atom)
     mgGameTypesOtherButtonPressed();
 }
 
-void mgResourceInjectionAmount(char *name, featom *atom)
+void mgResourceInjectionAmount(const char *name, featom *atom)
 {
     char    temp[20];
 
@@ -5102,7 +5102,7 @@ void mgResourceInjectionAmount(char *name, featom *atom)
     mgGameTypesOtherButtonPressed();
 }
 
-void mgResourceLumpSum(char *name, featom *atom)
+void mgResourceLumpSum(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -5118,7 +5118,7 @@ void mgResourceLumpSum(char *name, featom *atom)
     mgGameTypesOtherButtonPressed();
 }
 
-void mgResourceLumpSumInterval(char *name, featom *atom)
+void mgResourceLumpSumInterval(const char *name, featom *atom)
 {
     char    temp[20];
     udword  timemins;
@@ -5150,7 +5150,7 @@ void mgResourceLumpSumInterval(char *name, featom *atom)
     mgGameTypesOtherButtonPressed();
 }
 
-void mgResourceLumpSumAmount(char *name, featom *atom)
+void mgResourceLumpSumAmount(const char *name, featom *atom)
 {
     char    temp[20];
 
@@ -5179,7 +5179,7 @@ void mgResourceLumpSumAmount(char *name, featom *atom)
     mgGameTypesOtherButtonPressed();
 }
 
-void mgBackFromOptions(char *name, featom *atom)
+void mgBackFromOptions(const char *name, featom *atom)
 {
     if (LANGame)
     {
@@ -5213,7 +5213,7 @@ void mgBackFromOptions(char *name, featom *atom)
     }
 }
 
-void mgBasicOptions(char *name,featom *atom)
+void mgBasicOptions(const char *name, featom *atom)
 {
     if (LANGame)
     {
@@ -5247,7 +5247,7 @@ void mgBasicOptions(char *name,featom *atom)
     }
 }
 
-void mgAdvancedOptions(char *name,featom *atom)
+void mgAdvancedOptions(const char *name, featom *atom)
 {
     if (LoggedIn || LANGame)
     {
@@ -5273,7 +5273,7 @@ void mgAdvancedOptions(char *name,featom *atom)
     }
 }
 
-void mgResourceOptions(char *name,featom *atom)
+void mgResourceOptions(const char *name, featom *atom)
 {
     if (LoggedIn || LANGame)
     {
@@ -5304,7 +5304,7 @@ void mgResourceOptions(char *name,featom *atom)
     Callbacks for the Player options screen:
 =============================================================================*/
 
-void mgSetColorsNow(char *name, featom *atom)
+void mgSetColorsNow(const char *name, featom *atom)
 {
     cpResetRegions();
 
@@ -5327,7 +5327,7 @@ void mgSetColorsNow(char *name, featom *atom)
     mgShowScreen(lastScreen, TRUE);
 }
 
-void mgBackFromPlayerOptions(char *name, featom *atom)
+void mgBackFromPlayerOptions(const char *name, featom *atom)
 {
     dbgAssertOrIgnore(lastScreen != -1);
 
@@ -5344,7 +5344,7 @@ void mgBackFromPlayerOptions(char *name, featom *atom)
     Callbacks for the Connecting Status Screen:
 =============================================================================*/
 
-void mgConnectingCancel(char *name, featom *atom)
+void mgConnectingCancel(const char *name, featom *atom)
 {
     mgQueryType = -1;
 
@@ -5371,7 +5371,7 @@ void mgConnectingStatusItemDraw(rectangle *rect, listitemhandle data)
     fontMakeCurrent(oldfont);
 }
 
-void mgConnectingStatusInit(char *name, featom *atom)
+void mgConnectingStatusInit(const char *name, featom *atom)
 {
     fonthandle      oldfont;
 
@@ -5403,7 +5403,7 @@ void mgConnectingStatusInit(char *name, featom *atom)
     Callbacks for the game entry screen.:
 =============================================================================*/
 
-void mgGamePasswordEntry(char *name, featom *atom)
+void mgGamePasswordEntry(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -5440,12 +5440,12 @@ void mgGamePasswordEntry(char *name, featom *atom)
     }
 }
 
-void mgBackFromPassword(char *name, featom *atom)
+void mgBackFromPassword(const char *name, featom *atom)
 {
     mgShowScreen(MGS_Available_Games,TRUE);
 }
 
-void mgGoPassword(char *name, featom *atom)
+void mgGoPassword(const char *name, featom *atom)
 {
 #ifndef _MACOSX_FIX_LAN
     static wchar_t widepasswordentryboxtext[MAX_PASSWORD_LENGTH];
@@ -5466,12 +5466,12 @@ void mgGoPassword(char *name, featom *atom)
 #endif
 }
 
-void mgBackFromRoomPassword(char *name, featom *atom)
+void mgBackFromRoomPassword(const char *name, featom *atom)
 {
     mgShowScreen(MGS_Available_Channels,TRUE);
 }
 
-void mgGoRoomPassword(char *name, featom *atom)
+void mgGoRoomPassword(const char *name, featom *atom)
 {
 #ifndef _MACOSX_FIX_LAN
     if (wcslen(joinchannelname) >= 2)
@@ -5486,7 +5486,7 @@ void mgGoRoomPassword(char *name, featom *atom)
     callbacks from the Quit WON question box.:
 =============================================================================*/
 
-void mgYesQuitWON(char *name, featom *atom)
+void mgYesQuitWON(const char *name, featom *atom)
 {
     bool waitforshutdown = FALSE;
     LoggedIn=FALSE;
@@ -5517,7 +5517,7 @@ void mgYesQuitWON(char *name, featom *atom)
     mgShowScreen(MGS_Connection_Method, TRUE);
 }
 
-void mgDontQuitWON(char *name, featom *atom)
+void mgDontQuitWON(const char *name, featom *atom)
 {
     mgShowScreen(-1, MG_JustOneDisappear);
 }
@@ -5526,7 +5526,7 @@ void mgDontQuitWON(char *name, featom *atom)
     Callbacks from the message box screen.:
 =============================================================================*/
 
-void mgMessageOk(char *name, featom *atom)
+void mgMessageOk(const char *name, featom *atom)
 {
     mgShowScreen(-1, MG_JustOneDisappear);
 }
@@ -6856,7 +6856,7 @@ void mgDrawPatchProgress(featom *atom, regionhandle region)
     fontMakeCurrent(oldfont);
 }
 
-void mgYesDownloadPatch(char *name, featom *atom)
+void mgYesDownloadPatch(const char *name, featom *atom)
 {
     char patchpath[150];
     mgShowScreen(MGS_Downloading_Patch,FALSE);
@@ -6867,12 +6867,12 @@ void mgYesDownloadPatch(char *name, featom *atom)
     titanGetPatch(patchpath,PATCHNAME);
 }
 
-void mgNoDownloadPatch(char *name, featom *atom)
+void mgNoDownloadPatch(const char *name, featom *atom)
 {
     mgConnectingCancel(NULL,NULL);
 }
 
-void mgAbortDownloadPatch(char *name, featom *atom)
+void mgAbortDownloadPatch(const char *name, featom *atom)
 {
     patchAbortRequest = 1;
     mgConnectingCancel(NULL,NULL);
@@ -7326,7 +7326,7 @@ void mgProcessGameChatPacket(ChatPacket *packet)
 //Game Options setting code
 
 //goes through gametypes.script and sets game options based on gameName.script
-void mgSetGameType(char *gameName)
+void mgSetGameType(const char *gameName)
 {
     udword i;
 
@@ -7445,7 +7445,7 @@ void mgNotifyDirRequestFailed()
 #define mgServerListSelectedColor mgChannelListSelectedColor
 #define mgServerListNormalColor mgChannelListNormalColor
 
-void mgGoChooseServer(char *name, featom *atom)
+void mgGoChooseServer(const char *name, featom *atom)
 {
     serverlist *servlist;
 
@@ -7472,7 +7472,7 @@ void mgStartSpecificFactServerFailedCB(void)
     mgDisplayMessage(strGetString(strHitCancelContinue));
 }
 
-void mgCancelChooseServer(char *name, featom *atom)
+void mgCancelChooseServer(const char *name, featom *atom)
 {
     mgShowScreen(lastScreen, TRUE);
 }
@@ -7759,7 +7759,7 @@ void mgDrawListOfServersItem(rectangle *rect, listitemhandle data)
     fontMakeCurrent(oldfont);
 }
 
-void mgListOfServersInit(char *name, featom *atom)
+void mgListOfServersInit(const char *name, featom *atom)
 {
     fonthandle  oldfont;
     sdword      titleheight, itemheight;

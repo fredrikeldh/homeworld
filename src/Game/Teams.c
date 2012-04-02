@@ -78,7 +78,7 @@ scriptEntry teColorTweaks[] =
 /*=============================================================================
     Script-parsing functions:
 =============================================================================*/
-void teTrailColorSet(char *directory,char *field,void *dataToFillIn)
+void teTrailColorSet(const char *directory,char *field,void *dataToFillIn)
 {
     sdword iPlayer, iPoint, red, green, blue, nScanned;
 
@@ -99,7 +99,7 @@ void teTrailColorSet(char *directory,char *field,void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void teColorSet(char *directory,char *field,void *dataToFillIn)
+void teColorSet(const char *directory,char *field,void *dataToFillIn)
 {
     sdword iPlayer, red, green, blue, nScanned;
     color *dest;
@@ -125,7 +125,7 @@ void teColorSet(char *directory,char *field,void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void teColorFactorsSet(char *directory,char *field,void *dataToFillIn)
+void teColorFactorsSet(const char *directory,char *field,void *dataToFillIn)
 {
     real32 hue, sat, lum;
     sdword nScanned;
@@ -190,7 +190,7 @@ color teColorAdjust(color baseColor, trhlscolorize *colorize)
     colRGBToHLS(&hue, &lum, &sat, colUbyteToReal(colRed(baseColor)),
                 colUbyteToReal(colGreen(baseColor)),
                 colUbyteToReal(colBlue(baseColor)));
-                
+
     hue += colorize->hue;
     if (hue < 0)
     {
@@ -210,9 +210,9 @@ color teColorAdjust(color baseColor, trhlscolorize *colorize)
     {
         sat = 1.0f;
     }
-    
+
     colHLSToRGB(&red, &green, &blue, hue, lum, sat);
-        
+
     return(colRGB(colRealToUbyte(red), colRealToUbyte(green), colRealToUbyte(blue)));
 }
 
@@ -238,7 +238,7 @@ void teTeamColorsSet(sdword iTeam, color baseColor, color stripeColor)
         red = colUbyteToReal(colRed(baseColor));
         green = colUbyteToReal(colGreen(baseColor));
         blue = colUbyteToReal(colBlue(baseColor));
-        
+
         colRGBToHSV(&hue, &sat, &val, red, green, blue);
         if (colRealToUbyte(val) < cpDarkestColor0 * TE_DarkColorGraceFactor)
         {                                                   //is trying to set his ships to black

@@ -1,4 +1,5 @@
 
+#include "../gles2.h"
 #include "state.h"
 
 
@@ -14,10 +15,10 @@ StateSetup::StateSetup() :
 void StateSetup::SetState(GLenum cap, bool value)
 {
 	short index = GetStateIndex(cap);
-	
+
 	if( index < 0 )
 		return;
-	
+
 	caps[index] = value;
 }
 
@@ -59,14 +60,14 @@ void glDrawPixels(
 	const GLvoid *  data)
 {
 	//TODO: implement
-		
+
 }
 
 void StateSetup::ApplyTo(IRenderState* pRenderer)
 {
-	
-	
-	
+
+
+
 }
 
 

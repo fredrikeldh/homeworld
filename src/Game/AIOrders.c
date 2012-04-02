@@ -175,7 +175,7 @@ void aioCreateHarass(AITeam *team)
     aimCreateMoveDone(team, FALSE, FALSE);
 }
 
-
+#if 0
 /*-----------------------------------------------------------------------------
     Name        : aioCreateReconHarass
     Description : Creates the moves for a team to do a recon/harass mission
@@ -219,6 +219,7 @@ void aioCreateReconHarass(AITeam *team)
 
     aimCreateMoveDone(team, FALSE, FALSE);
 }
+#endif
 
 /*-----------------------------------------------------------------------------
     Name        : aioCreateDefendMothership
@@ -344,6 +345,7 @@ void aioCreateSlowRovingDefense(AITeam *team)
     aimCreateMoveDone(team, FALSE, FALSE);
 }
 
+#if 0
 /*-----------------------------------------------------------------------------
     Name        : aioCreateReinforcements
     Description : Creates the moves to get the team to reinforce the other team
@@ -379,7 +381,7 @@ void aioCreateReinforcements(AITeam *team, AITeam *reinforceteam, ShipType shipt
     aimCreateReinforce(team, reinforceteam, BROAD_FORMATION, Evasive, TRUE, FALSE);
     aimCreateMoveDone(team, FALSE, FALSE);
 }
-
+#endif
 
 /*-----------------------------------------------------------------------------
     Name        : aioCreateActiveSupport

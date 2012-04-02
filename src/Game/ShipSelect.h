@@ -299,7 +299,7 @@ void makeSelectionHyperspaceCapable(SelectCommand *selection);
 void makeShipsNotHaveNonCombatShipsForGuardAttack(SelectCommand *selection);
 
 // convert a LinkedList of ships into the equivalent SelectCommand
-SelectCommand * shipLinkedListAsSelectCommand(LinkedList *list, char *label);
+SelectCommand * shipLinkedListAsSelectCommand(LinkedList *list, const char *label);
 
 // Selects all of the current player's non-hyperspacing ships
 SelectCommand *selectAllCurrentPlayersNonHyperspacingShips(void);
@@ -330,7 +330,7 @@ sdword MothershipOrCarrierIndexInSelection(SelectCommand *selection);
 SelectCommand *selectMergeTwoSelections(SelectCommand *selection1, SelectCommand *selection2, udword dealloc);
 
 // Duplicate a selection
-SelectCommand *selectMemDupSelection(SelectCommand *selection, char *str, udword memflag);
+SelectCommand *selectMemDupSelection(SelectCommand *selection, const char *str, udword memflag);
 #define selectDupSelection(sel)     selectMemDupSelection(sel, "selDup", 0)
 
 #define ShipCanHyperspace(ship) (isCapitalShip(ship) && (ship->shiptype != CryoTray) && (ship->shiptype != Probe))

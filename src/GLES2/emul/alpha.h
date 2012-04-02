@@ -5,7 +5,7 @@
 
 class AlphaSetup : public GLPart
 {
-private:
+public:
 	AlphaSetup();
 public:
 	void SetFunc(

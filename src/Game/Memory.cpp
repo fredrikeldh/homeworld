@@ -2,7 +2,7 @@
     MEMORY.C:   Routines to manage memory
 =============================================================================*/
 
-#include <memory>
+//#include <memory>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -43,6 +43,7 @@ sdword memClearDword(void *dest, udword pattern, sdword nDwords)
     return(OKAY);
 }
 
+#if 0
 template<typename T>
 class shared_ptr : public std::shared_ptr<T>
 {
@@ -55,6 +56,7 @@ public:
 	{
 	}
 };
+#endif
 
 // FIXME:
 // * change length to size_t

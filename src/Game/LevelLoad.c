@@ -62,17 +62,17 @@ ResourceDistribution resourceDistTemplate;
     Private Function prototypes:
 =============================================================================*/
 
-static void scriptSetDerelictCB     (char *directory, char *field, void *dataToFillIn);
-static void scriptSetResourcesCB    (char *directory, char *field, void *dataToFillIn);
-static void scriptSetShipsCB        (char *directory, char *field, void *dataToFillIn);
-static void scriptSetAIPointCB      (char *directory, char *field, void *dataToFillIn);
-static void scriptSetAIPathCB       (char *directory, char *field, void *dataToFillIn);
-static void scriptSetAIBoxCB        (char *directory, char *field, void *dataToFillIn);
-static void scriptSetAISphereCB     (char *directory, char *field, void *dataToFillIn);
-static void scriptSetMissionSphereCB(char *directory, char *field, void *dataToFillIn);
-static void scriptSetLightingCB     (char *directory, char *field, void *dataToFillIn);
-static void scriptSetBackgroundCB   (char *directory, char *field, void *dataToFillIn);
-static void scriptSetUword2CB       (char *directory, char *field, void *dataToFillIn);
+static void scriptSetDerelictCB     (const char *directory,char *field, void *dataToFillIn);
+static void scriptSetResourcesCB    (const char *directory,char *field, void *dataToFillIn);
+static void scriptSetShipsCB        (const char *directory,char *field, void *dataToFillIn);
+static void scriptSetAIPointCB      (const char *directory,char *field, void *dataToFillIn);
+static void scriptSetAIPathCB       (const char *directory,char *field, void *dataToFillIn);
+static void scriptSetAIBoxCB        (const char *directory,char *field, void *dataToFillIn);
+static void scriptSetAISphereCB     (const char *directory,char *field, void *dataToFillIn);
+static void scriptSetMissionSphereCB(const char *directory,char *field, void *dataToFillIn);
+static void scriptSetLightingCB     (const char *directory,char *field, void *dataToFillIn);
+static void scriptSetBackgroundCB   (const char *directory,char *field, void *dataToFillIn);
+static void scriptSetUword2CB       (const char *directory,char *field, void *dataToFillIn);
 
 /*=============================================================================
     Private Data:
@@ -132,7 +132,7 @@ scriptEntry SMMissionTweaks[] =
     makeEntry(smUniverseSizeY,       scriptSetReal32CB),
     makeEntry(smUniverseSizeZ,       scriptSetReal32CB),
     makeEntry(SongNumber,            scriptSetSdwordCB),
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -145,16 +145,16 @@ scriptStructEntry MissionScriptTable[] =
     END_SCRIPT_STRUCT_ENTRY
 };
 
-static void llExcludeShip              (char *directory, char *field, void *dataToFillIn);
-static void llExcludeAsteroid          (char *directory, char *field, void *dataToFillIn);
-static void llExcludeDustCloud         (char *directory, char *field, void *dataToFillIn);
-static void llExcludeGasCloud          (char *directory, char *field, void *dataToFillIn);
-static void llExcludeNebula            (char *directory, char *field, void *dataToFillIn);
-static void llExcludeDerelict          (char *directory, char *field, void *dataToFillIn);
-static void llAvailableColorScheme     (char *directory, char *field, void *dataToFillIn);
-static void scriptSetShipsToBeNeeded   (char *directory, char *field, void *dataToFillIn);
-static void scriptSetDerelictToBeNeeded(char *directory, char *field, void *dataToFillIn);
-static void scriptPreMissionSphereCB   (char *directory, char *field, void *dataToFillIn);
+static void llExcludeShip              (const char *directory,char *field, void *dataToFillIn);
+static void llExcludeAsteroid          (const char *directory,char *field, void *dataToFillIn);
+static void llExcludeDustCloud         (const char *directory,char *field, void *dataToFillIn);
+static void llExcludeGasCloud          (const char *directory,char *field, void *dataToFillIn);
+static void llExcludeNebula            (const char *directory,char *field, void *dataToFillIn);
+static void llExcludeDerelict          (const char *directory,char *field, void *dataToFillIn);
+static void llAvailableColorScheme     (const char *directory,char *field, void *dataToFillIn);
+static void scriptSetShipsToBeNeeded   (const char *directory,char *field, void *dataToFillIn);
+static void scriptSetDerelictToBeNeeded(const char *directory,char *field, void *dataToFillIn);
+static void scriptPreMissionSphereCB   (const char *directory,char *field, void *dataToFillIn);
 
 bool AnyShipOverlapsAsteroid(vector *position,AsteroidType asteroidtype);
 
@@ -208,7 +208,7 @@ bool missionman = FALSE;
     Functions:
 =============================================================================*/
 
-static void scriptSetUword2CB(char *directory,char *field,void *dataToFillIn)
+static void scriptSetUword2CB(const char *directory, char *field,void *dataToFillIn)
 {
     sdword fillin[2] = { -1,-1 };
 
@@ -242,7 +242,7 @@ static void SetSMMissionTweaks(char *directory,char *filename)
     smUpdateParameters();
 }
 
-static void GetResourceDistribution(ResourceDistribution *resourceDistribution,char *directory,char *name,ObjType resourceobjtype)
+static void GetResourceDistribution(ResourceDistribution *resourceDistribution,const char *directory,char *name,ObjType resourceobjtype)
 {
     sdword i,j;
     uword cum;
@@ -603,7 +603,7 @@ static void AddSphere(ResourceVolume *sphere)
     }
 }
 
-static void scriptSetResourcesCB(char *directory,char *field,void *dataToFillIn)
+static void scriptSetResourcesCB(const char *directory, char *field,void *dataToFillIn)
 {
     MissionSphereInfo *missionSphereInfo = (MissionSphereInfo *)dataToFillIn;
     vector position;
@@ -738,7 +738,7 @@ static void scriptSetResourcesCB(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-static void scriptSetDerelictCB(char *directory,char *field,void *dataToFillIn)
+static void scriptSetDerelictCB(const char *directory, char *field,void *dataToFillIn)
 {
     vector position;
     MissionSphereInfo *missionSphereInfo = (MissionSphereInfo *)dataToFillIn;
@@ -854,7 +854,7 @@ ShipType GetAppropriateShipTypeForRace(ShipType request,ShipRace shiprace)
             case DFGFrigate:
                 shiptype = DDDFrigate;
                 break;
-                
+
             default:
                 break;
         }
@@ -949,7 +949,7 @@ void GivePlayerCapitalShip(Player *player)
     }
 }
 
-static void scriptSetShipsCB(char *directory,char *field,void *dataToFillIn)
+static void scriptSetShipsCB(const char *directory, char *field,void *dataToFillIn)
 {
     vector position;
     real32 rot;
@@ -1379,7 +1379,7 @@ static void scriptSetShipsCB(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-static void scriptSetAIPointCB(char *directory,char *field,void *dataToFillIn)
+static void scriptSetAIPointCB(const char *directory, char *field,void *dataToFillIn)
 {
     char label[KAS_MAX_LABEL_LENGTH+1];
     real32 x, y, z, w;
@@ -1394,7 +1394,7 @@ static void scriptSetAIPointCB(char *directory,char *field,void *dataToFillIn)
     aiplayerLog((0,"AIPoint %s added: %f,%f,%f,%f", label, x, y, z, w));
 }
 
-static void scriptSetAIPathCB(char *directory,char *field,void *dataToFillIn)
+static void scriptSetAIPathCB(const char *directory, char *field,void *dataToFillIn)
 {
     char label[KAS_MAX_LABEL_LENGTH+1];
     char openClosed[KAS_MAX_LABEL_LENGTH+1];
@@ -1423,7 +1423,7 @@ static void scriptSetAIPathCB(char *directory,char *field,void *dataToFillIn)
     aiplayerLog((0,"AIPath %s point %d/%d added: %f,%f,%f", label, pointNum, numPoints, point.x, point.y, point.z));
 }
 
-static void scriptSetAIBoxCB(char *directory,char *field,void *dataToFillIn)
+static void scriptSetAIBoxCB(const char *directory, char *field,void *dataToFillIn)
 {
     char label[KAS_MAX_LABEL_LENGTH+1];
     real32 x, y, z, width, height, depth;
@@ -1445,7 +1445,7 @@ static void scriptSetAIBoxCB(char *directory,char *field,void *dataToFillIn)
     aiplayerLog((0,"AIBox %s added", label));
 }
 
-static void scriptSetAISphereCB(char *directory,char *field,void *dataToFillIn)
+static void scriptSetAISphereCB(const char *directory, char *field,void *dataToFillIn)
 {
     char label[KAS_MAX_LABEL_LENGTH+1];
     real32 x, y, z, diameter;
@@ -1465,7 +1465,7 @@ static void scriptSetAISphereCB(char *directory,char *field,void *dataToFillIn)
     aiplayerLog((0,"AISphere %s added", label));
 }
 
-static void scriptSetLightingCB(char *directory,char *field,void *dataToFillIn)
+static void scriptSetLightingCB(const char *directory, char *field,void *dataToFillIn)
 {
     char lightingFileName[50];
 
@@ -1515,7 +1515,7 @@ static void scriptSetLightingCB(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-static void scriptSetBackgroundCB(char* directory, char* field, void* dataToFillIn)
+static void scriptSetBackgroundCB(const char* directory, char* field, void* dataToFillIn)
 {
     char btgFileName[50];
     real32 theta = 0.0f,phi = 0.0f;
@@ -1578,7 +1578,7 @@ static void scriptSetBackgroundCB(char* directory, char* field, void* dataToFill
     }
 }
 
-static void scriptSetMissionSphereCB(char *directory,char *field,void *dataToFillIn)
+static void scriptSetMissionSphereCB(const char *directory, char *field,void *dataToFillIn)
 {
     sdword playerNumber;
     char raceName[50];
@@ -1688,7 +1688,7 @@ static void scriptSetMissionSphereCB(char *directory,char *field,void *dataToFil
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-static void scriptPreMissionSphereCB(char *directory,char *field,void *dataToFillIn)
+static void scriptPreMissionSphereCB(const char *directory, char *field,void *dataToFillIn)
 {
     sdword playerNumber;
     char raceName[50];
@@ -1873,7 +1873,7 @@ char llDelimiters[] = " ,()\t[]";
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-static void llExcludeShip(char *directory,char *field,void *dataToFillIn)
+static void llExcludeShip(const char *directory, char *field,void *dataToFillIn)
 {
     char *string;
     ShipRace race;
@@ -1913,7 +1913,7 @@ static void llExcludeShip(char *directory,char *field,void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-static void llExcludeAsteroid(char *directory,char *field,void *dataToFillIn)
+static void llExcludeAsteroid(const char *directory, char *field,void *dataToFillIn)
 {
     AsteroidType type;
 
@@ -1926,7 +1926,7 @@ static void llExcludeAsteroid(char *directory,char *field,void *dataToFillIn)
 
     bitSetTo(asteroidStaticInfos[type].staticheader.infoFlags, IF_InfoNeeded, (bool8)(size_t)dataToFillIn);
 }
-static void llExcludeDustCloud(char *directory,char *field,void *dataToFillIn)
+static void llExcludeDustCloud(const char *directory, char *field,void *dataToFillIn)
 {
     DustCloudType type;
 
@@ -1935,7 +1935,7 @@ static void llExcludeDustCloud(char *directory,char *field,void *dataToFillIn)
 
     bitSetTo(dustcloudStaticInfos[type].staticheader.infoFlags, IF_InfoNeeded, (bool8)(size_t)dataToFillIn);
 }
-static void llExcludeGasCloud(char *directory,char *field,void *dataToFillIn)
+static void llExcludeGasCloud(const char *directory, char *field,void *dataToFillIn)
 {
     GasCloudType type;
 
@@ -1944,7 +1944,7 @@ static void llExcludeGasCloud(char *directory,char *field,void *dataToFillIn)
 
     bitSetTo(gascloudStaticInfos[type].staticheader.infoFlags, IF_InfoNeeded, (bool8)(size_t)dataToFillIn);
 }
-static void llExcludeNebula(char *directory,char *field,void *dataToFillIn)
+static void llExcludeNebula(const char *directory, char *field,void *dataToFillIn)
 {
     NebulaType type;
 
@@ -1953,7 +1953,7 @@ static void llExcludeNebula(char *directory,char *field,void *dataToFillIn)
 
     bitSetTo(nebulaStaticInfos[type].staticheader.infoFlags, IF_InfoNeeded, (bool8)(size_t)dataToFillIn);
 }
-static void llExcludeDerelict(char *directory,char *field,void *dataToFillIn)
+static void llExcludeDerelict(const char *directory, char *field,void *dataToFillIn)
 {
     DerelictType type;
 
@@ -1980,7 +1980,7 @@ static void llExcludeDerelict(char *directory,char *field,void *dataToFillIn)
     Note        : overrides whatever default color schemes might have been coded
                     for this ship
 ----------------------------------------------------------------------------*/
-static void llAvailableColorScheme(char *directory,char *field,void *dataToFillIn)
+static void llAvailableColorScheme(const char *directory, char *field,void *dataToFillIn)
 {
     char *string;
     ShipRace race;
@@ -2059,7 +2059,7 @@ static void llAvailableColorScheme(char *directory,char *field,void *dataToFillI
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-static void scriptSetShipsToBeNeeded(char *directory,char *field,void *dataToFillIn)
+static void scriptSetShipsToBeNeeded(const char *directory, char *field,void *dataToFillIn)
 {
     MissionSphereInfo *missionSphereInfo = (MissionSphereInfo *)dataToFillIn;
     Player *player = &universe.players[missionSphereInfo->playerNumber];
@@ -2164,7 +2164,7 @@ static void scriptSetShipsToBeNeeded(char *directory,char *field,void *dataToFil
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-static void scriptSetDerelictToBeNeeded(char *directory,char *field,void *dataToFillIn)
+static void scriptSetDerelictToBeNeeded(const char *directory, char *field,void *dataToFillIn)
 {
     DerelictType derelicttype;
     char derelicttypestr[50];

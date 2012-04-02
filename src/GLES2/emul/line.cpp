@@ -21,4 +21,3 @@ void glLineStipple(
 {
 	Get<LineSetup>().SetStripple(factor, pattern);
 }
-

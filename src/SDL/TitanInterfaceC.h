@@ -235,7 +235,7 @@ typedef struct TPServerList
 
 #define sizeofDirectoryCustomInfo(n) (sizeof(DirectoryCustomInfo) + (n).stringdatalength - 1)
 
-void SetChannel(wchar_t *channel,wchar_t *description);
+void SetChannel(const wchar_t *channel,const wchar_t *description);
 void ResetChannel(void);
 wchar_t *GetCurrentChannel(void);
 wchar_t *GetCurrentChannelDescription(void);

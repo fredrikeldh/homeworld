@@ -1287,7 +1287,7 @@ typedef struct ShipID
 #define SPECIAL_2_DontPlowThroughEnemyShips         BIT5
 #define SPECIAL_2_BusiedDockPoint                   BIT6
 #define SPECIAL_2_DisabledForever                   BIT7
-				
+
 
 struct Resource;
 

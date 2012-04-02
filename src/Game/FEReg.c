@@ -242,7 +242,7 @@ typedef enum
 
 #define UNINITIALIZED_TEX_HOLDER  end_texholder
 
-char *tex_names[end_texholder] =
+const char *tex_names[end_texholder] =
 {
     FER_BOX_OUTER_CORNER,
     FER_BOX_INNER_CORNER,
@@ -877,7 +877,7 @@ lifheader *ferTextureRegister(tex_holder holder, textype newtype, textype origty
     Outputs     :
     Return      : the texture structure corresponding to the filename and type
 ----------------------------------------------------------------------------*/
-lifheader *ferTextureRegisterSpecial(char *fileName, textype newtype, textype origtype)
+lifheader *ferTextureRegisterSpecial(const char *fileName, textype newtype, textype origtype)
 {
     udword i;
     Node *node;
@@ -1715,9 +1715,9 @@ textype ferDrawCutout(rectangle dimensions, rectangle cutDimensions,
 
         return left;
     }
-    
+
     // NB: should never get here; this is just to keep the compiler happy
-    return none; 
+    return none;
 }
 
 /*-----------------------------------------------------------------------------

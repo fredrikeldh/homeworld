@@ -61,11 +61,11 @@ ranstream;
 
 #if RANDOM_DEBUG_CALL_SEQ
     udword ranRandomFnSimple(sdword ranIndex);
-    udword ranRandomFn(sdword ranIndex, char *file, sdword line);
+    udword ranRandomFn(sdword ranIndex, const char *file, sdword line);
 
     #define ranRandom(i)  ranRandomFn(i, NULL, 0)
     #define gamerand()    ranRandomFn(RANDOM_GAME, __FILE__, __LINE__)
-    
+
     extern bool ranCallerDebug;
 #else
     #define ranRandomFnSimple  ranRandomFn

@@ -245,11 +245,11 @@ void PreFixCooperatingTeamDiedCB(AITeam *team)
 {
     if (team->cooperatingTeamDiedCB == aitSpecialDefenseCoopTeamDiedCB)
     {
-        team->cooperatingTeamDiedCB = 1;
+        team->cooperatingTeamDiedCB = (void*)1;
     }
     else if (team->cooperatingTeamDiedCB == GenericCooperatingTeamDiedCB)
     {
-        team->cooperatingTeamDiedCB = 2;
+        team->cooperatingTeamDiedCB = (void*)2;
     }
     else
     {
@@ -2213,7 +2213,7 @@ void aitExecute(void)
 //
 //  (really old msgs will be forgotten)
 //
-void aitMsgSend(AITeam *fromTeamp, AITeam *teamp, char *msg)
+void aitMsgSend(AITeam *fromTeamp, AITeam *teamp, const char *msg)
 {
     MsgQueue *msgQP;
     sdword mlen;
@@ -2254,7 +2254,7 @@ void aitMsgSend(AITeam *fromTeamp, AITeam *teamp, char *msg)
 //  (msg will be removed from queue).
 //  returns 0 otherwise.
 //
-sdword aitMsgReceived(AITeam *teamp, char *msg)
+sdword aitMsgReceived(AITeam *teamp, const char *msg)
 {
     MsgQueue *msgQP;
     sdword i;
@@ -2497,18 +2497,18 @@ void SaveThisAITeam(AITeam *team)
     chunk = CreateChunk(BASIC_STRUCTURE|AITEAM,sizeof(AITeam),team);
     sc = chunkContents(chunk);
 
-    sc->aiplayerowner = AIPlayerToNumber(team->aiplayerowner);
+    sc->aiplayerowner = (void*)AIPlayerToNumber(team->aiplayerowner);
 
-    sc->curMove = ConvertPointerInListToNum(&team->moves,team->curMove);
+    sc->curMove = (void*)ConvertPointerInListToNum(&team->moves,team->curMove);
     dbgAssertOrIgnore(team->custTeamInfo == NULL);      // not supported yet, will not support if no one uses it, fix later
     dbgAssertOrIgnore(team->TeamDiedCB == NULL);        // not supported yet, will not support if no one uses it, fix later
     PreFixCooperatingTeamDiedCB(sc);
 
-    sc->cooperatingTeam = AITeamToTeamIndex(team->cooperatingTeam);
-    sc->msgSender = AITeamToTeamIndex(team->msgSender);
+    sc->cooperatingTeam = (void*)AITeamToTeamIndex(team->cooperatingTeam);
+    sc->msgSender = (void*)AITeamToTeamIndex(team->msgSender);
 
-    sc->kasFSMWatchFunction = kasConvertFuncPtrToOffset(team->kasFSMWatchFunction);
-    sc->kasStateWatchFunction = kasConvertFuncPtrToOffset(team->kasStateWatchFunction);
+    sc->kasFSMWatchFunction = (void*)kasConvertFuncPtrToOffset(team->kasFSMWatchFunction);
+    sc->kasStateWatchFunction = (void*)kasConvertFuncPtrToOffset(team->kasStateWatchFunction);
 
     SaveThisChunk(chunk);
     memFree(chunk);

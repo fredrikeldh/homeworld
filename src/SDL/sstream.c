@@ -85,8 +85,10 @@ sdword streamStartThread(void)
 {
 	streamer.status = SOUND_PLAYING;
 
+#ifndef MAPIP
 	SDL_CreateThread(isoundstreamupdate, NULL);
-			
+#endif
+
 	return (SOUND_OK);
 }
 
@@ -207,7 +209,7 @@ udword soundstreamopenfile(char *pszStreamFile, smemsize *handle)
 				  size: the size of streambuffer
 	Outputs		:
 	Return		: the handle to the stream
-----------------------------------------------------------------------------*/	
+----------------------------------------------------------------------------*/
 sdword soundstreamcreatebuffer(void *pstreambuffer, sdword size, uword bitrate)
 {
 	sdword			channel = 0;
@@ -228,7 +230,7 @@ sdword soundstreamcreatebuffer(void *pstreambuffer, sdword size, uword bitrate)
 			pstream->playing = FALSE;
 			memset(pstream->buffer, 0, pstream->buffersize);
 
-#ifndef _MACOSX_FIX_SOUND			
+#ifndef _MACOSX_FIX_SOUND
 			fqAcModel(NULL, NULL, 0, pstream->delaybuffer1, DELAY_BUF_SIZE, &(pstream->delaypos1));
 			fqAcModel(NULL, NULL, 0, pstream->delaybuffer2, DELAY_BUF_SIZE, &(pstream->delaypos2));
 #endif
@@ -268,7 +270,7 @@ sdword soundstreamcreatebuffer(void *pstreambuffer, sdword size, uword bitrate)
 	Inputs		:
 	Outputs		:
 	Return		:
-----------------------------------------------------------------------------*/	
+----------------------------------------------------------------------------*/
 sdword soundstreamnumqueued(sdword streamhandle)
 {
 #if 1
@@ -291,7 +293,7 @@ sdword soundstreamnumqueued(sdword streamhandle)
 	Inputs		:
 	Outputs		:
 	Return		:
-----------------------------------------------------------------------------*/	
+----------------------------------------------------------------------------*/
 void soundstreamstopall(real32 fadetime)
 {
 	sdword i;
@@ -316,12 +318,12 @@ sdword soundstreamover(sdword streamhandle)
 	{
 		return (TRUE);
 	}
-	
+
 	if (streamer.status != SOUND_PLAYING)
 	{
 		return (TRUE);
 	}
-	
+
 	channel = SNDchannel(streamhandle);
 
 	if (channel >= SOUND_OK)
@@ -343,12 +345,12 @@ sdword soundstreamfading(sdword streamhandle)
 	{
 		return (FALSE);
 	}
-	
+
 	if (streamer.status != SOUND_PLAYING)
 	{
 		return (FALSE);
 	}
-	
+
 	channel = SNDchannel(streamhandle);
 
 	if (channel >= SOUND_OK)
@@ -368,7 +370,7 @@ sdword soundstreamfading(sdword streamhandle)
 	Inputs		: actornum - actor index of event we're queueing up
 	Outputs		:
 	Return		:
-----------------------------------------------------------------------------*/	
+----------------------------------------------------------------------------*/
 sdword soundstreamqueuePatch(sdword streamhandle, smemsize filehandle, smemsize offset, udword flags, sword vol, sword pan, sword numchannels, sword bitrate, EFFECT *peffect, STREAMEQ *pEQ, STREAMDELAY *pdelay, void *pmixpatch, sdword level, real32 silence, real32 fadetime, sdword actornum, sdword speechEvent, bool bWait)
 {
 	sdword chan;
@@ -436,7 +438,7 @@ sdword soundstreamqueuePatch(sdword streamhandle, smemsize filehandle, smemsize 
 				/* panned right so attenuate left */
 				pqueue->volfactorL *= (real32)(SOUND_PAN_RIGHT - pan) / SOUND_PAN_RIGHT;
 			}
-	
+
 			if (pEQ != NULL)
 			{
 				pqueue->eq = pEQ;
@@ -445,7 +447,7 @@ sdword soundstreamqueuePatch(sdword streamhandle, smemsize filehandle, smemsize 
 			{
 				pqueue->eq = NULL;
 			}
-	
+
 			if (pdelay != NULL)
 			{
 				pqueue->delay = pdelay;
@@ -454,7 +456,7 @@ sdword soundstreamqueuePatch(sdword streamhandle, smemsize filehandle, smemsize 
 			{
 				pqueue->delay = NULL;
 			}
-	
+
 			if (peffect != NULL)
 			{
 				pqueue->effect = peffect;
@@ -506,7 +508,7 @@ sdword soundstreamqueuePatch(sdword streamhandle, smemsize filehandle, smemsize 
 				pqueue->mixLevel = SOUND_VOL_MIN;
 				pqueue->mixHandle = SOUND_DEFAULT;
                 pqueue->actornum = actornum;
-				
+
 				if (pan < SOUND_PAN_CENTER)
 				{
 					/* panned left so attenuate right */
@@ -517,7 +519,7 @@ sdword soundstreamqueuePatch(sdword streamhandle, smemsize filehandle, smemsize 
 					/* panned right so attenuate left */
 					pqueue->volfactorL *= (real32)(SOUND_PAN_RIGHT - pan) / SOUND_PAN_RIGHT;
 				}
-		
+
 				if (pEQ != NULL)
 				{
 					pqueue->eq = pEQ;
@@ -526,7 +528,7 @@ sdword soundstreamqueuePatch(sdword streamhandle, smemsize filehandle, smemsize 
 				{
 					pqueue->eq = NULL;
 				}
-		
+
 				if (pdelay != NULL)
 				{
 					pqueue->delay = pdelay;
@@ -535,7 +537,7 @@ sdword soundstreamqueuePatch(sdword streamhandle, smemsize filehandle, smemsize 
 				{
 					pqueue->delay = NULL;
 				}
-		
+
 				if (peffect != NULL)
 				{
 					pqueue->effect = peffect;
@@ -553,7 +555,7 @@ sdword soundstreamqueuePatch(sdword streamhandle, smemsize filehandle, smemsize 
 					pstream->queueindex = 0;
 				}
 				pqueue->fhandle = filehandle;
-				
+
 				if ((pstream->status == SOUND_STREAM_INUSE) && !bWait)
 				{
 					pstream->blockstatus[0] = 0;
@@ -578,7 +580,7 @@ sdword soundstreamqueuePatch(sdword streamhandle, smemsize filehandle, smemsize 
 				  vol - the volume to set this sound to (range of SOUND_MIN_VOL - SOUND_MAX_VOL)
 	Outputs		:
 	Return		: SOUND_OK if successful, SOUND_ERR on error
-----------------------------------------------------------------------------*/	
+----------------------------------------------------------------------------*/
 sdword soundstreamvolume(sdword handle, sword vol, real32 fadetime)
 {
 	CHANNEL *pchan;
@@ -592,7 +594,7 @@ sdword soundstreamvolume(sdword handle, sword vol, real32 fadetime)
 	{
 		return (SOUND_ERR);
 	}
-	
+
 	if (streamer.status != SOUND_PLAYING)
 	{
 	return (SOUND_ERR);
@@ -670,7 +672,7 @@ sdword soundstreamvolume(sdword handle, sword vol, real32 fadetime)
 				pchan->volticksleft = 1;
 				pchan->volfade = 0.0f;
 			}
-			
+
 			if (stop)
 			{
 				pchan->status = SOUND_STOPPING;
@@ -843,12 +845,12 @@ foundInfo:;
 sword soundstreamgetvol(sdword handle)
 {
 	sdword channel;
-	
+
 	if (!soundinited)
 	{
 		return (SOUND_ERR);
 	}
-	
+
 	if (streamer.status != SOUND_PLAYING)
 	{
 		return (SOUND_ERR);
@@ -922,7 +924,7 @@ sdword isoundstreamreadheader(STREAM *pstream)
         length = ssSubtitleRead(&pstream->header, pqueue->fhandle, pqueue->actornum, pqueue->speechEvent, pstream->dataPeriod); //read the subtitle
 
         pstream->lastpos = ret + length;
-		
+
 		if (pstream->header.ID != ID_STREAM_DATA)
 		{
 			/* this is not stream data */
@@ -944,7 +946,7 @@ sdword isoundstreamreadheader(STREAM *pstream)
 		pstream->header.ID = ppatch->id;
 		pstream->header.size = ppatch->datasize - ppatch->dataoffset;
 		pstream->lastpos = ppatch->dataoffset;
-		
+
 		// need to assign a size to this item
 		pqueue->size = pstream->header.size;
 	}
@@ -953,16 +955,16 @@ sdword isoundstreamreadheader(STREAM *pstream)
 		pstream->header.ID = 0;
 		pstream->header.size = (sdword)(pqueue->silencetime * SOUND_FADE_TIMETOBLOCKS * (pqueue->bitrate >> 3));  // * bitrate?
 		pstream->lastpos = 0;
-	
+
 		if (pqueue->pmixPatch != NULL)
 		{
 			pqueue->mixHandle = splayMUTE((void *)pqueue->pmixPatch, SOUND_FLAGS_PATCHPOINTER, pqueue->pan, SOUND_PRIORITY_STREAM, pqueue->mixLevel);
 		}
 	}
-		
+
 	pstream->dataleft = pstream->header.size;
 	pstream->numqueued--;
-	
+
 	return (SOUND_OK);
 }
 
@@ -985,7 +987,7 @@ sdword isoundstreamreadblock(STREAMQUEUE *pqueue, void *buffer, smemsize positio
 			/* yuck, bad */
 			return (-2);
 		}
-		
+
 		ret = fileBlockRead(pqueue->fhandle, buffer, size);
 		if (ret != size)
 		{
@@ -1033,7 +1035,7 @@ void isoundstreamcleanup(void)
 	Inputs		:
 	Outputs		:
 	Return		:
-----------------------------------------------------------------------------*/	
+----------------------------------------------------------------------------*/
 int isoundstreamupdate(void *dummy)
 {
 #ifndef _MACOSX_FIX_SOUND
@@ -1046,7 +1048,7 @@ int isoundstreamupdate(void *dummy)
 	Uint8 *bufferpos;
 	sdword bufsize;
 	STREAMQUEUE *pqueue;
-	
+
 	if (streams == NULL)
 	{
 	/* not inited yet */
@@ -1065,27 +1067,27 @@ int isoundstreamupdate(void *dummy)
 				streamer.status = SOUND_STOPPED;
 			}
 		}
-		
+
 		if (bSoundDeactivated && (streamer.status == SOUND_PLAYING)  && !bSoundPaused)
 		{
 //			isoundstreamcleanup();
 //			streamer.status = SOUND_STOPPED;
 			streamer.status = SOUND_PAUSED;
 		}
-		
+
 		if ((streamer.status >= SOUND_PLAYING) && (streamer.status < SOUND_PAUSED))
 		{
 			if (bSoundPaused && (streamer.status == SOUND_PLAYING))
 			{
 				streamer.status = SOUND_STOPPING;
 			}
-			
+
 			for (i = 0; i < numstreams; i++)
 			{
 				pstream = &streams[i];
 				pchan = &speechchannels[i];
 				pqueue = &pstream->queue[pstream->writeindex];
-		
+
 				if (pstream->status == SOUND_STREAM_STARTING)
 				{
 					pstream->playindex = pstream->writeindex;
@@ -1109,14 +1111,14 @@ int isoundstreamupdate(void *dummy)
 						pstream->status = SOUND_STREAM_WRITING;
 						pchan->volfactorL = pqueue->volfactorL;
 						pchan->volfactorR = pqueue->volfactorR;
-						
+
 						pchan->voltarget = pqueue->vol;
 						if (pqueue->fadetime != 0.0f)
 						{
 							pchan->volume = 0.0f;
 							pchan->volticksleft = (sdword)(pqueue->fadetime * SOUND_FADE_TIMETOBLOCKS);
 							pchan->volfade = (real32)(pchan->voltarget - pchan->volume) / (real32)pchan->volticksleft;
-	
+
 							if (pchan->volfade == 0.0f)
 							{
 								pchan->volfade = 0.01f;
@@ -1132,14 +1134,14 @@ int isoundstreamupdate(void *dummy)
 							pchan->volticksleft = 0;
 							pchan->volfade = 0.0f;
 						}
-	
+
 						pchan->pan = pqueue->pan;
 						pchan->numchannels = pqueue->numchannels;
 						pchan->bitrate = pqueue->bitrate;
 						pchan->amountread = 0;
-						
+
 						bufsize = SOUND_STREAM_BUFFER_SIZE;
-						
+
 						if (bufsize % ((pchan->bitrate >> 3) * 8))
 						{
 							bufsize /= ((pchan->bitrate >> 3) * 8);
@@ -1149,12 +1151,12 @@ int isoundstreamupdate(void *dummy)
 						pstream->blocksize = pstream->buffersize / 2;
 						pchan->endpos = (sbyte *)(pstream->buffer + pstream->buffersize);
 						pchan->currentpos = (sbyte *)pstream->buffer;
-						
+
 						pstream->numtoplay--;
 						pchan->status = SOUND_PLAYING;
 					}
 				}
-		
+
 				if (pstream->status == SOUND_STREAM_WRITING)
 				{
 					if (pstream->blockstatus[pstream->writeblock] == 0)
@@ -1170,18 +1172,18 @@ int isoundstreamupdate(void *dummy)
 							{
 								/* IS THERE ANOTHER STREAM IN THE HOUSE? */
 								pqueue->fhandle = SOUND_ERR;
-								
+
 								pqueue->nextplay = pstream->buffer + (pstream->blocksize * pstream->writeblock);
-								
+
 								pstream->writeindex++;
-					
+
 								if (pstream->writeindex >= SOUND_MAX_STREAM_QUEUE)
 								{
 									pstream->writeindex = 0;
 								}
-								
+
 								pqueue = &pstream->queue[pstream->writeindex];
-		
+
 								if (pqueue->fhandle != SOUND_ERR)
 								{
 									isoundstreamreadheader(pstream);
@@ -1197,19 +1199,19 @@ int isoundstreamupdate(void *dummy)
 								}
 							}
 						}
-		
+
 						if (pstream->dataleft >= pstream->blocksize)
 						{
 							/* WE HAVE LOTS OF DATA HERE */
 							ret = isoundstreamreadblock(pqueue, (void *)(pstream->buffer + (pstream->blocksize * pstream->writeblock)), pstream->lastpos, pstream->blocksize);
-							
+
 							if (ret != pstream->blocksize)
 							{
 								/* yuck, bad */
 								/* dbgMessagef("soundstreamupdate95: couldn't read file block.");*/
 								goto Recover;
 							}
-				
+
 							pstream->lastpos += ret;
 							pstream->dataleft -= pstream->blocksize;
 						}
@@ -1217,7 +1219,7 @@ int isoundstreamupdate(void *dummy)
 						{
 							/* HMMM, GETTING KINDA LOW, NEED A TOP UP */
 							ret = isoundstreamreadblock(pqueue, (void *)(pstream->buffer + (pstream->blocksize * pstream->writeblock)), pstream->lastpos, pstream->dataleft);
-							
+
 							if (ret != pstream->dataleft)
 							{
 								/* yuck, bad */
@@ -1225,38 +1227,38 @@ int isoundstreamupdate(void *dummy)
 								goto Recover;
 							}
 							pstream->lastpos += ret;
-		
+
 							if (!(pqueue->flags & SOUND_FLAGS_LOOPING))
 							{
 								/* IS THERE ANOTHER STREAM IN THE HOUSE? */
 								pqueue->fhandle = SOUND_ERR;
-								
+
 								pqueue->nextplay = pstream->buffer + (pstream->blocksize * pstream->writeblock) + pstream->dataleft;
-								
+
 								pstream->writeindex++;
-					
+
 								if (pstream->writeindex >= SOUND_MAX_STREAM_QUEUE)
 								{
 									pstream->writeindex = 0;
 								}
-								
+
 								pqueue = &pstream->queue[pstream->writeindex];
 							}
-							
+
 							readsize = pstream->blocksize - pstream->dataleft;
 							bufferpos = pstream->buffer + (pstream->blocksize * pstream->writeblock) + pstream->dataleft;
 							pstream->dataleft = 0;
-				
+
 							if (pqueue->fhandle != SOUND_ERR)
 							{
 								/* LOOKS LIKE WE HAVE ANOTHER STREAM HERE */
 								isoundstreamreadheader(pstream);
-		
+
 								if (pstream->dataleft >= readsize)
 								{
 									/* read a block of data */
 									ret = isoundstreamreadblock(pqueue, (void *)(bufferpos), pstream->lastpos, readsize);
-									
+
 									if (ret != readsize)
 									{
 										/* yuck, bad */
@@ -1267,14 +1269,14 @@ int isoundstreamupdate(void *dummy)
 								else
 								{
 									ret = isoundstreamreadblock(pqueue, (void *)(bufferpos), pstream->lastpos, pstream->dataleft);
-									
+
 									if (ret != pstream->dataleft)
 									{
 										/*bad*/
 										/* dbgAssertOrIgnore(FALSE); */
 										goto Recover;
 									}
-		
+
 									if (pstream->writeindex + 1 >= SOUND_MAX_STREAM_QUEUE)
 									{
 										if (pstream->queue[0].fhandle != SOUND_ERR)
@@ -1326,16 +1328,16 @@ Recover:
 				{
 					/* IS THERE ANOTHER STREAM IN THE HOUSE? */
 					pqueue->fhandle = SOUND_ERR;
-					
+
 					pqueue->nextplay = pstream->buffer + (pstream->blocksize * pstream->writeblock);
-					
+
 					pstream->writeindex++;
-		
+
 					if (pstream->writeindex >= SOUND_MAX_STREAM_QUEUE)
 					{
 						pstream->writeindex = 0;
 					}
-					
+
 					pqueue = &pstream->queue[pstream->writeindex];
 
 					if (pqueue->fhandle != SOUND_ERR)
@@ -1369,15 +1371,18 @@ Recover:
 				streamer.status = SOUND_PLAYING;
 			}
 		}
-		
+
+#if !defined(MAPIP)	// no need for semaphores or sleep on MoSync.
+
 #ifdef _MSC_VER
 #pragma message("This should use semaphores!")
 #else
 #warning This should use semaphores!
 #endif
 		SDL_Delay(SOUND_STREAM_SLEEP);
+#endif	//MAPIP
 	}
-	
+
 	/* clean up all the streams */
     for (i = 0; i < numstreams; i++)
 	{

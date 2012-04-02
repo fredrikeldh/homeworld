@@ -69,7 +69,7 @@
 #define BIGGIE_VERSION "3.00"   // biggie: .BIG file extractor tool (see /tools)
 
 // some things don't get compiled into the command line tool
-#if defined(HW_BUILD_FOR_DEBUGGING) || defined(HW_BUILD_FOR_DISTRIBUTION) 
+#if defined(HW_BUILD_FOR_DEBUGGING) || defined(HW_BUILD_FOR_DISTRIBUTION)
     #define BF_HOMEWORLD
 #endif
 
@@ -117,9 +117,9 @@ typedef enum
 }
 bigLocalFileAgeComparison;
 
-typedef struct 
+typedef struct
 {
-    char   *bigFileName;
+    const char   *bigFileName;
     bool    required;
     FILE   *filePtr;
     bigTOC  tableOfContents;
@@ -142,7 +142,7 @@ int bigAddFile(char *bigFilename, char *filename, char *storedFilename, int optC
 int bigDelete(char *bigfilename, int numFiles, char *filenames[], int consoleOutput);
 int bigView(char *bigfilename, int consoleOutput);
 int bigExtract(char *bigfilename, int numFiles, char *filenames[], int optFreshen, int optMove, int optPathnames, int optOverwrite, int consoleOutput);
-bool bigTOCFileExists(bigTOC *toc, char *filename, udword *fileNum);
+bool bigTOCFileExists(bigTOC *toc, const char *filename, udword *fileNum);
 int bigTOCFileExistsByCRC(bigTOC *toc, bigTOCFileEntry *target, udword *fileNum);
 void bigTOCSort(bigTOC *toc);
 void bigFilenameEncrypt(char *filename);
@@ -153,12 +153,12 @@ crc32 bigTOCCRC(bigTOC *toc);
 #ifdef BF_HOMEWORLD
     bool bigOpenAllBigFiles(void);
     void bigCloseAllBigFiles(void);
-    
-    void bigCRC(udword *bigCRCArray, udword arraySize);
-    void bigFilesystemCompare(char *baseDirectory, char *directory);
-    bool bigFindFile(char *filename, bigFileConfiguration **whereFound, udword *fileIndex);
 
-    sdword bigFileLoadAlloc(bigTOC *toc, FILE *bigFP, char *filename, udword fileNum, void **address);
+    void bigCRC(udword *bigCRCArray, udword arraySize);
+    void bigFilesystemCompare(char *baseDirectory, const char *directory);
+    bool bigFindFile(const char *filename, bigFileConfiguration **whereFound, udword *fileIndex);
+
+    sdword bigFileLoadAlloc(bigTOC *toc, FILE *bigFP, const char *filename, udword fileNum, void **address);
     sdword bigFileLoad(bigTOC *toc, FILE *bigFP, udword fileNum, void *address);
 #endif
 

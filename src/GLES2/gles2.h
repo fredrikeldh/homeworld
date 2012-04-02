@@ -41,8 +41,8 @@ private:
 	{
 		if( IsSame<TEST, T1>::Result::value )
 			return INDEX;
-		
-		throw "Type not registered";
+
+		maPanic(0, "Type not registered");
 	}
 
 	template<GLubyte INDEX, typename TEST, typename T1, typename T2, typename... TOTHER>
@@ -50,7 +50,7 @@ private:
 	{
 		if( IsSame<TEST, T1>::Result::value )
 			return INDEX;
-		
+
 		return GetIndex<INDEX + 1, TEST, T2, TOTHER...>();
 	};
 public:
@@ -77,7 +77,7 @@ typedef Setup<
 	VertexSetup
 > GLES2Setup ;
 
-extern GLES2Setup setup; 
+extern GLES2Setup setup;
 
 template<typename T>
 T& Get()

@@ -144,9 +144,9 @@ typedef struct tagMEXNAVLightChunk
     char            NAVLightName[20];       // Actual name.
 } MEXNAVLightChunk; // 36 bytes...
 
-void *mexGetChunk(void *mex,char *type,char *name);
+void *mexGetChunk(void *mex,const char *type,const char *name);
 
-void *mexLoad(char *filename);
+void *mexLoad(const char *filename);
 void mexFree(void *mex);
 bool mexVerify(void *mex);
 

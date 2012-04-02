@@ -92,9 +92,9 @@ psimage;
 
 void psStartup(void);
 void psShutdown(void);
-void psModeBegin(char *directory, udword modeFlags);
+void psModeBegin(const char *directory, udword modeFlags);
 void psModeEnd(void);
-void psScreenStart(char *name);
+void psScreenStart(const char *name);
 void psCurrentScreenDelete(void);
 
 #endif

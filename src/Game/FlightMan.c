@@ -2388,12 +2388,12 @@ void setFlightManProb(char *field,udword *flightprobs,udword *flightcums,udword 
     *sumtotal = cum;
 }
 
-void scriptSetFlightManTurnaroundCB(char *directory,char *field, FlightManProb *dataToFillIn)
+void scriptSetFlightManTurnaroundCB(const char *directory,char *field, void *dataToFillIn)
 {
     char tactic_buffer[32];
     char class_buffer[64];
     char field2[32];
-    FlightManProb *prob;
+    FlightManProb *prob = (FlightManProb *)dataToFillIn;
 
     TacticsType tactic;
     ShipClass shipclass;
@@ -2410,18 +2410,17 @@ void scriptSetFlightManTurnaroundCB(char *directory,char *field, FlightManProb *
     CheckValidTacticsClass(tactic,shipclass,field);
 #endif
 
-    dataToFillIn += (tactic * (NUM_CLASSES + 1)) + shipclass;
-    prob = dataToFillIn;
+    prob += (tactic * (NUM_CLASSES + 1)) + shipclass;
     setFlightManProb(field2,prob->flightprobTurnaround,prob->flightcumTurnaround,&prob->sumtotalTurnaround,FLIGHTMAN_TYPE_TURNAROUND_NUM);
     prob->valid = FLIGHTPROB_VALID;
 }
 
-void scriptSetFlightManAIPCB(char *directory,char *field,FlightManProb *dataToFillIn)
+void scriptSetFlightManAIPCB(const char *directory,char *field, void *dataToFillIn)
 {
     char tactic_buffer[32];
     char class_buffer[64];
     char field2[32];
-    FlightManProb *prob;
+    FlightManProb *prob = (FlightManProb *)dataToFillIn;
 
     TacticsType tactic;
     ShipClass shipclass;
@@ -2438,18 +2437,17 @@ void scriptSetFlightManAIPCB(char *directory,char *field,FlightManProb *dataToFi
     CheckValidTacticsClass(tactic,shipclass,field);
 #endif
 
-    dataToFillIn += (tactic * (NUM_CLASSES + 1)) + shipclass;
-    prob = dataToFillIn;
+    prob += (tactic * (NUM_CLASSES + 1)) + shipclass;
     setFlightManProb(field2,prob->flightprobAIP,prob->flightcumAIP,&prob->sumtotalAIP,FLIGHTMAN_TYPE_AIP_NUM);
     prob->valid = FLIGHTPROB_VALID;
 }
 
-void scriptSetFlightManEvasiveBehindCB(char *directory,char *field,FlightManProb *dataToFillIn)
+void scriptSetFlightManEvasiveBehindCB(const char *directory,char *field,void *dataToFillIn)
 {
     char tactic_buffer[32];
     char class_buffer[64];
     char field2[32];
-    FlightManProb *prob;
+    FlightManProb *prob = (FlightManProb *)dataToFillIn;
 
     TacticsType tactic;
     ShipClass shipclass;
@@ -2466,18 +2464,17 @@ void scriptSetFlightManEvasiveBehindCB(char *directory,char *field,FlightManProb
     CheckValidTacticsClass(tactic,shipclass,field);
 #endif
 
-    dataToFillIn += (tactic * (NUM_CLASSES + 1)) + shipclass;
-    prob = dataToFillIn;
+    prob += (tactic * (NUM_CLASSES + 1)) + shipclass;
     setFlightManProb(field2,prob->flightprobEvasiveBehind,prob->flightcumEvasiveBehind,&prob->sumtotalEvasiveBehind,FLIGHTMAN_TYPE_TURNAROUND_NUM);
     prob->valid = FLIGHTPROB_VALID;
 }
 
-void scriptSetFlightManEvasiveFrontCB(char *directory,char *field,FlightManProb *dataToFillIn)
+void scriptSetFlightManEvasiveFrontCB(const char *directory,char *field,void *dataToFillIn)
 {
     char tactic_buffer[32];
     char class_buffer[64];
     char field2[32];
-    FlightManProb *prob;
+    FlightManProb *prob = (FlightManProb *)dataToFillIn;
 
     TacticsType tactic;
     ShipClass shipclass;
@@ -2494,18 +2491,17 @@ void scriptSetFlightManEvasiveFrontCB(char *directory,char *field,FlightManProb 
     CheckValidTacticsClass(tactic,shipclass,field);
 #endif
 
-    dataToFillIn += (tactic * (NUM_CLASSES + 1)) + shipclass;
-    prob = dataToFillIn;
+    prob += (tactic * (NUM_CLASSES + 1)) + shipclass;
     setFlightManProb(field2,prob->flightprobEvasiveFront,prob->flightcumEvasiveFront,&prob->sumtotalEvasiveFront,FLIGHTMAN_TYPE_TURNAROUND_NUM);
     prob->valid = FLIGHTPROB_VALID;
 }
 
-void scriptSetFlightManEvasivePureCB(char *directory,char *field,FlightManProb *dataToFillIn)
+void scriptSetFlightManEvasivePureCB(const char *directory,char *field,void *dataToFillIn)
 {
     char tactic_buffer[32];
     char class_buffer[64];
     char field2[32];
-    FlightManProb *prob;
+    FlightManProb *prob = (FlightManProb *)dataToFillIn;
 
     TacticsType tactic;
     ShipClass shipclass;
@@ -2522,8 +2518,7 @@ void scriptSetFlightManEvasivePureCB(char *directory,char *field,FlightManProb *
     CheckValidTacticsClass(tactic,shipclass,field);
 #endif
 
-    dataToFillIn += (tactic * (NUM_CLASSES + 1)) + shipclass;
-    prob = dataToFillIn;
+    prob += (tactic * (NUM_CLASSES + 1)) + shipclass;
     setFlightManProb(field2,prob->flightprobEvasivePure,prob->flightcumEvasivePure,&prob->sumtotalEvasivePure,FLIGHTMAN_TYPE_TURNAROUND_NUM);
     prob->valid = FLIGHTPROB_VALID;
 }

@@ -218,7 +218,7 @@ scriptEntry SoundeventTweaks[] =
 
 	makeEntry(RANDOM_AMBIENCE_MINFREQ,scriptSetReal32CB),
     makeEntry(RANDOM_AMBIENCE_ADDRANDOM,scriptSetSdwordCB),
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -673,7 +673,7 @@ void SEprecalcVolTables(void)
 {
     sdword i, j, index;
 
-#if FIX_ENDIAN	
+#if FIX_ENDIAN
         for (j = 0; j< (RangeLUT->rows * RangeLUT->columns); j++ )
             RangeLUT->lookup[j] = FIX_ENDIAN_INT_32( RangeLUT->lookup[j] );
         for (j = 0; j< (VolumeLUT->rows * VolumeLUT->columns); j++ )
@@ -694,7 +694,7 @@ void SEprecalcVolTables(void)
 			RangeFloatLUT[j+i] = 1.0f / (real32)(RangeLUT->lookup[j+i] - RangeLUT->lookup[j+i-1]);
 		}
 	}
-	
+
         /* do some precalcs on the Frequency table, saves a compare, [], addition and 2 subtractions for every SEequalize */
 	for (j = 0; j < FrequencyLUT->columns; j++)
 	{
@@ -767,7 +767,7 @@ void soundEventInit(void)
     RangeLUT->columns = FIX_ENDIAN_INT_16( RangeLUT->columns );
     RangeLUT->rows    = FIX_ENDIAN_INT_16( RangeLUT->rows );
 #endif
-    
+
     strcpy(loadfile, SOUNDFXDIR);
     strcat(loadfile, "Frequency.lut");
     size = fileLoadAlloc(loadfile, (void**)&FrequencyLUT, NonVolatile);
@@ -778,7 +778,7 @@ void soundEventInit(void)
     FrequencyLUT->columns = FIX_ENDIAN_INT_16( FrequencyLUT->columns );
     FrequencyLUT->rows    = FIX_ENDIAN_INT_16( FrequencyLUT->rows );
 #endif
-    
+
     /* do some pre-calculations on the volume, range and frequency tables */
 	SEprecalcVolTables();
 
@@ -803,7 +803,7 @@ void soundEventInit(void)
 #endif // SPEECH
 
     soundeventinited = TRUE;
-    
+
 #endif // DIRECTSOUND
 #endif // SOUND
 }
@@ -907,15 +907,15 @@ void soundEventStopSFX(real32 fadetime)
     Ship *ship;
     Derelict *pDerelict;
     Node *objnode = universe.RenderList.tail;
-	
+
 	if (enableSFX)
 	{
 		soundstopallSFX(fadetime, FALSE);
-	
+
 		while (objnode != NULL)
 		{
 			ship = (Ship *)listGetStructOfNode(objnode);
-	
+
 			if (ship->objtype == OBJ_DerelictType)
 			{
 				pDerelict = (Derelict *)ship;
@@ -1170,7 +1170,7 @@ void soundEventUpdate(void)
 		// ok, now we're into the SHIP stuff
         shipclass = ship->staticinfo->shipclass;
         dist = (real32)fsqrt(ship->cameraDistanceSquared);
-		
+
 		// a little hack here so that these ships have reasonable volume curves
 		if (ship->shiptype == MiningBase)
 		{
@@ -1244,7 +1244,7 @@ void soundEventUpdate(void)
 		vol = SEequalize(shipclass, dist, tempEQ);
 		shipangle = SEgetAngleToCamera(ship);
 		velocity = fsqrt(vecMagnitudeSquared(ship->posinfo.velocity));
-		
+
 		// need this for setting the music volume
 		if (dist < nearestShipDistance)
 		{
@@ -1371,7 +1371,7 @@ void soundEventUpdate(void)
 				{
 					ship->soundevent.engineState = SOUND_PLAYING;
 				}
-	
+
 				soundvolume(ship->soundevent.engineHandle, vol);
 				soundpan(ship->soundevent.engineHandle, pan);
 				if (velratio > 1.0f)
@@ -1380,7 +1380,7 @@ void soundEventUpdate(void)
 				}
 				soundequalize(ship->soundevent.engineHandle, tempEQ);
 			}
-	
+
 			if (shipclass == CLASS_Fighter)
 			{
 				if (FIGHTER_DOPPLER_USEVELOCITY)
@@ -1406,7 +1406,7 @@ void soundEventUpdate(void)
 		}
 
 othersounds:
-		// now we deal with the special sounds, ambients, damage ambients and random ambients			
+		// now we deal with the special sounds, ambients, damage ambients and random ambients
 		if (!SEinrange(shipclass + AMBIENT_OFFSET, dist))
 		{
 			SEstopsoundhandle(&(ship->soundevent.specialHandle), SOUND_FADE_STOPNOW);
@@ -1433,7 +1433,7 @@ othersounds:
 				{
 					specialon = TRUE;
 					ambienton = FALSE;
-					
+
 					if ((ship->soundevent.specialHandle == SOUND_NOTINITED) ||
 						soundover(ship->soundevent.specialHandle))
 					{
@@ -1577,13 +1577,13 @@ othersounds:
 						{
 							ambient = ShipCmn_HeavyDamage;
 						}
-						
+
 						// only play if a damage should be on
 						ship->soundevent.damageHandle = splayEPRV(ShipBank, ShipCmnEventsLUT->lookup[GetPatch(ShipCmnEventsLUT, ship->shiptype, ambient)],
 																   tempEQ, pan, SOUND_PRIORITY_LOW, vol);
 					}
 				}
-				
+
 				ship->soundevent.lastAmbient = ambient;
 			}
 			else
@@ -1596,7 +1596,7 @@ othersounds:
 					if (damageratio < SFX_DAMAGERATIO_LIGHT)
 					{
 						damageOn = TRUE;
-						
+
 						if (damageratio > SFX_DAMAGERATIO_MEDIUM)
 						{
 							ambient = ShipCmn_LightDamage;
@@ -1622,7 +1622,7 @@ othersounds:
 																	   tempEQ, pan, SOUND_PRIORITY_LOW, vol);
 							ship->soundevent.lastAmbient = ambient;
 						}
-						
+
 						// set the parameters for the damage sound
 						soundvolume(ship->soundevent.damageHandle, vol);
 						soundpan(ship->soundevent.damageHandle, pan);
@@ -1721,7 +1721,7 @@ othersounds:
 			}
 		}
 
-playgimbles:		
+playgimbles:
 		// NEW Gimble stuff
 		if (ship->gunInfo != NULL)
 		{
@@ -1851,18 +1851,18 @@ void soundEventUpdate(void)
 					ship->soundevent.engineState = SOUND_PLAYING;
 				}
 			}
-	
+
 			/* set volume */
 			soundvolume(ship->soundevent.engineHandle, ship->soundevent.engineVol);
-	
+
 			/* set pan */
 			soundpan(ship->soundevent.engineHandle, ship->soundevent.pan);
-	
+
 			/* set equalization */
 			soundequalize(ship->soundevent.engineHandle, tempEQ);
 		}
 	}
-	
+
 	for (i = 0; i < SFX_MAX_CAPENGINES; i++)
 	{
 		ship = capships[i];
@@ -1870,7 +1870,7 @@ void soundEventUpdate(void)
 		{
 			/* EQ this puppy */
 			SEeq(ship->staticinfo->shipclass, ship->soundevent.distance, tempEQ);
-	
+
 			if (ship->soundevent.engineHandle == SOUND_NOTINITED)
 			{
 				/* start the engine sound */
@@ -1886,13 +1886,13 @@ void soundEventUpdate(void)
 						ship->soundevent.engineState = SOUND_PLAYING;
 					}
 				}
-		
+
 				/* set volume */
 				soundvolume(ship->soundevent.engineHandle, ship->soundevent.engineVol);
-		
+
 				/* set pan */
 				soundpan(ship->soundevent.engineHandle, ship->soundevent.pan);
-		
+
 				/* set equalization */
 				soundequalize(ship->soundevent.engineHandle, tempEQ);
 			}
@@ -1907,7 +1907,7 @@ void soundEventUpdate(void)
 		{
 			/* EQ this puppy */
 			SEeq(ship->staticinfo->shipclass, ship->soundevent.distance, tempEQ);
-	
+
 			if (ship->soundevent.engineHandle == SOUND_NOTINITED)
 			{
 				/* start the engine sound */
@@ -2079,7 +2079,7 @@ void SEupdateShipRange(void)
     ShipClass shipclass;
 	sdword i;
 
-	
+
 	numMoships = 0;
 
     while (objnode != NULL)
@@ -2096,9 +2096,9 @@ void SEupdateShipRange(void)
         if (SEinrangeSqr(shipclass, ship->cameraDistanceSquared))
 		{
 			ship->soundevent.distance = (real32)fsqrt(ship->cameraDistanceSquared);
-			
+
 			ship->soundevent.coverage = rndComputeOverlap(ship, 1.0);	// make 1.0 tweakable in a script
-	
+
 			ship->soundevent.pan = getPanAngle(ship->enginePosition);
 
 			ship->soundevent.engineVol = SEcalcvol(shipclass, ship->soundevent.distance);	// want to modify the volume by the coverage and a tweak to modify the effect of coverage
@@ -2112,7 +2112,7 @@ void SEupdateShipRange(void)
 		{
 			ship->soundevent.engineVol = 0;
 		}
-		
+
 		if (ship->soundevent.engineVol > 0)
 		{
 			tempship = ship;
@@ -2213,7 +2213,7 @@ void soundEventInitStruct(SOUNDEVENT *pseStruct)
 void soundEventShipDied(Ship *deadship)
 {
 	soundEventShipRemove(deadship);
-	
+
 	if (deadship != NULL)
 	{
 		deadship->soundevent.engineHandle = SOUND_SHIP_EXPLODED;
@@ -2424,7 +2424,7 @@ sword SEequalize(sdword objtype, real32 distance, real32 *eq)
 
 			mult = ((real32)RangeLUT->lookup[index] - distance) * RangeFloatLUT[index];
 			vol = volSFX * ((real32)VolumeLUT->lookup[index] + (mult * VolumeFloatLUT[index]));
-			
+
 			if (vol < SFX_MIN_PERCEPTABLE_VOL)
 			{
 				vol = 0;
@@ -2587,7 +2587,7 @@ void SEstopsoundhandle(sdword *shandle, real32 fadetime)
 void SEloadbank(void)
 {
     char loadfile[100];
-    
+
 #if FIX_ENDIAN
 	int  i;
 #endif
@@ -2597,7 +2597,7 @@ void SEloadbank(void)
     strcat(loadfile, "GunEvents.lut");
     fileLoadAlloc(loadfile, (void**)&GunEventsLUT, NonVolatile);
 
-#if FIX_ENDIAN	
+#if FIX_ENDIAN
 	GunEventsLUT->ID            = FIX_ENDIAN_INT_32( GunEventsLUT->ID );
 	GunEventsLUT->checksum      = FIX_ENDIAN_INT_32( GunEventsLUT->checksum );
 	GunEventsLUT->numvariations = FIX_ENDIAN_INT_16( GunEventsLUT->numvariations );
@@ -2622,7 +2622,7 @@ void SEloadbank(void)
 	for ( i=0; i<lt; i++ )
 		ShipCmnEventsLUT->lookup[i] = FIX_ENDIAN_INT_16( ShipCmnEventsLUT->lookup[i] );
 #endif
-		
+
     strcpy(loadfile, SOUNDFXDIR);
     strcat(loadfile, "ShipEvents.lut");
     fileLoadAlloc(loadfile, (void**)&ShipEventsLUT, NonVolatile);
@@ -2637,7 +2637,7 @@ void SEloadbank(void)
 	for ( i=0; i<lt; i++ )
 		ShipEventsLUT->lookup[i] = FIX_ENDIAN_INT_16( ShipEventsLUT->lookup[i] );
 #endif
-		
+
 	if (ShipEventsLUT->checksum != ShipCmnEventsLUT->checksum)
 	{
 		dbgMessage("Lookup tables do not match.  Not from same generate.");
@@ -2658,7 +2658,7 @@ void SEloadbank(void)
 	for ( i=0; i<lt; i++ )
 		DerelictEventsLUT->lookup[i] = FIX_ENDIAN_INT_16( DerelictEventsLUT->lookup[i] );
 #endif
-		
+
 	if (DerelictEventsLUT->checksum != ShipCmnEventsLUT->checksum)
 	{
 		dbgMessage("Lookup tables do not match.  Not from same generate.");
@@ -2704,7 +2704,7 @@ void SEloadbank(void)
 	for ( i=0; i<lt; i++ )
 		SpecHitEventsLUT->lookup[i] = FIX_ENDIAN_INT_16( SpecHitEventsLUT->lookup[i] );
 #endif
-		
+
 //	if (SpecHitEventsLUT->checksum != SpecEffectEventsLUT->checksum)
 	if (SpecHitEventsLUT->checksum != SpecExpEventsLUT->checksum)
 	{
@@ -2781,7 +2781,7 @@ void SEloadbank(void)
 	}
 }
 
-#ifndef EMSCRIPTEN
+#if !defined(EMSCRIPTEN) && !defined(MAPIP)
 /*-----------------------------------------------------------------------------
     Name        :
     Description :
@@ -2863,7 +2863,7 @@ void soundEventStopCD(void)
     SDL_CDClose(gCD);
     gCD = NULL;
 }
-#endif //!EMSCRIPTEN
+#endif //!EMSCRIPTEN || !MAPIP
 
 void soundEventPlayMusic(sdword tracknum)
 {
@@ -2931,7 +2931,7 @@ sword getPanAngle(vector WorldVector, real32 objsize, real32 distance)
 	{
 		return ((sword)SOUND_PAN_CENTER);
 	}
-	
+
 	vecSub(CameraToPoint, WorldVector, mrCamera->eyeposition);
     vecSub(CameraLookAt, mrCamera->lookatpoint, mrCamera->eyeposition);
 

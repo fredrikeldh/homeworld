@@ -215,7 +215,7 @@ void rgluOrtho2D(GLfloat left, GLfloat right, GLfloat bottom, GLfloat top)
 #endif
 }
 
-char* rgluErrorString(GLenum err)
+const char* rgluErrorString(GLenum err)
 {
     switch (err)
     {

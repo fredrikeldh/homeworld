@@ -43,13 +43,13 @@ void lightSetNumLights(udword numLights)
 
 struct
 {
-    char      *name;
+    const char *name;
     lightinfo *light;
 }
 lightNameToInfoTable[] =
 {
     { "default", &lightDefaultLight   },
-    
+
     { "player0", &lightPlayerLight[0] },
     { "player1", &lightPlayerLight[1] },
     { "player2", &lightPlayerLight[2] },
@@ -58,7 +58,7 @@ lightNameToInfoTable[] =
     { "player5", &lightPlayerLight[5] },
     { "player6", &lightPlayerLight[6] },
     { "player7", &lightPlayerLight[7] },
-    
+
     { NULL,      NULL                 }
 };
 
@@ -66,9 +66,9 @@ static lightinfo *currentLight;
 static lightinfo currentLight1;
 static GLfloat lightAmbient[4] = {0.2f, 0.2f, 0.2f, 1.0f};
 
-static void lightPositionRead  (char *directory, char *field, void *dataToFillIn);
-static void lightTypeSet       (char *directory, char *field, void *dataToFillIn);
-static void lightPropertiesRead(char *directory, char *field, void *dataToFillIn);
+static void lightPositionRead  (const char *directory, char *field, void *dataToFillIn);
+static void lightTypeSet       (const char *directory, char *field, void *dataToFillIn);
+static void lightPropertiesRead(const char *directory, char *field, void *dataToFillIn);
 
 static scriptEntry lightScriptTable[] =
 {
@@ -77,7 +77,7 @@ static scriptEntry lightScriptTable[] =
     { "diffuse",   lightPropertiesRead, &lightDefaultLight.diffuse  },
     { "specular",  lightPropertiesRead, &lightDefaultLight.specular },
     { "position",  lightPositionRead,   NULL                        },
-    
+
     { NULL,        NULL,                NULL                        }
 };
 
@@ -86,7 +86,7 @@ char lightCurrentLighting[PATH_MAX];
 /*=============================================================================
     Private script-parsing functions:
 =============================================================================*/
-static void lightPositionRead(char *directory,char *field,void *dataToFillIn)
+static void lightPositionRead(const char *directory,char *field,void *dataToFillIn)
 {
     sdword nScanned;
     nScanned = sscanf(field, "%f,%f,%f,%f", &lightPosition.x, &lightPosition.y, &lightPosition.z, &lightPosition.w);
@@ -94,7 +94,7 @@ static void lightPositionRead(char *directory,char *field,void *dataToFillIn)
     dbgAssertOrIgnore(nScanned == 4);
 }
 
-static void lightTypeSet(char *directory,char *field,void *dataToFillIn)
+static void lightTypeSet(const char *directory,char *field,void *dataToFillIn)
 {
     sdword index;
 
@@ -110,7 +110,7 @@ static void lightTypeSet(char *directory,char *field,void *dataToFillIn)
     dbgFatalf(DBG_Loc, "light type %s not known.", field);
 #endif
 }
-static void lightPropertiesRead(char *directory,char *field,void *dataToFillIn)
+static void lightPropertiesRead(const char *directory,char *field,void *dataToFillIn)
 {
     sdword nScanned;
     real32 red, green, blue;
@@ -290,7 +290,7 @@ void _inplace_glify(GLfloat* v)
     Outputs     : alters global variables
     Return      :
 ----------------------------------------------------------------------------*/
-void lightParseHSF(char* fileName)
+void lightParseHSF(const char* fileName)
 {
     udword numLights = 1;
     static char lastFileName[128];

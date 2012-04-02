@@ -2,6 +2,7 @@
 #include "include.h"
 #include <cstring>
 #include <vector>
+#include <GLES2/gl2.h>
 
 class Buffer
 {
@@ -11,13 +12,13 @@ public:
 	{
 		std::memcpy(target, source, sizeof(T) * size);
 	}
-	
+
 	template<typename T, GLubyte SIZE>
 	static void Copy(const T* source, T* target)
 	{
 		Copy<T>(source, target, SIZE);
 	}
-	
+
 	template<typename T1, typename T2>
 	static void Copy(const T1* source, T2* target, GLubyte size)
 	{
@@ -27,7 +28,7 @@ public:
 			*target = *source;
 		}
 	}
-	
+
 	template<typename T>
 	static void Copy(const T* source, std::vector<T>& target, GLubyte size)
 	{

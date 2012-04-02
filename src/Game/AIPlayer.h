@@ -407,7 +407,7 @@ void aiplayerShutdown(void);
 #define aiplayerLog(x)    {;}
 #endif
 
-void aiplayerDebugLog(uword playerIndex, char *format, ...);
+void aiplayerDebugLog(uword playerIndex, const char *format, ...);
 
 void aiplayerShipDied(ShipPtr ship);
 

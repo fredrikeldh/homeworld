@@ -13,6 +13,12 @@ namespace gles1
 	enum dummy{};
 }
 
+template<typename T>
+T& Get()
+{
+	return *new T();
+}
+
 using namespace gles1;
 #endif //__cplusplus
 #endif //_HW_NAMESPACE_

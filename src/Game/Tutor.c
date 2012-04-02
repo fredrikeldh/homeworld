@@ -52,8 +52,8 @@
 bool FalkosFuckedUpTutorialFlag = FALSE;
 
 // Function declarations
-void utySinglePlayerGameStart(char *name, featom *atom);
-char *tutGetNextTextLine(char *pDest, char *pString, long Width, int pDestSize);
+void utySinglePlayerGameStart(const char *name, featom *atom);
+const char *tutGetNextTextLine(char *pDest, const char *pString, long Width, int pDestSize);
 udword tutProcessNextButton(struct tagRegion *reg, smemsize ID, udword event, udword data);
 udword tutProcessBackButton(struct tagRegion *reg, smemsize ID, udword event, udword data);
 udword uicButtonProcess(regionhandle region, smemsize ID, udword event, udword data);
@@ -255,7 +255,7 @@ featom tutBackAtom =
 #define TUT_REST_OFF    7
 #define TUT_REST_MOUSE  8
 
-char *tutImageList[TUT_NUM_IMAGES] =
+const char *tutImageList[TUT_NUM_IMAGES] =
 {
     "Tut_Next_On",
     "Tut_Next_Off",
@@ -292,7 +292,7 @@ char *tutImageList[TUT_NUM_IMAGES] =
     ""
 };
 
-char *tutFrenchImageList[TUT_NUM_IMAGES] =
+const char *tutFrenchImageList[TUT_NUM_IMAGES] =
 {
     "Tut_fr_Next_On",
     "Tut_fr_Next_Off",
@@ -329,7 +329,7 @@ char *tutFrenchImageList[TUT_NUM_IMAGES] =
     ""
 };
 
-char *tutGermanImageList[TUT_NUM_IMAGES] =
+const char *tutGermanImageList[TUT_NUM_IMAGES] =
 {
     "Tut_ger_Next_On",
     "Tut_ger_Next_Off",
@@ -366,7 +366,7 @@ char *tutGermanImageList[TUT_NUM_IMAGES] =
     ""
 };
 
-char *tutSpanishImageList[TUT_NUM_IMAGES] =
+const char *tutSpanishImageList[TUT_NUM_IMAGES] =
 {
     "Tut_sp_Next_On",
     "Tut_sp_Next_Off",
@@ -403,7 +403,7 @@ char *tutSpanishImageList[TUT_NUM_IMAGES] =
     ""
 };
 
-char *tutItalianImageList[TUT_NUM_IMAGES] =
+const char *tutItalianImageList[TUT_NUM_IMAGES] =
 {
     "Tut_it_Next_On",
     "Tut_it_Next_Off",
@@ -441,7 +441,7 @@ char *tutItalianImageList[TUT_NUM_IMAGES] =
 };
 
 // This string structure must match the tutGameEnableFlags struct
-char *tutGameEnableString[] =
+const char *tutGameEnableString[] =
 {
     "KASFrame",     // FOR INTERAL USE ONLY
     "GameRunning",
@@ -503,7 +503,7 @@ color       tutTexture[TUT_NUM_IMAGES];
 lifheader   *tutImage[TUT_NUM_IMAGES];
 
 
-static char *tutTutorialNames[4] = {"", "Tutorial1"};
+static const char *tutTutorialNames[4] = {"", "Tutorial1"};
 
 void tutPreInitTutorial(char *dirfile, char *levelfile)
 {
@@ -535,7 +535,7 @@ void tutInitTutorial(char *dirfile, char *levelfile)
     }
 }
 
-void tutSaveLesson(sdword Num, char *pName)
+void tutSaveLesson(sdword Num, const char *pName)
 {
     collUpdateCollBlobs();
     collUpdateObjsInCollBlobs();
@@ -617,7 +617,7 @@ void tutLoadTutorialGame(void)
     tutFEContextMenuShipType = 0;
 }
 
-void tutTutorial1(char *name, featom *atom)
+void tutTutorial1(const char *name, featom *atom)
 {
     static bool beginning;
 
@@ -654,7 +654,7 @@ void tutTutorial1(char *name, featom *atom)
     Outputs     :
     Return      : pointer to pointer.  Quaint isn't it?
 ----------------------------------------------------------------------------*/
-tutpointer *tutPointerAllocate(char *name, sdword type)
+tutpointer *tutPointerAllocate(const char *name, sdword type)
 {
     sdword index, freeIndex = -1;
 
@@ -675,7 +675,7 @@ tutpointer *tutPointerAllocate(char *name, sdword type)
             freeIndex = index;
         }
     }
-    
+
 #ifdef HW_BUILD_FOR_DEBUGGING
     if (freeIndex < 0)
     {
@@ -688,7 +688,7 @@ tutpointer *tutPointerAllocate(char *name, sdword type)
     return(&tutPointer[freeIndex]);
 }
 
-void tutSetPointerTargetXY(char *name, sdword x, sdword y)
+void tutSetPointerTargetXY(const char *name, sdword x, sdword y)
 {
     tutpointer *pointer = tutPointerAllocate(name, TUT_PointerTypeXY);
     pointer->x = x;
@@ -696,40 +696,40 @@ void tutSetPointerTargetXY(char *name, sdword x, sdword y)
 }
 
 //sets the tutorial pointer relative to the right side of the screen
-void tutSetPointerTargetXYRight(char *name, sdword x, sdword y)
+void tutSetPointerTargetXYRight(const char *name, sdword x, sdword y)
 {
     tutSetPointerTargetXY(name, MAIN_WindowWidth+x-640, y);
 }
 
 //sets the tutorial pointer relative to the bottom right corner of the screen
-void tutSetPointerTargetXYBottomRight(char *name, sdword x, sdword y)
+void tutSetPointerTargetXYBottomRight(const char *name, sdword x, sdword y)
 {
     tutSetPointerTargetXY(name, MAIN_WindowWidth+x-640, MAIN_WindowHeight+y-480);
 }
 
-void tutSetPointerTargetXYTaskbar(char *name, sdword x, sdword y)
+void tutSetPointerTargetXYTaskbar(const char *name, sdword x, sdword y)
 {
     tutSetPointerTargetXY(name, feResRepositionCentredX(x), MAIN_WindowHeight+y-480);
 }
 
-void tutSetPointerTargetXYFE(char *name, sdword x, sdword y)
+void tutSetPointerTargetXYFE(const char *name, sdword x, sdword y)
 {
     tutSetPointerTargetXY(name, feResRepositionCentredX(x), feResRepositionCentredY(y));
 }
 
-void tutSetPointerTargetShip(char *name, ShipPtr ship)
+void tutSetPointerTargetShip(const char *name, ShipPtr ship)
 {
     tutpointer *pointer = tutPointerAllocate(name, TUT_PointerTypeShip);
     pointer->ship = ship;
 }
 
-void tutSetPointerTargetShipSelection(char *name, SelectCommand *ships)
+void tutSetPointerTargetShipSelection(const char *name, SelectCommand *ships)
 {
     tutpointer *pointer = tutPointerAllocate(name, TUT_PointerTypeShips);
     pointer->selection = ships;
 }
 
-void tutSetPointerTargetShipHealth(char *name, ShipPtr ship)
+void tutSetPointerTargetShipHealth(const char *name, ShipPtr ship)
 {
     tutpointer *pointer = tutPointerAllocate(name, TUT_PointerTypeShipHealth);
     pointer->ship = ship;
@@ -737,7 +737,7 @@ void tutSetPointerTargetShipHealth(char *name, ShipPtr ship)
     tutPointerShipHealthRect = &pointer->rect;
 }
 
-void tutSetPointerTargetShipGroup(char *name, ShipPtr ship)
+void tutSetPointerTargetShipGroup(const char *name, ShipPtr ship)
 {
     tutpointer *pointer = tutPointerAllocate(name, TUT_PointerTypeShipGroup);
     pointer->ship = ship;
@@ -765,7 +765,7 @@ void tutPlayerShipDied(ShipPtr ship)
     }
 }
 
-void tutSetPointerTargetFERegion(char *name, char *pAtomName)
+void tutSetPointerTargetFERegion(const char *name, const char *pAtomName)
 {
     regionhandle    reg;
 
@@ -781,7 +781,7 @@ void tutSetPointerTargetFERegion(char *name, char *pAtomName)
     }
 }
 
-void tutSetPointerTargetRect(char *name, sdword x0, sdword y0, sdword x1, sdword y1)
+void tutSetPointerTargetRect(const char *name, sdword x0, sdword y0, sdword x1, sdword y1)
 {
     tutpointer *pointer = tutPointerAllocate(name, TUT_PointerTypeRegion);
     pointer->rect.x0 = x0;
@@ -790,7 +790,7 @@ void tutSetPointerTargetRect(char *name, sdword x0, sdword y0, sdword x1, sdword
     pointer->rect.y1 = y1;
 }
 
-void tutSetPointerTargetAIVolume(char *name, Volume *volume)
+void tutSetPointerTargetAIVolume(const char *name, Volume *volume)
 {
     if (volume != NULL)
     {
@@ -806,7 +806,7 @@ void tutSetPointerTargetAIVolume(char *name, Volume *volume)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void tutRemovePointerByName(char *name)
+void tutRemovePointerByName(const char *name)
 {
     sdword index;
 
@@ -952,11 +952,12 @@ void tutDeallocateRootRegion(void)
 
 // This function will accept a string to be displayed in the current text box.
 // The current text box is set up with the tutSetTextDisplayBox() function.
-void tutShowText(char *szText)
+void tutShowText(const char *szText)
 {
 fonthandle  currFont;
 sdword      Height;
-char        Line[256], *pString;
+char        Line[256];
+	const char *pString;
 
     if(tutTextVisible)
         tutHideText();
@@ -1043,7 +1044,7 @@ bool tutIsspace(char c)
 
 // This function gets a line of text that is up to Width pixels wide, and returns a
 // pointer to the start of the next line.  Assumes the current font is set.
-char *tutGetNextTextLine(char *pDest, char *pString, long Width, int pDestSize)
+const char *tutGetNextTextLine(char *pDest, const char *pString, long Width, int pDestSize)
 {
 long    WordLen, StringLen;
 char    *pstr;
@@ -1427,7 +1428,7 @@ shipsCase:
 // This function actually handles drawing the text in the region added by tutShowText
 void tutDrawTextFunction(regionhandle reg)
 {
-char    *pString;
+const char    *pString;
 char    Line[256];
 long    x, y, Width;
 fonthandle  currFont;
@@ -1657,9 +1658,9 @@ void tutDrawBackButtonFunction(regionhandle reg)
 
 
 // Returns the next "StartFrom" value, and copies the token into pDest
-long GetNextCommaDelimitedToken(char *pString, char *pDest, long StartFrom)
+long GetNextCommaDelimitedToken(const char *pString, char *pDest, long StartFrom)
 {
-static char *pSrc = NULL;
+static const char *pSrc = NULL;
 long Index = 0, Len;
 
     if(pString)
@@ -1692,7 +1693,7 @@ long Index = 0, Len;
     return Index;
 }
 
-long tutFindTokenIndex(char *pTokenList[], char *pToken)
+long tutFindTokenIndex(const char *pTokenList[], char *pToken)
 {
 long    i;
 
@@ -1707,7 +1708,7 @@ long    i;
     return -1;
 }
 
-long tutParseImagesIntoIndices(char *szImages)
+long tutParseImagesIntoIndices(const char *szImages)
 {
 char    szToken[256];
 long    StrIndex, Count, TokenIndex;
@@ -1737,7 +1738,7 @@ This function will accept a comma delimited list of images to be displayed, in
 order of appearance in this list, from left to right on the screen.  The image
 list is included in the header.
 */
-void tutShowImages(char *szImages)
+void tutShowImages(const char *szImages)
 {
 long    ImageCount;
 
@@ -1976,7 +1977,7 @@ long    i;
         tutSetFlagIndex(i, 0);
 }
 
-void tutSetEnableFlags(char *pFlagString, long Val)
+void tutSetEnableFlags(const char *pFlagString, long Val)
 {
 char    szToken[256];
 long    StrIndex, TokenIndex;
@@ -1990,7 +1991,7 @@ long    StrIndex, TokenIndex;
     }
 }
 
-void tutBuilderSetRestrictions(char *pShipTypes, bool bRestricted)
+void tutBuilderSetRestrictions(const char *pShipTypes, bool bRestricted)
 {
 ShipType    st;
 char    szToken[256];
@@ -2047,7 +2048,7 @@ long i, j;
     return j;
 }
 
-sdword tutSelectedContainsShipTypes(char *pShipTypes)
+sdword tutSelectedContainsShipTypes(const char *pShipTypes)
 {
 ShipType    st;
 char    szToken[256];
@@ -2067,7 +2068,7 @@ long    StrIndex, Count;
     return Count;
 }
 
-void tutGameMessage(char *eventName)
+void tutGameMessage(const char *eventName)
 {
     if (!tutorial)
     {
@@ -2085,16 +2086,16 @@ void tutGameMessage(char *eventName)
     }
 }
 
-bool tutGameSentMessage(char *eventNames)
+bool tutGameSentMessage(const char *eventNames)
 {
     bool in_queue = tutGameMessageInQueue(eventNames);
 
     tutResetGameMessageQueue();
-    
+
     return in_queue;
 }
 
-bool tutGameMessageInQueue(char *eventNames)
+bool tutGameMessageInQueue(const char *eventNames)
 {
     udword  i;
     char    szToken[256];
@@ -2121,7 +2122,7 @@ void tutResetGameMessageQueue(void)
     tutGameMessageIndex = 0;
 }
 
-sdword tutContextMenuDisplayedForShipType(char *pShipType)
+sdword tutContextMenuDisplayedForShipType(const char *pShipType)
 {
     ShipType st;
 
@@ -2135,7 +2136,7 @@ void tutResetContextMenuShipTypeTest(void)
 }
 
 
-sdword tutBuildManagerShipTypeInBatchQueue(char *pShipType)
+sdword tutBuildManagerShipTypeInBatchQueue(const char *pShipType)
 {
     long        i;
     ShipType    st;
@@ -2150,7 +2151,7 @@ sdword tutBuildManagerShipTypeInBatchQueue(char *pShipType)
     return 0;
 }
 
-sdword tutBuildManagerShipTypeInBuildQueue(char *pShipType)
+sdword tutBuildManagerShipTypeInBuildQueue(const char *pShipType)
 {
     long        index;
     ShipType    st;
@@ -2192,7 +2193,7 @@ shipinprogress *cmSIP(udword index);
     Return      : TRUE or FALSE
 ----------------------------------------------------------------------------*/
 
-sdword tutBuildManagerShipTypeSelected(char *pShipType)
+sdword tutBuildManagerShipTypeSelected(const char *pShipType)
 {
     ShipType shiptype;
     shipinprogress *shipprog;
@@ -2229,7 +2230,7 @@ long    i;
 }
 
 
-sdword tutCameraFocusedOnShipType(char *pShipTypes)
+sdword tutCameraFocusedOnShipType(const char *pShipTypes)
 {
 char    szToken[256];
 long    StrIndex, Count;

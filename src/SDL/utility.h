@@ -152,18 +152,18 @@ extern char utyVoiceFilename[];
     Functions:
 =============================================================================*/
 //handles the message loop for fatal errors
-void utyFatalErrorWaitLoop(int exitCode);
+void utyFatalErrorWaitLoop(int exitCode) __attribute((noreturn));
 sdword utyNonFatalErrorWaitLoop(void);
 
 //startup/shutdown game systems
-char *utyGameSystemsPreInit(void);
-char *utyGameSystemsPreShutdown(void);
-char *utyGameSystemsInit(void);
-char *utyGameSystemsShutdown(void);
+const char *utyGameSystemsPreInit(void);
+const char *utyGameSystemsPreShutdown(void);
+const char *utyGameSystemsInit(void);
+const char *utyGameSystemsShutdown(void);
 
 udword utyCloseOK(regionhandle region, sdword ID, udword event, udword data);
 
-void gameStart(char *loadfilename);
+void gameStart(const char *loadfilename);
 void gameEnd(void);
 
 //query system timer and call task manager
@@ -178,9 +178,9 @@ void utyForceTopmost(bool bTopMost);
 //clip the mouse
 void utyClipMouse(sdword clip);
 
-void utyNewGameStart(char *name, featom *atom);
-void utyGameQuit(char *name, featom *atom);
-void utyGameQuitToMain(char *name, featom *atom);
+void utyNewGameStart(const char* name, featom* atom);
+void utyGameQuit(const char* name, featom* atom);
+void utyGameQuitToMain(const char* name, featom* atom);
 
 //load/save options from disk
 void utyOptionsFileRead(void);
@@ -195,7 +195,7 @@ void utyLoadMultiPlayerGameGivenFilename(char *filename);
 
 bool utyChangeResolution(sdword width, sdword height, sdword depth);
 
-bool utyBrowserExec(char *URL);
+bool utyBrowserExec(const char *URL);
 void utyGetFirstCDPath(char *szPath);
 
 //toggle key things

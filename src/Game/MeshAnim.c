@@ -586,7 +586,7 @@ sdword madAnimIndexFindByName(madheader *header, char *name)
     Outputs     :
     Return      : index of named mesh object, if -1 if not found
 ----------------------------------------------------------------------------*/
-sdword madGunBindingIndexFindByName(ShipStaticInfo *info, char *name)
+sdword madGunBindingIndexFindByName(ShipStaticInfo *info, const char *name)
 {
     sdword index;
     mhbinding *list = info->staticheader.LOD->level[0].hBindings;
@@ -641,7 +641,7 @@ bool madBindingFindCallback(meshdata *mesh, polygonobject *object, sdword iObjec
     Outputs     :
     Return      : index of first binding to match the name or -1 if not found in animation.
 ----------------------------------------------------------------------------*/
-sdword madBindingIndexFindByName(madheader *header, char *name)
+sdword madBindingIndexFindByName(madheader *header, const char *name)
 {
     /*
     sdword level;

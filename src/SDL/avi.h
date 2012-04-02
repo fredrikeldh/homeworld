@@ -36,9 +36,10 @@ extern bool utilPlayingIntro;
 
 
 int aviInit(void);
-bool aviPlay(char* filename);
+bool aviPlay(const char* filename);
 int aviStop(void);
 int aviCleanup(void);
+void aviIntroPlay(void);
 
 int aviGetSamples(void* pBuf, long* pNumSamples, long nBufSize);
 

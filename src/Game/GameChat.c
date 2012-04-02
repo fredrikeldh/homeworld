@@ -123,7 +123,7 @@ sdword          chatwidth;
     function prototypes:
 =============================================================================*/
 
-void gcInGameChatEntry(char *name, featom *atom);
+void gcInGameChatEntry(const char *name, featom *atom);
 void gcChatTextDraw(featom *atom, regionhandle region);
 
 fecallback      gcCallBack[]=
@@ -410,7 +410,7 @@ sdword gcParseChatEntry(char *message)
     Outputs     :
     Return      : void
 ----------------------------------------------------------------------------*/
-void gcInGameChatEntry(char *name, featom *atom)
+void gcInGameChatEntry(const char *name, featom *atom)
 {
     sdword user;
     chathistory *chat;

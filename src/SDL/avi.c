@@ -282,7 +282,7 @@ dbgMessagef("aviPlayLoop: numBytes= %d, width=%d height=%d", numBytes, pCodecCtx
 
     if (img_convert_ctx == NULL){
         img_convert_ctx = sws_getContext(pCodecCtx->width, pCodecCtx->height, pCodecCtx->pix_fmt, pCodecCtx->width, pCodecCtx->height, PIX_FMT_RGB24, SWS_BICUBIC, NULL, NULL, NULL);
-        
+
     }
 
     while(av_read_frame(pFormatCtx, &packet)>=0) {
@@ -303,7 +303,7 @@ dbgMessagef("aviPlayLoop: frameFinished=%d  packet.data=%x   packet.size=%d ", f
 //                (AVPicture*)pFrame, pCodecCtx->pix_fmt, pCodecCtx->width,
 //                pCodecCtx->height);
             sws_scale(img_convert_ctx, pFrame->data,pFrame->linesize, 0, pCodecCtx->height, pPictureRGB->data,pPictureRGB->linesize);
-            
+
 
             animAviDecode(frame);
 
@@ -343,10 +343,10 @@ dbgMessagef("aviPlayLoop: play_time=%d ", SDL_GetTicks() - start_time);
 
 #endif //  HW_ENABLE_MOVIES
 
-    
+
 }
 
-int aviStart(char* filename)
+int aviStart(const char* filename)
 {
 
 #if defined(HW_ENABLE_MOVIES) && !defined(EMSCRIPTEN)
@@ -374,7 +374,7 @@ dbgMessagef("sizeof  AVFormatContext = %d",sizeof(AVFormatContext));
 #endif
 
 #ifndef _X86_64 // Really, really, really must redo this. It's hideous. :(
-    if ((sizeof(AVFormatContext) == 3976 ) || (sizeof(AVFormatContext) == 3960 )){   //alligned variables 
+    if ((sizeof(AVFormatContext) == 3976 ) || (sizeof(AVFormatContext) == 3960 )){   //alligned variables
 	alignDoubleSet = 1;
     }
     else {                                   // 3964 should be un-aligned
@@ -562,7 +562,7 @@ void aviFileExit (void){
 #endif
 
 }
-	
+
 void aviSetScreen(int w, int h){
 
     int xOfs, yOfs;
@@ -577,11 +577,11 @@ dbgMessagef("aviSetScreen: xOfs=%d yOfs=%d", xOfs, yOfs);
 int aviStop(void)
 {
 #ifdef HW_ENABLE_MOVIES
-   
+
     SDL_Delay(500); // Give the audio time to stop
 
 #ifndef EMSCRIPTEN
-    avcodec_close(pCodecCtx); 
+    avcodec_close(pCodecCtx);
 #endif //EMSCRIPTEN
     aviFileExit();
 #endif
@@ -589,14 +589,14 @@ int aviStop(void)
 }
 
 
-bool aviPlay(char* filename)
+bool aviPlay(const char* filename)
 {
+    char  fullname[1024];
 #if AVI_VERBOSE_LEVEL >= 2
 dbgMessage("aviPlay:Entering");
 #endif
-    char  fullname[1024];
 
-//TODO  Include Windows file structure. 
+//TODO  Include Windows file structure.
 
     strcpy(fullname, filePathPrepend(filename, FF_HomeworldDataPath));
 
@@ -623,7 +623,7 @@ dbgMessage("aviPlay:Entering");
 
     aviStop();
     aviIsPlaying = FALSE;
-    
+
     return 1;
 }
 

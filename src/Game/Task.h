@@ -64,7 +64,7 @@ typedef struct
     udword ticksPerCall;        //period in ticks
     taskfunction function;      //task handler entry point
     taskContext context;        //current line & other task-specific data
-    char *name;                 //for debugging
+    const char *name;           //for debugging
 }
 taskdata;
 
@@ -195,7 +195,7 @@ void taskShutdown(void);
 
 #define taskStart(function, period, flags) \
     taskStartName(function, #function, (period), (flags))
-taskhandle taskStartName(taskfunction function, char *name,
+taskhandle taskStartName(taskfunction function, const char *name,
 			 real32 period, udword flags);
 void taskPause(taskhandle handle);
 void taskResume(taskhandle handle);

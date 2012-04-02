@@ -11,6 +11,7 @@
 #ifdef _WIN32
     #define WIN32_LEAN_AND_MEAN
     #include <windows.h>
+#elif defined(MAPIP)
 #else
     #include <sys/mman.h>
 #endif
@@ -38,10 +39,10 @@ static void _ssAppendScreenshotFilename(char* savePath)
     FILE        *imageFile;
     char         imagePath[PATH_MAX + 1],
                  imageName[256];
-                 
+
     time_t       now;
     struct tm    timeStruct;
-    
+
     unsigned int attempts          =  0,
                  sleep_time_secs   =  1,
                  max_attempts_secs = 10;
@@ -49,20 +50,22 @@ static void _ssAppendScreenshotFilename(char* savePath)
     while (1) {
         time(&now);
         timeStruct = *localtime(&now);
-        
+
         strftime(imageName, sizeof(imageName), "shot_%Y%m%d_%H%M%S_%Z.jpg", &timeStruct);
 
         strcpy(imagePath, savePath);
         strcat(imagePath, imageName);
-        
+
         // unable to open filename so presumably good name to use
         if ((imageFile = fopen(imagePath, "r")) == NULL) {
             break;
         }
-        
+
         fclose(imageFile);
         attempts++;
+#ifndef MAPIP
         sleep(sleep_time_secs);    // rapid screenshots possibly: wait and try again
+#endif
 
         // don't try for more than the allowed time
         if (attempts > max_attempts_secs / sleep_time_secs) {
@@ -140,6 +143,8 @@ void ssTakeScreenshot(void)
 #elif defined(EMSCRIPTEN)
 	NULL;
 	//FIXME: find way to make screenshot
+#elif defined(MAPIP)
+	malloc(3 * MAIN_WindowWidth * MAIN_WindowHeight);
 #else
         mmap(NULL, 3 * MAIN_WindowWidth * MAIN_WindowHeight,
             PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
@@ -148,15 +153,17 @@ void ssTakeScreenshot(void)
     if (screenshot_buffer != NULL)
     {
         int result = 0;
-        
+
         glReadPixels(0, 0, MAIN_WindowWidth, MAIN_WindowHeight,
             GL_RGB, GL_UNSIGNED_BYTE, screenshot_buffer);
-            
+
         _ssSaveScreenshot(screenshot_buffer);
 
 #ifdef _WIN32
         result = VirtualFree(buf, 0, MEM_RELEASE);
         dbgAssertOrIgnore(result);
+#elif defined(MAPIP)
+			free(screenshot_buffer);
 #else
         result = munmap(screenshot_buffer, 3*MAIN_WindowWidth*MAIN_WindowHeight);
         dbgAssertOrIgnore(result != -1);

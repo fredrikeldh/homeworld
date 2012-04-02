@@ -1,4 +1,5 @@
 
+#include "../gles2.h"
 #include "vertex.h"
 
 void glVertexPointer(
@@ -38,7 +39,7 @@ void VertexSetup::Pointer::Set(
 		SetError<GL_INVALID_VALUE>();
 		return;
 	}
-	
+
 	if
 	(
 		!Evaluate
@@ -50,7 +51,7 @@ void VertexSetup::Pointer::Set(
 		>(type)
 	)
 		return;
-	
+
 	this->size = size;
 	this->type = type;
 	this->stride = stride;
@@ -66,3 +67,6 @@ VertexSetup::Pointer::Pointer() :
 {
 }
 
+void VertexSetup::Pointer::ApplyTo(IRenderState*) {
+	//todo
+}

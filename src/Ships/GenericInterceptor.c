@@ -140,11 +140,11 @@ scriptStructEntry LIStaticScriptTable[] =
 {
     { "gunsFireTime",           scriptSetReal32CB,                   &(GenericInterceptorStatic.firetime),           &(GenericInterceptorStatic) },
 
-    { "flightmanTurnaround",    (void(*)(char *,char *,void*)) scriptSetFlightManTurnaroundCB,      &(GenericInterceptorStatic.flightmanProb),      &(GenericInterceptorStatic) },
-    { "flightmanAIP",           (void(*)(char *,char *,void*))scriptSetFlightManAIPCB,             &(GenericInterceptorStatic.flightmanProb),      &(GenericInterceptorStatic) },
-    { "flightmanEvasiveBehind", (void(*)(char *,char *,void*))scriptSetFlightManEvasiveBehindCB,   &(GenericInterceptorStatic.flightmanProb),      &(GenericInterceptorStatic) },
-    { "flightmanEvasiveFront",  (void(*)(char *,char *,void*))scriptSetFlightManEvasiveFrontCB,    &(GenericInterceptorStatic.flightmanProb),      &(GenericInterceptorStatic) },
-    { "flightmanEvasivePure",   (void(*)(char *,char *,void*))scriptSetFlightManEvasivePureCB,     &(GenericInterceptorStatic.flightmanProb),      &(GenericInterceptorStatic) },
+    { "flightmanTurnaround",    scriptSetFlightManTurnaroundCB,      &(GenericInterceptorStatic.flightmanProb),      &(GenericInterceptorStatic) },
+    { "flightmanAIP",           scriptSetFlightManAIPCB,             &(GenericInterceptorStatic.flightmanProb),      &(GenericInterceptorStatic) },
+    { "flightmanEvasiveBehind", scriptSetFlightManEvasiveBehindCB,   &(GenericInterceptorStatic.flightmanProb),      &(GenericInterceptorStatic) },
+    { "flightmanEvasiveFront",  scriptSetFlightManEvasiveFrontCB,    &(GenericInterceptorStatic.flightmanProb),      &(GenericInterceptorStatic) },
+    { "flightmanEvasivePure",   scriptSetFlightManEvasivePureCB,     &(GenericInterceptorStatic.flightmanProb),      &(GenericInterceptorStatic) },
     { "maxFlyAwayDist",         scriptSetReal32CB_ARRAY,             &(GenericInterceptorStatic.maxFlyAwayDist),     &(GenericInterceptorStatic) },
     { "breakRange",             scriptSetReal32CB_ARRAY,             &(GenericInterceptorStatic.breakRange),         &(GenericInterceptorStatic) },
     { "flyPastDist",            scriptSetReal32CB_ARRAY,             &(GenericInterceptorStatic.flyPastDist),        &(GenericInterceptorStatic) },
@@ -265,6 +265,7 @@ bool GenericInterceptorCanFire(Ship *ship,SpaceObjRotImpTarg *target,vector *tra
         return FALSE;
     }
 
+#if 0	// unused
     if(ship->aistateattack == STATE_WHIPSTRAFE1)
     {
         triggerHappy = 0.0f;
@@ -274,6 +275,7 @@ bool GenericInterceptorCanFire(Ship *ship,SpaceObjRotImpTarg *target,vector *tra
     {
         triggerHappy = NIS_TriggerHappyAngle;
     }
+#endif
 
     if(ship->staticinfo->madStatic != NULL)
     {

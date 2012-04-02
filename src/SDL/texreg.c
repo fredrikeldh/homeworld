@@ -74,7 +74,7 @@ sdword trRamPoolGranularity = 16;               //granularity - this is just a g
 color trTestPalette0[TR_PaletteLength];         //black-to-white palette
 bool trSpecialTextures = FALSE;
 sdword trSpecialTextureMode = TSM_None;
-char *trSpecialTextureName[TSM_NumberModes] =
+const char *trSpecialTextureName[TSM_NumberModes] =
 {"Normal", "Uncolored", "Base color buffer", "Stripe color buffer"};
 #endif
 
@@ -1499,7 +1499,7 @@ lifheader* tr64LifAdjustLoad(lifheader_disk *oldHeader, sdword oldLength)
 
     lenDiff =  sizeof(lifheader) - sizeof(lifheader_disk);
     newLength = oldLength + lenDiff;
-    
+
     newHeader =  (lifheader *)memAlloc (newLength,"",0);
 
 
@@ -1535,7 +1535,7 @@ lifheader* tr64LifAdjustLoad(lifheader_disk *oldHeader, sdword oldLength)
     Return      : pointer to the header of newly allocated file.
     Note        : the header of this image can be memfreed as it's all 1 big block
 ----------------------------------------------------------------------------*/
-lifheader *trLIFFileLoad(char *fileName, udword flags)
+lifheader *trLIFFileLoad(const char *fileName, udword flags)
 {
     lifheader *newHeader;
 
@@ -2553,7 +2553,7 @@ itFitFine:;
     Return      : pointer to the .lif listing
     Note        : the element list can be freed by memFree
 ----------------------------------------------------------------------------*/
-llelement *trListFileLoad(char *name, sdword *number)
+llelement *trListFileLoad(const char *name, sdword *number)
 {
     filehandle f;
     llfileheader header;
@@ -3028,7 +3028,7 @@ abortloading:
     trSizeSortList = NULL;                                  //and prevent any future references
     trSizeSortLength = 0;
     trCurrentHandle = TR_Invalid;
-#if MEM_ANALYSIS
+#if 0//MEM_ANALYSIS
     memAnalysisCreate();
 #endif
 
@@ -4013,7 +4013,7 @@ void trNoPalFilter(sdword bEnable, sdword handle)
     Return      :
 ----------------------------------------------------------------------------*/
 #if TR_TEXTURE_USAGE
-void trTextureUsageList(char *fileName)
+void trTextureUsageList(const char *fileName)
 {
     char *fileNameFull;
     FILE *fp;

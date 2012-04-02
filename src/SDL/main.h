@@ -15,13 +15,13 @@
 // -----------------------------------------------------------------------------
 // Make sure the game is being compiled with the correct build configuration
 // -----------------------------------------------------------------------------
- 
+
 #define HW_GAME_TYPE_COUNT    defined( HW_GAME_HOMEWORLD      ) \
                             + defined( HW_GAME_RAIDER_RETREAT ) \
                             + defined( HW_GAME_DEMO           )
 
 #define HW_BUILD_TYPE_COUNT   defined( HW_BUILD_FOR_DEBUGGING    ) \
-                            + defined( HW_BUILD_FOR_DISTRIBUTION ) 
+                            + defined( HW_BUILD_FOR_DISTRIBUTION )
 
 
 #if HW_GAME_TYPE_COUNT != 1
@@ -73,11 +73,11 @@ typedef struct
 {
     //bool visible;                               //is this option visible by using '/?'?
     udword flags;                               //flags for this entry.  See above for possible values.
-    char *parameter;                            //parameter string (begins with a slash)
-    bool (*function)(char *string);             //function to call, NULL if none.  Called after variable is set.
+    const char *parameter;                            //parameter string (begins with a slash)
+    bool (*function)(const char *string);             //function to call, NULL if none.  Called after variable is set.
     void *variableToModify;                     //variable to modify, NULL if none
     udword valueToSet;                          //value to set variable to
-    char *helpString;                           //string printed in help screen
+    const char *helpString;                           //string printed in help screen
 }
 commandoption;
 
@@ -143,7 +143,7 @@ void utyOptionsFileWrite(void);
 //renderer swapping functions
 bool mainLoadGL(char* data);
 bool mainLoadRGL(void);
-bool mainLoadParticularRGL(char* device, char* data);
+bool mainLoadParticularRGL(const char* device, const char* data);
 sdword mainActiveRenderer(void);
 bool mainReinitRGL(void);
 bool mainShutdownRenderer(void);

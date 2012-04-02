@@ -83,7 +83,7 @@ void frReloadGL(void);
 void frReloadFonts(void);
 
 //register a font
-fonthandle frFontRegister(char *fileName);
+fonthandle frFontRegister(const char *fileName);
 void frFontUnregister(fonthandle font);
 
 #endif

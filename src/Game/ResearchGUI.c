@@ -149,13 +149,13 @@ listwindowhandle rmTechListWindowHandle = NULL;
 
 // callbacks for ui elements
 
-void rmSelectAll(char *string, featom *atom);
-void rmClearAllLabs(char *string, featom *atom);
-void rmClearSelectedLab(char *string, featom *atom);
-void rmResearchItem(char *string, featom *atom);
-void rmExitMenu(char *string, featom *atom);
-void rmTechListWindow(char *string, featom *atom);
-void rmExtendedInfo(char *string, featom *atom);
+void rmSelectAll(const char *string, featom *atom);
+void rmClearAllLabs(const char *string, featom *atom);
+void rmClearSelectedLab(const char *string, featom *atom);
+void rmResearchItem(const char *string, featom *atom);
+void rmExitMenu(const char *string, featom *atom);
+void rmTechListWindow(const char *string, featom *atom);
+void rmExtendedInfo(const char *string, featom *atom);
 
 // callbacks for user draw areas
 
@@ -300,7 +300,7 @@ TechNames TechImageNames[]=
     {NULL                           }
 };
 
-char* TechImagePaths[]=
+const char* TechImagePaths[]=
 {
 #ifdef _WIN32
     "ResearchGUI\\Race1\\",
@@ -494,7 +494,7 @@ void rmDirtyTechList()
     }
 }
 
-void rmSelectAll(char *string, featom *atom)
+void rmSelectAll(const char *string, featom *atom)
 {
     sdword index;
 
@@ -533,7 +533,7 @@ void rmClearLab(sdword labindex)
     labbuttons[labindex].selected = FALSE;
 }
 
-void rmClearAllLabs(char *string, featom *atom)
+void rmClearAllLabs(const char *string, featom *atom)
 {
     sdword index;
 
@@ -545,7 +545,7 @@ void rmClearAllLabs(char *string, featom *atom)
 }
 
 
-void rmClearSelectedLab(char *string, featom *atom)
+void rmClearSelectedLab(const char *string, featom *atom)
 {
     sdword index;
    bool halted = FALSE;
@@ -578,7 +578,7 @@ void rmClearSelectedLab(char *string, featom *atom)
 }
 
 
-void rmResearchItem(char *string, featom *atom)
+void rmResearchItem(const char *string, featom *atom)
 {
     sdword          index;
     bool            found=FALSE;
@@ -657,7 +657,7 @@ void rmResearchItem(char *string, featom *atom)
 }
 
 
-void rmExitMenu(char *string, featom *atom)
+void rmExitMenu(const char *string, featom *atom)
 {
     rmRenderEverythingCounter = 0;
 
@@ -850,7 +850,7 @@ void rmDrawLabButton(LabPrintList *labprint, regionhandle region)
 
         rndPerspectiveCorrection(FALSE);
         primRectSolidTextured2(&rect);
-        
+
         // compute progress bar length
         percent = (real32)((1.0 - (real32)labprint->lab->topic->timeleft/(real32)research->techstat->TimeToComplete[labprint->lab->topic->techresearch]));
 
@@ -1449,7 +1449,7 @@ void rmTechTexturePrepare(sdword index)
     Outputs     : none
     Return      : void
 ----------------------------------------------------------------------------*/
-void rmExtendedInfo(char *string, featom *atom)
+void rmExtendedInfo(const char *string, featom *atom)
 {
     rmExtendedInfoActive = !rmExtendedInfoActive;
     rmDirtyTechInfo();
@@ -1716,7 +1716,7 @@ void rmTechImageDraw(featom *atom, regionhandle region)
 
                     rndPerspectiveCorrection(FALSE);
                     primRectSolidTextured2(&textureRect);
-                    
+
                     if (rmExtendedInfoActive)
                     {
                         primRectTranslucent2(&textureRect, colRGBA(0, 0, 0, 128));
@@ -1767,7 +1767,7 @@ void rmTechImageDraw(featom *atom, regionhandle region)
 
         rndPerspectiveCorrection(FALSE);
         primRectSolidTextured2(&textureRect);
-        
+
         if (rmExtendedInfoActive)
         {
             primRectTranslucent2(&textureRect, colRGBA(0, 0, 0, 128));
@@ -1912,7 +1912,7 @@ void rmDrawTechListItem(rectangle *rect, listitemhandle data)
     Outputs     : none
     Return      : void
 ----------------------------------------------------------------------------*/
-void rmTechListWindow(char *string, featom *atom)
+void rmTechListWindow(const char *string, featom *atom)
 {
     fonthandle oldfont;
     sdword     index;

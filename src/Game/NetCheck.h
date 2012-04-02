@@ -51,7 +51,7 @@ void netlogclose();
 
 void recPackRecordInit(void);
 void recPackRecordPacket(ubyte *packet,udword sizeofPacket);
-void recPackRecordPacketFilename(ubyte *packet,udword sizeofPacket,char *filename);
+void recPackRecordPacketFilename(ubyte *packet,udword sizeofPacket,const char *filename);
 ubyte *recPackPlayGetNextPacket(udword *sizeofPacket);
 void recPackPlayInit(void);
 void recPackPlayClose(void);
@@ -63,7 +63,7 @@ void recPackInGameStopCB(void);
 extern char OrigRecordPacketFileName[];
 
 #ifdef GOD_LIKE_SYNC_CHECKING
-void syncDebugDump(char *filename,sdword counter,bool save);
+void syncDebugDump(const char *filename,sdword counter,bool save);
 void industrialStrengthSyncDebugging(sdword FrameNumber);
 void netcheckIndustrialChecksum();
 void netReceivedSyncFromNonCaptain(void *checksums,udword frame,udword playerIndex);

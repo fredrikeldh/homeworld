@@ -170,7 +170,7 @@ bool GLOBAL_NO_TEXTURES = FALSE;
 
 // turn fullscreen off when debugging so that if the debugger kicks in
 // after a crash you don't find yourself locked out and have to reboot...
-#if defined(_MACOSX) && defined(HW_BUILD_FOR_DEBUGGING) 
+#if defined(_MACOSX) && defined(HW_BUILD_FOR_DEBUGGING)
 bool fullScreen = FALSE;
 #else
 bool fullScreen = TRUE;
@@ -328,7 +328,7 @@ int RegisterCommandLine(char *commandLine)
 /*-----------------------------------------------------------------------------
     Command-line parsing functions called when a certain flags are set
 -----------------------------------------------------------------------------*/
-bool HeapSizeSet(char *string)
+bool HeapSizeSet(const char *string)
 {
     sscanf(string, "%d", &MemoryHeapSize);
     if (MemoryHeapSize <= MEM_BlockSize * 2)
@@ -339,48 +339,48 @@ bool HeapSizeSet(char *string)
 }
 
 
-bool EnableFileLoadLog(char *string)
+bool EnableFileLoadLog(const char *string)
 {
     logfileClear(FILELOADSLOG);
     return TRUE;
 }
 
-bool SelectDevice(char* string)
+bool SelectDevice(const char* string)
 {
     selectedDEVICE = TRUE;
     return TRUE;
 }
 
-bool SelectMSGL(char* string)
+bool SelectMSGL(const char* string)
 {
     return TRUE;
 }
 
-bool EnableRasterSkip(char* string)
+bool EnableRasterSkip(const char* string)
 {
     mainRasterSkip = TRUE;
     return TRUE;
 }
 
-bool EnableDoubleIsTriple(char* string)
+bool EnableDoubleIsTriple(const char* string)
 {
     mainDoubleIsTriple = TRUE;
     return TRUE;
 }
 
-bool DisableFastFrontend(char* string)
+bool DisableFastFrontend(const char* string)
 {
     mainFastFrontend = FALSE;
     return TRUE;
 }
 
-bool EnableGatherStats(char *string)
+bool EnableGatherStats(const char* string)
 {
     noDefaultComputerPlayer = TRUE;
     return TRUE;
 }
 
-bool EnableShowStatsFancyFight(char *string)
+bool EnableShowStatsFancyFight(const char* string)
 {
     showStatsFancyFight = TRUE;
     strcpy(showStatsFancyFightScriptFile,string);
@@ -388,7 +388,7 @@ bool EnableShowStatsFancyFight(char *string)
     return TRUE;
 }
 
-bool EnableShowStatsFight(char *string)
+bool EnableShowStatsFight(const char* string)
 {
     sscanf(string, "%d", &showStatsFightI);
 
@@ -402,7 +402,7 @@ bool EnableShowStatsFight(char *string)
     return TRUE;
 }
 
-bool SpecifyLogFilePath(char *string)
+bool SpecifyLogFilePath(const char* string)
 {
     strcpy(logFilePath,string);
     return TRUE;
@@ -412,7 +412,7 @@ bool SpecifyLogFilePath(char *string)
 #if NIS_TEST
 extern char *nisTestNIS;
 extern char *nisTestScript;
-bool TestNISSet(char *string)
+bool TestNISSet(const char* string)
 {
     static char staticString[256];
 
@@ -422,7 +422,7 @@ bool TestNISSet(char *string)
     nisTestNIS = staticString;
     return TRUE;
 }
-bool TestNISScriptSet(char *string)
+bool TestNISScriptSet(const char* string)
 {
     static char staticString[256];
 
@@ -435,7 +435,7 @@ bool TestNISScriptSet(char *string)
 #endif
 
 #if MAIN_SENSOR_LEVEL
-bool InitialSensorLevelSet(char *string)
+bool InitialSensorLevelSet(const char* string)
 {
     sscanf(string, "%d", &initialSensorLevel);
     return TRUE;
@@ -443,14 +443,14 @@ bool InitialSensorLevelSet(char *string)
 #endif
 
 #if LOD_SCALE_DEBUG
-bool EnableLodScaleDebug(char *string)
+bool EnableLodScaleDebug(const char* string)
 {
     sscanf(string, "%f", &lodDebugScaleFactor);
     return TRUE;
 }
 #endif
 
-bool EnableDemoRecord(char *string)
+bool EnableDemoRecord(const char* string)
 {
     if (!demDemoPlaying)
     {
@@ -460,7 +460,7 @@ bool EnableDemoRecord(char *string)
     return TRUE;
 }
 
-bool EnableDemoPlayback(char *string)
+bool EnableDemoPlayback(const char* string)
 {
     if (!demDemoRecording)
     {
@@ -472,27 +472,27 @@ bool EnableDemoPlayback(char *string)
 }
 
 #if DEM_AUTO_DEMO
-bool AutoDemoWaitSet(char *string)
+bool AutoDemoWaitSet(const char* string)
 {
     sscanf(string , "%f", &demAutoDemoWaitTime);
     return TRUE;
 }
 #endif
 
-bool EnablePacketPlay(char *string)
+bool EnablePacketPlay(const char* string)
 {
     transferCaptaincyDisabled = TRUE;
     strcpy(recordPacketFileName, strtok(NULL, TS_Delimiters));
     return TRUE;
 }
 
-bool EnablePacketRecord(char *string)
+bool EnablePacketRecord(const char* string)
 {
     debugPacketRecord = TRUE;
     return TRUE;
 }
 
-bool EnableDebugSync(char *string)
+bool EnableDebugSync(const char* string)
 {
     recordPackets = TRUE;
     logEnable = LOG_VERBOSE;
@@ -500,13 +500,13 @@ bool EnableDebugSync(char *string)
     return TRUE;
 }
 
-bool EnableAutoSaveDebug(char *string)
+bool EnableAutoSaveDebug(const char *string)
 {
     autoSaveDebug = TRUE;
     return TRUE;
 }
 
-bool EnableMiniRes(char* string)
+bool EnableMiniRes(const char* string)
 {
     selectedRES = TRUE;
     mainWindowWidth  = 320;
@@ -514,7 +514,7 @@ bool EnableMiniRes(char* string)
     return TRUE;
 }
 
-bool EnableLoRes(char *string)
+bool EnableLoRes(const char *string)
 {
     selectedRES = TRUE;
     mainWindowWidth  = 640;
@@ -522,7 +522,7 @@ bool EnableLoRes(char *string)
     return TRUE;
 }
 
-bool EnableHiRes(char *string)
+bool EnableHiRes(const char *string)
 {
     selectedRES = TRUE;
     mainWindowWidth  = 800;
@@ -530,7 +530,7 @@ bool EnableHiRes(char *string)
     return TRUE;
 }
 
-bool EnableMegaRes(char *string)
+bool EnableMegaRes(const char *string)
 {
     selectedRES = TRUE;
     mainWindowWidth  = 1024;
@@ -538,7 +538,7 @@ bool EnableMegaRes(char *string)
     return TRUE;
 }
 
-bool EnableUltraRes(char* string)
+bool EnableUltraRes(const char* string)
 {
     selectedRES = TRUE;
     mainWindowWidth  = 1280;
@@ -546,7 +546,7 @@ bool EnableUltraRes(char* string)
     return TRUE;
 }
 
-bool EnableInsaneRes(char* string)
+bool EnableInsaneRes(const char* string)
 {
     selectedRES = TRUE;
     mainWindowWidth  = 1600;
@@ -554,21 +554,21 @@ bool EnableInsaneRes(char* string)
     return TRUE;
 }
 
-bool Enable32Bit(char* string)
+bool Enable32Bit(const char* string)
 {
     selectedRES = TRUE;
     MAIN_WindowDepth = 32;
     return TRUE;
 }
 
-bool Enable16Bit(char* string)
+bool Enable16Bit(const char* string)
 {
     selectedRES = TRUE;
     MAIN_WindowDepth = 16;
     return TRUE;
 }
 
-bool Enable24Bit(char* string)
+bool Enable24Bit(const char* string)
 {
     selectedRES = TRUE;
     MAIN_WindowDepth = 24;
@@ -578,7 +578,7 @@ bool Enable24Bit(char* string)
 #ifdef GOD_LIKE_SYNC_CHECKING
 
 #define GUESS_NUM_SHIPS     400
-bool syncDumpInit(char *string1)
+bool syncDumpInit(const char *string1)
 {
     if(sscanf(string1,"%d!%d",&syncDumpWindowSize,&syncDumpGranularity) != 2)
     {
@@ -796,14 +796,14 @@ commandoption commandOptions[] =
     entryFnParam("/BryceAndDrewAreGods", syncDumpInit,                  "=<X>!<Y>   X = size of SyncDumpWindow  Y = granularity in universe Frames"),
 #endif
 
-#if NIS_PRINT_INFO
+#ifdef NIS_PRINT_INFO
     entryComment("NIS OPTIONS"),    //-----------------------------------------------------
 #endif
 #if NIS_TEST
     entryFn("/testNIS" ,            TestNISSet,                         " <nisFile> - enables NIS testing mode using [nisFile]."),
     entryFn("/testNISScript",       TestNISScriptSet,                   " <scriptFile> - enables NIS testing mode using [scriptFile]."),
 #endif
-#if NIS_PRINT_INFO
+#ifdef NIS_PRINT_INFO
     entryVr("/nisCounter",          nisPrintInfo,TRUE,                  " - display nis time index info by default."),
     entryVr("/nisNoLockout",        nisNoLockout, TRUE,                 " - don't lock out the interface when playing an NIS."),
 #endif
@@ -861,7 +861,7 @@ commandoption commandOptions[] =
     Return      :
 ----------------------------------------------------------------------------*/
 char *gHelpString;
-void DebugHelpDefault(char *string)
+void DebugHelpDefault(const char* string)
 {
     sdword index, length;
 
@@ -1306,7 +1306,7 @@ void mainMemFree(void* pointer)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-bool mainStartupParticularRGL(char* device, char* data)
+bool mainStartupParticularRGL(const char* device, const char* data)
 {
     rndinitdata renderData;
 
@@ -1594,7 +1594,7 @@ bool mainLoadGL(char* data)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-bool mainLoadParticularRGL(char* device, char* data)
+bool mainLoadParticularRGL(const char* device, const char* data)
 {
     dbgMessagef("-- load rGL device %s --", device);
 
@@ -1692,9 +1692,9 @@ udword keyLanguageTranslate(udword wParam)
     Return      : Result of event handling (based on the event)
 ----------------------------------------------------------------------------*/
 //long FAR PASCAL WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+extern bool utilPlayingIntro;
 sdword HandleEvent (const SDL_Event* pEvent)
 {
-    extern bool utilPlayingIntro;
 
     /* Mouse button press times for double-click support. */
     static Uint32 mbDownTime[3] = { 0, 0, 0 };
@@ -1883,7 +1883,7 @@ sdword HandleEvent (const SDL_Event* pEvent)
                 }
             }
             break;
-            
+
         // Currently written with use of SpaceNavigator in mind (since that's
         // what I've got). Needs to be rewritten to be a little more generic
         // using mappings of registered joystick axes to functionality.
@@ -1896,28 +1896,28 @@ sdword HandleEvent (const SDL_Event* pEvent)
             {
                 break;
             }
-            
-            switch (pEvent->jaxis.axis) 
+
+            switch (pEvent->jaxis.axis)
             {
                 // zoom: +ve multiplier = zoom out
-                
-                case 1: // translation (+/-) forwards-backwards 
+
+                case 1: // translation (+/-) forwards-backwards
                     // camJoyZoom = -1 * pEvent->jaxis.value;
                     break;
-                    
+
                 case 2: // translation (+/-) up-down
                     camJoyZoom = -1 * pEvent->jaxis.value;
                     break;
 
                 // declination: +ve multiplier = move toward north pole
-                
+
                 case 3: // pitch (+/-) back-forward  - declination
                     camJoyDeclination = +1 * pEvent->jaxis.value;
                     break;
 
                 // right ascension: +ve multiplier = anti clockwise about z-axis
 
-                case 0: // translation (+/-) left-right 
+                case 0: // translation (+/-) left-right
                     // camJoyRightAscension = -1 * pEvent->jaxis.value;
                     break;
 
@@ -1929,16 +1929,16 @@ sdword HandleEvent (const SDL_Event* pEvent)
                     camJoyRightAscension = -1 * pEvent->jaxis.value;
                     break;
 
-                default: 
-                    break; 
+                default:
+                    break;
             }
 
-#if DEBUG_JOYSTICK_CAMERA            
+#if DEBUG_JOYSTICK_CAMERA
             dbgMessagef("joystick: dec(%6d) asc(%6d) zoom(%6d)", camJoyDeclination, camJoyRightAscension, camJoyZoom);
 #endif
-            break; 
-    
-    
+            break;
+
+
         case SDL_QUIT:
             if (mainActuallyQuit)
             {
@@ -1964,6 +1964,7 @@ sdword HandleEvent (const SDL_Event* pEvent)
     Outputs     :
     Return      : TRUE if successful, FALSE if not
 ----------------------------------------------------------------------------*/
+extern udword loadedDevcaps, loadedDevcaps2;
 static bool InitWindow ()
 {
     unsigned int rinDevCRC;
@@ -2021,7 +2022,6 @@ static bool InitWindow ()
     }
     else
     {
-        extern udword loadedDevcaps, loadedDevcaps2;
         //successfully re-using previous device,
         //re-use previous devcaps
         gDevcaps = loadedDevcaps;
@@ -2087,7 +2087,7 @@ int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
 */
 int main (int argc, char* argv[])
 {
-    static char *errorString = NULL;
+    static const char *errorString = NULL;
 #ifdef _WIN32
     static HANDLE hMapping;
 #endif

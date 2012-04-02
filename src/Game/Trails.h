@@ -159,7 +159,7 @@ void trailMove(shiptrail* trail, vector *delta);
 void trailMakeWobbly(void* vship, bool state);
 
 //parse a ship definition file and create a trailstatic structure
-trailstatic *trailStaticInfoParse(char *directory, char *fileName);
+trailstatic *trailStaticInfoParse(const char *directory, const char *fileName);
 void trailStaticDelete(trailstatic *tailInfo);
 
 //recolorize trails

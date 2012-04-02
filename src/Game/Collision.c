@@ -1463,7 +1463,7 @@ void collCheckShipDerelictColl(blob *thisBlob)
     real32 maxdistCollPossible = 0.0;
     real32 distcheck           = 0.0;
     real32 absdistcheck        = 0.0;
-    
+
     vector distvector;
 
 
@@ -2141,8 +2141,8 @@ passagain:
                         }
                         if(((Ship *)target)->shiptype == DefenseFighter)
                         {    //if target is a DefenseFighter
-                            DefenseFighterStatics *defensestatics;
-                            defensestatics = (DefenseFighterStatics *) ((ShipStaticInfo *)(((Ship *)target)->staticinfo))->custstatinfo;
+                            //DefenseFighterStatics *defensestatics;
+                            //defensestatics = (DefenseFighterStatics *) ((ShipStaticInfo *)(((Ship *)target)->staticinfo))->custstatinfo;
                             if(distsquared < ((Ship *)target)->staticinfo->bulletRangeSquared[((Ship *)target)->tacticstype])
                             {
                                 DefenseFighterReportBullet((Ship *)target, bullet);

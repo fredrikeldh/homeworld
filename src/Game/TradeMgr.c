@@ -127,8 +127,8 @@ bool tmTradeActive = FALSE;
 char        oldtline[650], tline[650];
 
 //callback tables for this screen
-void tmLeave(char *string, featom *atom);
-void tmAcceptOffer(char *string, featom *atom);
+void tmLeave(const char *string, featom *atom);
+void tmAcceptOffer(const char *string, featom *atom);
 void tmNumberRUsDraw(featom *atom, regionhandle region);
 void tmTechCostsDraw(featom *atom, regionhandle region);
 
@@ -136,7 +136,7 @@ void tmTechListDraw(featom *atom, regionhandle region);
 void tmTechImageDraw(featom *atom, regionhandle region);
 
 void tmDirtyTechInfo(void);
-void tmDialog(char *string, featom *atom);
+void tmDialog(const char *string, featom *atom);
 
 fecallback tmCallback[] =
 {
@@ -366,7 +366,7 @@ void tmDirtyTechInfo(void)
     Outputs     : Deletes all regions associated with trade manager
     Return      :
 ----------------------------------------------------------------------------*/
-void tmLeave(char *string, featom *atom)
+void tmLeave(const char *string, featom *atom)
 {                                                           //close the construction manager
 #if TM_VERBOSE_LEVEL >= 1
     dbgMessagef("Close trade manager.");
@@ -403,7 +403,7 @@ void tmLeave(char *string, featom *atom)
     Outputs     : Get the technologies
     Return      :
 ----------------------------------------------------------------------------*/
-void tmAcceptOffer(char *string, featom *atom)
+void tmAcceptOffer(const char *string, featom *atom)
 {
     udword price;
 
@@ -1243,7 +1243,7 @@ void tmTechInit(void)
 extern bool rmGUIActive;
 void rmUpdateTechList(void);
 
-void AllowPlayerToResearch(char *techname)
+void AllowPlayerToResearch(const char *techname)
 {
     TechnologyType tech = StrToTechType(techname);
 
@@ -1256,44 +1256,44 @@ void AllowPlayerToResearch(char *techname)
         tmTechResearchable[tech] = TRUE;
 }
 
-void AllowPlayerToPurchase(char *techname)
+void AllowPlayerToPurchase(const char *techname)
 {
    TechnologyType tech = StrToTechType(techname);
    if (tmTechForSale[tech] != TM_TECH_IS_ALREADY_OWNED) tmTechForSale[tech] = TM_TECH_IS_FOR_SALE;
 }
 
-void PlayerAcquiredTechnology(char *techname)
+void PlayerAcquiredTechnology(const char *techname)
 {
    TechnologyType tech = StrToTechType(techname);
    tmTechForSale[tech] = TM_TECH_IS_ALREADY_OWNED;
    rmAddTechToPlayer(universe.curPlayerPtr, ((udword)1)<<tech);
 }
 
-sdword CanPlayerResearch(char *techname)
+sdword CanPlayerResearch(const char *techname)
 {
    TechnologyType tech = StrToTechType(techname);
    return (tmTechResearchable[tech]);
 }
 
-sdword CanPlayerPurchase(char *techname)
+sdword CanPlayerPurchase(const char *techname)
 {
    TechnologyType tech = StrToTechType(techname);
    return (tmTechForSale[tech] == TM_TECH_IS_FOR_SALE);
 }
 
-sdword DoesPlayerHave(char *techname)
+sdword DoesPlayerHave(const char *techname)
 {
    TechnologyType tech = StrToTechType(techname);
    return (tmTechForSale[tech] == TM_TECH_IS_ALREADY_OWNED);
 }
 
-sdword GetBaseTechnologyCost(char *techname)
+sdword GetBaseTechnologyCost(const char *techname)
 {
    TechnologyType tech = StrToTechType(techname);
    return (tmTechPrice[tech]);
 }
 
-void SetBaseTechnologyCost(char *techname, sdword cost)
+void SetBaseTechnologyCost(const char *techname, sdword cost)
 {
    TechnologyType tech = StrToTechType(techname);
    tmTechPrice[tech] = cost;
@@ -1311,7 +1311,7 @@ bool tmTraderGUIActive(void)
     return tmTradeActive;
 }
 
-void tmSetDialog(sdword phrasenum, char *sentence)
+void tmSetDialog(sdword phrasenum, const char *sentence)
 {
     if (tmKASDialog[phrasenum])
     {

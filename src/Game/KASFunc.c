@@ -124,7 +124,7 @@ void kasfMissionCompleted(void)
         // if you want to finish a level without hyperspacing, you put the stuff that happens here
         speechEventCleanup();
         singlePlayerMissionCompleteCB();
-        
+
         animAviPlay(spGetCurrentMission(), spGetNextMission());
     }
 }
@@ -146,7 +146,7 @@ void kasfFadeToWhite(void)
 //
 //  for scoping symbol names
 //
-static void kasfScopeName(char *scopedName, char *name)
+static void kasfScopeName(char *scopedName, const char *name)
 {
     if (!name || strlen(name) < 2)
         scopedName[0] = 0;
@@ -161,14 +161,14 @@ static void kasfScopeName(char *scopedName, char *name)
         strcpy(scopedName, name);
 }
 
-void kasfVarCreate(char *name)
+void kasfVarCreate(const char *name)
 {
     char scopedName[AIVAR_LABEL_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
     kasfScopeName(scopedName, name);
     aivarCreate(scopedName);
 }
 
-void kasfVarCreateSet(char *name, sdword value)
+void kasfVarCreateSet(const char *name, sdword value)
 {
     char scopedName[AIVAR_LABEL_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
     kasfScopeName(scopedName, name);
@@ -176,14 +176,14 @@ void kasfVarCreateSet(char *name, sdword value)
     aivarValueSet(aivarFind(scopedName), value);
 }
 
-void kasfVarValueSet(char *name, sdword value)
+void kasfVarValueSet(const char *name, sdword value)
 {
     char scopedName[AIVAR_LABEL_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
     kasfScopeName(scopedName, name);
     aivarValueSet(aivarFind(scopedName), value);
 }
 
-void kasfVarValueInc(char *name)
+void kasfVarValueInc(const char *name)
 {
     AIVar *var;
     char scopedName[AIVAR_LABEL_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
@@ -192,7 +192,7 @@ void kasfVarValueInc(char *name)
     aivarValueSet(var, aivarValueGet(var) + 1);
 }
 
-void kasfVarValueDec(char *name)
+void kasfVarValueDec(const char *name)
 {
     AIVar *var;
     char scopedName[AIVAR_LABEL_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
@@ -201,89 +201,89 @@ void kasfVarValueDec(char *name)
     aivarValueSet(var, aivarValueGet(var) - 1);
 }
 
-sdword kasfVarValueGet(char *name)
+sdword kasfVarValueGet(const char *name)
 {
     char scopedName[AIVAR_LABEL_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
     kasfScopeName(scopedName, name);
     return aivarValueGet(aivarFind(scopedName));
 }
 
-void kasfVarDestroy(char *name)
+void kasfVarDestroy(const char *name)
 {
     char scopedName[AIVAR_LABEL_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
     kasfScopeName(scopedName, name);
     aivarDestroy(aivarFind(scopedName));
 }
 
-void kasfCommandMessage(char *message)
+void kasfCommandMessage(const char *message)
 {
     clCommandMessage(message);
 }
 
-void kasfTimerCreate(char *name)
+void kasfTimerCreate(const char *name)
 {
     char scopedName[TIMER_NAME_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
     kasfScopeName(scopedName, name);
     timTimerCreate(scopedName);
 }
 
-void kasfTimerSet(char *name, sdword duration)
+void kasfTimerSet(const char *name, sdword duration)
 {
     char scopedName[TIMER_NAME_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
     kasfScopeName(scopedName, name);
     timTimerSet(scopedName, duration);
 }
 
-void kasfTimerStart(char *name)
+void kasfTimerStart(const char *name)
 {
     char scopedName[TIMER_NAME_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
     kasfScopeName(scopedName, name);
     timTimerStart(scopedName);
 }
 
-void kasfTimerCreateSetStart(char *name, sdword duration)
+void kasfTimerCreateSetStart(const char *name, sdword duration)
 {
     char scopedName[TIMER_NAME_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
     kasfScopeName(scopedName, name);
     timTimerCreateSetStart(scopedName, duration);
 }
 
-void kasfTimerStop(char *name)
+void kasfTimerStop(const char *name)
 {
     char scopedName[TIMER_NAME_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
     kasfScopeName(scopedName, name);
     timTimerStart(scopedName);
 }
 
-sdword kasfTimerRemaining(char *name)
+sdword kasfTimerRemaining(const char *name)
 {
     char scopedName[TIMER_NAME_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
     kasfScopeName(scopedName, name);
     return timTimerRemaining(scopedName);
 }
 
-sdword kasfTimerExpired(char *name)
+sdword kasfTimerExpired(const char *name)
 {
     char scopedName[TIMER_NAME_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
     kasfScopeName(scopedName, name);
     return timTimerExpired(scopedName);
 }
 
-sdword kasfTimerExpiredDestroy(char *name)
+sdword kasfTimerExpiredDestroy(const char *name)
 {
     char scopedName[TIMER_NAME_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
     kasfScopeName(scopedName, name);
     return timTimerExpiredDestroy(scopedName);
 }
 
-void kasfTimerDestroy(char *name)
+void kasfTimerDestroy(const char *name)
 {
     char scopedName[TIMER_NAME_MAX_LENGTH*2+2]; // allow for extra scope name -- this might be truncated
     kasfScopeName(scopedName, name);
     timTimerDestroy(scopedName);
 }
 
-sdword kasfMsgReceived(char *msg)
+sdword kasfMsgReceived(const char *msg)
 {
     // remove the need to pass a team ptr
     return aitMsgReceived(CurrentTeamP, msg);
@@ -587,12 +587,12 @@ void kasfPatrolActive(void)
     aimCreateActivePatrol(CurrentTeamP, AIT_SLOW_PATROL, FALSE, TRUE);
 }
 
-void kasfLog(char *string)
+void kasfLog(const char *string)
 {
     aiplayerLog((0,"KAS: %s", string));
 }
 
-void kasfLogInteger(char *string, sdword integer)
+void kasfLogInteger(const char *string, sdword integer)
 {
     char tempstr[256];
     char tempstr2[256];
@@ -1342,7 +1342,7 @@ sdword kasfMissionSkillGet(void)
     return CurrentMissionSkillLevel;
 }
 
-void kasfRequestShips(char *shipType, sdword numShips)
+void kasfRequestShips(const char *shipType, sdword numShips)
 {
     AITeam *teamp;
     ShipType st = StrToShipType(shipType);
@@ -1712,7 +1712,7 @@ sdword kasfUnderAttack(GrowSelection *attackers)
     return kasfUnderAttackElsewhere(CurrentTeamP, attackers);
 }
 
-sdword kasfShipsCountType(GrowSelection *ships, char *shipType)
+sdword kasfShipsCountType(GrowSelection *ships, const char *shipType)
 {
     sdword i, count = 0, numShips = ships->selection->numShips;
     ShipType st = StrToShipType(shipType);
@@ -1892,7 +1892,7 @@ sdword kasfTeamDockedReadyForLaunch(void)
 //
 //  send to all script teams
 //
-void kasfMsgSendAll(char *msg)
+void kasfMsgSendAll(const char *msg)
 {
     AITeam *teamp;
     sdword i;
@@ -1906,7 +1906,7 @@ void kasfMsgSendAll(char *msg)
     }
 }
 
-void kasfMsgSend(struct AITeam *team, char *msg)
+void kasfMsgSend(struct AITeam *team, const char *msg)
 {
     aitMsgSend(CurrentTeamP, team, msg);
 }
@@ -1917,7 +1917,7 @@ sdword kasfRUsEnemyCollected(void)
 }
 
 //  serves the "friendly" and "enemy" functions below
-static sdword kasfFindPlayersShipsOfType(GrowSelection *ships, char *shipType, sdword playerIndex)
+static sdword kasfFindPlayersShipsOfType(GrowSelection *ships, const char *shipType, sdword playerIndex)
 {
     Node *node;
     ShipType st = StrToShipType(shipType);
@@ -1953,19 +1953,19 @@ static sdword kasfFindPlayersShipsOfType(GrowSelection *ships, char *shipType, s
 }
 
 //  (enemy == human)
-sdword kasfFindEnemyShipsOfType(GrowSelection *ships, char *shipType)
+sdword kasfFindEnemyShipsOfType(GrowSelection *ships, const char *shipType)
 {
     return kasfFindPlayersShipsOfType(ships, shipType, 0);
 }
 
 //  (friendly == not human)
-sdword kasfFindFriendlyShipsOfType(GrowSelection *ships, char *shipType)
+sdword kasfFindFriendlyShipsOfType(GrowSelection *ships, const char *shipType)
 {
     return kasfFindPlayersShipsOfType(ships, shipType, 1);
 }
 
 //  serves the "friendly" and "enemy" functions below
-static sdword kasfFindPlayersShipsOfClass(GrowSelection *ships, char *shipClass, sdword playerIndex)
+static sdword kasfFindPlayersShipsOfClass(GrowSelection *ships, const char *shipClass, sdword playerIndex)
 {
     Node *node;
     ShipClass sc = StrToShipClass(shipClass);
@@ -2001,13 +2001,13 @@ static sdword kasfFindPlayersShipsOfClass(GrowSelection *ships, char *shipClass,
 }
 
 //  (enemy == human)
-sdword kasfFindEnemyShipsOfClass(GrowSelection *ships, char *shipClass)
+sdword kasfFindEnemyShipsOfClass(GrowSelection *ships, const char *shipClass)
 {
     return kasfFindPlayersShipsOfClass(ships, shipClass, 0);
 }
 
 //  (friendly == not human)
-sdword kasfFindFriendlyShipsOfClass(GrowSelection *ships, char *shipClass)
+sdword kasfFindFriendlyShipsOfClass(GrowSelection *ships, const char *shipClass)
 {
     return kasfFindPlayersShipsOfClass(ships, shipClass, 1);
 }
@@ -2112,7 +2112,7 @@ void kasfPopupTextDraw(void)
 //
 //  PETER: I think we can nuke this now, right?
 //
-void kasfPopupText(char *line)
+void kasfPopupText(const char *line)
 {
     sdword width;
     fonthandle fhSave;
@@ -2157,12 +2157,12 @@ void kasfPopupTextClear(void)
 //
 //  new fleet-intelligence style popup
 //
-void kasfPopup(char *text)
+void kasfPopup(const char *text)
 {
     fleetIntelligenceCreate(text, 1);
 }
 
-void kasfPopupInteger(char *text, sdword integer)
+void kasfPopupInteger(const char *text, sdword integer)
 {
     char tempstr[256];
 
@@ -2177,7 +2177,7 @@ void kasfPopupInteger(char *text, sdword integer)
 //
 //  new fleet-intelligence style objectives & popup
 //
-void kasfObjectiveCreate(char *label, char *briefText, char *fullText)
+void kasfObjectiveCreate(const char *label, const char *briefText, const char *fullText)
 {
     if ((fullText == NULL) || (fullText[0] == 0))
     {
@@ -2189,7 +2189,7 @@ void kasfObjectiveCreate(char *label, char *briefText, char *fullText)
     }
 }
 
-void kasfObjectiveCreateSecondary(char* label, char* briefText, char* fullText)
+void kasfObjectiveCreateSecondary(const char* label, const char* briefText, const char* fullText)
 {
     if ((fullText == NULL) || (fullText[0] == 0))
     {
@@ -2201,7 +2201,7 @@ void kasfObjectiveCreateSecondary(char* label, char* briefText, char* fullText)
     }
 }
 
-void kasfObjectiveSet(char *label, sdword status)
+void kasfObjectiveSet(const char *label, sdword status)
 {
     objectiveSet(label, status);
 }
@@ -2211,7 +2211,7 @@ void kasfObjectiveSet(char *label, sdword status)
 //    objectivePopupAll();
 //}
 
-sdword kasfObjectiveGet(char *label)
+sdword kasfObjectiveGet(const char *label)
 {
     return objectiveGet(label);
 }
@@ -2221,7 +2221,7 @@ sdword kasfObjectiveGetAll(void)
     return objectiveGetAll();
 }
 
-void kasfObjectiveDestroy(char *label)
+void kasfObjectiveDestroy(const char *label)
 {
     objectiveDestroy(label);
 }
@@ -2301,7 +2301,7 @@ sdword kasfShipsSelectFriendly(GrowSelection *newShips, GrowSelection *originalS
     return newShips->selection->numShips;
 }
 
-sdword kasfShipsSelectClass(GrowSelection *newShips, GrowSelection *originalShips, char *shipClass)
+sdword kasfShipsSelectClass(GrowSelection *newShips, GrowSelection *originalShips, const char *shipClass)
 {
     Ship *ship;
     sdword i, selected, sourceIsDest = FALSE;
@@ -2334,7 +2334,7 @@ sdword kasfShipsSelectClass(GrowSelection *newShips, GrowSelection *originalShip
     return newShips->selection->numShips;
 }
 
-sdword kasfShipsSelectType(GrowSelection *newShips, GrowSelection *originalShips, char *shipType)
+sdword kasfShipsSelectType(GrowSelection *newShips, GrowSelection *originalShips, const char *shipType)
 {
     Ship *ship;
     sdword i, selected, sourceIsDest = FALSE;
@@ -2822,7 +2822,7 @@ void kasfShipsSetRetaliation(GrowSelection *ships)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void kasfPingAddSingleShip(GrowSelection *ships, char *label)
+void kasfPingAddSingleShip(GrowSelection *ships, const char *label)
 {
     if (ships == NULL || ships->selection == NULL || ships->selection->ShipPtr[0] == NULL)
         return;
@@ -2838,7 +2838,7 @@ void kasfPingAddSingleShip(GrowSelection *ships, char *label)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void kasfPingAddShips(GrowSelection *ships, char *label)
+void kasfPingAddShips(GrowSelection *ships, const char *label)
 {
     if (ships == NULL || ships->selection == NULL || ships->selection->ShipPtr[0] == NULL)
         return;
@@ -2846,12 +2846,12 @@ void kasfPingAddShips(GrowSelection *ships, char *label)
     pingAnomalySelectionPingAdd(label, ships->selection);
 }
 
-void kasfPingAddPoint(hvector *point, char *label)
+void kasfPingAddPoint(hvector *point, const char *label)
 {
     pingAnomalyPositionPingAdd(label, (vector *)point);
 }
 
-void kasfPingRemove(char *label)
+void kasfPingRemove(const char *label)
 {
     pingAnomalyPingRemove(label);
 }
@@ -2953,12 +2953,12 @@ void kasfForceTaskbar()
 ----------------------------------------------------------------------------
 */
 
-void kasfBuilderRestrictShipTypes(char *shipTypes)
+void kasfBuilderRestrictShipTypes(const char *shipTypes)
 {
     tutBuilderSetRestrictions(shipTypes, 1);
 }
 
-void kasfBuilderUnrestrictShipTypes(char *shipTypes)
+void kasfBuilderUnrestrictShipTypes(const char *shipTypes)
 {
     tutBuilderSetRestrictions(shipTypes, 0);
 }
@@ -2979,7 +2979,7 @@ void kasfBuilderCloseIfOpen(void)
 }
 
 // figure out how to do this someday....
-void kasfForceBuildShipType(char *shipType)
+void kasfForceBuildShipType(const char *shipType)
 {
     ShipType st;
 
@@ -3010,7 +3010,7 @@ sdword kasfSelectNumSelected(void)
     return selSelected.numShips;
 }
 
-sdword kasfSelectIsSelectionShipType(sdword Index, char *shipType)
+sdword kasfSelectIsSelectionShipType(sdword Index, const char *shipType)
 {
 ShipType    st;
 
@@ -3018,37 +3018,37 @@ ShipType    st;
     return ((selSelected.numShips > Index) && selSelected.ShipPtr[Index]->shiptype == st);
 }
 
-sdword kasfSelectContainsShipTypes(char *shipTypes)
+sdword kasfSelectContainsShipTypes(const char *shipTypes)
 {
     return tutSelectedContainsShipTypes(shipTypes);
 }
 
-void kasfTutSetPointerTargetXY(char *name, sdword x, sdword y)
+void kasfTutSetPointerTargetXY(const char *name, sdword x, sdword y)
 {
     tutSetPointerTargetXY(name, x,y);
 }
 
-void kasfTutSetPointerTargetXYRight(char *name, sdword x, sdword y)
+void kasfTutSetPointerTargetXYRight(const char *name, sdword x, sdword y)
 {
     tutSetPointerTargetXYRight(name, x,y);
 }
 
-void kasfTutSetPointerTargetXYBottomRight(char *name, sdword x, sdword y)
+void kasfTutSetPointerTargetXYBottomRight(const char *name, sdword x, sdword y)
 {
     tutSetPointerTargetXYBottomRight(name, x,y);
 }
 
-void kasfTutSetPointerTargetXYTaskbar(char *name, sdword x, sdword y)
+void kasfTutSetPointerTargetXYTaskbar(const char *name, sdword x, sdword y)
 {
     tutSetPointerTargetXYTaskbar(name, x,y);
 }
 
-void kasfTutSetPointerTargetXYFE(char *name, sdword x, sdword y)
+void kasfTutSetPointerTargetXYFE(const char *name, sdword x, sdword y)
 {
     tutSetPointerTargetXYFE(name, x,y);
 }
 
-void kasfTutSetPointerTargetShip(char *name, GrowSelection *ships)
+void kasfTutSetPointerTargetShip(const char *name, GrowSelection *ships)
 {
     if(ships->selection->numShips > 0)
     {
@@ -3056,7 +3056,7 @@ void kasfTutSetPointerTargetShip(char *name, GrowSelection *ships)
     }
 }
 
-void kasfTutSetPointerTargetShipSelection(char *name, GrowSelection *ships)
+void kasfTutSetPointerTargetShipSelection(const char *name, GrowSelection *ships)
 {
     if(ships->selection->numShips > 0)
     {
@@ -3064,13 +3064,13 @@ void kasfTutSetPointerTargetShipSelection(char *name, GrowSelection *ships)
     }
 }
 
-void kasfTutSetPointerTargetShipHealth(char *name, GrowSelection *ships)
+void kasfTutSetPointerTargetShipHealth(const char *name, GrowSelection *ships)
 {
     if(ships->selection->numShips > 0)
         tutSetPointerTargetShipHealth(name, ships->selection->ShipPtr[0]);
 }
 
-void kasfTutSetPointerTargetShipGroup(char *name, GrowSelection *ships)
+void kasfTutSetPointerTargetShipGroup(const char *name, GrowSelection *ships)
 {
     if(ships->selection->numShips > 0)
     {
@@ -3078,22 +3078,22 @@ void kasfTutSetPointerTargetShipGroup(char *name, GrowSelection *ships)
     }
 }
 
-void kasfTutSetPointerTargetFERegion(char *name, char *pAtomName)
+void kasfTutSetPointerTargetFERegion(const char *name, const char *pAtomName)
 {
     tutSetPointerTargetFERegion(name, pAtomName);
 }
 
-void kasfTutSetPointerTargetRect(char *name, sdword x0, sdword y0, sdword x1, sdword y1)
+void kasfTutSetPointerTargetRect(const char *name, sdword x0, sdword y0, sdword x1, sdword y1)
 {
     tutSetPointerTargetRect(name, x0, y0, x1, y1);
 }
 
-void kasfTutSetPointerTargetAIVolume(char *name, Volume *volume)
+void kasfTutSetPointerTargetAIVolume(const char *name, Volume *volume)
 {
     tutSetPointerTargetAIVolume(name, volume);
 }
 
-void kasfTutRemovePointer(char *name)
+void kasfTutRemovePointer(const char *name)
 {
     tutRemovePointerByName(name);
 }
@@ -3117,7 +3117,7 @@ void kasfTutSetTextDisplayBoxFE(sdword x, sdword y, sdword width, sdword height)
     tutSetTextDisplayBox(x, y, width, height, FALSE);
 }
 
-void kasfTutShowText(char *szText)
+void kasfTutShowText(const char *szText)
 {
     tutShowText(szText);
 }
@@ -3157,12 +3157,12 @@ void kasfTutShowPrevButton(void)
     tutShowPrevButton();
 }
 
-void kasfTutSaveLesson(sdword Num, char *pName)
+void kasfTutSaveLesson(sdword Num, const char *pName)
 {
     tutSaveLesson(Num, pName);
 }
 
-void kasfTutShowImages(char *szImages)
+void kasfTutShowImages(const char *szImages)
 {
     tutShowImages(szImages);
 }
@@ -3182,12 +3182,12 @@ void kasfTutDisableEverything(void)
     tutDisableEverything();
 }
 
-void kasfTutEnableFlags(char *pFlags)
+void kasfTutEnableFlags(const char *pFlags)
 {
     tutSetEnableFlags(pFlags, 1);
 }
 
-void kasfTutDisableFlags(char *pFlags)
+void kasfTutDisableFlags(const char *pFlags)
 {
     tutSetEnableFlags(pFlags, 0);
 }
@@ -3197,7 +3197,7 @@ void kasfTutForceUnpaused(void)
     universePause = FALSE;
 }
 
-sdword kasfTutGameSentMessage(char *commandNames)
+sdword kasfTutGameSentMessage(const char *commandNames)
 {
     return tutGameSentMessage(commandNames);
 }
@@ -3207,7 +3207,7 @@ void kasfTutResetGameMessageQueue(void)
     tutResetGameMessageQueue();
 }
 
-sdword kasfTutContextMenuDisplayedForShipType(char *shipType)
+sdword kasfTutContextMenuDisplayedForShipType(const char *shipType)
 {
     return tutContextMenuDisplayedForShipType(shipType);
 }
@@ -3222,22 +3222,22 @@ void kasfTutRedrawEverything(void)
     bitSet(regRootRegion.status, RSF_ReallyDirty);
 }
 
-sdword kasfBuildManagerShipTypeInBatchQueue(char *shipType)
+sdword kasfBuildManagerShipTypeInBatchQueue(const char *shipType)
 {
     return tutBuildManagerShipTypeInBatchQueue(shipType);
 }
 
-sdword kasfBuildManagerShipTypeInBuildQueue(char *shipType)
+sdword kasfBuildManagerShipTypeInBuildQueue(const char *shipType)
 {
     return tutBuildManagerShipTypeInBuildQueue(shipType);
 }
 
-sdword kasfBuildManagerShipTypeSelected(char *shipType)
+sdword kasfBuildManagerShipTypeSelected(const char *shipType)
 {
     return tutBuildManagerShipTypeSelected(shipType);
 }
 
-sdword kasfTutCameraFocusedOnShipType(char *shipTypes)
+sdword kasfTutCameraFocusedOnShipType(const char *shipTypes)
 {
     return tutCameraFocusedOnShipType(shipTypes);
 }
@@ -3270,7 +3270,7 @@ void kasfTutCameraFocus(GrowSelection *ships)
 
 }
 
-void kasfTutCameraFocusDerelictType(char *derelictType)
+void kasfTutCameraFocusDerelictType(const char *derelictType)
 {
     Derelict *derelict;
     Node *node;
@@ -3377,16 +3377,16 @@ sdword kasfTutShipsTactics(GrowSelection *ships)
         return -1;
 }
 
+extern real32 pieDistance;
 sdword kasfTutPieDistance(void)
 {
-    extern real32 pieDistance;
 
     return (sdword)pieDistance;
 }
 
+extern real32 pieHeight;
 sdword kasfTutPieHeight(void)
 {
-    extern real32 pieHeight;
 
     return (sdword)pieHeight;
 }
@@ -3478,42 +3478,42 @@ void kasfSensorsWeirdness(sdword value)
 */
 }
 
-void kasfAllowPlayerToResearch(char *name)
+void kasfAllowPlayerToResearch(const char *name)
 {
     AllowPlayerToResearch(name);
 }
 
-void kasfAllowPlayerToPurchase(char *name)
+void kasfAllowPlayerToPurchase(const char *name)
 {
     AllowPlayerToPurchase(name);
 }
 
-void kasfPlayerAcquiredTechnology(char *name)
+void kasfPlayerAcquiredTechnology(const char *name)
 {
     PlayerAcquiredTechnology(name);
 }
 
-sdword kasfCanPlayerResearch(char *name)
+sdword kasfCanPlayerResearch(const char *name)
 {
     return CanPlayerResearch(name);
 }
 
-sdword kasfCanPlayerPurchase(char *name)
+sdword kasfCanPlayerPurchase(const char *name)
 {
     return CanPlayerPurchase(name);
 }
 
-sdword kasfDoesPlayerHave(char *name)
+sdword kasfDoesPlayerHave(const char *name)
 {
     return DoesPlayerHave(name);
 }
 
-void kasfSetBaseTechnologyCost(char *name, sdword cost)
+void kasfSetBaseTechnologyCost(const char *name, sdword cost)
 {
     SetBaseTechnologyCost(name, cost);
 }
 
-sdword kasfGetBaseTechnologyCost(char *name)
+sdword kasfGetBaseTechnologyCost(const char *name)
 {
     return GetBaseTechnologyCost(name);
 }
@@ -3533,7 +3533,7 @@ sdword kasfTraderGUIActive(void)
     return tmTraderGUIActive();
 }
 
-void kasfSetTraderDialog(sdword dialogNum, char *text)
+void kasfSetTraderDialog(sdword dialogNum, const char *text)
 {
     tmSetDialog(dialogNum, text);
 }
@@ -3657,7 +3657,7 @@ void kasfResetShipRenderFlags(GrowSelection *ships)
         ships->selection->ShipPtr[i]->renderedLODs = 0;
 }
 
-sdword kasfRenderedDerelicts(char *derelictType, sdword LOD)
+sdword kasfRenderedDerelicts(const char *derelictType, sdword LOD)
 {
     Derelict *derelict;
     Node *node;
@@ -3676,7 +3676,7 @@ sdword kasfRenderedDerelicts(char *derelictType, sdword LOD)
     return 0;
 }
 
-void kasfResetDerelictRenderFlags(char *derelictType)
+void kasfResetDerelictRenderFlags(const char *derelictType)
 {
     Derelict *derelict;
     Node *node;
@@ -3859,7 +3859,7 @@ sdword kasfShipsDisabled(GrowSelection *ships)
 }
 
 //saves a single player level
-void kasfSaveLevel(sdword LevelNum, char *LevelName)
+void kasfSaveLevel(sdword LevelNum, const char *LevelName)
 {
 //    char levelName[256];
 
@@ -3918,7 +3918,7 @@ void kasfWideScreenOut(sdword frames)
 
 //simulate a subtitle
 static sdword kasfDummyEventNumber = 0;         //incremented to ensure unique event numbers
-void kasfSubtitleSimulate(sdword actor, sdword milliseconds, char *speech)
+void kasfSubtitleSimulate(sdword actor, sdword milliseconds, const char *speech)
 {
     dbgAssertOrIgnore(milliseconds > 10);
     subTitleAdd(actor, kasfDummyEventNumber, speech, strlen(speech), (real32)milliseconds / 1000.0f);
@@ -3927,7 +3927,7 @@ void kasfSubtitleSimulate(sdword actor, sdword milliseconds, char *speech)
 }
 
 //display a location card
-void kasfLocationCard(sdword milliseconds, char *location)
+void kasfLocationCard(sdword milliseconds, const char *location)
 {
     char buffer[SUB_SubtitleLength];
 
@@ -4010,7 +4010,7 @@ void kasfDeleteShips(GrowSelection *ships)
     Outputs     :
     Return      : void
 ----------------------------------------------------------------------------*/
-void kasfRotateDerelictType(char *derelictType, sdword rot_x, sdword rot_y, sdword rot_z, sdword variation)
+void kasfRotateDerelictType(const char *derelictType, sdword rot_x, sdword rot_y, sdword rot_z, sdword variation)
 {
     Derelict *derelict;
     Node *node;
@@ -4254,11 +4254,11 @@ void kasfGameEnd(void)
     Return      :
     Note        : the first parameter to the effect will be the size of the ship.
 ----------------------------------------------------------------------------*/
-void kasfSpawnEffect(GrowSelection *ships, char *effectName, sdword parameter)
+void kasfSpawnEffect(GrowSelection *ships, const char *effectName, sdword parameter)
 {
     real32 floatParameter;
     udword intParameter, intSize, index, count;
-    static char *lastName = NULL;
+    static const char *lastName = NULL;
     static etgeffectstatic *lastEffect;
     Ship **shipPtr;
 

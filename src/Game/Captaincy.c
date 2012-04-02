@@ -101,7 +101,7 @@ void resetPausedNextPacketToReceive()
     }
 }
 
-void captaincyLog(bool echotoscreen,char *format, ...)
+void captaincyLog(bool echotoscreen, const char *format, ...)
 {
     char buffer[200];
     va_list argList;

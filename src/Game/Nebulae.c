@@ -132,7 +132,7 @@ scriptEntry NebulaeTweaks[] =
     makeEntry(NEB_VEL_BASE, scriptSetReal32CB),
     makeEntry(NEB_TENDRIL_RADIUS_BASE, scriptSetReal32CB),
     makeEntry(NEB_TENDRIL_RADIUS_RANGE, scriptSetReal32CB),
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -2405,11 +2405,11 @@ void nebSave_nebTendril(nebulae_t* neb, nebTendril *nebtendril)
     chunk = CreateChunk(BASIC_STRUCTURE|SAVE_NEBTENDRIL,sizeof(nebTendril),nebtendril);
     savecontents = chunkContents(chunk);
 
-    savecontents->a = nebChunkPtrToNum(neb, savecontents->a);
-    savecontents->b = nebChunkPtrToNum(neb, savecontents->b);
+    savecontents->a = (nebChunk*)nebChunkPtrToNum(neb, savecontents->a);
+    savecontents->b = (nebChunk*)nebChunkPtrToNum(neb, savecontents->b);
 
-    savecontents->prev = nebTendrilPtrToNum(neb, savecontents->prev);
-    savecontents->next = nebTendrilPtrToNum(neb, savecontents->next);
+    savecontents->prev = (nebTendril*)nebTendrilPtrToNum(neb, savecontents->prev);
+    savecontents->next = (nebTendril*)nebTendrilPtrToNum(neb, savecontents->next);
 
     SaveThisChunk(chunk);
     memFree(chunk);
@@ -2431,11 +2431,11 @@ void nebSave_nebChunk(nebulae_t* neb, nebChunk *nebchunk)
 
     for (i=0;i<NEB_MAX_TENDRILS;i++)
     {
-        savecontents->tendrils[i] = nebTendrilPtrToNum(neb, savecontents->tendrils[i]);
+        savecontents->tendrils[i] = (nebTendril*)nebTendrilPtrToNum(neb, savecontents->tendrils[i]);
     }
 
-    savecontents->spaceobj = SpaceObjRegistryGetID(savecontents->spaceobj);
-    savecontents->nebulae = nebIndexOfNeb(neb);
+    savecontents->spaceobj = (void*)SpaceObjRegistryGetID(savecontents->spaceobj);
+    savecontents->nebulae = (void*)nebIndexOfNeb(neb);
 
     SaveThisChunk(chunk);
     memFree(chunk);

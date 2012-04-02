@@ -80,7 +80,7 @@ extern Camera *mrCamera;
 extern void (*mrHoldLeft)(void);
 extern void (*mrHoldRight)(void);
 
-extern char *mrMenuItemByTactic[];
+extern const char *mrMenuItemByTactic[];
 
 extern bool helpinfoactive;
 
@@ -110,32 +110,32 @@ udword mrRegionProcess(struct tagRegion *reg, sdword ID, udword event, udword da
 void mrRegionDraw(regionhandle reg);
 
 //right-click callback functions
-void mrDockingOrders(char *string, featom *atom);
-void mrDeltaFormation(char *string, featom *atom);
-void mrBroadFormation(char *string, featom *atom);
-void mrXFormation(char *string, featom *atom);
-void mrClawFormation(char *string, featom *atom);
-void mrWallFormation(char *string, featom *atom);
-void mrSphereFormation(char *string, featom *atom);
-void mrCustomFormation(char *string, featom *atom);
-void mrHarvestResources(char *string, featom *atom);
-void mrBuildShips(char *string, featom *atom);
-void mrTradeStuff(char *string, featom *atom);
-void mrMoveShips(char *string, featom *atom);
-void mrInfo(char *string, featom *atom);
-void mrCancel(char *string, featom *atom);
-void mrScuttle(char *string, featom *atom);
-void mrRetire(char *string, featom *atom);
+void mrDockingOrders(const char* name, featom* atom);
+void mrDeltaFormation(const char* name, featom* atom);
+void mrBroadFormation(const char* name, featom* atom);
+void mrXFormation(const char* name, featom* atom);
+void mrClawFormation(const char* name, featom* atom);
+void mrWallFormation(const char* name, featom* atom);
+void mrSphereFormation(const char* name, featom* atom);
+void mrCustomFormation(const char* name, featom* atom);
+void mrHarvestResources(const char* name, featom* atom);
+void mrBuildShips(const char* name, featom* atom);
+void mrTradeStuff(const char* name, featom* atom);
+void mrMoveShips(const char* name, featom* atom);
+void mrInfo(const char* name, featom* atom);
+void mrCancel(const char* name, featom* atom);
+void mrScuttle(const char* name, featom* atom);
+void mrRetire(const char* name, featom* atom);
 void mrUpdateHyperspaceStatus(bool goForLaunch);
-void mrHyperspace(char *string, featom *atom);
-void mrLaunch(char *string, featom *atom);
-void mrResearch(char *string, featom *atom);
-void mrEvasiveTactics(char *string, featom *atom);
-void mrNeutralTactics(char *string, featom *atom);
-void mrAgressiveTactics(char *string, featom *atom);
-void mrFormAlliance(char *string, featom *atom);
-void mrBreakAlliance(char *string, featom *atom);
-void mrTransferRUS(char *string, featom *atom);
+void mrHyperspace(const char* name, featom* atom);
+void mrLaunch(const char* name, featom* atom);
+void mrResearch(const char* name, featom* atom);
+void mrEvasiveTactics(const char* name, featom* atom);
+void mrNeutralTactics(const char* name, featom* atom);
+void mrAgressiveTactics(const char* name, featom* atom);
+void mrFormAlliance(const char* name, featom* atom);
+void mrBreakAlliance(const char* name, featom* atom);
+void mrTransferRUS(const char* name, featom* atom);
 
 //misc functions
 void mrCameraMotion(void);

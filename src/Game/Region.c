@@ -1725,7 +1725,7 @@ regionhandle regSiblingFindByFunction(regionhandle reg, regionfunction find)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-regionhandle regFindChildByAtomName(regionhandle reg, char *pAtomName)
+regionhandle regFindChildByAtomName(regionhandle reg, const char *pAtomName)
 {
 regionhandle child;
 regionhandle Result = NULL;

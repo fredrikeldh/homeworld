@@ -65,9 +65,9 @@ color toPlayerColor[TO_NumPlayers];
 //for legend: track if a particular class is currently displayed (for each player)
 bool8 toClassUsed[NUM_CLASSES+1][TO_NumPlayers];
 
-void toNewClassSet(char *directory,char *field,void *dataToFillIn);
-void toNumberPointsSet(char *directory,char *field,void *dataToFillIn);
-void toVertexAdd(char *directory,char *field,void *dataToFillIn);
+void toNewClassSet(const char *directory,char *field,void *dataToFillIn);
+void toNumberPointsSet(const char *directory,char *field,void *dataToFillIn);
+void toVertexAdd(const char *directory,char *field,void *dataToFillIn);
 scriptEntry toIconTweaks[] =
 {
     { "IconClass",      toNewClassSet,  NULL},
@@ -139,7 +139,7 @@ void toShutdown(void)
 /*-----------------------------------------------------------------------------
     Script-read functions to load in the TO icons
 -----------------------------------------------------------------------------*/
-void toNewClassSet(char *directory,char *field,void *dataToFillIn)
+void toNewClassSet(const char *directory,char *field,void *dataToFillIn)
 {                                                           //set new ship class
     if (strcasecmp(field,"CLASS_Mine") == 0)
     {
@@ -151,7 +151,7 @@ void toNewClassSet(char *directory,char *field,void *dataToFillIn)
     }
     dbgAssertOrIgnore(toCurrentClass < (NUM_CLASSES+1));
 }
-void toNumberPointsSet(char *directory,char *field,void *dataToFillIn)
+void toNumberPointsSet(const char *directory,char *field,void *dataToFillIn)
 {                                                           //set number of points and allocate structure
     sdword nPoints, nScanned;
 
@@ -163,7 +163,7 @@ void toNumberPointsSet(char *directory,char *field,void *dataToFillIn)
     toClassIcon[toCurrentClass]->nPoints = nPoints;
     toCurrentPoint = 0;                                     //no points loaded yet
 }
-void toVertexAdd(char *directory,char *field,void *dataToFillIn)
+void toVertexAdd(const char *directory,char *field,void *dataToFillIn)
 {
     real32 x, y;
     sdword nScanned;

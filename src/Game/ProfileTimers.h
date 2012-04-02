@@ -44,11 +44,11 @@ void profResetFunc(void);
 void profTimerStartFunc(sdword timer);
 void profTimerStopFunc(sdword timer);
 void profTimerStatsPrintFunc(sdword *y);
-void profTimerLabelFunc(sdword timer,char *label);
-void profTimerStartLabelFunc(sdword timer,char *label);
+void profTimerLabelFunc(sdword timer,const char *label);
+void profTimerStartLabelFunc(sdword timer,const char *label);
 void profTimerOutputRecordingsFunc();
 
-void profTimerStartLittleLabelFunc(sdword timer,char *label);
+void profTimerStartLittleLabelFunc(sdword timer,const char *label);
 void profTimerStopLittleFunc(sdword timer);
 
 #endif

@@ -27,8 +27,6 @@ extern unsigned int functionCount;
 
 extern int yynerrs;
 
-extern int lineNumGet();
-extern char *curFilenameGet();
 char stateHelp[1024];
 
 extern int parseLevel;
@@ -1311,7 +1309,7 @@ void kasFSMStart(char *name)
     sprintf(stateHelp, "expecting state list in %s FSM", name);
 }
 
-void kasFSMEnd(char *name)
+void kasFSMEnd(const char *name)
 {
 #ifdef LOTS_OF_DEBUGS
     fprintf(stderr, "-=*> kasFSMEnd(\"%s\")\n", name);
@@ -1461,7 +1459,7 @@ void kasStateStart(char *name)
     sprintf(stateHelp, "expecting initialize section in %s state", name);
 }
 
-void kasStateEnd(char *name)
+void kasStateEnd(const char *name)
 {
 #ifdef LOTS_OF_DEBUGS
     fprintf(stderr, "-=*> kasStateEnd(\"%s\")\n", name);
@@ -1706,7 +1704,7 @@ void kasLocalizationEnd(void)
     fprintf(stderr, "-=*> kasLocalizationEnd()\n");
 #endif
 
-    sprintf(stateHelp, "");
+    //sprintf(stateHelp, "");
 }
 
 //  wipe list of definied lstrings
@@ -1785,7 +1783,7 @@ void kasLStringDefineStart(char *name)
         ++lstringCount;
     }
 
-    fprintf(yyout, "static char *LSTRING_%s[] = {  // multilingual strings", name);
+    fprintf(yyout, "static const char *LSTRING_%s[] = {  // multilingual strings", name);
 }
 
 //
@@ -1866,7 +1864,7 @@ void kasFunctionStart(char *funcName)
 void kasFunctionEnd(void)
 {
     int funcNum = callStack[curFuncDepth].functionNum;
-    FunctionCall *fcallp;
+    //FunctionCall *fcallp;
 
 #ifdef LOTS_OF_DEBUGS
     fprintf(stderr, "-=*> kasFunctionEnd()\n");
@@ -1894,7 +1892,7 @@ void kasFunctionEnd(void)
 
     --curFuncDepth;
 
-    sprintf(stateHelp, "");
+    //sprintf(stateHelp, "");
 }
 
 
@@ -2143,9 +2141,9 @@ void kasFunctionParamVolumePtr(void)
 }
 
 // friendly, english type strings
-char *kasParamTypeToString(int type)
+const char *kasParamTypeToString(int type)
 {
-    static char *s[] = {
+    static const char *s[] = {
         "integer",
         "integer",
         "integer",
@@ -2170,9 +2168,9 @@ char *kasParamTypeToString(int type)
 }
 
 // friendly, english type strings
-char *kasParamTypeToC(int type)
+const char *kasParamTypeToC(int type)
 {
-    static char *s[] = {
+    static const char *s[] = {
        "sbyte",
        "ubyte",
        "sword",

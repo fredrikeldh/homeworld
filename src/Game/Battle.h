@@ -112,7 +112,7 @@ battleping;
 //structure for a battle chatter event and it's heuristics
 typedef struct
 {
-    char *eventName;                            //name of event for parsing
+    const char *eventName;                      //name of event for parsing
     sdword eventNumber;                         //event number
     udword randomWeight;                        //liklihood of this event being called ( / BAT_RandomTotal)
     double maxDistance;                         //max distance from camera event can be heard
@@ -122,7 +122,7 @@ typedef struct
     double minRepeatProximity;                  //min proximity for a repeat within minWavelength (0 = ignore)
     double expRepeatProximity;                  //exponent of the proximity probability curve
 #if BATTLE_TEXT
-    char **texts;                               //strings of what the ship might say (for debug printing)
+    const char **texts;                         //strings of what the ship might say (for debug printing)
 #endif
     //end of static stuff; dynamic stuff follows
     real32 lastTimeSpoken;                      //universe time when this event was last actually queued up

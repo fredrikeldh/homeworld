@@ -16,11 +16,11 @@
     Types:
 =============================================================================*/
 
-typedef void (*setVarCback)(char *directory,char *field,void *dataToFillIn);
+typedef void (*setVarCback)(const char *directory,char *field,void *dataToFillIn);
 
 typedef struct
 {
-    char *name;
+    const char *name;
     setVarCback setVarCB;
     void * offset1;     // should really be 1 offset, but I can't get rid of this strange compiler error
     void * offset2;
@@ -28,7 +28,7 @@ typedef struct
 
 typedef struct
 {
-    char *name;
+    const char *name;
     setVarCback setVarCB;
     void *dataPtr;
 } scriptEntry;
@@ -56,58 +56,58 @@ struct ShipStaticInfo;
 void RemoveCommasFromString(char *field);
 void StripTrailingSpaces(char *value);
 
-void scriptSetRGBCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetRGBACB(char *directory,char *field,void *dataToFillIn);
-void scriptSetReal32CB(char *directory,char *field,void *dataToFillIn);
-void scriptSetReal32CB_ARRAY(char *directory,char *field,void *dataToFillIn);
-void scriptSetReal32SqrCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetSbyteCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetUbyteCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetSwordCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetUwordCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetSdwordCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetUdwordCB(char *directory,char *field,void *dataToFillIn);
+void scriptSetRGBCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetRGBACB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetReal32CB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetReal32CB_ARRAY(const char *directory,char *field,void *dataToFillIn);
+void scriptSetReal32SqrCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetSbyteCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetUbyteCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetSwordCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetUwordCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetSdwordCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetUdwordCB(const char *directory,char *field,void *dataToFillIn);
 bool scriptStringToBool(char *boolString);
-void scriptSetBool8(char *directory,char *field,void *dataToFillIn);
-void scriptSetBool(char *directory,char *field,void *dataToFillIn);
-void scriptSetBitUdword(char *directory,char *field,void *dataToFillIn);
-void scriptSetBitUword(char *directory,char *field,void *dataToFillIn);
-void scriptSetStringCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetStringPtrCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetCosAngCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetCosAngSqrCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetCosAngCB_ARRAY(char *directory,char *field,void *dataToFillIn);
-void scriptSetSinAngCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetTanAngCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetAngCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetGunTypeCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetGunSoundTypeCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetBulletTypeCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetShipClassCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetShipRaceCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetShipTypeCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetVectorCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetLWToHWMonkeyVectorCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetFormationCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetTacticsCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetSalvagePointCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetSalvageStatCB(char *directory,char *field,void *dataToFillIn);
-void scriptSetSalvageStatics(char *directory,char *filename,struct StaticInfoHealthGuidanceShipDerelict *statinfo);
-void scriptSetDockOverideStatics(char *directory,char *filename,struct ShipStaticInfo *shipstatinfo);
+void scriptSetBool8(const char *directory,char *field,void *dataToFillIn);
+void scriptSetBool(const char *directory,char *field,void *dataToFillIn);
+void scriptSetBitUdword(const char *directory,char *field,void *dataToFillIn);
+void scriptSetBitUword(const char *directory,char *field,void *dataToFillIn);
+void scriptSetStringCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetStringPtrCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetCosAngCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetCosAngSqrCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetCosAngCB_ARRAY(const char *directory,char *field,void *dataToFillIn);
+void scriptSetSinAngCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetTanAngCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetAngCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetGunTypeCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetGunSoundTypeCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetBulletTypeCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetShipClassCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetShipRaceCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetShipTypeCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetVectorCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetLWToHWMonkeyVectorCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetFormationCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetTacticsCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetSalvagePointCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetSalvageStatCB(const char *directory,char *field,void *dataToFillIn);
+void scriptSetSalvageStatics(const char *directory,const char *filename,struct StaticInfoHealthGuidanceShipDerelict *statinfo);
+void scriptSetDockOverideStatics(const char *directory,const char *filename,struct ShipStaticInfo *shipstatinfo);
 
-void scriptSetStruct(char *directory,char *filename,scriptStructEntry info[],ubyte *structureToFillIn);
-void scriptSet(char *directory,char *filename,scriptEntry info[]);
-void scriptSetFileSystem(char *directory,char *filename,scriptEntry info[]);
-void scriptSetGunStatics(char *directory,char *filename,struct ShipStaticInfo *shipstatinfo);
-void scriptSetNAVLightStatics(char *directory,char *filename,struct ShipStaticInfo *shipstatinfo);
-void scriptSetDockStatics(char *directory,char *filename,struct ShipStaticInfo *statinfo);
-struct SphereStaticInfo *scriptSetSphereStaticInfo(char *directory,char *filename);
-void scriptSetShipGroupSizeCB(char *directory, char *field, sdword *dataToFillIn);
-void scriptSetShipProbCB(char *directory, char *field, real32 *dataToFillIn);
-void scriptSetHyperspaceCostCB(char *directory, char *field, real32 *dataToFillIn);
-void scriptSetSpecialDoorOffsetCB(char *directory, char *field, real32 *dataToFillIn);
-void scriptSetBlobPropertyOverlap(char *directory,char *field,void *dataToFillIn);
-void scriptSetBlobBiggestRadius(char *directory,char *field,void *dataToFillIn);
+void scriptSetStruct(const char *directory,const char *filename,scriptStructEntry info[],ubyte *structureToFillIn);
+void scriptSet(const char *directory,const char *filename,scriptEntry info[]);
+void scriptSetFileSystem(const char *directory,const char *filename,scriptEntry info[]);
+void scriptSetGunStatics(const char *directory,const char *filename,struct ShipStaticInfo *shipstatinfo);
+void scriptSetNAVLightStatics(const char *directory,const char *filename,struct ShipStaticInfo *shipstatinfo);
+void scriptSetDockStatics(const char *directory,const char *filename,struct ShipStaticInfo *statinfo);
+struct SphereStaticInfo *scriptSetSphereStaticInfo(const char *directory,const char *filename);
+void scriptSetShipGroupSizeCB(const char *directory, char *field, void *dataToFillIn);
+void scriptSetShipProbCB(const char *directory, char *field, void *dataToFillIn);
+void scriptSetHyperspaceCostCB(const char *directory, char *field, void *dataToFillIn);
+void scriptSetSpecialDoorOffsetCB(const char *directory, char *field, void *dataToFillIn);
+void scriptSetBlobPropertyOverlap(const char *directory,char *field,void *dataToFillIn);
+void scriptSetBlobBiggestRadius(const char *directory,char *field,void *dataToFillIn);
 
 // sets all tweakable global variables in game
 void scriptSetTweakableGlobals(void);

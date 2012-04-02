@@ -42,7 +42,7 @@
 #include "utility.h"
 
 #ifdef GENERIC_ETGCALLFUNCTION
-#ifdef _MACOSX_FIX_MISC
+#if defined(_MACOSX_FIX_MISC) || defined(MAPIP)
 #include "functions.h"
 #else
 #include "functions.h"
@@ -418,31 +418,53 @@ void etgDepthWriteResolve(struct etgeffectstatic *stat, etgfunctioncall *call);
 
 #ifdef GENERIC_ETGCALLFUNCTION
 #define funcEntryn(name, ret, function)                                      {name, function, wrap_##function, ret, (ubyte)FALSE, ETG_VariableParams}
+#undef funcEntry0
 #define funcEntry0(name, ret, function)                                      {name, function, wrap_##function, ret, (ubyte)FALSE, NULL, 0, {0,0,0,0,0,0,0,0,0}}
+#undef funcEntry1
 #define funcEntry1(name, ret, function, p0)                                  {name, function, wrap_##function, ret, (ubyte)FALSE, NULL, 1, {p0}}
+#undef funcEntry2
 #define funcEntry2(name, ret, function, p0, p1)                              {name, function, wrap_##function, ret, (ubyte)FALSE, NULL, 2, {p0, p1}}
+#undef funcEntry3
 #define funcEntry3(name, ret, function, p0, p1, p2)                          {name, function, wrap_##function, ret, (ubyte)FALSE, NULL, 3, {p0, p1, p2}}
+#undef funcEntry4
 #define funcEntry4(name, ret, function, p0, p1, p2, p3)                      {name, function, wrap_##function, ret, (ubyte)FALSE, NULL, 4, {p0, p1, p2, p3}}
+#undef funcEntry5
 #define funcEntry5(name, ret, function, p0, p1, p2, p3, p4)                  {name, function, wrap_##function, ret, (ubyte)FALSE, NULL, 5, {p0, p1, p2, p3, p4}}
+#undef funcEntry6
 #define funcEntry6(name, ret, function, p0, p1, p2, p3, p4, p5)              {name, function, wrap_##function, ret, (ubyte)FALSE, NULL, 6, {p0, p1, p2, p3, p4, p5}}
+#undef funcEntry7
 #define funcEntry7(name, ret, function, p0, p1, p2, p3, p4, p5, p6)          {name, function, wrap_##function, ret, (ubyte)FALSE, NULL, 7, {p0, p1, p2, p3, p4, p5, p6}}
+#undef funcEntry8
 #define funcEntry8(name, ret, function, p0, p1, p2, p3, p4, p5, p6, p7)      {name, function, wrap_##function, ret, (ubyte)FALSE, NULL, 7, {p0, p1, p2, p3, p4, p5, p6, p7}}
 
 #define funcEntryThisn(name, ret, function)                                  {name, function, wrap_##function, ret, (ubyte)TRUE,  ETG_VariableParams}
+#undef funcEntryThis0
 #define funcEntryThis0(name, ret, function)                                  {name, function, wrap_##function, ret, (ubyte)TRUE,  NULL, 0, {0,0,0,0,0,0,0,0,0}}
+#undef funcEntryThis1
 #define funcEntryThis1(name, ret, function, p0)                              {name, function, wrap_##function, ret, (ubyte)TRUE,  NULL, 1, {p0}}
+#undef funcEntryThis2
 #define funcEntryThis2(name, ret, function, p0, p1)                          {name, function, wrap_##function, ret, (ubyte)TRUE,  NULL, 2, {p0, p1}}
+#undef funcEntryThis3
 #define funcEntryThis3(name, ret, function, p0, p1, p2)                      {name, function, wrap_##function, ret, (ubyte)TRUE,  NULL, 3, {p0, p1, p2}}
+#undef funcEntryThis4
 #define funcEntryThis4(name, ret, function, p0, p1, p2, p3)                  {name, function, wrap_##function, ret, (ubyte)TRUE,  NULL, 4, {p0, p1, p2, p3}}
+#undef funcEntryThis5
 #define funcEntryThis5(name, ret, function, p0, p1, p2, p3, p4)              {name, function, wrap_##function, ret, (ubyte)TRUE,  NULL, 5, {p0, p1, p2, p3, p4}}
+#undef funcEntryThis6
 #define funcEntryThis6(name, ret, function, p0, p1, p2, p3, p4, p5)          {name, function, wrap_##function, ret, (ubyte)TRUE,  NULL, 6, {p0, p1, p2, p3, p4, p5}}
+#undef funcEntryThis7
 #define funcEntryThis7(name, ret, function, p0, p1, p2, p3, p4, p5, p6)      {name, function, wrap_##function, ret, (ubyte)TRUE,  NULL, 7, {p0, p1, p2, p3, p4, p5, p6}}
+#undef funcEntryThis8
 #define funcEntryThis8(name, ret, function, p0, p1, p2, p3, p4, p5, p6, p7)  {name, function, wrap_##function, ret, (ubyte)TRUE,  NULL, 7, {p0, p1, p2, p3, p4, p5, p6, p7}}
 
+#undef funcEntryR1
 #define funcEntryR1(name, ret, function, p0, resolve)                        {name, function, wrap_##function, ret, (ubyte)FALSE, resolve, 1, {p0}}
+#undef funcEntryR2
 #define funcEntryR2(name, ret, function, p0, p1, resolve)                    {name, function, wrap_##function, ret, (ubyte)FALSE, resolve, 2, {p0, p1}}
 
+#undef funcEntryThisR1
 #define funcEntryThisR1(name, ret, function, p0, resolve)                    {name, function, wrap_##function, ret, (ubyte)TRUE,  resolve, 1, {p0}}
+#undef funcEntryThisR2
 #define funcEntryThisR2(name, ret, function, p0, p1, resolve)                {name, function, wrap_##function, ret, (ubyte)TRUE,  resolve, 2, {p0, p1}}
 
 #else
@@ -686,24 +708,24 @@ etgcondentry etgConditionalTable[] =
 };
 
 //table for parsing the etg script
-etgeffectstatic *etgEffectLoad(char *directory,char *field,void *dataToFillIn);
-void etgEffectTestKey(char *directory,char *field,void *dataToFillIn);
-void etgEffectProfileKey(char *directory,char *field,void *dataToFillIn);
-void etgDeathEventSet(char *directory,char *field,void *dataToFillIn);
-void etgFireEventSet(char *directory,char *field,void *dataToFillIn);
-void etgHitEventSet(char *directory,char *field,void *dataToFillIn);
-void etgBulletEffectSet(char *directory,char *field,void *dataToFillIn);
-//void etgBulletDeflectEffectSet(char *directory,char *field,void *dataToFillIn);
-void etgBulletDestroyEffectSet(char *directory,char *field,void *dataToFillIn);
-void etgResourceEffectSet(char *directory,char *field,void *dataToFillIn);
-void etgTractorBeamEffectSet(char *directory,char *field,void *dataToFillIn);
-void etgSpecialPurposeEffectSet(char *directory,char *field, void *dataToFillIn);
-void etgBulletColorSet(char *directory,char *field,void *dataToFillIn);
-void etgSetBigDeathFactor(char *directory,char *field,void *dataToFillIn);
-void etgDamageEventSet(char *directory,char *field,void *dataToFillIn);
-void etgHyperspaceEventSet(char *directory,char *field,void *dataToFillIn);
-void etgNumberEffectsParse(char *directory,char *field,void *dataToFillIn);
-void etgSoftwareEffect(char *directory,char *field,void *dataToFillIn);
+etgeffectstatic *etgEffectLoad(const char *directory, char *field,void *dataToFillIn);
+void etgEffectTestKey(const char *directory, char *field,void *dataToFillIn);
+void etgEffectProfileKey(const char *directory, char *field,void *dataToFillIn);
+void etgDeathEventSet(const char *directory, char *field,void *dataToFillIn);
+void etgFireEventSet(const char *directory, char *field,void *dataToFillIn);
+void etgHitEventSet(const char *directory, char *field,void *dataToFillIn);
+void etgBulletEffectSet(const char *directory, char *field,void *dataToFillIn);
+//void etgBulletDeflectEffectSet(const char *directory, char *field,void *dataToFillIn);
+void etgBulletDestroyEffectSet(const char *directory, char *field,void *dataToFillIn);
+void etgResourceEffectSet(const char *directory, char *field,void *dataToFillIn);
+void etgTractorBeamEffectSet(const char *directory, char *field,void *dataToFillIn);
+void etgSpecialPurposeEffectSet(const char *directory, char *field, void *dataToFillIn);
+void etgBulletColorSet(const char *directory, char *field,void *dataToFillIn);
+void etgSetBigDeathFactor(const char *directory, char *field,void *dataToFillIn);
+void etgDamageEventSet(const char *directory, char *field,void *dataToFillIn);
+void etgHyperspaceEventSet(const char *directory, char *field,void *dataToFillIn);
+void etgNumberEffectsParse(const char *directory, char *field,void *dataToFillIn);
+void etgSoftwareEffect(const char *directory, char *field,void *dataToFillIn);
 scriptEntry etgScriptParseTable[] =
 {
     {"LoadEffect",                  (setVarCback)etgEffectLoad, NULL},
@@ -736,7 +758,7 @@ scriptEntry etgScriptParseTable[] =
 sdword etgNumberEffectsExpected = -1;
 sdword etgNumberEffectsLoaded = 0;
 //list of script files to load
-char *etgScriptFilename[] =
+const char *etgScriptFilename[] =
 {
     "general.script",
     "R1.script",
@@ -875,7 +897,7 @@ bool   etgBulletEffectsEnabled = TRUE;          //bullet effects on
                     re-allocates and grows the structure for returning.
     Return      : newly (re)allocated structure.
 ----------------------------------------------------------------------------*/
-etglod *etgLODLoad(char *directory, char *name, etglod *oldLOD)
+etglod *etgLODLoad(const char *directory, char *name, etglod *oldLOD)
 {
     char path[PATH_MAX];
     etglod *newLOD;
@@ -912,7 +934,7 @@ etglod *etgLODLoad(char *directory, char *name, etglod *oldLOD)
     Note        : Can be called from script loading stuff or directly from
                     special loading functions.
 ----------------------------------------------------------------------------*/
-etgeffectstatic *etgEffectLoad(char *directory,char *field,void *dataToFillIn)
+etgeffectstatic *etgEffectLoad(const char *directory, char *field,void *dataToFillIn)
 {
     char path[PATH_MAX];
 
@@ -930,7 +952,7 @@ etgeffectstatic *etgEffectLoad(char *directory,char *field,void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void etgSoftwareEffect(char *directory,char *field,void *dataToFillIn)
+void etgSoftwareEffect(const char *directory, char *field,void *dataToFillIn)
 {
     etgeffectstatic *hardwareEffect;
     char *hardwareName, *softwareName;
@@ -949,7 +971,7 @@ void etgSoftwareEffect(char *directory,char *field,void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void etgSetBigDeathFactor(char *directory,char *field,void *dataToFillIn)
+void etgSetBigDeathFactor(const char *directory, char *field,void *dataToFillIn)
 {
     char *param;
     ShipClass classy;
@@ -991,7 +1013,7 @@ scanTheFactor:
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void etgNumberEffectsParse(char *directory,char *field,void *dataToFillIn)
+void etgNumberEffectsParse(const char *directory, char *field,void *dataToFillIn)
 {
     scriptSetSdwordCB(directory, field, &etgNumberEffectsExpected);
     dbgAssertOrIgnore(etgNumberEffectsExpected > 0 && etgNumberEffectsExpected < 2000);
@@ -1049,7 +1071,7 @@ sdword etgTokTheType(void)
     Outputs     : loads in the named effect for the named death type of the named ship class
     Return      :
 ----------------------------------------------------------------------------*/
-void etgDeathEventSet(char *directory,char *field,void *dataToFillIn)
+void etgDeathEventSet(const char *directory, char *field,void *dataToFillIn)
 {
     char *param;
     ShipClass classy;
@@ -1126,7 +1148,7 @@ void etgParseRaceSoundParam(char *params, ShipRace *race, GunSoundType *gunSound
     Outputs     : Sets the fire, hit or bullet effects.
     Return      :
 ----------------------------------------------------------------------------*/
-void etgFireEventSet(char *directory,char *field,void *dataToFillIn)
+void etgFireEventSet(const char *directory, char *field,void *dataToFillIn)
 {
     char *param;
     ShipRace racerX;
@@ -1144,7 +1166,7 @@ void etgFireEventSet(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-void etgHitEventSet(char *directory,char *field,void *dataToFillIn)
+void etgHitEventSet(const char *directory, char *field,void *dataToFillIn)
 {
     char *param;
     ShipRace racerX;
@@ -1162,7 +1184,7 @@ void etgHitEventSet(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-void etgBulletEffectSet(char *directory,char *field,void *dataToFillIn)
+void etgBulletEffectSet(const char *directory, char *field,void *dataToFillIn)
 {
     char *param;
     ShipRace racerX;
@@ -1180,7 +1202,7 @@ void etgBulletEffectSet(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-void etgBulletDestroyEffectSet(char *directory,char *field,void *dataToFillIn)
+void etgBulletDestroyEffectSet(const char *directory, char *field,void *dataToFillIn)
 {
     char *param;
     ShipRace racerX;
@@ -1198,7 +1220,7 @@ void etgBulletDestroyEffectSet(char *directory,char *field,void *dataToFillIn)
     }
 }
 /*
-void etgBulletDeflectEffectSet(char *directory,char *field,void *dataToFillIn)
+void etgBulletDeflectEffectSet(const char *directory, char *field,void *dataToFillIn)
 {
     char *param;
     ShipRace racerX;
@@ -1216,7 +1238,7 @@ void etgBulletDeflectEffectSet(char *directory,char *field,void *dataToFillIn)
     }
 }
 */
-void etgResourceEffectSet(char *directory,char *field,void *dataToFillIn)
+void etgResourceEffectSet(const char *directory, char *field,void *dataToFillIn)
 {
     char *param;
     ShipRace racerX;
@@ -1240,7 +1262,7 @@ void etgResourceEffectSet(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-void etgTractorBeamEffectSet(char *directory,char *field,void *dataToFillIn)
+void etgTractorBeamEffectSet(const char *directory, char *field,void *dataToFillIn)
 {
     char *param;
     ShipRace racerX;
@@ -1255,7 +1277,7 @@ void etgTractorBeamEffectSet(char *directory,char *field,void *dataToFillIn)
     etgTractorBeamEffectTable[racerX] = etgLODLoad(directory, param, etgTractorBeamEffectTable[racerX]);
 }
 
-void etgDamageEventSet(char *directory,char *field,void *dataToFillIn)
+void etgDamageEventSet(const char *directory, char *field,void *dataToFillIn)
 {
     char *param;
     ShipClass classy;
@@ -1297,7 +1319,7 @@ void etgDamageEventSet(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-void etgHyperspaceEventSet(char *directory,char *field,void *dataToFillIn)
+void etgHyperspaceEventSet(const char *directory, char *field,void *dataToFillIn)
 {
     char *param;
 
@@ -1313,7 +1335,7 @@ void etgHyperspaceEventSet(char *directory,char *field,void *dataToFillIn)
     }
 }
 
-void etgSpecialPurposeEffectSet(char *directory,char *field,void *dataToFillIn)
+void etgSpecialPurposeEffectSet(const char *directory, char *field,void *dataToFillIn)
 {
     char *param;
     SpecialEffectType effectnum;
@@ -1329,7 +1351,7 @@ void etgSpecialPurposeEffectSet(char *directory,char *field,void *dataToFillIn)
 }
 
 
-void etgBulletColorSet(char *directory,char *field,void *dataToFillIn)
+void etgBulletColorSet(const char *directory, char *field,void *dataToFillIn)
 {
     char *param;
     ShipRace racerX;
@@ -1527,7 +1549,7 @@ udword etgEffectProfile(regionhandle reg, sdword ID, udword event, udword data)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void etgEffectTestKey(char *directory,char *field,void *dataToFillIn)
+void etgEffectTestKey(const char *directory, char *field,void *dataToFillIn)
 {
     keyindex key;
     char *lightName, *effectName, *type;
@@ -1593,7 +1615,7 @@ void etgEffectTestKey(char *directory,char *field,void *dataToFillIn)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void etgEffectProfileKey(char *directory,char *field,void *dataToFillIn)
+void etgEffectProfileKey(const char *directory, char *field,void *dataToFillIn)
 {
     sdword nScanned;
     char *string;
@@ -1646,7 +1668,7 @@ void etgStartup(void)
 {
     sdword index = 0;
     sdword bigDeathInitialiser = -10;
-    
+
 #if ETG_VERBOSE_LEVEL >= 1
     dbgMessagef("Starting effects");
 #endif
@@ -1864,7 +1886,7 @@ void etgReset(void)
     sdword index, j;
     char path[PATH_MAX];
     etgeffectstatic *newStat;
-    char *nameSave;
+    const char *nameSave;
 
 #if ETG_VERBOSE_LEVEL >= 1
     dbgMessagef("Resetting up to %d effects", ETG_EventListLength);
@@ -1906,7 +1928,7 @@ void etgReset(void)
             if (newStat != NULL)                            //if the effect was loaded OK
             {
                 etgEffectCodeDelete(etgEventTable[index].effectStatic, FALSE);
-                memFree(etgEventTable[index].effectStatic->name);//free the name not freed by previous line
+                //memFree(etgEventTable[index].effectStatic->name);//free the name not freed by previous line
                 *etgEventTable[index].effectStatic = *newStat;//delete the registry entry
                 for (j = 0; j < ETG_EventListLength; j++)
                 {                                           //find effect just loaded
@@ -1952,7 +1974,7 @@ void etgEffectCodeExecute(etgeffectstatic *stat, Effect *effect, udword codeBloc
     ubyte *pOpcode;
 
 
-	//this function does not interface well with optimized code which assumes 
+	//this function does not interface well with optimized code which assumes
 	//certain variables will not get stomped, hence the pushes
 #ifndef GENERIC_ETGCALLFUNCTION
 #if defined (_MSC_VER)
@@ -1985,7 +2007,7 @@ void etgEffectCodeExecute(etgeffectstatic *stat, Effect *effect, udword codeBloc
 		"movq %%rcx, %2\n\t"
 		"movq %%rdx, %3\n\t"
 		"movq %%rsi, %4\n\t"
-		"movq %%rdi, %5\n\t" 
+		"movq %%rdi, %5\n\t"
 		"movq %%r8,  %6\n\t"
 		"movq %%r9,  %7\n\t" : :
 		"m" (savedreg[0]), "m" (savedreg[1]), "m" (savedreg[2]),
@@ -2017,7 +2039,7 @@ void etgEffectCodeExecute(etgeffectstatic *stat, Effect *effect, udword codeBloc
     while (etgExecStack.etgCodeBlock[etgExecStack.etgCodeBlockIndex].offset <
            etgExecStack.etgCodeBlock[etgExecStack.etgCodeBlockIndex].length)
     {
-		
+
         pOpcode = etgExecStack.etgCodeBlock[etgExecStack.etgCodeBlockIndex].code + etgExecStack.etgCodeBlock[etgExecStack.etgCodeBlockIndex].offset;
         opcode = *((udword *)pOpcode);                      //get an opcode
 #if ETG_ERROR_CHECKING
@@ -2033,10 +2055,10 @@ void etgEffectCodeExecute(etgeffectstatic *stat, Effect *effect, udword codeBloc
         //execute the opcode
         size = etgHandleTable[opcode].function(effect, stat, pOpcode);
         etgExecStack.etgCodeBlock[etgExecStack.etgCodeBlockIndex].offset += size;
-		
+
     }
 //    etgExecStackIndex--;
-	//this function does not interface well with optimized code which assumes 
+	//this function does not interface well with optimized code which assumes
 	//certain variables will not get stomped, hence the pushes
 #ifndef GENERIC_ETGCALLFUNCTION
 #if defined (_MSC_VER)
@@ -2068,7 +2090,7 @@ void etgEffectCodeExecute(etgeffectstatic *stat, Effect *effect, udword codeBloc
 		"movq %2, %%rcx\n\t"
 		"movq %3, %%rdx\n\t"
 		"movq %4, %%rsi\n\t"
-		"movq %5, %%rdi\n\t" 
+		"movq %5, %%rdi\n\t"
 		"movq %6, %%r8\n\t"
 		"movq %7, %%r9\n\t" : :
 		"m" (savedreg[0]), "m" (savedreg[1]), "m" (savedreg[2]),
@@ -2189,7 +2211,7 @@ void etgEffectCodeDelete(etgeffectstatic *stat, bool bFullDelete)
 {
     if (bFullDelete)
     {
-        memFree(stat->name);
+        //memFree(stat->name);
     }
 #if ETG_ERROR_CHECKING
     if (stat->nParticleBlocks == 0xffffffff)
@@ -2496,7 +2518,7 @@ ubyte *etgConstData;
     Outputs     :
     Return      : 0
 ----------------------------------------------------------------------------*/
-sdword etgLoadError(char *file, sdword line, char *error)
+sdword etgLoadError(const char *file, sdword line, const char *error)
 {
     if (etgErrorRecoverable)
     {
@@ -2516,7 +2538,7 @@ sdword etgLoadError(char *file, sdword line, char *error)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-sdword etgLoadErrorf(char *file, sdword line, char *format, ...)
+sdword etgLoadErrorf(const char *file, sdword line, const char *format, ...)
 {
     va_list argList;
     char error[DBG_BufferLength];
@@ -2637,8 +2659,8 @@ char *etgLineRead(char *dest, sdword length)
     Outputs     : ..
     Return      : length of nameToMatch of they match, or 0 if they don't
 ----------------------------------------------------------------------------*/
-char etgLabelString[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz12345667890-_{}#";
-sdword etgParseNamesMatch(char *string, char *nameToMatch)
+const char etgLabelString[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz12345667890-_{}#";
+sdword etgParseNamesMatch(const char *string, const char *nameToMatch)
 {
     sdword countS, countN;
 
@@ -2662,7 +2684,7 @@ sdword etgParseNamesMatch(char *string, char *nameToMatch)
 char *etgParametersIsolate(char *string, sdword offset)
 {
 #if ETG_ERROR_CHECKING
-    char *temp;
+    const char *temp;
     if ((temp = strchr(string, '(')) == NULL)
     {
         etgLoadErrorf(ETG, "Expecting parameters in '%s'", string);
@@ -2691,7 +2713,7 @@ char *etgParametersIsolate(char *string, sdword offset)
                     with a given name to be loaded in later.
     Return      : pointer to effect, or NULL if not already registered
 ----------------------------------------------------------------------------*/
-etgeffectstatic *etgEffectStaticFind(char *name, bool bRegister)
+etgeffectstatic *etgEffectStaticFind(const char *name, bool bRegister)
 {
     sdword index;
     etgeffectstatic *newStatic;
@@ -2846,7 +2868,7 @@ bool etgOpcodeScan(struct etgeffectstatic *stat, char *string, ubyte *dest, sdwo
     Outputs     :
     Return      : TRUE if a number, false otherwise
 ----------------------------------------------------------------------------*/
-bool etgIsNumber(char *number)
+bool etgIsNumber(const char *number)
 {
     while (*number)
     {
@@ -2866,7 +2888,7 @@ bool etgIsNumber(char *number)
     Outputs     :
     Return      : variable info structure if found or NULL if not found
 ----------------------------------------------------------------------------*/
-etgvarentry *etgVariableFind(char *name)
+etgvarentry *etgVariableFind(const char *name)
 {
     sdword index;
 
@@ -2921,7 +2943,7 @@ color etgColorScan(char *string)
 ----------------------------------------------------------------------------*/
 bool etgVarCopyScan(struct etgeffectstatic *stat, char *string, ubyte *dest, sdword *destLength)
 {
-    char *rValue, *lValue, *parser;
+    const char *rValue, *lValue, *parser;
     etgvariablecopy *opcode = (etgvariablecopy *)dest;
     etgvarentry *rVar, *lVar;
     udword constant, offset;
@@ -3035,7 +3057,8 @@ bool etgFunctionCallScan(struct etgeffectstatic *stat, char *string, ubyte *dest
     sdword index, varIndex;
     sdword strLength, nScanned;
     udword constant, offset;
-    char *start, *params, *param, *parser;
+    char *start, *params, *param;
+	const char *parser;
     char returnValue[STRING_LENGTH];
     bool bReturnValue;
     etgfunctioncall *opcode = (etgfunctioncall *)dest;
@@ -3493,7 +3516,7 @@ void etgForwardReferenceFix(ubyte *codeSegment, sdword segmentLength)
     Outputs     : allocates an effect static block and loads it in.
     Return      : newly allocated and loaded effect.
 ----------------------------------------------------------------------------*/
-etgeffectstatic *etgEffectCodeLoad(char *fileName)
+etgeffectstatic *etgEffectCodeLoad(const char *fileName)
 {
     char string[STRING_LENGTH];
     char *pString;
@@ -3602,7 +3625,7 @@ etgeffectstatic *etgEffectCodeLoad(char *fileName)
                     //since there are some things in this effect which may
                     //or may not have been allocated, let's just not free them.
                     //This is a debugging feature anyhow.
-                    memFree(etgEventTable[j].effectStatic->name);
+                    //memFree(etgEventTable[j].effectStatic->name);
                     memFree(etgEventTable[j].effectStatic);
                     etgEventTable[j].effectStatic = NULL;
                     goto foundThisNewEffect;
@@ -4407,10 +4430,10 @@ void etgConditionalComplete(sdword codeBlock, sdword offset, sdword newOffset, u
 //handle 'if' statements
 sdword etgConditional(struct etgeffectstatic *stat, ubyte *dest, char *opcodeString, char *params, char *ret)
 {
-    char *param0, *oper, *param1, *tempparam;
+    char *param0, *param1, *tempparam;
     etgvarentry *var0, *var1, *tempvar;
     sdword isVar0, isVar1, bTranspose;
-    char *parser;
+    const char *parser, *oper;
     udword constant;
     etgconditional *opcode = (etgconditional *)dest;
     sdword index, subIndex;
@@ -5802,7 +5825,7 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
 
     opfunctionentry *entry = NULL;
     udword currEntry=0;
-        
+
     while ((entry = &etgFunctionTable[currEntry++])->name != NULL)
     {
         if (entry->function == ((etgfunctioncall *)opcode)->function)
@@ -5835,12 +5858,12 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
  This function causes error during compilation of ETG.c with optimization on, and still
  needs to be fixed. It works (or seems to work) in debug mode, though. It simply calls other
  functions, but in relly messed way. (etgfunctioncall *)opcode contains a table of paramaters
- and a pointer to function to call. Number of params can vary from function to function, so 
+ and a pointer to function to call. Number of params can vary from function to function, so
  on x86 they simply push every parameter to the stack and then call function without any params.
  On PowerPC however, parameters are passed using registers (starting from r3 or f1 for floats),
  that's why I have to iterate trough etgFunctionTable to check types of each param - thanks for
  that I know what register to use. I'm still not sure if all functions called here are in this
- table... Second thing is that I have to use this ugly if-else block to put params in right 
+ table... Second thing is that I have to use this ugly if-else block to put params in right
  registers (and I assumed there are max. 8 params, which also may not be true). Anyway, when
  using optimizatons, compiling stops because of float-handling part of function.
 */
@@ -5853,9 +5876,9 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
            param       = 0,
            nParams     = ((etgfunctioncall *)opcode)->nParameters,
            returnValue = ((etgfunctioncall *)opcode)->returnValue;
-           
+
 	opfunctionentry *entry;
-        
+
 	while ((entry = &etgFunctionTable[currEntry++])->name != NULL)
 	{
 		if (entry->function == ((etgfunctioncall *)opcode)->function)
@@ -5911,10 +5934,10 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
             // gcc 4.0 simply will not allow direct references to 'param' with the
             // address operator (&), or indeed whatever the variable is called in the
             // 'else' clause's assembly (sic). To get around this we copy the value to a
-            // temporary variable and do the float conversion on that.  
+            // temporary variable and do the float conversion on that.
             udword param_copy = param;
             float paramf = *((float *)&param_copy);
-        
+
 			if( currParamF == 0 )
 				__asm__ ( "lfs f1, %0\n" : : "g" (paramf) : "f1" );
 			else if( currParamF == 1 )
@@ -5931,7 +5954,7 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
 				__asm__ ( "lfs f7, %0\n" : : "g" (paramf) : "f7" );
 			else if( currParamF == 7 )
 				__asm__ ( "lfs f8, %0\n" : : "g" (paramf) : "f8" );
-            
+
             currParamF++;
         }
 		else
@@ -5962,7 +5985,7 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
     {
         *((udword *)(effect->variable + returnValue)) = param;  // set the return parameter
     }
-    
+
     return (etgFunctionSize(nParams));
 }
 
@@ -5972,12 +5995,12 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
 This function causes error during compilation of ETG.c with optimization on, and still
 needs to be fixed. It works (or seems to work) in debug mode, though. It simply calls other
 functions, but in relly messed way. (etgfunctioncall *)opcode contains a table of paramaters
-and a pointer to function to call. Number of params can vary from function to function, so 
+and a pointer to function to call. Number of params can vary from function to function, so
 on x86 they simply push every parameter to the stack and then call function without any params.
 On x86_64 however, parameters are passed using registers (starting from rdi or xmm0 for floats),
 that's why I have to iterate trough etgFunctionTable to check types of each param - thanks for
 that I know what register to use. I'm still not sure if all functions called here are in this
-table... Second thing is that I have to use^H^H^Hsteal this ugly if-else block to put params in right 
+table... Second thing is that I have to use^H^H^Hsteal this ugly if-else block to put params in right
 registers (and I assumed there are max. 8 params, which also may not be true). Anyway, when
 using optimizatons, compiling stops because of float-handling part of function.
 */
@@ -5993,7 +6016,7 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
    memsize param       = 0;
    memsize intParam[8] = {0,0,0,0,0,0,0,0};
    memsize returnValue = ((etgfunctioncall *)opcode)->returnValue;
-           
+
 	opfunctionentry *entry;
 
 /*
@@ -6002,15 +6025,15 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
 //        dbgMessagef("Function: %lx:%d   -> %s",((etgfunctioncall *)opcode)->function, nParams+((etgfunctioncall *)opcode)->passThis ,  stat->name);
 
         switch  (nParams+((etgfunctioncall *)opcode)->passThis){
-            case 4: 
+            case 4:
                 etgSpawnNewEffect(effect, ((etgfunctioncall *)opcode)->parameter[0].param,1,((etgfunctioncall *)opcode)->parameter[2].param);
                 return (etgFunctionSize(nParams));
                 break;
-            case 5: 
+            case 5:
                 etgSpawnNewEffect(effect, ((etgfunctioncall *)opcode)->parameter[0].param,2,((etgfunctioncall *)opcode)->parameter[2].param,((etgfunctioncall *)opcode)->parameter[3].param);
                 return (etgFunctionSize(nParams));
                 break;
-            case 6: 
+            case 6:
                 etgSpawnNewEffect(effect, ((etgfunctioncall *)opcode)->parameter[0].param,3,((etgfunctioncall *)opcode)->parameter[2].param,((etgfunctioncall *)opcode)->parameter[3].param,((etgfunctioncall *)opcode)->parameter[4].param);
                 return (etgFunctionSize(nParams));
                 break;
@@ -6021,23 +6044,23 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
                 return (etgFunctionSize(nParams));
                 break;
 
-            default: 
+            default:
                 break;
         }
-    } 
+    }
 */ // etgSpawnNewEffect
 /*
     if (((etgfunctioncall *)opcode)->function == etgCreateEffects){
         switch  (nParams+((etgfunctioncall *)opcode)->passThis){
-            case 6: 
+            case 6:
                 etgCreateEffects(effect, ((etgfunctioncall *)opcode)->parameter[0].param,((etgfunctioncall *)opcode)->parameter[1].param,((etgfunctioncall *)opcode)->parameter[2].param,1, ((etgfunctioncall *)opcode)->parameter[4].param);
                 return (etgFunctionSize(nParams));
                 break;
-            case 7: 
+            case 7:
                 etgCreateEffects(effect, ((etgfunctioncall *)opcode)->parameter[0].param,((etgfunctioncall *)opcode)->parameter[1].param,((etgfunctioncall *)opcode)->parameter[2].param,1, ((etgfunctioncall *)opcode)->parameter[4].param, ((etgfunctioncall *)opcode)->parameter[5].param);
                 return (etgFunctionSize(nParams));
                 break;
-            case 8: 
+            case 8:
                 etgCreateEffects(effect, ((etgfunctioncall *)opcode)->parameter[0].param,((etgfunctioncall *)opcode)->parameter[1].param,((etgfunctioncall *)opcode)->parameter[2].param,1, ((etgfunctioncall *)opcode)->parameter[4].param, ((etgfunctioncall *)opcode)->parameter[5].param,((etgfunctioncall *)opcode)->parameter[6].param);
                 return (etgFunctionSize(nParams));
                 break;
@@ -6048,10 +6071,10 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
                 return (etgFunctionSize(nParams));
                 break;
 
-            default: 
+            default:
                 break;
         }
-    } 
+    }
 */ //etgCreateEffects
 	while ((entry = &etgFunctionTable[currEntry++])->name != NULL)
 	{
@@ -6089,14 +6112,14 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
                 param = (memsize)stat->constData + param;
                 isLabel = 1;
                 break;
-//            case EVT_Pointer:   
+//            case EVT_Pointer:
 //                param = effect->variable + param;
 //                if ( (memsize)((etgfunctioncall *)opcode)->parameter[index].paramptr != 0 ) {
 //                param = *((memsize*)(effect->variable + param));
-//                    param = (memsize)((etgfunctioncall *)opcode)->parameter[index].paramptr; 
+//                    param = (memsize)((etgfunctioncall *)opcode)->parameter[index].paramptr;
 //                }
 //                else {
-//                    param = (memsize)((etgfunctioncall *)opcode)->parameter[index].paramptr; 
+//                    param = (memsize)((etgfunctioncall *)opcode)->parameter[index].paramptr;
 //                }
 //                isLabel = 1;
 //                break;
@@ -6120,10 +6143,10 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
             // gcc 4.0 simply will not allow direct references to 'param' with the
             // address operator (&), or indeed whatever the variable is called in the
             // 'else' clause's assembly (sic). To get around this we copy the value to a
-            // temporary variable and do the float conversion on that.  
+            // temporary variable and do the float conversion on that.
             memsize param_copy = param;
             float paramf = *((float *)&param_copy);
-        
+
 			if( currParamF == 0 )
 				__asm__ ( "movss %0, %%xmm0\n" : : "g" (paramf) : "xmm0" );
 			else if( currParamF == 1 )
@@ -6140,7 +6163,7 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
 				__asm__ ( "movss %0, %%xmm6\n" : : "g" (paramf) : "xmm6" );
 			else if( currParamF == 7 )
 				__asm__ ( "movss %0, %%xmm7\n" : : "g" (paramf) : "xmm7" );
-            
+
             currParamF++;
         }
 		else
@@ -6155,17 +6178,17 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
 //        dbgMessagef("Function: %lx:%d   -> %s",((etgfunctioncall *)opcode)->function, nParams+((etgfunctioncall *)opcode)->passThis ,  stat->name);
 
         switch  (nParams+((etgfunctioncall *)opcode)->passThis){
-            case 4: 
+            case 4:
 //                dbgMessagef("etgSpawnNewEffect %lx,%lx,%lx,%lx", effect,intParam[1],1,intParam[3]);
                 etgSpawnNewEffect(effect, (etgeffectstatic *) intParam[1],1,intParam[3]);
                 return (etgFunctionSize(nParams));
                 break;
-            case 5: 
+            case 5:
 //                dbgMessagef("etgSpawnNewEffect %lx,%lx,%lx,%lx,%lx", effect,intParam[1],2,intParam[3],intParam[4]);
                 etgSpawnNewEffect(effect, (etgeffectstatic *) intParam[1],2,intParam[3],intParam[4]);
                 return (etgFunctionSize(nParams));
                 break;
-            case 6: 
+            case 6:
 //                dbgMessagef("etgSpawnNewEffect %lx,%lx,%lx,%lx,%lx,%lx", effect,intParam[1],3,intParam[3],intParam[4],intParam[5]);
                 etgSpawnNewEffect(effect, (etgeffectstatic *) intParam[1],3,intParam[3],intParam[4],intParam[5]);
                 return (etgFunctionSize(nParams));
@@ -6177,24 +6200,24 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
                 return (etgFunctionSize(nParams));
                 break;
 
-            default: 
+            default:
 //                dbgMessagef("etgSpawnNewEffect %lx,%lx", effect,intParam[1],intParam[2]);
                 break;
         }
-    } 
+    }
     if ((memsize)((etgfunctioncall *)opcode)->function == (memsize) etgCreateEffects){
         switch  (nParams+((etgfunctioncall *)opcode)->passThis){
-            case 6: 
+            case 6:
 //                dbgMessagef("etgCreateEffects %lx,%lx,%lx,%lx,%lx,%lx", effect,intParam[1],intParam[2],intParam[3],1,intParam[5]);
                 etgCreateEffects(effect, (etgeffectstatic *) intParam[1],intParam[2],intParam[3],1, intParam[5]);
                 return (etgFunctionSize(nParams));
                 break;
-            case 7: 
+            case 7:
 //                dbgMessagef("etgCreateEffects %lx,%lx,%lx,%lx,%lx,%lx,%lx", effect,intParam[1],intParam[2],intParam[3],2,intParam[5],intParam[6]);
                 etgCreateEffects(effect, (etgeffectstatic *) intParam[1],intParam[2],intParam[3],2, intParam[5], intParam[6]);
                 return (etgFunctionSize(nParams));
                 break;
-            case 8: 
+            case 8:
 //                dbgMessagef("etgCreateEffects %lx,%lx,%lx,%lx,%lx,%lx,%lx,%lx", effect,intParam[1],intParam[2],intParam[3],3,intParam[5],intParam[6],intParam[7]);
                 etgCreateEffects(effect, (etgeffectstatic *) intParam[1],intParam[2],intParam[3],3, intParam[5], intParam[6],intParam[7]);
                 return (etgFunctionSize(nParams));
@@ -6206,11 +6229,11 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
                 return (etgFunctionSize(nParams));
                 break;
 
-            default: 
+            default:
 //                dbgMessagef("etgCreateEffects %lx,%lx,%lx,%lx,%lx", effect,intParam[1],intParam[2],intParam[3],intParam[4]);
                 break;
         }
-    } 
+    }
     switch (currParam){
         case 8:
            __asm__ ("movq %0, (24)(%%rbp)\n"
@@ -6246,7 +6269,7 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
     {
             *((memsize*)(effect->variable + returnValue)) = param;  // set the return parameter
     }
-    
+
     return (etgFunctionSize(nParams));
 }
 
@@ -6259,7 +6282,7 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
     sdword index;
 	etgfunctioncall *opptr = (etgfunctioncall *)opcode; //opcode pointer
 
-	
+
     nParams = opptr->nParameters;
     returnType = opptr->returnValue;
     for (index = (sdword)nParams - 1; index >= 0; index--) {		//for each parameter
@@ -6272,7 +6295,7 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
 		}
 #endif
 		param = opptr->parameter[index].param;
-        switch (opptr->parameter[index].type)	
+        switch (opptr->parameter[index].type)
         {
             case EVT_Constant:
                 break;
@@ -6305,9 +6328,9 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
             :
             : "a" (param) );
 #elif defined (_MACOSX_86)
-		
+
 //		__asm__ __volatile__ (								/* store parameters above the stack pointer */
-//			"movl %0, (%%esp,%1)\n\t"						
+//			"movl %0, (%%esp,%1)\n\t"
 //			:
 //			: "a" (param), "r" (offset) );
 		void *stackPointer;
@@ -6319,9 +6342,9 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
 		*stackPointer = param;
 #endif
     }// end of above for loop
-	
-	
-    if (opptr->passThis) {                                  
+
+
+    if (opptr->passThis) {
 #if defined (_MSC_VER)										//pass a 'this' pointer
         _asm
         {
@@ -6351,7 +6374,7 @@ sdword etgFunctionCall(Effect *effect, struct etgeffectstatic *stat, ubyte *opco
     {
         *((udword *)(effect->variable + returnType)) = param;//set the return parameter
     }
-	
+
     return(etgFunctionSize(nParams));
 }
 
@@ -8247,7 +8270,7 @@ void etgModifyDepthWrite(ubyte *sys, udword write)
     partModifyNoDepthWrite((psysPtr)sys, !write);
 }
 
-void etgSetColorA(color c) 
+void etgSetColorA(color c)
 {
 #if FIX_ENDIAN
     // color c is actually a numerically calculated RGBA udword
@@ -8361,22 +8384,22 @@ udword etgCARandom(udword loR, udword hiR, udword loG, udword hiG, udword loB, u
     {
         hiR = loR + 1;
     }
-    
+
     if (loG <= hiG)
     {
         hiG = loG + 1;
     }
-    
+
     if (loB <= hiB)
     {
         hiB = loB + 1;
     }
-    
+
     if (loA <= hiA)
     {
         hiA = loA + 1;
     }
-    
+
     return colRGBA(randyrandombetween(RANDOM_ETG, loR, hiR),
                    randyrandombetween(RANDOM_ETG, loG, hiG),
                    randyrandombetween(RANDOM_ETG, loB, hiB),

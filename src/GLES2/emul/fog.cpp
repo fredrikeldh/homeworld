@@ -1,5 +1,7 @@
 
+#include "../gles2.h"
 #include "fog.h"
+#include "declarations.h"
 
 FogSetup::FogSetup() :
 	mode(GL_EXP),
@@ -61,7 +63,8 @@ void FogSetup::Set(
 	}
 }
 
-void glFogiv(
+#if 0
+static void glFogiv(
 	GLenum        pname,
 	const GLint * params
 )
@@ -69,7 +72,7 @@ void glFogiv(
 	Get<FogSetup>().Set<GLint>(pname, params);
 }
 
-void glFogi(
+static void glFogi(
 	GLenum        pname,
 	GLint         param
 )
@@ -77,10 +80,11 @@ void glFogi(
 	const GLint value = param;
 	glFogiv(pname, &value);
 }
+#endif
 
 void glFogfv(
 	GLenum    pname,
- 	const GLfloat*  params
+ 	GLfloat*  params
 )
 {
 	Get<FogSetup>().Set<GLfloat>(pname, params);
@@ -91,7 +95,7 @@ void glFogf(
  	GLfloat  	param
 )
 {
-	const GLfloat value = param;
+	GLfloat value = param;
 	glFogfv(pname, &value);
 }
 

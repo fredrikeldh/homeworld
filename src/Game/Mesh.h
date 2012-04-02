@@ -282,11 +282,11 @@ void meshStartup(void);
 void meshShutdown(void);
 
 //load in a mesh file
-meshdata *meshLoad(char *fileName);
+meshdata *meshLoad(const char *fileName);
 void meshFree(meshdata *mesh);
 void meshRecolorize(meshdata *mesh);
 void meshFixupUV(meshdata* mesh);
-bool meshPagedVersionExists(char* fileName);
+bool meshPagedVersionExists(const char* fileName);
 
 //render a specific mesh
 sdword meshRender(meshdata *mesh, sdword iColorScheme);

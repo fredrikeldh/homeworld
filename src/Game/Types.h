@@ -67,15 +67,15 @@ typedef double  real64;
 
 #ifdef _X86_64
 typedef uqword	memsize;
-#define MEMSIZE_FORMAT "lu"
+#define MEMSIZE_FORMAT "%lu"
 typedef sqword	smemsize;
-#define SMEMSIZE_FORMAT "ld"
+#define SMEMSIZE_FORMAT "%ld"
 typedef real64  memrealsize;
 #else
 typedef udword	memsize;
-#define MEMSIZE_FORMAT "u"
+#define MEMSIZE_FORMAT "%u"
 typedef sdword	smemsize;
-#define SMEMSIZE_FORMAT "d"
+#define SMEMSIZE_FORMAT "%d"
 typedef real32  memrealsize;
 #endif
 

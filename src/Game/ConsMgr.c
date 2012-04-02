@@ -148,10 +148,10 @@ void cmDeterministicStartup(void);
 void cmDeterministicShutdown(void);
 
 //callback tables for this screen
-void cmClose(char *string, featom *atom);
-void cmCancelJobs(char *string, featom *atom);
-void cmPauseJobs(char *string, featom *atom);
-void cmBuildShips(char *string, featom *atom);
+void cmClose(const char *string, featom *atom);
+void cmCancelJobs(const char *string, featom *atom);
+void cmPauseJobs(const char *string, featom *atom);
+void cmBuildShips(const char *string, featom *atom);
 void cmNumberRUsDraw(featom *atom, regionhandle region);
 void cmShipCostsDraw(featom *atom, regionhandle region);
 void cmShipInfoDraw(featom *atom, regionhandle region);
@@ -167,7 +167,7 @@ void cmCarrier4Draw(featom *atom, regionhandle region);
 void cmLeftArrowDraw(featom *atom, regionhandle region);
 void cmRightArrowDraw(featom *atom, regionhandle region);
 
-void cmScroller(char *string, featom *atom);
+void cmScroller(const char *string, featom *atom);
 
 void cmFillInCarrierXs(void);
 
@@ -582,7 +582,7 @@ lifheader *cmShipImage[MAX_RACES][NUM_CMTEXTURES] =
 };
 
 
-char *ShipImagePaths[] =
+const char *ShipImagePaths[] =
 {
 #ifdef _WIN32
     "FEMan\\Construction_Manager\\Build_race1_",
@@ -593,7 +593,7 @@ char *ShipImagePaths[] =
 #endif
 };
 
-char *ShipIcons[] =
+const char *ShipIcons[] =
 {
     "icon1.lif", // Mothership
     "icon2.lif"  // Carrier
@@ -617,7 +617,7 @@ lifheader *cmArrowIcon[6] =
 #define ARROW_ICON_PATH "FEMan/Textures/"
 #endif
 
-char *ArrowIcons[] =
+const char *ArrowIcons[] =
 {
     "Build_arrow_left_mouse.lif",
     "Build_Arrow_Left_on.lif",
@@ -876,7 +876,7 @@ void cmDirtyShipInfo(void)
     }
 }
 
-void cmScroller(char *string, featom *atom)
+void cmScroller(const char *string, featom *atom)
 {
     scrollbarhandle shandle;
     sword ind;
@@ -1580,7 +1580,7 @@ void cmUpdateShipAvailable(void)
     Outputs     : Deletes all regions associated with construction manager
     Return      :
 ----------------------------------------------------------------------------*/
-void cmClose(char *string, featom *atom)
+void cmClose(const char *string, featom *atom)
 {                                                           //close the construction manager
     sdword i;
     if((tutorial==TUTORIAL_ONLY) && !tutEnable.bBuildClose)
@@ -1641,7 +1641,7 @@ void cmClose(char *string, featom *atom)
     Outputs     : Start building all the selected ships
     Return      :
 ----------------------------------------------------------------------------*/
-void cmBuildShips(char *string, featom *atom)
+void cmBuildShips(const char *string, featom *atom)
 {
     sdword index;
     bool builtSomething = FALSE;
@@ -1715,7 +1715,7 @@ void cmForceBuildShipType(ShipType type)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void cmCancelJobs(char *string, featom *atom)
+void cmCancelJobs(const char *string, featom *atom)
 {
     sdword index, jobCount;
     shipinprogress *progress;
@@ -1808,7 +1808,7 @@ void cmCancelJobs(char *string, featom *atom)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void cmPauseJobs(char *string, featom *atom)
+void cmPauseJobs(const char *string, featom *atom)
 {
     sdword index;
     shipinprogress *progress;
@@ -3784,7 +3784,7 @@ void cmDrawShipImage(regionhandle region, sdword shipID)
 
     rndPerspectiveCorrection(FALSE);
     primRectSolidTextured2(&rect);
-    
+
 }
 
 /*-----------------------------------------------------------------------------

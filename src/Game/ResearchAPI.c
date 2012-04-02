@@ -322,12 +322,12 @@ char *TechTypeToNiceString(TechnologyType tech)
     return (strGetString((uword)tech+strTechOffset));
 }
 
-char *TechTypeToString(TechnologyType tech)
+const char *TechTypeToString(TechnologyType tech)
 {
     return NumToStr(techtypeinfo,(uword)tech);
 }
 
-TechnologyType StrToTechType(char *tech)
+TechnologyType StrToTechType(const char *tech)
 {
     return (StrToNum(techtypeinfo, tech));
 }
@@ -1161,7 +1161,7 @@ void rmResetStaticInfo(void)
     Outputs     : none
     Return      : void
 ----------------------------------------------------------------------------*/
-void rmSetShipDependCB(char *directory, char *field, void *dataToFillIn)
+void rmSetShipDependCB(const char *directory, char *field, void *dataToFillIn)
 {
     sdword index;
     char temp[64];
@@ -1218,7 +1218,7 @@ void rmSetShipDependCB(char *directory, char *field, void *dataToFillIn)
     Outputs     : none
     Return      : void
 ----------------------------------------------------------------------------*/
-void rmSetTechDependCB(char *directory, char *field, void *dataToFillIn)
+void rmSetTechDependCB(const char *directory, char *field, void *dataToFillIn)
 {
     sdword index;
     char temp[64];

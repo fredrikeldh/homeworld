@@ -43,13 +43,13 @@ void profResetFunc(void)
     profInitFunc();
 }
 
-void profTimerLabelFunc(sdword timer,char *label)
+void profTimerLabelFunc(sdword timer,const char *label)
 {
     if ((timer < 0) || (timer >= NUM_PROFILE_TIMERS)) return;
     memStrncpy(profileTimers.timeLabel[timer],label,PROFILE_TIMER_LABLEN-1);
 }
 
-void profTimerStartLittleLabelFunc(sdword timer,char *label)
+void profTimerStartLittleLabelFunc(sdword timer,const char *label)
 {
     if ((timer < 0) || (timer >= NUM_PROFILE_TIMERS)) return;
     profileTimers.profileTimerType[timer] = PROFTIMER_TYPE_ADDUPLITTLETIMES;
@@ -57,7 +57,7 @@ void profTimerStartLittleLabelFunc(sdword timer,char *label)
     profileTimers.timeTotalDuration[timer] = 0;
 }
 
-void profTimerStartLabelFunc(sdword timer,char *label)
+void profTimerStartLabelFunc(sdword timer,const char *label)
 {
     if ((timer < 0) || (timer >= NUM_PROFILE_TIMERS)) return;
     if (profileTimers.timeLabel[timer][0] == 0) memStrncpy(profileTimers.timeLabel[timer],label,PROFILE_TIMER_LABLEN-1);

@@ -60,7 +60,7 @@ fonthandle poTextFont = 0;
 
 
 // Forward reference for callback tables
-void poClose(char *string, featom *atom);
+void poClose(const char *string, featom *atom);
 void poTextDraw(featom *atom, regionhandle region);
 
 fecallback poCallback[] =
@@ -83,7 +83,7 @@ void fleetIntelligenceDestroy(FleetIntelligence *fleetIntelligence)
 }
 
 
-FleetIntelligence *fleetIntelligenceCreate(char *description, bool8 showOnce)
+FleetIntelligence *fleetIntelligenceCreate(const char *description, bool8 showOnce)
 {
     FleetIntelligence *fleetIntelligence;
 
@@ -104,7 +104,8 @@ FleetIntelligence *fleetIntelligenceCreate(char *description, bool8 showOnce)
     return fleetIntelligence;
 }
 
-Objective *objectiveAndFleetIntelligenceCreate(char *label, char *briefDescription, char* fullDescription, bool8 showOnce, bool primary)
+Objective *objectiveAndFleetIntelligenceCreate(const char *label, const char *briefDescription,
+	const char* fullDescription, bool8 showOnce, bool primary)
 {
     Objective *objective;
     bool hyperspace;
@@ -215,7 +216,7 @@ void objectiveShutdown(void)
 //  True == complete
 //  False == not complete
 //
-void objectiveSet(char *label, sdword status)
+void objectiveSet(const char *label, sdword status)
 {
     Objective *obj = objectiveFind(label);
 
@@ -230,7 +231,7 @@ void objectiveSet(char *label, sdword status)
 //  True == complete
 //  False == not complete
 //
-sdword objectiveGet(char *label)
+sdword objectiveGet(const char *label)
 {
     Objective *obj = objectiveFind(label);
 
@@ -264,7 +265,7 @@ sdword objectiveGetAll(void)
 //
 //  remove one objective
 //
-void objectiveDestroy(char *label)
+void objectiveDestroy(const char *label)
 {
     sdword i = 0;
     Objective *obj = NULL;
@@ -334,7 +335,7 @@ void objectiveDestroyAll(void)
 //
 //  returns NULL if not found
 //
-Objective *objectiveFind(char *label)
+Objective *objectiveFind(const char *label)
 {
     sdword i = 0;
 
@@ -515,7 +516,7 @@ void poTextDraw(featom *atom, regionhandle region)
     Outputs     : Deletes all regions associated with mission objectives window
     Return      :
 ----------------------------------------------------------------------------*/
-void poClose(char *string, featom *atom)
+void poClose(const char *string, featom *atom)
 {                                                           //close the window
 #if CM_VERBOSE_LEVEL >= 1
     dbgMessagef("Close mission objectives window.");

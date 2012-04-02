@@ -187,7 +187,7 @@ real32 HYPERSPACE_BASE_ARRIVETIME               =      2.0f;
 real32 HYPERSPACE_BASE_MOTHERSHIPARRIVETIME     =      1.0f;
 real32 HYPERSPACE_BASE_WAITTIME                 =      3.0f;
 real32 HYPERSPACE_DECELERATE_DIST               =      0.0f;
-real32 HYPERSPACE_DECELERATE_INITIAL_VEL        =      0.0f; 
+real32 HYPERSPACE_DECELERATE_INITIAL_VEL        =      0.0f;
 real32 HYPERSPACE_DECELERATE_TIME               =      3.0f;
 real32 HYPERSPACE_DECELERATION                  =  10000.0f;
 real32 HYPERSPACE_FARCLIPPLANE                  = 100000.0f;
@@ -218,21 +218,21 @@ static udword convertMissionToSequenceIndex(MissionEnum mission);
 static MissionEnum spGetAdjacentMission(sbyte direction);
 
 static void singlePlayerKasMissionStart(MissionEnum missionnum);
-static void singlePlayerNISNamesGet(char **nisname, char **scriptname, bool *centreMothership, sdword nisNumber);
-static void singlePlayerStartNis(char *nis, char *script, bool centre, hvector *positionAndAngle);
+static void singlePlayerNISNamesGet(const char **nisname, const char **scriptname, bool *centreMothership, sdword nisNumber);
+static void singlePlayerStartNis(const char *nis, const char *script, bool centre, hvector *positionAndAngle);
 
-static void spAbortHyperspaceCB(char *string, featom *atom);
-static void spGoNowHyperspaceCB(char *string, featom *atom);
+static void spAbortHyperspaceCB(const char *string, featom *atom);
+static void spGoNowHyperspaceCB(const char *string, featom *atom);
 
 static void spShipsDockedDrawCB   (featom *atom, regionhandle region);
 static void spShipsRemainingDrawCB(featom *atom, regionhandle region);
 
-static void SetBaseFleetStrCB       (char *directory, char *field, void *dataToFillIn);
-static void SetOnMissionCompleteInfo(char *directory, char *field, void *dataToFillIn);
-static void SetWarpFleetCB          (char *directory, char *field, void *dataToFillIn);
-static void WarpFleetStrengthCB     (char *directory, char *field, void *dataToFillIn);
-static void WarpFleetRUStrengthCB   (char *directory, char *field, void *dataToFillIn);
-static void WarpPreLoadCB           (char *directory, char *field, void *dataToFillIn);
+static void SetBaseFleetStrCB       (const char *directory, char *field, void *dataToFillIn);
+static void SetOnMissionCompleteInfo(const char *directory, char *field, void *dataToFillIn);
+static void SetWarpFleetCB          (const char *directory, char *field, void *dataToFillIn);
+static void WarpFleetStrengthCB     (const char *directory, char *field, void *dataToFillIn);
+static void WarpFleetRUStrengthCB   (const char *directory, char *field, void *dataToFillIn);
+static void WarpPreLoadCB           (const char *directory, char *field, void *dataToFillIn);
 
 static void FindShipsOfShipTypeOfPlayer(GrowSelection *growselect,ShipType shiptype,Player *player);
 
@@ -275,7 +275,7 @@ scriptEntry SinglePlayerTweaks[] =
     makeEntry( SUBMESSAGE_SAFETY_TIMEOUT,                   scriptSetReal32CB    ),
 
     { "BaseFleetStrengthForLevel", SetBaseFleetStrCB, NULL },
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -283,7 +283,7 @@ scriptEntry WarpScriptTable[] =
 {
     { "WarpStartRU", scriptSetSdwordCB, &universe.players[0].resourceUnits },
     { "WarpFleet",   SetWarpFleetCB,    NULL                               },
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -291,14 +291,14 @@ scriptEntry WarpCalcFleetStrengthTable[] =
 {
     { "WarpStartRU", WarpFleetRUStrengthCB, NULL },
     { "WarpFleet",   WarpFleetStrengthCB,   NULL },
-    
+
     END_SCRIPT_ENTRY
 };
 
 scriptEntry WarpPreLoadTable[] =
 {
     { "WarpFleet", WarpPreLoadCB, NULL },
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -309,7 +309,7 @@ scriptEntry SinglePlayerScriptTable[] =
     { "MissionStartEnemyRUs",  scriptSetSdwordCB,        &universe.players[1].resourceUnits      },
     { "MissionStartEnemyRace", scriptSetShipRaceCB,      &universe.players[1].race               },
     { "Asteroid0sCanMove",     scriptSetBool,            &singlePlayerGameInfo.asteroid0sCanMove },
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -317,7 +317,7 @@ fecallback spHyperspaceCallback[] =
 {
     { spAbortHyperspaceCB, "AbortHyperspace" },
     { spGoNowHyperspaceCB, "GoNowHyperspace" },
-    
+
     { NULL,                NULL              },
 };
 
@@ -325,7 +325,7 @@ fedrawcallback spHyperspaceDrawCallback[] =
 {
     { spShipsRemainingDrawCB, "ShipsRemainingDraw" },
     { spShipsDockedDrawCB,    "ShipsDockedDraw"    },
-    
+
     { NULL,                   NULL                 },
 };
 
@@ -333,7 +333,7 @@ fedrawcallback spHyperspaceDrawCallback[] =
 udword convertMissionToSequenceIndex(MissionEnum mission)
 {
     udword index = 0;
-    
+
     for (index = 0; index < NUMBER_MISSIONS_IN_SEQUENCE; index++)
     {
         if (mission == missionSequence[index])
@@ -341,26 +341,26 @@ udword convertMissionToSequenceIndex(MissionEnum mission)
             return index;
         }
     }
-    
+
     // getting here is seriously bad and I don't see how to recover from it
     // other than to lie about the index which will probably crash things anyway
     // so let's die at the point of failure not somewhere else down the line
     dbgFatalf(DBG_Loc, "unknown MissionEnum enum: %u", mission);
-    
+
     return 0;  // this will never be called but keeps the compiler quiet
 }
 
 void spResetMissionSequenceToBeginning(void)
 {
     singlePlayerCurrentMissionIndex = 0;
-    
+
     spSetCurrentMission(missionSequence[singlePlayerCurrentMissionIndex]);
 }
 
 void spSetCurrentMission(MissionEnum mission)
 {
     singlePlayerGameInfo.currentMission = mission;
-    
+
     singlePlayerCurrentMissionIndex
         = convertMissionToSequenceIndex(mission);
 }
@@ -385,13 +385,13 @@ MissionEnum spGetAdjacentMission(sbyte direction)
     sdword adjacentMissionIndex
         = convertMissionToSequenceIndex(spGetCurrentMission())
         + (direction < 0 ? -1 : +1);
-    
+
     if (adjacentMissionIndex < 0
     ||  adjacentMissionIndex >= NUMBER_MISSIONS_IN_SEQUENCE)
     {
         return MISSION_ENUM_NOT_INITIALISED;
     }
-    
+
     return missionSequence[adjacentMissionIndex];
 }
 
@@ -421,7 +421,7 @@ void GetMissionsDirAndFile(MissionEnum mission)
     }
 }
 
-bool GetPointOfName(hvector *point,char *name)
+bool GetPointOfName(hvector *point,const char *name)
 {
     hvector *vectptr = kasVectorPtr(name);
 
@@ -442,7 +442,7 @@ bool GetStartPointPlayer(hvector *startpoint)
     return GetPointOfName(startpoint,"StartPointPlayer");
 }
 
-void SetBaseFleetStrCB(char *directory,char *field,void *dataToFillIn)
+void SetBaseFleetStrCB(const char *directory,char *field,void *dataToFillIn)
 {
     sdword level;
     real32 basestrength;
@@ -673,7 +673,7 @@ void TellShipsToAbortDockForHyperspace()
     memFree(selectAll);
 }
 
-void spAbortHyperspaceCB(char *string, featom *atom)
+void spAbortHyperspaceCB(const char *string, featom *atom)
 {
     if (singlePlayerGameInfo.hyperspaceState == HYPERSPACE_WAITINGROLLCALL)
     {
@@ -692,7 +692,7 @@ void spAbortHyperspaceCB(char *string, featom *atom)
     }
 }
 
-void spGoNowHyperspaceCB(char *string, featom *atom)
+void spGoNowHyperspaceCB(const char *string, featom *atom)
 {
     if (singlePlayerGameInfo.hyperspaceState == HYPERSPACE_WAITINGROLLCALL)
     {
@@ -1607,7 +1607,7 @@ bool UpdateArrivingShip(Ship *ship,hvector *topoint,bool midLevel)
     noupdateonincomminghs:;
                     }
                     break;
-                    
+
                 case HS_COLLAPSE_OUTOF:
                     if (ship->soundevent.hyperspaceHandle != SOUND_NOTINITED)
                     {
@@ -1635,14 +1635,14 @@ bool UpdateArrivingShip(Ship *ship,hvector *topoint,bool midLevel)
     noupdateHSMP:;
                     }
                     break;
-                    
+
                 case HS_INACTIVE:
                     if (universe.totaltimeelapsed > shipSinglePlayerGameInfo->timeToHyperspace)
                     {
                         thisShipArrived = TRUE;
                     }
                     break;
-                    
+
                 default:
                     hsUpdate(ship);
                     break;
@@ -1975,7 +1975,7 @@ void spLockout(udword flags)
 {
     spLockoutFlags = flags;
 //comment out the rest of this function to use NIS debugging keys
-#if NIS_PRINT_INFO
+#ifdef NIS_PRINT_INFO
     if (nisNoLockout)
     {
         return;
@@ -2080,7 +2080,7 @@ void spHyperspaceButtonPushed(void)
                 sdword resourcesLeft = NumberOfEasilyAccesibleRUs(NULL);
 
                 if (resourcesLeft > 0) {
-                    char *resources_collected_strings[] = {
+                    const char *resources_collected_strings[] = {
                         "Resources collected",
                         "Ressources collectées",
                         "Ressourcen gesammelt",
@@ -2171,7 +2171,7 @@ void singlePlayerLevelLoaded(void)
     // need to fix up the mission sequence index to match the currentMission
     singlePlayerCurrentMissionIndex
         = convertMissionToSequenceIndex(spGetCurrentMission());
-    
+
     if (spGetCurrentMission() == MISSION_10_SUPER_NOVA_STATION)
     {
         Node *objnode;
@@ -2411,7 +2411,7 @@ void singlePlayerGameUpdate()
         if (value != 0)
         {
             hvector startpoint;
-            char *nis, *script;
+            const char *nis, *script;
             bool centre;
 
             GetStartPointPlayer(&startpoint);
@@ -2563,7 +2563,7 @@ void singlePlayerGameUpdate()
                     {
                         animAviPlay(spGetCurrentMission(), spGetNextMission());
                     }
-                    
+
                     switch( spGetCurrentMission() )
                     {
 // was: HW_COMPUTER_GAMING_WORLD_DEMO but the standard demo
@@ -2660,7 +2660,7 @@ void singlePlayerGameUpdate()
                 if (singlePlayerGameInfo.onLoadPlayNIS > 0)
                 {
                     hvector startpoint;
-                    char *nis, *script;
+                    const char *nis, *script;
                     bool centre;
 
                     GetStartPointPlayer(&startpoint);
@@ -2687,13 +2687,13 @@ hyperspacefailed:
                 singlePlayerGameInfo.hyperspaceFails = FALSE;
             }
             break;
-            
+
         default:
             break;
     }
 }
 
-static void SetOnMissionCompleteInfo(char *directory,char *field,void *dataToFillIn)
+static void SetOnMissionCompleteInfo(const char *directory,char *field,void *dataToFillIn)
 {
     char str[30];
     SinglePlayerGameInfo *info = (SinglePlayerGameInfo *)dataToFillIn;
@@ -2909,9 +2909,9 @@ udword spOldMissionNumber(MissionEnum missionEnum)
 
     if (missionEnum == MISSION_5B_TURANIC_RAIDER_PLANETOID)
     {
-        oldMissionValue = (udword) MISSION_5_GREAT_WASTELANDS_REVENGE;  
+        oldMissionValue = (udword) MISSION_5_GREAT_WASTELANDS_REVENGE;
     }
-    
+
     return oldMissionValue;
 }
 
@@ -2965,7 +2965,7 @@ void *WatchFunctionAddress(MissionEnum mission)
         case MISSION_15_CHAPEL_PERILOUS:           return &Watch_Mission15;
         case MISSION_16_HIIGARA:                   return &Watch_Mission16;
         case MISSION_TUTORIAL:                     return &Watch_Tutorial1;
-        
+
         default:
             break;
     }
@@ -2996,7 +2996,7 @@ const void **FunctionListAddress(MissionEnum mission)
         case MISSION_15_CHAPEL_PERILOUS:           return Mission15_FunctionPointers;
         case MISSION_16_HIIGARA:                   return Mission16_FunctionPointers;
         case MISSION_TUTORIAL:                     return Tutorial1_FunctionPointers;
-        
+
         default:
             break;
     }
@@ -3027,7 +3027,7 @@ udword FunctionListSize(MissionEnum mission)
         case MISSION_15_CHAPEL_PERILOUS:           return Mission15_FunctionPointerCount;
         case MISSION_16_HIIGARA:                   return Mission16_FunctionPointerCount;
         case MISSION_TUTORIAL:                     return Tutorial1_FunctionPointerCount;
-        
+
         default:
             break;
     }
@@ -3053,7 +3053,7 @@ KASWatchFunction MissionEnumToWatchFunction(MissionEnum mission)
 {
     dbgAssertOrIgnore(mission >= MISSION_ENUM_NOT_INITIALISED);
     dbgAssertOrIgnore(mission <  NUMBER_SINGLEPLAYER_MISSIONS);
-    
+
     return WatchFunctionAddress(mission);
 }
 
@@ -3061,7 +3061,7 @@ const void** MissionEnumToFunctionList(MissionEnum mission)
 {
     dbgAssertOrIgnore(mission >= MISSION_ENUM_NOT_INITIALISED);
     dbgAssertOrIgnore(mission <  NUMBER_SINGLEPLAYER_MISSIONS);
-    
+
     return FunctionListAddress(mission);
 }
 
@@ -3081,12 +3081,12 @@ const void** MissionEnumToFunctionList(MissionEnum mission)
     #define NIS_PATH "nis/"
 #endif
 
-char *singlePlayerNISName = NULL;
+const char *singlePlayerNISName = NULL;
 
 sdword singlePlayerNisNumber    = -1;
 sdword singlePlayerNisletNumber = -1;
 
-char *nisR1Names[NUMBER_SINGLEPLAYER_NIS][2] =
+const char *nisR1Names[NUMBER_SINGLEPLAYER_NIS][2] =
 {
     { NIS_PATH"n01r1.nis",  NIS_PATH"n01r1.script"    },
 #if defined (HW_GAME_DEMO)
@@ -3107,7 +3107,7 @@ char *nisR1Names[NUMBER_SINGLEPLAYER_NIS][2] =
 };
 
 //See note above regarding the weird NIS ordering
-char *nisR2Names[NUMBER_SINGLEPLAYER_NIS][2] =
+const char *nisR2Names[NUMBER_SINGLEPLAYER_NIS][2] =
 {
     { NIS_PATH"n01r2.nis",  NIS_PATH"n01r2.script"  },
     { NIS_PATH"n02.nis",    NIS_PATH"n02.script"    },
@@ -3127,7 +3127,7 @@ char *nisR2Names[NUMBER_SINGLEPLAYER_NIS][2] =
 
 typedef struct
 {
-    char *name[NISLETS_PER_LEVEL];
+    const char *name[NISLETS_PER_LEVEL];
     bool8 raceSpecific[NISLETS_PER_LEVEL];
 }
 nisletnames;
@@ -3152,7 +3152,7 @@ nisletnames nisletNames[NUMBER_SINGLEPLAYER_MISSIONS] =
     { { NIS_PATH"m15a", NIS_PATH"m15b", NULL           }, { FALSE, FALSE, FALSE } },
     { { NIS_PATH"m14a", NULL,           NULL           }, { TRUE,  FALSE, FALSE } },
     { { NIS_PATH"m16a", NIS_PATH"m16a", NIS_PATH"m16a" }, { FALSE, FALSE, TRUE  } },
-    
+
     { { NULL,           NULL,           NULL           }, { FALSE, FALSE, FALSE } },
 };
 
@@ -3161,15 +3161,15 @@ bool8 nisPlayRelativeToMothership[NUMBER_SINGLEPLAYER_NIS] =
     FALSE,
     TRUE,
     TRUE,
-    
+
     TRUE,
     TRUE,
     TRUE,
-    
+
     TRUE,
     TRUE,
     TRUE,
-    
+
     TRUE,
     TRUE,
     TRUE
@@ -3247,7 +3247,7 @@ void singlePlayerNisStoppedCB(void)
                   centreMothership - TRUE if the NIS is to be centred about player's mothership
     Return      : void
 ----------------------------------------------------------------------------*/
-void singlePlayerNISNamesGet(char **nisname, char **scriptname, bool *centreMothership, sdword nisNumber)
+void singlePlayerNISNamesGet(const char **nisname, const char **scriptname, bool *centreMothership, sdword nisNumber)
 {
     singlePlayerNisNumber = nisNumber;
     nisNumber--;
@@ -3292,7 +3292,7 @@ bool singlePlayerNISletNamesGet(char **nisname, char **scriptname, sdword nislet
     dbgAssertOrIgnore(missionNumber < NUMBER_SINGLEPLAYER_MISSIONS);
     dbgAssertOrIgnore(insertNumber >= 0);
     dbgAssertOrIgnore(insertNumber < NISLETS_PER_LEVEL);
-#if NIS_PRINT_INFO
+#ifdef NIS_PRINT_INFO
     if (nisletNames[missionNumber].name[insertNumber] == NULL)
     {
         dbgMessagef("Mission %d insert (%c) is not defined", missionNumber + 1, insertNumber + 'A');
@@ -3315,7 +3315,7 @@ bool singlePlayerNISletNamesGet(char **nisname, char **scriptname, sdword nislet
     strcpy(nisScriptName, nisFileName);
     strcat(nisFileName, ".nis");
     strcat(nisScriptName, ".script");
-#if NIS_PRINT_INFO
+#ifdef NIS_PRINT_INFO
     if (!fileExists(nisFileName, 0) || !fileExists(nisScriptName, 0))
     {
         dbgMessagef("'%s' and/or '%s' do not exist.", nisFileName, nisScriptName);
@@ -3339,7 +3339,7 @@ bool singlePlayerNISletNamesGet(char **nisname, char **scriptname, sdword nislet
     Outputs     :
     Return      : void
 ----------------------------------------------------------------------------*/
-void singlePlayerStartNis(char *nisname, char *scriptname, bool centreMothership, hvector *positionAndAngle)
+void singlePlayerStartNis(const char *nisname, const char *scriptname, bool centreMothership, hvector *positionAndAngle)
 {
     matrix thisIdentityMatrix;
     vector position;
@@ -3387,7 +3387,7 @@ void singlePlayerStartNis(char *nisname, char *scriptname, bool centreMothership
         for (node = universe.DerelictList.head; node != NULL; node = node->next)
         {
             derelict = (Derelict *)listGetStructOfNode(node);
-            if (derelict->derelicttype == typeOfCentreShip)
+            if (derelict->derelicttype == (int)typeOfCentreShip)
             {                                               //if this is the derelict we're looking for
                 nisCentreShip = (Ship *)derelict;
                 break;
@@ -3557,7 +3557,7 @@ sdword WarpToLevelEnabled()
     return 0;
 }
 
-void WarpFleetStrengthCB(char *directory,char *field,void *dataToFillIn)
+void WarpFleetStrengthCB(const char *directory,char *field,void *dataToFillIn)
 {
     ShipType shiptype;
     ShipRace shiprace;
@@ -3597,7 +3597,7 @@ void WarpFleetStrengthCB(char *directory,char *field,void *dataToFillIn)
     spFleetStr += (GetStrengthOfShipStatic(shipstatic)*num);
 }
 
-void WarpPreLoadCB(char *directory,char *field,void *dataToFillIn)
+void WarpPreLoadCB(const char *directory,char *field,void *dataToFillIn)
 {
     ShipType shiptype;
     ShipRace shiprace;
@@ -3633,7 +3633,7 @@ void WarpPreLoadCB(char *directory,char *field,void *dataToFillIn)
     SetInfoNeededForShipAndRelatedStaticInfo(shiptype,shiprace,TRUE);
 }
 
-void WarpFleetRUStrengthCB(char *directory,char *field,void *dataToFillIn)
+void WarpFleetRUStrengthCB(const char *directory,char *field,void *dataToFillIn)
 {
     sdword num = 0;
 
@@ -3641,7 +3641,7 @@ void WarpFleetRUStrengthCB(char *directory,char *field,void *dataToFillIn)
     spFleetStr += GetStrengthOfRUs(num);
 }
 
-void SetWarpFleetCB(char *directory,char *field,void *dataToFillIn)
+void SetWarpFleetCB(const char *directory,char *field,void *dataToFillIn)
 {
     Ship *ship;
     ShipType shiptype;
@@ -3742,62 +3742,62 @@ void singleHackResearchWarp(void)
         case MISSION_16_HIIGARA:
         case MISSION_15_CHAPEL_PERILOUS:
             PlayerAcquiredTechnology("HeavyGuns");
-        
+
         case MISSION_14_BRIDGE_OF_SIGHS:
             AllowPlayerToResearch("HeavyGuns");
             PlayerAcquiredTechnology("CloakDefenseFighter");
-        
+
         case MISSION_13_THE_KAROS_GRAVEYARD:
             PlayerAcquiredTechnology("MissileWeapons");
             AllowPlayerToResearch("CloakDefenseFighter");
-        
+
         case MISSION_12_GALACTIC_CORE:
             PlayerAcquiredTechnology("GravityWellGeneratorTech");
-        
+
         case MISSION_11_TENHAUSER_GATE:
             AllowPlayerToResearch("GravityWellGeneratorTech");
             PlayerAcquiredTechnology("ProximityDetector");
             PlayerAcquiredTechnology("RepairTech");
-        
+
         case MISSION_10_SUPER_NOVA_STATION:
             AllowPlayerToResearch("RepairTech");
             AllowPlayerToResearch("MissileWeapons");
-        
+
         case MISSION_9_SEA_OF_LOST_SOULS:
             PlayerAcquiredTechnology("DDDFDFGFTech");
             PlayerAcquiredTechnology("TargetingSystems");
-        
+
         case MISSION_8_THE_CATHEDRAL_OF_KADESH:
             AllowPlayerToResearch("TargetingSystems");
-        
+
         case MISSION_7_THE_GARDENS_OF_KADESH:
             AllowPlayerToResearch("DDDFDFGFTech");
             PlayerAcquiredTechnology("MassDrive1Mt");
             PlayerAcquiredTechnology("FireControl");
-            
+
         case MISSION_6_DIAMOND_SHOALS:
             PlayerAcquiredTechnology("PlasmaWeapons");
             AllowPlayerToResearch("MassDrive1Mt");
             AllowPlayerToResearch("FireControl");
-            
+
         case MISSION_5_GREAT_WASTELANDS_REVENGE:
         case MISSION_5B_TURANIC_RAIDER_PLANETOID:
             AllowPlayerToResearch("PlasmaWeapons");
             PlayerAcquiredTechnology("Chassis3");
             PlayerAcquiredTechnology("IonWeapons");
-            
+
         case MISSION_4_GREAT_WASTELANDS_TRADERS:
             PlayerAcquiredTechnology("MassDrive100Kt");
             AllowPlayerToResearch("Chassis3");
-            
+
         case MISSION_3_RETURN_TO_KHARAK:
             PlayerAcquiredTechnology("Chassis2");
             PlayerAcquiredTechnology("MediumGuns");
-            
+
         case MISSION_2_OUTSKIRTS_OF_KHARAK_SYSTEM:
             PlayerAcquiredTechnology("Chassis1");
             PlayerAcquiredTechnology("MassDrive10Kt");
-            
+
         case MISSION_1_KHARAK_SYSTEM:
             PlayerAcquiredTechnology("MassDrive1Kt");
             AllowPlayerToResearch("Chassis1");
@@ -3808,7 +3808,7 @@ void singleHackResearchWarp(void)
 void singlePlayerStartGame(void)
 {
     hvector startPoint;
-    char *nis, *script;
+    const char *nis, *script;
     bool centre;
 
     universe.players[1].resourceUnits = 0;
@@ -3856,7 +3856,7 @@ void singlePlayerStartGame(void)
     singlePlayerLevelLoaded();
     singlePlayerKasMissionStart(spGetCurrentMission());
     GetStartPointPlayer(&startPoint);
-    
+
     singlePlayerNISNamesGet(&nis, &script, &centre, spOldMissionNumber(spGetCurrentMission()));
     singlePlayerStartNis(nis, script, centre, &startPoint);
 }
@@ -3864,7 +3864,7 @@ void singlePlayerStartGame(void)
 void singlePlayerNextLevel(void)
 {
     hvector startnisAt = { 0.0f, 0.0f, 0.0f, 0.0f };
-    char *nis, *script;
+    const char *nis, *script;
     bool centre;
 
     if (spGetCurrentMission() == MISSION_16_HIIGARA)

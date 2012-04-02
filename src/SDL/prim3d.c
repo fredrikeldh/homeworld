@@ -542,11 +542,12 @@ void primPointSize3Fade(vector *p1, real32 size, color c, real32 fade)
     }
 }
 
+#if 0	//unused
+extern udword gDevcaps;
 static void primSolidTexture3_multi(vector* p1, real32 size, color c, trhandle tex)
 {
     real32 halfsize;
     texreg* reg;
-    extern udword gDevcaps;
 
     halfsize = 0.5f * size;
 
@@ -591,6 +592,7 @@ static void primSolidTexture3_multi(vector* p1, real32 size, color c, trhandle t
     glDisable(GL_BLEND);
     rndAdditiveBlends(FALSE);
 }
+#endif
 
 /*-----------------------------------------------------------------------------
     Name        : primSolidTexture3

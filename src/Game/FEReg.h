@@ -355,6 +355,6 @@ void ferDrawHorizSlider(sliderhandle shandle, uword state);
 void ferDrawVertSlider(sliderhandle shandle, uword state);
 
 void ferDraw(sdword x, sdword y, lifheader *texture);
-lifheader *ferTextureRegisterSpecial(char *fileName, textype newtype, textype origtype);
+lifheader *ferTextureRegisterSpecial(const char *fileName, textype newtype, textype origtype);
 
 #endif

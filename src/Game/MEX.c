@@ -30,7 +30,7 @@ bool mexVerify(void *mex)
     return (strcasecmp((char *)mex,"mannngo") == 0);
 }
 
-void *mexLoad(char *filename)
+void *mexLoad(const char *filename)
 {
     void *address;
 
@@ -83,7 +83,7 @@ void *mexLoad(char *filename)
 
 			chunk1->r = FIX_ENDIAN_FLOAT_32( chunk1->r );
 		}
-		
+
 		if( strcasecmp( chunk->type, "Rct" ) == 0 )
 		{
 			MEXCollisionRectangleChunk *chunk1 = ( MEXCollisionRectangleChunk *)chunk;
@@ -126,7 +126,7 @@ void mexFree(void *mex)
     memFree(mex);
 }
 
-void *mexGetChunk(void *mex,char *type,char *name)
+void *mexGetChunk(void *mex,const char *type,const char *name)
 {
     MEXFileHeader *header = (MEXFileHeader *)mex;
     MEXChunk *curmexchunk = (MEXChunk *) ( ((ubyte *)mex) + sizeof(MEXFileHeader) );

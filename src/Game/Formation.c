@@ -106,7 +106,7 @@ scriptEntry FormationTweaks[] =
     makeEntry(FORMATION_ERROR_NEGLIGIBLE,scriptSetReal32CB),
     makeEntry(TARGETDRONE_FORMATION_SIZE,scriptSetReal32CB),
     makeEntry(SPHERESIZE_IGNORE_NUMDECLINATIONS,scriptSetReal32CB),
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -152,7 +152,7 @@ bool isCapitalShipStaticOrBig(ShipStaticInfo *shipstatic)
     Outputs     :
     Return      : string representing formation
 ----------------------------------------------------------------------------*/
-char *TypeOfFormationToStr(TypeOfFormation formation)
+const char *TypeOfFormationToStr(TypeOfFormation formation)
 {
     return NumToStr(formationtypeinfo,(uword)formation);
 }
@@ -442,9 +442,9 @@ SphereTableEntry *findSphereTableEntry(sdword numShips)
             return tableentry;
         }
     }
-    
+
     dbgFatal(DBG_Loc,"\nSphere formation too big");
-    
+
     // never going to get here because of the dbgFatal above; this is here just to keep the compiler happy
     return tableentry;
 }
@@ -2684,7 +2684,7 @@ typedef struct
 
 static ParadeTypeInfo paradeTypeInfos[NUMBER_PARADE_TYPES];
 
-void scriptSetSlotInfoCB(char *directory,char *field,void *dataToFillIn);
+void scriptSetSlotInfoCB(const char *directory,char *field,void *dataToFillIn);
 
 scriptStructEntry ParadeInfoScriptTable[] =
 {
@@ -2733,7 +2733,7 @@ scriptStructEntry ParadeInfoScriptTable[] =
     END_SCRIPT_STRUCT_ENTRY
 };
 
-void scriptSetSlotInfoCB(char *directory,char *field,void *dataToFillIn)
+void scriptSetSlotInfoCB(const char *directory,char *field,void *dataToFillIn)
 {
     SlotInfo *slotInfo = (SlotInfo *)dataToFillIn;
 

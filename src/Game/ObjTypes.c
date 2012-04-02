@@ -460,7 +460,7 @@ ShipRace RaceBitsToRace(uword raceBits)
     Outputs     :
     Return      : pointer to converted string if found, NULL otherwise
 ----------------------------------------------------------------------------*/
-char *NumToStr(NumStrXlate numstrtab[],uword num)
+const char *NumToStr(NumStrXlate numstrtab[],uword num)
 {
     uword i;
     NumStrXlate *curnumstr;
@@ -483,7 +483,7 @@ char *NumToStr(NumStrXlate numstrtab[],uword num)
     Outputs     :
     Return      : number if converted correctly, -1 otherwise
 ----------------------------------------------------------------------------*/
-sdword StrToNum(NumStrXlate numstrtab[],char *str)
+sdword StrToNum(NumStrXlate numstrtab[],const char *str)
 {
     sdword i;
     NumStrXlate *curnumstr;
@@ -503,17 +503,17 @@ sdword StrToNum(NumStrXlate numstrtab[],char *str)
     and the strings representing them and vice-versa.
 =============================================================================*/
 
-char *TacticsTypeToStr(TacticsType tactics)
+const char *TacticsTypeToStr(TacticsType tactics)
 {
     return NumToStr(tacticsinfo,(uword)tactics);
 }
 
-TacticsType StrToTacticsType(char *str)
+TacticsType StrToTacticsType(const char *str)
 {
     return StrToNum(tacticsinfo,str);
 }
 
-char *ShipClassToStr(ShipClass shipclass)
+const char *ShipClassToStr(ShipClass shipclass)
 {
     return NumToStr(shipclassinfo,(uword)shipclass);
 }
@@ -523,12 +523,12 @@ char *ShipClassToNiceStr(ShipClass shipclass)
     return(strGetString((uword) shipclass+strClassOffset));
 }
 
-char *ShipRaceToStr(ShipRace shiprace)
+const char *ShipRaceToStr(ShipRace shiprace)
 {
     return NumToStr(shipraceinfo,(uword)shiprace);
 }
 
-char *ShipTypeToStr(ShipType shiptype)
+const char *ShipTypeToStr(ShipType shiptype)
 {
     return NumToStr(shiptypeinfo,(uword)shiptype);
 }
@@ -552,7 +552,7 @@ ShipRace StrToNisRace(char *string)
     return((ShipRace)StrToNum(nisraceinfo, string));
 }
 
-char *NisRaceToStr(ShipRace race)
+const char *NisRaceToStr(ShipRace race)
 {
     return(NumToStr(nisraceinfo, (uword)race));
 }
@@ -562,162 +562,162 @@ char *ShipTypeToNiceStr(ShipType shiptype)
     return(strGetString((uword) shiptype + strShipOffset));
 }
 
-char *GunTypeToStr(GunType guntype)
+const char *GunTypeToStr(GunType guntype)
 {
     return NumToStr(guntypeinfo,(uword)guntype);
 }
 
-char *GunSoundTypeToStr(GunSoundType gunsoundtype)
+const char *GunSoundTypeToStr(GunSoundType gunsoundtype)
 {
     return NumToStr(gunsoundtypeinfo,(uword)gunsoundtype);
 }
 
-char *DockPointTypeToStr(DockPointType dockpointtype)
+const char *DockPointTypeToStr(DockPointType dockpointtype)
 {
     return NumToStr(dockpointtypeinfo,(uword)dockpointtype);
 }
 
-char *SalvagePointTypeToStr(SalvagePointType salvagepointtype)
+const char *SalvagePointTypeToStr(SalvagePointType salvagepointtype)
 {
     return NumToStr(salvagepointtypeinfo,(uword)salvagepointtype);
 }
 
-char *ExplosionTypeToStr(EffectType type)
+const char *ExplosionTypeToStr(EffectType type)
 {
     return NumToStr(explosiontypeinfo,(uword)type);
 }
 
-char *AsteroidTypeToStr(AsteroidType asteroidtype)
+const char *AsteroidTypeToStr(AsteroidType asteroidtype)
 {
     return NumToStr(asteroidtypeinfo,(uword)asteroidtype);
 }
 
-char *DustCloudTypeToStr(DustCloudType dustcloudtype)
+const char *DustCloudTypeToStr(DustCloudType dustcloudtype)
 {
     return NumToStr(dustcloudtypeinfo,(uword)dustcloudtype);
 }
 
-char *GasCloudTypeToStr(GasCloudType gascloudtype)
+const char *GasCloudTypeToStr(GasCloudType gascloudtype)
 {
     return NumToStr(gascloudtypeinfo,(uword)gascloudtype);
 }
 
-char *NebulaTypeToStr(NebulaType nebulatype)
+const char *NebulaTypeToStr(NebulaType nebulatype)
 {
     return NumToStr(nebulatypeinfo, (uword)nebulatype);
 }
 
-char *DerelictTypeToStr(DerelictType derelicttype)
+const char *DerelictTypeToStr(DerelictType derelicttype)
 {
     return NumToStr(derelicttypeinfo,(uword)derelicttype);
 }
 
-char *BulletTypeToStr(BulletType bulletType)
+const char *BulletTypeToStr(BulletType bulletType)
 {
     return NumToStr(bullettypeinfo,(uword)bulletType);
 }
 
-char *MissileTypeToStr(MissileType missileType)
+const char *MissileTypeToStr(MissileType missileType)
 {
     return NumToStr(missiletypeinfo,(uword)missileType);
 }
 
-char *NAVLightTypeToStr(NAVLightType navlightType)
+const char *NAVLightTypeToStr(NAVLightType navlightType)
 {
     return(NumToStr(navlighttypeinfo, (uword)navlightType));
 }
 
-char *ObjTypeToStr(ObjType objtype)
+const char *ObjTypeToStr(ObjType objtype)
 {
     return(NumToStr(objtypeinfo,(uword)objtype));
 }
 
-ShipClass StrToShipClass(char *str)
+ShipClass StrToShipClass(const char *str)
 {
     return StrToNum(shipclassinfo,str);
 }
 
-ShipRace StrToShipRace(char *str)
+ShipRace StrToShipRace(const char *str)
 {
     return StrToNum(shipraceinfo,str);
 }
 
-SpecialEffectType StrToEffectNum(char *str)
+SpecialEffectType StrToEffectNum(const char *str)
 {
     return StrToNum(SpecialEffectinfo,str);
 }
 
-ShipType StrToShipType(char *str)
+ShipType StrToShipType(const char *str)
 {
     return StrToNum(shiptypeinfo,str);
 }
 
-AsteroidType StrToAsteroidType(char *str)
+AsteroidType StrToAsteroidType(const char *str)
 {
     return StrToNum(asteroidtypeinfo,str);
 }
 
-DustCloudType StrToDustCloudType(char *str)
+DustCloudType StrToDustCloudType(const char *str)
 {
     return StrToNum(dustcloudtypeinfo, str);
 }
 
-GasCloudType StrToGasCloudType(char *str)
+GasCloudType StrToGasCloudType(const char *str)
 {
     return StrToNum(gascloudtypeinfo, str);
 }
 
-NebulaType StrToNebulaType(char *str)
+NebulaType StrToNebulaType(const char *str)
 {
     return StrToNum(nebulatypeinfo, str);
 }
 
-DerelictType StrToDerelictType(char *str)
+DerelictType StrToDerelictType(const char *str)
 {
     return StrToNum(derelicttypeinfo,str);
 }
 
-EffectType StrToExplosionType(char *str)
+EffectType StrToExplosionType(const char *str)
 {
     return StrToNum(explosiontypeinfo,str);
 }
 
-GunType StrToGunType(char *str)
+GunType StrToGunType(const char *str)
 {
     return StrToNum(guntypeinfo,str);
 }
 
-GunSoundType StrToGunSoundType(char *str)
+GunSoundType StrToGunSoundType(const char *str)
 {
     return StrToNum(gunsoundtypeinfo,str);
 }
 
-DockPointType StrToDockPointType(char *str)
+DockPointType StrToDockPointType(const char *str)
 {
     return StrToNum(dockpointtypeinfo,str);
 }
 
-SalvagePointType StrToSalvagePointType(char *str)
+SalvagePointType StrToSalvagePointType(const char *str)
 {
     return StrToNum(salvagepointtypeinfo,str);
 }
 
-BulletType StrToBulletType(char *str)
+BulletType StrToBulletType(const char *str)
 {
     return StrToNum(bullettypeinfo,str);
 }
 
-MissileType StrToMissileType(char *str)
+MissileType StrToMissileType(const char *str)
 {
     return StrToNum(missiletypeinfo,str);
 }
 
-NAVLightType StrToNAVLightType(char *str)
+NAVLightType StrToNAVLightType(const char *str)
 {
     return StrToNum(navlighttypeinfo, str);
 }
 
-ObjType StrToObjType(char *str)
+ObjType StrToObjType(const char *str)
 {
     return StrToNum(objtypeinfo, str);
 }

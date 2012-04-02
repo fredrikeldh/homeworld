@@ -15,7 +15,7 @@
 #endif
 
 #include <unistd.h>
-#include "../../src/Game/Types.h"
+//#include "../../src/Game/Types.h"
 #include "kas2c.h"
 
 #ifdef _WIN32
@@ -31,7 +31,7 @@
 // Declare to prevent warnings
 //
 #ifndef yylex
-int yylex();
+int yylex(void);
 #endif
 
 #ifndef yyerror
@@ -299,17 +299,17 @@ int lineNumGet(void)
     return lineNum;
 }
 
-char *curFilenameGet()
+const char *curFilenameGet(void)
 {
     return curFilename;
 }
 
+extern FILE *yyin, *yyout;
 int main(int argc, char **argv)
 {
     char infilename[256], outfilename[256], houtfilename[256], foutfilename[256];
     char *shortinfilename, tempfilename[256];
-    extern FILE *yyin, *yyout;
-    int i;
+    size_t i;
 
     if (argc >= 2 && !strcasecmp(argv[1], "-F"))
     {
@@ -510,7 +510,7 @@ int main(int argc, char **argv)
     {
         unlink(outfilename);
         unlink(houtfilename);
-        if (foutfilename[0]);
+        if (foutfilename[0])
             unlink(foutfilename);
     }
     return 0;

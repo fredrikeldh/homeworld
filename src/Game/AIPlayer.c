@@ -691,7 +691,7 @@ void aiplayerShutdown()
     aivarShutdown();
 }
 
-void aiplayerDebugLog(uword playerIndex, char *format, ...)
+void aiplayerDebugLog(uword playerIndex, const char *format, ...)
 {
     if (aiplayerLogEnable)
     {

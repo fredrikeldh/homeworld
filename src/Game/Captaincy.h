@@ -48,7 +48,7 @@ void TimeoutTimerUpdateAll(void);
 void GiveUpCaptaincy(void);
 
 void captaincyLogInit(void);
-void captaincyLog(bool echotoscreen, char *format, ...);
+void captaincyLog(bool echotoscreen, const char *format, ...);
 
 
 extern bool transferCaptaincyDisabled;

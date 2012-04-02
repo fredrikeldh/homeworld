@@ -518,7 +518,7 @@ void btgLoadTextures(void)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void btgLoad(char* filename)
+void btgLoad(const char* filename)
 {
     ubyte* btgData       = NULL;
     ubyte* btgDataOffset = NULL;
@@ -561,9 +561,9 @@ void btgLoad(char* filename)
 #endif
 
 
-// Hard coding sizeof values. 
+// Hard coding sizeof values.
 // This is because they may change later on in the world but static in the file.
-// This allows us to align variables. It replaces 
+// This allows us to align variables. It replaces
 //  memcpy(btgHead, btgData, headSize);
 
     memset(btgHead,0,sizeof(*btgHead));
@@ -630,7 +630,7 @@ void btgLoad(char* filename)
 
     memcpy( (ubyte*)btgHead+offsetof(btgHeader,renderMode    ), btgDataOffset, 4 );
     btgDataOffset += 4;
-        
+
 //    memcpy(btgHead, btgData, headSize);  //See above.
 
 #if FIX_ENDIAN
@@ -705,13 +705,13 @@ void btgLoad(char* filename)
         for( i=0; i<btgHead->numVerts; i++ )
         {
             btgVerts[i].flags = FIX_ENDIAN_INT_32( btgVerts[i].flags );
-            
+
             swap  = ( Uint64 *)&btgVerts[i].x;
             *swap = SDL_SwapLE64( *swap );
-            
+
             swap  = ( Uint64 *)&btgVerts[i].y;
             *swap = SDL_SwapLE64( *swap );
-            
+
             btgVerts[i].red        = FIX_ENDIAN_INT_32( btgVerts[i].red );
             btgVerts[i].green      = FIX_ENDIAN_INT_32( btgVerts[i].green );
             btgVerts[i].blue       = FIX_ENDIAN_INT_32( btgVerts[i].blue );
@@ -860,7 +860,7 @@ void btgLoad(char* filename)
             instarp += 4;
 
 	}
-		
+
 #if FIX_ENDIAN
 		for( i=0; i<btgHead->numPolys; i++ )
 		{
@@ -1234,6 +1234,10 @@ void btgSetColourMultiplier(real32 t)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
+
+#if MR_KEYBOARD_CHEATS
+extern bool gMosaic;
+#endif
 void btgRender()
 {
     udword nStar;
@@ -1242,10 +1246,6 @@ void btgRender()
     udword* dlast;
     udword* dnext;
     static sdword lastFade = 255;
-
-#if MR_KEYBOARD_CHEATS
-    extern bool gMosaic;
-#endif
 
     if (btgHead == NULL)
     {

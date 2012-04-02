@@ -1130,7 +1130,7 @@ void mouseDraw(void)
 #undef SX
 #undef SY
 
-char *tutMouseDrawMessage[] =
+const char *tutMouseDrawMessage[] =
 {   "Mouse_NormalMouse",
     "Mouse_RotateCamera",
     "Mouse_ZoomCamera",

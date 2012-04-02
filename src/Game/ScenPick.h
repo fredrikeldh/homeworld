@@ -86,8 +86,8 @@ void spShutdown(void);
 void spScenarioPick(char *dest);
 
 //close the picker, either with 'back' or with 'OK'
-void spDonePicking(char *name, featom *atom);
-void spBackPicking(char *name, featom *atom);
+void spDonePicking(const char *name, featom *atom);
+void spBackPicking(const char *name, featom *atom);
 
 void spFindMap(char *MapName);
 

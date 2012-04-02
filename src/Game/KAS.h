@@ -52,33 +52,33 @@ typedef struct {
 =============================================================================*/
 //  to fill in table of labelled mission layout entities
 void kasLabelsInit();
-//void kasLabelledAITeamAdd(char *label);
-Path *kasLabelledPathAdd(char *label, sdword numPoints, sdword closed);
-hvector *kasLabelledVectorAdd(char *label, real32 x, real32 y, real32 z,real32 w);
-Volume *kasLabelledVolumeAdd(char *label);
+//void kasLabelledAITeamAdd(const char *label);
+Path *kasLabelledPathAdd(const char *label, sdword numPoints, sdword closed);
+hvector *kasLabelledVectorAdd(const char *label, real32 x, real32 y, real32 z,real32 w);
+Volume *kasLabelledVolumeAdd(const char *label);
 
-void kasMissionStart(char *name, KASInitFunction initFunction, KASWatchFunction watchFunction);
+void kasMissionStart(const char *name, KASInitFunction initFunction, KASWatchFunction watchFunction);
 void kasExecute(void);
 
 // keywords of KAS language
-void kasJump(char *stateName, KASInitFunction initFunction, KASWatchFunction watchFunction);
-void kasFSMCreate(char *fsmName, KASInitFunction initFunction, KASWatchFunction watchFunction, struct AITeam *team);
+void kasJump(const char *stateName, KASInitFunction initFunction, KASWatchFunction watchFunction);
+void kasFSMCreate(const char *fsmName, KASInitFunction initFunction, KASWatchFunction watchFunction, struct AITeam *team);
 
 // labels: resolves references from script to mission layout file
-struct AITeam *kasAITeamPtr(char *label);
-GrowSelection *kasAITeamShipsPtr(char *label);
-hvector *kasShipsVectorPtr(char *label);
-hvector *kasTeamsVectorPtr(char *label);
-hvector *kasVolumeVectorPtr(char *label);
+struct AITeam *kasAITeamPtr(const char *label);
+GrowSelection *kasAITeamShipsPtr(const char *label);
+hvector *kasShipsVectorPtr(const char *label);
+hvector *kasTeamsVectorPtr(const char *label);
+hvector *kasVolumeVectorPtr(const char *label);
 hvector *kasThisTeamsVectorPtr(void);
-Path   *kasPathPtr(char *label);
-Path *kasPathPtrNoErrorChecking(char *label);
-Volume *kasVolumePtr(char *label);
-hvector *kasVectorPtr(char *label);
-hvector *kasVectorPtrIfExists(char *label);
-GrowSelection *kasGrowSelectionPtr(char *label);
+Path   *kasPathPtr(const char *label);
+Path *kasPathPtrNoErrorChecking(const char *label);
+Volume *kasVolumePtr(const char *label);
+hvector *kasVectorPtr(const char *label);
+hvector *kasVectorPtrIfExists(const char *label);
+GrowSelection *kasGrowSelectionPtr(const char *label);
 
-GrowSelection *kasGetGrowSelectionPtrIfExists(char *label);
+GrowSelection *kasGetGrowSelectionPtrIfExists(const char *label);
 
 void kasShipDied(Ship *ship);
 
@@ -86,7 +86,7 @@ void kasGrowSelectionClear(GrowSelection *ships);
 
 void kasLabelledEntitiesDestroy(void);
 
-void kasAddShipToTeam(Ship *ship,char *str);
+void kasAddShipToTeam(Ship *ship,const char *str);
 
 #define KAS_TEAM_NAME_MAX_LENGTH 47
 char *kasAITeamName(struct AITeam *team, char *teamName);
@@ -103,7 +103,7 @@ void kasInit();
 // Save Game Stuff
 void kasSave(void);
 void kasLoad(void);
-void *kasConvertOffsetToFuncPtr(sdword offset);
+const void *kasConvertOffsetToFuncPtr(sdword offset);
 sdword kasConvertFuncPtrToOffset(void *func);
 
 

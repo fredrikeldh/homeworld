@@ -179,7 +179,7 @@ void rndDrawScissorBars(bool scissorEnabled);
 
 #if RND_GL_STATE_DEBUG
 extern bool rndGLStateSaving;
-void rndGLStateLogFunction(char *location);
+void rndGLStateLogFunction(const char *location);
 #define rndGLStateLog(s) if (rndGLStateSaving) rndGLStateLogFunction(s);
 #else
 #define rndGLStateLog(s)

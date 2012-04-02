@@ -130,7 +130,7 @@ scriptEntry TrailTweaks[] =
     makeEntry(TRAIL_GLOW_2_GREEN, scriptSetSdwordCB),
     makeEntry(TRAIL_GLOW_2_BLUE, scriptSetSdwordCB),
     makeEntry(TRAIL_EXPANSION_TICKS, scriptSetSdwordCB),
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -172,7 +172,7 @@ trhandle  g_glowHandle = 0;
 #define TM_MOSHIP_GLOW_P1_3 20
 #define TM_NUMDEFS          21
 
-char* trailMeshNames[TM_NUMDEFS] =
+const char* trailMeshNames[TM_NUMDEFS] =
 {
     "energybolt",
     "engine_glow00",
@@ -203,9 +203,9 @@ sdword trailInsertCount = 0;
 
 bool8 _afterburning;
 
-static void trailSegmentsRead(char *directory,char *field,void *dataToFillIn);
-static void trailGranularityRead(char *directory,char *field,void *dataToFillIn);
-static void trailColorRead(char *directory,char *field,void *dataToFillIn);
+static void trailSegmentsRead(const char *directory,char *field,void *dataToFillIn);
+static void trailGranularityRead(const char *directory,char *field,void *dataToFillIn);
+static void trailColorRead(const char *directory,char *field,void *dataToFillIn);
 scriptEntry trailStaticScriptTable[] =
 {
     { "trailSegments",                  trailSegmentsRead,  NULL },
@@ -785,6 +785,7 @@ real32 trailRibbonAdjust(shiptrail* trail)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
+extern bool8 g_NoMatSwitch;
 void trailDrawCapitalGlow(shiptrail* trail, sdword LOD)
 {
     Ship* ship = (Ship*)trail->vship;
@@ -795,7 +796,6 @@ void trailDrawCapitalGlow(shiptrail* trail, sdword LOD)
     real32 scaleFactor;
     real32 scale[3];
     bool moshipGlow;
-    extern bool8 g_NoMatSwitch;
 
     if (trail->width == -1.0f || trail->state == TRAIL_CONTRACTED)
     {
@@ -1656,7 +1656,7 @@ color trailSurpriseColorAdjust(sdword index, sdword max, color c)
         g = MAX2(g-randval,0);
         b = MAX2(b-randval,0);
     }
-	
+
     return colRGB(r,g,b);
 }
 
@@ -2106,13 +2106,13 @@ static sdword tpGranularity;
 static color *tpColorArray[MAX_MULTIPLAYER_PLAYERS];
 #define TP_InvalidColor     colRGBA(255, 0, 255, 13)
 
-static void trailSegmentsRead(char *directory,char *field,void *dataToFillIn)
+static void trailSegmentsRead(const char *directory,char *field,void *dataToFillIn)
 {                                                           //read number of trail segments
     sdword nScanned, index, teamIndex;
     nScanned = sscanf(field, "%d", &tpNSegments);
     dbgAssertOrIgnore(nScanned == 1);
     dbgAssertOrIgnore(tpNSegments > 1 && tpNSegments < 1000);
-    
+
     for (teamIndex = 0; teamIndex < MAX_MULTIPLAYER_PLAYERS; teamIndex++)
     {
         tpColorArray[teamIndex] = memAlloc(sizeof(color) * tpNSegments, "Temp. Color Array", 0);
@@ -2123,13 +2123,13 @@ static void trailSegmentsRead(char *directory,char *field,void *dataToFillIn)
         }
     }
 }
-static void trailGranularityRead(char *directory,char *field,void *dataToFillIn)
+static void trailGranularityRead(const char *directory,char *field,void *dataToFillIn)
 {                                                           //read trail granularity
     sdword nScanned;
     nScanned = sscanf(field, "%d", &tpGranularity);
     dbgAssertOrIgnore(nScanned == 1);
 }
-static void trailColorRead(char *directory,char *field,void *dataToFillIn)
+static void trailColorRead(const char *directory,char *field,void *dataToFillIn)
 {
     sdword nScanned, index, teamIndex;
     udword red, green, blue;
@@ -2149,7 +2149,7 @@ static void trailColorRead(char *directory,char *field,void *dataToFillIn)
     Return      : pointer to new or default trailstatic structure or NULL if
                     no info found.
 ----------------------------------------------------------------------------*/
-trailstatic *trailStaticInfoParse(char *directory, char *fileName)
+trailstatic *trailStaticInfoParse(const char *directory, const char *fileName)
 {
     sdword index, j, lastIndex, teamIndex;
     udword red, green, blue;
@@ -2252,7 +2252,7 @@ void trailRecolorize(trailstatic *trailStatic)
                          teColorSchemes[teamIndex].trailColors[cpIndex] & TP_KeyColor;
                 cpIndex++;                                  //update control point index
                 dbgAssertOrIgnore(cpIndex <= TE_NumberTrailColors);
-                
+
                 for (j = lastIndex + 1; j < index; j++)
                 {                                           //between last valid color to this one
                     red = (colRed(trailStatic->segmentColor[teamIndex][lastIndex]) * (index - j) +
@@ -2263,7 +2263,7 @@ void trailRecolorize(trailstatic *trailStatic)
                         colBlue(trailStatic->segmentColor[teamIndex][index]) * (j - lastIndex)) / (index - lastIndex);
                     trailStatic->segmentColor[teamIndex][j] = colRGB(red, green, blue);//interpolate the colors
                 }
-				
+
                 lastIndex = index;
             }
         }

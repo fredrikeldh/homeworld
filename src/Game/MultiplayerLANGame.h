@@ -204,12 +204,12 @@ void lgShutdown(void);
 void mgShowScreen(sdword screennum, bool disappear);
 
 //misc stuff MultiPlayerGame.c needs
-void lgCreateGameNow(char *name, featom *atom);
-void lgBackFromOptions(char *name, featom *atom);
-void lgBasicOptions(char *name,featom *atom);
+void lgCreateGameNow(const char *name, featom *atom);
+void lgBackFromOptions(const char *name, featom *atom);
+void lgBasicOptions(const char *name,featom *atom);
 
 // called from MG.c
-void lgGoPassword(char *name, featom *atom);
+void lgGoPassword(const char *name, featom *atom);
 
 
 /*=============================================================================

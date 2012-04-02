@@ -24,7 +24,7 @@
     Data:
 =============================================================================*/
 #if BATTLE_TEXT
-char *battleString_WingmanChased[] =
+const char *battleString_WingmanChased[] =
 {
     "There's one on your tail. Check six. Check six.",
     "You're being followed.",
@@ -35,7 +35,7 @@ char *battleString_WingmanChased[] =
     "Break! Break!",
     NULL
 };
-char *battleString_WingmanChased_Rsp[] =
+const char *battleString_WingmanChased_Rsp[] =
 {
     "He's on tight.",
     "...Can't break it...",
@@ -45,7 +45,7 @@ char *battleString_WingmanChased_Rsp[] =
     "Gotcha.",
     NULL
 };
-char *battleString_WingmanHit[] =
+const char *battleString_WingmanHit[] =
 {
     "Wing hit!",
     "...Cover me dammit.",
@@ -55,7 +55,7 @@ char *battleString_WingmanHit[] =
     "(to self) Damn! Okay, alright. I'm alright...",
     NULL
 };
-char *battleString_WingmanHit_Rsp[] =
+const char *battleString_WingmanHit_Rsp[] =
 {
     "Alright, hang in there.",
     "Looks OK.",
@@ -65,7 +65,7 @@ char *battleString_WingmanHit_Rsp[] =
     "On my way.",
     NULL
 };
-char *battleString_WingmanLethal[] =
+const char *battleString_WingmanLethal[] =
 {
     "Can't stabilize... I'm... <static>",
     "I'm losing the... <static>",
@@ -78,7 +78,7 @@ char *battleString_WingmanLethal[] =
     "Mayday, I got no...<static>",
     NULL
 };
-char *battleString_WingmanDies[] =
+const char *battleString_WingmanDies[] =
 {
     "Wingman down",
     "I've lost my wingman",
@@ -86,14 +86,14 @@ char *battleString_WingmanDies[] =
     "Lost the wing.",
     NULL
 };
-char *battleString_LeaderChased[] =
+const char *battleString_LeaderChased[] =
 {
     "Group leader, you've got a tail.",
     "Group lead, you've picked up a trailer.",
     "Hold on group leader, I'm coming.",
     NULL
 };
-char *battleString_Wingman[] =
+const char *battleString_Wingman[] =
 {
     "Wing, watch your course.",
     "You're sliding off-line. Correct.",
@@ -107,7 +107,7 @@ char *battleString_Wingman[] =
     "Stay on target.",
     NULL
 };
-char *battleString_PositiveBattle[] =
+const char *battleString_PositiveBattle[] =
 {
     "Nice move.",
     "I saw it, yeah, very smooth.",
@@ -128,7 +128,7 @@ char *battleString_PositiveBattle[] =
     "We're in. Yes.",
     NULL
 };
-char *battleString_NegativeBattle[] =
+const char *battleString_NegativeBattle[] =
 {
     "Redirect fire! Redirect fire!",
     "What's happening?",
@@ -154,7 +154,7 @@ char *battleString_NegativeBattle[] =
     "This ain't happening, man.",
     NULL
 };
-char *battleString_NeutralBattle[] =
+const char *battleString_NeutralBattle[] =
 {
     "Tactical even. It's flat.",
     "We're this far, push it home!",
@@ -171,7 +171,7 @@ char *battleString_NeutralBattle[] =
     "Flanking ships stay close.",
     NULL
 };
-char *battleString_FriendlyFire[] =
+const char *battleString_FriendlyFire[] =
 {
     "Check your fire!  Check your fire!",
     "Check your targets!  Friendly fire!",
@@ -179,7 +179,7 @@ char *battleString_FriendlyFire[] =
     "Watch that friendly fire!",
     NULL
 };
-char *battleString_Kamikaze[] =
+const char *battleString_Kamikaze[] =
 {
 
     "[increasing pitch] ...mmmmmmmnnahh!!!",
@@ -191,7 +191,7 @@ char *battleString_Kamikaze[] =
 
     NULL
 };
-char *battleString_StartBattleDisadvantaged[] =
+const char *battleString_StartBattleDisadvantaged[] =
 {
 
     "We're outnumbered.",
@@ -201,7 +201,7 @@ char *battleString_StartBattleDisadvantaged[] =
 
     NULL
 };
-char *battleString_StartBattleDisadvantaged_Rsp[] =
+const char *battleString_StartBattleDisadvantaged_Rsp[] =
 {
     "Yeah, but we can do it.",
     "Just keep it tight.",
@@ -209,7 +209,7 @@ char *battleString_StartBattleDisadvantaged_Rsp[] =
     "Shut it, we're goin' in.",
     NULL
 };
-char *battleString_StartBattleFair[] =
+const char *battleString_StartBattleFair[] =
 {
 
     "Watch your six.",
@@ -218,7 +218,7 @@ char *battleString_StartBattleFair[] =
 
     NULL
 };
-char *battleString_StartBattleFair_Rsp[] =
+const char *battleString_StartBattleFair_Rsp[] =
 {
 
     "Maintain positions.",
@@ -229,7 +229,7 @@ char *battleString_StartBattleFair_Rsp[] =
 
     NULL
 };
-char *battleString_StartBattleAdvantaged[] =
+const char *battleString_StartBattleAdvantaged[] =
 {
 
     "We caught 'em napping.",
@@ -241,7 +241,7 @@ char *battleString_StartBattleAdvantaged[] =
 
     NULL
 };
-char *battleString_StartBattleAdvantaged_Rsp[] =
+const char *battleString_StartBattleAdvantaged_Rsp[] =
 {
 
     "Stay on top of them.",
@@ -253,7 +253,7 @@ char *battleString_StartBattleAdvantaged_Rsp[] =
 
     NULL
 };
-char *battleString_Retreat[] =
+const char *battleString_Retreat[] =
 {
 
     "All units retreat, repeat, all units retreat.",
@@ -267,7 +267,7 @@ char *battleString_Retreat[] =
 
     NULL
 };
-char *battleString_Retreat_Rsp[] =
+const char *battleString_Retreat_Rsp[] =
 {
 
     "<Roger>. On our way.",
@@ -280,7 +280,7 @@ char *battleString_Retreat_Rsp[] =
 
     NULL
 };
-char *battleString_WinningBattle[] =
+const char *battleString_WinningBattle[] =
 {
 
     "We're on top of it.",
@@ -293,7 +293,7 @@ char *battleString_WinningBattle[] =
 
     NULL
 };
-char *battleString_WinningBattle_Rsp[] =
+const char *battleString_WinningBattle_Rsp[] =
 {
 
     "Yup.",
@@ -304,7 +304,7 @@ char *battleString_WinningBattle_Rsp[] =
 
     NULL
 };
-char *battleString_KickingButt[] =
+const char *battleString_KickingButt[] =
 {
 
     "Let's end this.",
@@ -317,7 +317,7 @@ char *battleString_KickingButt[] =
 
     NULL
 };
-char *battleString_KickingButt_Rsp[] =
+const char *battleString_KickingButt_Rsp[] =
 {
     "Roger that. Cleaning it up.",
     "Affirmative. It'll be no problem.",
@@ -329,7 +329,7 @@ char *battleString_KickingButt_Rsp[] =
     "They're routed.",
     NULL
 };
-char *battleString_BattleWon[] =
+const char *battleString_BattleWon[] =
 {
 
     "The enemy is defeated.",
@@ -342,7 +342,7 @@ char *battleString_BattleWon[] =
 
     NULL
 };
-char *battleString_LosingBattle[] =
+const char *battleString_LosingBattle[] =
 {
     "We have a situation developing here.",
     "Requesting back up... repeat... requesting back up.",
@@ -357,7 +357,7 @@ char *battleString_LosingBattle[] =
     "... ah ... this is not looking good Fleet.",
     NULL
 };
-char *battleString_LosingBattle_Rsp[] =
+const char *battleString_LosingBattle_Rsp[] =
 {
 
     "OK, keep it together now.",
@@ -372,7 +372,7 @@ char *battleString_LosingBattle_Rsp[] =
 
     NULL
 };
-char *battleString_LosingBadly[] =
+const char *battleString_LosingBadly[] =
 {
 
     "Situation critical Fleet.",
@@ -390,7 +390,7 @@ char *battleString_LosingBadly[] =
 
     NULL
 };
-char *battleString_LosingBadly_Rsp[] =
+const char *battleString_LosingBadly_Rsp[] =
 {
     "Emergency procedures.",
     "Rally! Rally!",
@@ -560,15 +560,15 @@ battleevent *batChatterToTune   = NULL;
 #endif
 
 //script-parsing table and function prototypes
-void batMaxDistanceSetCB(char *directory,char *field,void *dataToFillIn);
-void batDistanceExponentSetCB(char *directory,char *field,void *dataToFillIn);
-void batRandomWeightSetCB(char *directory,char *field,void *dataToFillIn);
-void batMinWavelengthSetCB(char *directory,char *field,void *dataToFillIn);
-void batWavelengthExponentSetCB(char *directory,char *field,void *dataToFillIn);
-void batMinRepeatProximitySetCB(char *directory,char *field,void *dataToFillIn);
-void batRepeatProximityExponentSetCB(char *directory,char *field,void *dataToFillIn);
-void batTuneEventSet(char *directory,char *field,void *dataToFillIn);
-void batGlobalFrequencyModifierSet(char *directory,char *field,void *dataToFillIn);
+void batMaxDistanceSetCB(const char *directory,char *field,void *dataToFillIn);
+void batDistanceExponentSetCB(const char *directory,char *field,void *dataToFillIn);
+void batRandomWeightSetCB(const char *directory,char *field,void *dataToFillIn);
+void batMinWavelengthSetCB(const char *directory,char *field,void *dataToFillIn);
+void batWavelengthExponentSetCB(const char *directory,char *field,void *dataToFillIn);
+void batMinRepeatProximitySetCB(const char *directory,char *field,void *dataToFillIn);
+void batRepeatProximityExponentSetCB(const char *directory,char *field,void *dataToFillIn);
+void batTuneEventSet(const char *directory,char *field,void *dataToFillIn);
+void batGlobalFrequencyModifierSet(const char *directory,char *field,void *dataToFillIn);
 scriptEntry battleTweaks[] =
 {
     {"randomWeight",    batRandomWeightSetCB, NULL},
@@ -595,7 +595,7 @@ scriptEntry battleTweaks[] =
     makeEntry(batRetreatModifier, scriptSetReal32CB),
     makeEntry(batGlobalFrequencyMin, scriptSetReal32CB),
     makeEntry(batGlobalFrequencyMax, scriptSetReal32CB),
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -638,7 +638,7 @@ foundName:
 /*-----------------------------------------------------------------------------
     Script-parsing callback functions
 -----------------------------------------------------------------------------*/
-void batRandomWeightSetCB(char *directory,char *field,void *dataToFillIn)
+void batRandomWeightSetCB(const char *directory,char *field,void *dataToFillIn)
 {
     battleevent *chat;
     double value;
@@ -647,7 +647,7 @@ void batRandomWeightSetCB(char *directory,char *field,void *dataToFillIn)
     dbgAssertOrIgnore(value >= 0.0f);
     chat->randomWeight = (udword)(value * (real32)BAT_RandomTotal / (real32)PNG_TaskPeriod);
 }
-void batMaxDistanceSetCB(char *directory,char *field,void *dataToFillIn)
+void batMaxDistanceSetCB(const char *directory,char *field,void *dataToFillIn)
 {
     battleevent *chat;
     double value;
@@ -656,7 +656,7 @@ void batMaxDistanceSetCB(char *directory,char *field,void *dataToFillIn)
     dbgAssertOrIgnore(value > 0.0f);
     chat->maxDistance = (double)value;
 }
-void batDistanceExponentSetCB(char *directory,char *field,void *dataToFillIn)
+void batDistanceExponentSetCB(const char *directory,char *field,void *dataToFillIn)
 {
     battleevent *chat;
     double value;
@@ -665,7 +665,7 @@ void batDistanceExponentSetCB(char *directory,char *field,void *dataToFillIn)
     dbgAssertOrIgnore(value >= 0.0f);
     chat->expDistance = (double)value;
 }
-void batMinWavelengthSetCB(char *directory,char *field,void *dataToFillIn)
+void batMinWavelengthSetCB(const char *directory,char *field,void *dataToFillIn)
 {
     battleevent *chat;
     double value;
@@ -674,7 +674,7 @@ void batMinWavelengthSetCB(char *directory,char *field,void *dataToFillIn)
     dbgAssertOrIgnore(value > 0.0f);
     chat->minWavelength = (double)value;
 }
-void batWavelengthExponentSetCB(char *directory,char *field,void *dataToFillIn)
+void batWavelengthExponentSetCB(const char *directory,char *field,void *dataToFillIn)
 {
     battleevent *chat;
     double value;
@@ -683,7 +683,7 @@ void batWavelengthExponentSetCB(char *directory,char *field,void *dataToFillIn)
     dbgAssertOrIgnore(value > 0.0f);
     chat->expWavelength = (double)value;
 }
-void batMinRepeatProximitySetCB(char *directory,char *field,void *dataToFillIn)
+void batMinRepeatProximitySetCB(const char *directory,char *field,void *dataToFillIn)
 {
     battleevent *chat;
     double value;
@@ -692,7 +692,7 @@ void batMinRepeatProximitySetCB(char *directory,char *field,void *dataToFillIn)
     dbgAssertOrIgnore(value > 0.0f);
     chat->minRepeatProximity = (double)value;
 }
-void batRepeatProximityExponentSetCB(char *directory,char *field,void *dataToFillIn)
+void batRepeatProximityExponentSetCB(const char *directory,char *field,void *dataToFillIn)
 {
     battleevent *chat;
     double value;
@@ -702,13 +702,13 @@ void batRepeatProximityExponentSetCB(char *directory,char *field,void *dataToFil
     chat->expRepeatProximity = (double)value;
 }
 #if BATTLE_TUNING
-void batTuneEventSet(char *directory,char *field,void *dataToFillIn)
+void batTuneEventSet(const char *directory,char *field,void *dataToFillIn)
 {
     double value;
     batChatterToTune = battleChatterEventFromName(field, &value);
 }
 #endif
-void batGlobalFrequencyModifierSet(char *directory,char *field,void *dataToFillIn)
+void batGlobalFrequencyModifierSet(const char *directory,char *field,void *dataToFillIn)
 {
     real32 value;
     sdword nScanned;
@@ -750,7 +750,7 @@ void battleChatterShutdown(void)
     Return      :
 ----------------------------------------------------------------------------*/
 #if BATTLE_TEXT
-void battleSpeechText(sdword eventNum, char **texts)
+void battleSpeechText(sdword eventNum, const char **texts)
 {
     sdword nTexts, index;
 

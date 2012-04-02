@@ -115,15 +115,15 @@ bool lmShipInList[TOTAL_NUM_SHIPS];
 
 
 // callback functions for the launch GUI
-void lmLaunch(char *string, featom *atom);
-void lmAutoLaunchM(char *string, featom *atom);
-void lmAutoLaunchC1(char *string, featom *atom);
-void lmAutoLaunchC2(char *string, featom *atom);
-void lmAutoLaunchC3(char *string, featom *atom);
-void lmAutoLaunchC4(char *string, featom *atom);
-void lmClose(char *string, featom *atom);
-void lmLaunchAll(char *string, featom *atom);
-void lmShipsToLaunchDraw(char *string, featom *atom);
+void lmLaunch(const char *string, featom *atom);
+void lmAutoLaunchM(const char *string, featom *atom);
+void lmAutoLaunchC1(const char *string, featom *atom);
+void lmAutoLaunchC2(const char *string, featom *atom);
+void lmAutoLaunchC3(const char *string, featom *atom);
+void lmAutoLaunchC4(const char *string, featom *atom);
+void lmClose(const char *string, featom *atom);
+void lmLaunchAll(const char *string, featom *atom);
+void lmShipsToLaunchDraw(const char *string, featom *atom);
 
 void lmFighterUsedDraw(featom *atom, regionhandle region);
 void lmCorvetteUsedDraw(featom *atom, regionhandle region);
@@ -203,7 +203,7 @@ lifheader *lmShipImage[MAX_RACES][NUM_LMTEXTURES] =
 };
 
 
-char *lmShipImagePaths[] =
+const char *lmShipImagePaths[] =
 {
 #ifdef _WIN32
     "FEMan\\Construction_Manager\\Build_race1_",
@@ -214,7 +214,7 @@ char *lmShipImagePaths[] =
 #endif
 };
 
-char *lmShipIcons[] =
+const char *lmShipIcons[] =
 {
     "icon1.lif", // Mothership
     "icon2.lif", // Carrier
@@ -300,7 +300,7 @@ void lmUpdateShipView(void)
     Outputs     : none
     Return      : void
 ----------------------------------------------------------------------------*/
-void lmLaunch(char *string, featom*atom)
+void lmLaunch(const char *string, featom *atom)
 {
     Node *walk;
     ShipPtr shipinside;
@@ -385,7 +385,7 @@ void lmLaunch(char *string, featom*atom)
     Outputs     : none
     Return      : void
 ----------------------------------------------------------------------------*/
-void lmAutoLaunchM(char *string, featom *atom)
+void lmAutoLaunchM(const char *string, featom *atom)
 {
     if (universe.curPlayerPtr->PlayerMothership == NULL)
     {
@@ -427,7 +427,7 @@ void lmAutoLaunchM(char *string, featom *atom)
     }
 }
 
-void lmAutoLaunchCX(char *string, featom *atom, udword x)
+void lmAutoLaunchCX(const char *string, featom *atom, udword x)
 {
     static udword bits[NUM_LMCARRIERS] = { BIT1, BIT2, BIT3, BIT4 };
     static udword shifts[NUM_LMCARRIERS] = { 1,2,3,4 };
@@ -475,22 +475,22 @@ void lmAutoLaunchCX(char *string, featom *atom, udword x)
     }
 }
 
-void lmAutoLaunchC1(char *string, featom *atom)
+void lmAutoLaunchC1(const char *string, featom *atom)
 {
     lmAutoLaunchCX(string,atom,1);
 }
 
-void lmAutoLaunchC2(char *string, featom *atom)
+void lmAutoLaunchC2(const char *string, featom *atom)
 {
     lmAutoLaunchCX(string,atom,2);
 }
 
-void lmAutoLaunchC3(char *string, featom *atom)
+void lmAutoLaunchC3(const char *string, featom *atom)
 {
     lmAutoLaunchCX(string,atom,3);
 }
 
-void lmAutoLaunchC4(char *string, featom *atom)
+void lmAutoLaunchC4(const char *string, featom *atom)
 {
     lmAutoLaunchCX(string,atom,4);
 }
@@ -502,7 +502,7 @@ void lmAutoLaunchC4(char *string, featom *atom)
     Outputs     : none
     Return      : void
 ----------------------------------------------------------------------------*/
-void lmLaunchAll(char *string, featom *atom)
+void lmLaunchAll(const char *string, featom *atom)
 {
     Node *walk;
     ShipPtr shipinside;
@@ -566,7 +566,7 @@ void lmLaunchAll(char *string, featom *atom)
     Outputs     : none
     Return      : void
 ----------------------------------------------------------------------------*/
-void lmClose(char *string, featom *atom)
+void lmClose(const char *string, featom *atom)
 {
     if((tutorial==TUTORIAL_ONLY) && !tutEnable.bLaunchClose)
         return;
@@ -816,7 +816,7 @@ void lmShipItemDraw(rectangle *rect, listitemhandle data)
     Outputs     : none
     Return      : void
 ----------------------------------------------------------------------------*/
-void lmShipsToLaunchDraw(char *string, featom *atom)
+void lmShipsToLaunchDraw(const char *string, featom *atom)
 {
     fonthandle      oldfont;
     sdword          index;

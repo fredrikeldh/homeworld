@@ -194,12 +194,12 @@ sdword taskPointerAlloc(void)
                   The task is executed once immediately and must yield
                   rather than exit at this first call.
 ----------------------------------------------------------------------------*/
-taskhandle taskStartName(taskfunction function, char *name,
+taskhandle taskStartName(taskfunction function, const char *name,
                          real32 period, udword flags)
 {
     static taskhandle handle = ERROR;
     taskdata *newTask;
-    
+
     taskInitCheck();
     dbgAssertOrIgnore(function != NULL);
     dbgAssertOrIgnore(period > 0.0f);

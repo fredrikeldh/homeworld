@@ -109,7 +109,7 @@ Smoothie;
 =============================================================================*/
 
 void opUpdateSettings(void);
-char *opKeyToNiceString(keyindex key);
+const char *opKeyToNiceString(keyindex key);
 keyindex opKeyTranslate(keyindex key);
 void opKeyAssign(uword func, keyindex key);
 bool opValidKey(keyindex key);

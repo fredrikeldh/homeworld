@@ -127,34 +127,34 @@ extern ShipPtr tutPointerShip;
 extern rectangle *tutPointerShipHealthRect;
 extern rectangle *tutPointerShipGroupRect;
 
-void tutSaveLesson(sdword Num, char *pName);
+void tutSaveLesson(sdword Num, const char *pName);
 
 void tutSaveTutorialGame(void);
 void tutLoadTutorialGame(void);
 
-void tutTutorial1(char *name, featom *atom);
+void tutTutorial1(const char *name, featom *atom);
 
-void tutSetPointerTargetXY(char *name, sdword x, sdword y);
-void tutSetPointerTargetXYRight(char *name, sdword x, sdword y);
-void tutSetPointerTargetXYBottomRight(char *name, sdword x, sdword y);
-void tutSetPointerTargetXYTaskbar(char *name, sdword x, sdword y);
-void tutSetPointerTargetXYFE(char *name, sdword x, sdword y);
-void tutSetPointerTargetShip(char *name, ShipPtr ship);
-void tutSetPointerTargetShipSelection(char *name, SelectCommand *ships);
-void tutSetPointerTargetShipHealth(char *name, ShipPtr ship);
-void tutSetPointerTargetShipGroup(char *name, ShipPtr ship);
+void tutSetPointerTargetXY(const char *name, sdword x, sdword y);
+void tutSetPointerTargetXYRight(const char *name, sdword x, sdword y);
+void tutSetPointerTargetXYBottomRight(const char *name, sdword x, sdword y);
+void tutSetPointerTargetXYTaskbar(const char *name, sdword x, sdword y);
+void tutSetPointerTargetXYFE(const char *name, sdword x, sdword y);
+void tutSetPointerTargetShip(const char *name, ShipPtr ship);
+void tutSetPointerTargetShipSelection(const char *name, SelectCommand *ships);
+void tutSetPointerTargetShipHealth(const char *name, ShipPtr ship);
+void tutSetPointerTargetShipGroup(const char *name, ShipPtr ship);
 void tutPlayerShipDied(ShipPtr ship);
-void tutSetPointerTargetFERegion(char *name, char *pAtomName);
-void tutSetPointerTargetRect(char *name, sdword x0, sdword y0, sdword x1, sdword y1);
-void tutSetPointerTargetAIVolume(char *name, Volume *volume);
-void tutRemovePointerByName(char *name);
+void tutSetPointerTargetFERegion(const char *name, const char *pAtomName);
+void tutSetPointerTargetRect(const char *name, sdword x0, sdword y0, sdword x1, sdword y1);
+void tutSetPointerTargetAIVolume(const char *name, Volume *volume);
+void tutRemovePointerByName(const char *name);
 void tutRemoveAllPointers(void);
 void tutRemoveAllPointers(void);
 void tutDrawTextPointers(rectangle *pRect);
 
 void tutSetTextDisplayBox(sdword x, sdword y, sdword width, sdword height, bool bScale);
 void tutSetTextDisplayBoxToSubtitleRegion(void);
-void tutShowText(char *szText);
+void tutShowText(const char *szText);
 void tutHideText(void);
 void tutShowNextButton(void);
 void tutHideNextButton(void);
@@ -162,7 +162,7 @@ sdword tutNextButtonClicked(void);
 void tutShowBackButton(void);
 void tutHideBackButton(void);
 void tutShowPrevButton(void);
-void tutShowImages(char *szImages);
+void tutShowImages(const char *szImages);
 void tutHideImages(void);
 
 void tutStartup(void);
@@ -172,27 +172,27 @@ void tutUnInitialize(void);
 
 void tutEnableEverything(void);
 void tutDisableEverything(void);
-void tutSetEnableFlags(char *pFlagString, long Val);
+void tutSetEnableFlags(const char *pFlagString, long Val);
 
-void tutBuilderSetRestrictions(char *pShipTypes, bool bRestricted);
+void tutBuilderSetRestrictions(const char *pShipTypes, bool bRestricted);
 void tutBuilderRestrictAll(void);
 void tutBuilderRestrictNone(void);
 
 
 sdword tutIsBuildShipRestricted(sdword shipType);
-sdword tutSelectedContainsShipTypes(char *pShipTypes);
+sdword tutSelectedContainsShipTypes(const char *pShipTypes);
 
-void tutGameMessage(char *commandName);
-bool tutGameSentMessage(char *commandName);
-bool tutGameMessageInQueue(char *commandNames);
+void tutGameMessage(const char *commandName);
+bool tutGameSentMessage(const char *commandName);
+bool tutGameMessageInQueue(const char *commandNames);
 void tutResetGameMessageQueue(void);
-sdword tutContextMenuDisplayedForShipType(char *pShipType);
+sdword tutContextMenuDisplayedForShipType(const char *pShipType);
 void  tutResetContextMenuShipTypeTest(void);
 
-sdword tutBuildManagerShipTypeInBatchQueue(char *pShipType);
-sdword tutBuildManagerShipTypeInBuildQueue(char *pShipType);
-sdword tutBuildManagerShipTypeSelected(char *pShipType);
+sdword tutBuildManagerShipTypeInBatchQueue(const char *pShipType);
+sdword tutBuildManagerShipTypeInBuildQueue(const char *pShipType);
+sdword tutBuildManagerShipTypeSelected(const char *pShipType);
 
-sdword tutCameraFocusedOnShipType(char *pShipTypes);
+sdword tutCameraFocusedOnShipType(const char *pShipTypes);
 
 #endif

@@ -600,8 +600,8 @@ bool aitCheckAmIBeingWatched(AITeam *team, SelectCommand *sel);
 void aitSetAmIBeingWatched(AITeam *team, SelectCommand *sel);
 
 
-sdword aitMsgReceived(AITeam *teamp, char *msg);
-void aitMsgSend(AITeam *fromTeamp, AITeam *teamp, char *msg);
+sdword aitMsgReceived(AITeam *teamp, const char *msg);
+void aitMsgSend(AITeam *fromTeamp, AITeam *teamp, const char *msg);
 void aitMsgQueueFree(AITeam *teamp);
 
 void aitSave(struct AIPlayer *aiplayer);

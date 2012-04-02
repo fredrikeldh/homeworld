@@ -50,7 +50,7 @@ void aivarShutdown(void)
         sdword i;
         for (i=0;i<varsUsed;i++)
         {
-#if AI_VERBOSE_LOGGING 
+#if AI_VERBOSE_LOGGING
             dbgMessagef("WARNING: vars[%d] %s not closed", i, vars[i]->label);
 #endif
             memFree(vars[i]);
@@ -69,7 +69,7 @@ void aivarShutdown(void)
 //
 //  returns NULL if label isn't unique
 //
-AIVar *aivarCreate(char *label)
+AIVar *aivarCreate(const char *label)
 {
     AIVar *var;
 
@@ -104,7 +104,7 @@ AIVar *aivarCreate(char *label)
 //
 //  return NULL if not found
 //
-AIVar *aivarFind(char *label)
+AIVar *aivarFind(const char *label)
 {
     sdword i = 0;
 
@@ -122,7 +122,7 @@ AIVar *aivarFind(char *label)
 //
 //  return NULL if not found
 //
-AIVar *aivarFindAnyFSM(char *label)
+AIVar *aivarFindAnyFSM(const char *label)
 {
     sdword i = 0;
     char *dot;
@@ -198,7 +198,7 @@ char *aivarLabelGet(AIVar *var)
         return NULL;
 }
 
-void aivarLabelSet(AIVar *var, char *label)
+void aivarLabelSet(AIVar *var, const char *label)
 {
     if (!var)
         return;

@@ -1,3 +1,4 @@
+#include "../gles2.h"
 #include "texture.h"
 
 void glTexCoordPointer(
@@ -46,7 +47,7 @@ void TextureSetup::Pointer::Set(
 		SetError(GL_INVALID_VALUE);
 		return;
 	}
-	
+
 	if
 	(
 		!Evaluate
@@ -86,7 +87,7 @@ void TextureSetup::Environment::Set(
 		>(target)
 	)
 		return;
-		
+
 	if( !Evaluate<
 		GL_TEXTURE_ENV_MODE, GL_TEXTURE_LOD_BIAS, GL_COMBINE_RGB,
 		GL_COMBINE_ALPHA   , GL_SRC0_RGB        , GL_SRC1_RGB,
@@ -97,12 +98,27 @@ void TextureSetup::Environment::Set(
 		GL_COORD_REPLACE
 		>(pname) )
 		return;
-	
-	
+
+
 	//TODO: Evaluate
 	this->target = target;
 	this->pname = pname;
 	this->param = param;
+}
+
+void TextureSetup::SetCoords(
+	GLubyte        size,
+	GLenum         type,
+	GLsizei        stride,
+	const GLvoid*  pointer
+)
+{
+	//Set(size, type, stride, pointer);
+	//TODO: Implement
+}
+
+TextureSetup::Environment::Environment()
+{
 }
 
 void TextureSetup::Environment::ApplyTo(IRenderState* renderer)
@@ -110,4 +126,11 @@ void TextureSetup::Environment::ApplyTo(IRenderState* renderer)
 	//TODO: Implement
 }
 
-
+void TextureSetup::SetEnvironment(
+	GLenum target,
+	GLenum pname,
+	GLint param
+)
+{
+	//TODO: Implement
+}

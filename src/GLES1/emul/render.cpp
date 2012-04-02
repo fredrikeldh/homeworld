@@ -1,9 +1,20 @@
 
 #include "render.h"
-#include <mutex>
+#include <stdio.h>
 
+#ifndef MAPIP
+#include <mutex>
 // There can be only one - Renderer
 static std::recursive_mutex _renderMutex;
+#else
+class RenderMutex {
+public:
+	void lock() {}
+	void unlock() {}
+	bool try_lock() { return true; }
+} _renderMutex;
+#endif
+
 static bool _immediate = false;
 
 RenderPipe::RenderPipe() :
@@ -93,24 +104,24 @@ static const GLushort gles_quad_indices[4] = { 1, 2, 0, 3 };
 void RenderPipe::Render()
 {
 	VertexSetup& vertexData = Get<VertexSetup>();
-	
+
 	Array<GLfloat, 16384>& vertices = vertexData._vertices;
 	unsigned int vertex_dimensions = vertexData._vertex_dimensions;
-	
+
 	GLenum& mode = _mode;
-	
+
 	VertexClientState vertexState(vertexData, *this);
 	glVertexPointer(vertex_dimensions, GL_FLOAT, 0, vertices.data());
-	
+
 	TextureClientState textureState(vertexData, *this);
 	if( textureState.IsEnabled() )
 		glTexCoordPointer(2, GL_FLOAT, 0, vertexData._texCoords.data());
-	
+
 	Array<GLfloat, 16384>& colors = vertexData._colors;
 	ColorClientState colorState(vertexData, *this);
 	if( colorState.IsEnabled() )
 		glColorPointer(4, GL_FLOAT, 0, colors.data());
-	
+
 	Array<GLfloat, 16384>& normals = vertexData._normals;
 	NormalClientState normalState(vertexData, *this);
 	if( normalState.IsEnabled() )
@@ -140,7 +151,7 @@ void RenderPipe::Render()
 
 			GLushort poly_indices[(vertex_count / vertex_dimensions) + 1];
 			poly_indices[0] = vertex_count / vertex_dimensions;
-			
+
 			for( GLuint i = 0; i < vertex_count / vertex_dimensions; i++ )
 			{
 				poly_indices[i + 1] = i;
@@ -160,9 +171,9 @@ void RenderPipe::Render()
 
 	vertices.clear();
 	vertexData._texCoords.clear();
-	
+
 	unsigned int color_count = vertexData._colors.size();
-	
+
 	if( color_count )
 	{
 		colors[0] = colors[color_count - 4];
@@ -171,7 +182,7 @@ void RenderPipe::Render()
 		colors[3] = colors[color_count - 1];
 		vertexData._colors.clear();
 	}
-	
+
 	unsigned int normal_count = vertexData._normals.size();
 
 	if( normal_count )
@@ -206,7 +217,7 @@ void RenderPipe::Start(GLenum mode)
 		>(mode)
 	)
 		return;
-	
+
 	_renderMutex.lock();
 
 	if( _immediate )
@@ -215,7 +226,7 @@ void RenderPipe::Start(GLenum mode)
 		SetError<GL_INVALID_OPERATION>();
 		return;
 	}
-	
+
 	_immediate = true;
 	_mode = mode;
 }
@@ -227,9 +238,9 @@ void RenderPipe::End()
 		SetError<GL_INVALID_OPERATION>();
 		return;
 	}
-	
+
 	Render();
-	
+
 	_immediate = false;
 	_renderMutex.unlock();
 }
@@ -247,15 +258,15 @@ void RenderPipe::Render(GLenum  mode, GLint  first, GLsizei  count)
 		>(mode)
 	)
 		return;
-	
+
 	if( !_renderMutex.try_lock() )
 	{
 		SetError<GL_INVALID_OPERATION>();
 		return;
 	}
-	
+
 	glDrawArrays(mode, first, count);
-	
+
 	_renderMutex.unlock();
 }
 
@@ -266,7 +277,7 @@ RenderPipe::BeginRequirement::BeginRequirement():
 	_renderMutex.lock();
 
 	if( !_immediate )
-		throw -1;
+		maPanic(-1, "RenderPipe");
 }
 
 RenderPipe::BeginRequirement::~BeginRequirement()

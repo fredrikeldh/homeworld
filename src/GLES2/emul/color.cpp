@@ -1,4 +1,5 @@
 
+#include "../gles2.h"
 #include "color.h"
 
 void glColorPointer(

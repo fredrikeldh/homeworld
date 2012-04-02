@@ -79,11 +79,11 @@ void*
 TitanPacketMsg::Pack(void)
 {
     MiniMessage::Pack();
-    
+
 	// append game name if required
 	if (mIncludeGameName)
 		Append_PW_STRING(mGameName);
-	
+
 	// append data
 	AppendBytes(mBlobLen, mBlob);
 
@@ -107,7 +107,7 @@ TitanPacketMsg::Unpack(void)
 	mIncludeGameName = (GetMessageType() != TITANMSGTYPE_GAME);
 	if (mIncludeGameName)
 		ReadWString(mGameName);
-    
+
 	mBlobLen = BytesLeftToRead();
     mBlob = ReadBytes(BytesLeftToRead());
 }

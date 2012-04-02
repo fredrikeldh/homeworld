@@ -1,3 +1,4 @@
+#include "../gles2.h"
 #include "raster.h"
 
 void glRasterPos2f (GLfloat x, GLfloat y)

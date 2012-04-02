@@ -117,7 +117,7 @@ scriptEntry pingTweaks[] =
 //    { "pingBobDoingCollisionBobs", scriptSetBool, &pingBattleBlobProperties.bobDoingCollisionBobs },
 
     { "pingTOLingerTime",       scriptSetReal32CB, &pingTOLingerTime },
-    
+
     END_SCRIPT_ENTRY
 };
 
@@ -156,7 +156,7 @@ DEFINE_TASK(pingUpdateTask)
     taskBegin;
 
     taskYield(0);
-    
+
     while (1)
     {
         thisNode = pingList.head;
@@ -605,7 +605,7 @@ bool pingAnomalyPingTimeout(struct ping *hellaPing, udword userID, char *userDat
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void pingAnomalySelectionPingAdd(char *pingName, SelectCommand *selection)
+void pingAnomalySelectionPingAdd(const char *pingName, SelectCommand *selection)
 {
     ubyte *userData;
     ping *newPing;
@@ -636,7 +636,7 @@ void pingAnomalySelectionPingAdd(char *pingName, SelectCommand *selection)
     Outputs     :
     Return      : void
 ----------------------------------------------------------------------------*/
-void pingAnomalyObjectPingAdd(char *pingName, SpaceObj *owner)
+void pingAnomalyObjectPingAdd(const char *pingName, SpaceObj *owner)
 {
     ubyte *userData;
     ping *newPing;
@@ -664,7 +664,7 @@ void pingAnomalyObjectPingAdd(char *pingName, SpaceObj *owner)
     Outputs     :
     Return      : void
 ----------------------------------------------------------------------------*/
-void pingAnomalyPositionPingAdd(char *pingName, vector *position)
+void pingAnomalyPositionPingAdd(const char *pingName, vector *position)
 {
     ubyte *userData;
     ping *newPing;
@@ -691,7 +691,7 @@ void pingAnomalyPositionPingAdd(char *pingName, vector *position)
     Outputs     :
     Return      : number of pings removed
 ----------------------------------------------------------------------------*/
-sdword pingAnomalyPingRemove(char *pingName)
+sdword pingAnomalyPingRemove(const char *pingName)
 {
     Node *thisNode, *nextNode;
     ping *thisPing;

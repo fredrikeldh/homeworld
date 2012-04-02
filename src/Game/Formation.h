@@ -165,7 +165,7 @@ void paradeSetTweakables();
 =============================================================================*/
 
 // routines for converting between string and enumeration for TypeOfFormation
-char *TypeOfFormationToStr(TypeOfFormation formation);
+const char *TypeOfFormationToStr(TypeOfFormation formation);
 TypeOfFormation StrToTypeOfFormation(char *str);
 
 char *TypeOfFormationToNiceStr(TypeOfFormation formation);

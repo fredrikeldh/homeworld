@@ -107,7 +107,7 @@ BabyCallBack    *tbRefreshBaby=NULL;
 listwindowhandle tbListWindow = NULL;
 regionhandle tbListWindowRegion = NULL;
 
-void tbListWindowInit(char *name, featom *atom);
+void tbListWindowInit(const char *name, featom *atom);
 bool tbRefreshBabyFunction(udword num, void *data, struct BabyCallBack *baby);
 
 void tbMothershipIndicator(featom *atom, regionhandle region);
@@ -117,10 +117,10 @@ void tbDockingIndicator(featom *atom, regionhandle region);
 void tbGuardingIndicator(featom *atom, regionhandle region);
 void tbOtherIndicator(featom* atom, regionhandle region);
 void tbRUs(featom *atom, regionhandle region);
-void tbTactics(char *name, featom *atom);
-void tbTacticsEvasive(char *name, featom *atom);
-void tbTacticsAggressive(char *name, featom *atom);
-void tbTacticsNeutral(char *name, featom *atom);
+void tbTactics(const char *name, featom *atom);
+void tbTacticsEvasive(const char *name, featom *atom);
+void tbTacticsAggressive(const char *name, featom *atom);
+void tbTacticsNeutral(const char *name, featom *atom);
 void tbShips(featom *atom, regionhandle region);
 
 
@@ -128,9 +128,9 @@ void tbCalcTotalShipCommands(void);
 
 void tbTaskBarInit(void);
 void tbTaskBarEnd(void);
-void feToggleButtonSetFromScreen(char *name, sdword bPressed, fescreen *screen);
+void feToggleButtonSetFromScreen(const char *name, sdword bPressed, fescreen *screen);
 
-regionhandle tbFindRegion(char* name);
+regionhandle tbFindRegion(const char* name);
 
 // Found in objectives.c
 extern Objective **objectives;
@@ -348,11 +348,11 @@ void tbButtonRegionDraw(featom *atom, regionhandle region)
         }
     }
 }
-void tbFleetManager(char *name, featom *atom)
+void tbFleetManager(const char *name, featom *atom)
 {
     feScreenStart(ghMainRegion, "Fleet_manager");
 }
-void tbSensorsManager(char *name, featom *atom)
+void tbSensorsManager(const char *name, featom *atom)
 {
     bitClear(((regionhandle)atom->region)->status,RSF_CurrentSelected);
 //    feScreenStart(ghMainRegion, "Sensors_manager");
@@ -362,7 +362,7 @@ void tbSensorsManager(char *name, featom *atom)
 
 #if TB_SECRET_BUTTON
 //exits the game, like right now
-void tbExitImmediately(char *name, featom *atom)
+void tbExitImmediately(const char *name, featom *atom)
 {
     if (!multiPlayerGame)
     {
@@ -1068,7 +1068,7 @@ void tbObjectivesListCleanUp(void)
     Outputs     :
     Return      :
 ----------------------------------------------------------------------------*/
-void tbListWindowInit(char *name, featom *atom)
+void tbListWindowInit(const char *name, featom *atom)
 {
     fonthandle oldfont;
 
@@ -1428,7 +1428,7 @@ void tbSetTactics(TacticsType tactic)
     }
 }
 
-void tbTacticsEvasive(char *name, featom *atom)
+void tbTacticsEvasive(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1443,7 +1443,7 @@ void tbTacticsEvasive(char *name, featom *atom)
     }
 }
 
-void tbTacticsNeutral(char *name, featom *atom)
+void tbTacticsNeutral(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1457,7 +1457,7 @@ void tbTacticsNeutral(char *name, featom *atom)
     }
 }
 
-void tbTacticsAggressive(char *name, featom *atom)
+void tbTacticsAggressive(const char *name, featom *atom)
 {
     if (FEFIRSTCALL(atom))
     {
@@ -1489,7 +1489,7 @@ void tbRefreshTacticsCheckboxes(void)
         feToggleButtonSetFromScreen("TB_Tactics_E", TRUE, tbScreen);
 }
 
-regionhandle tbFindRegion(char* name)
+regionhandle tbFindRegion(const char* name)
 {
     sdword i;
     featom* atom;
@@ -1656,7 +1656,7 @@ void PossiblyResetTaskbar(void)
     }
 }
 
-void feToggleButtonSetFromScreen(char *name, sdword bPressed, fescreen *screen)
+void feToggleButtonSetFromScreen(const char *name, sdword bPressed, fescreen *screen)
 {
     featom *atom;
     buttonhandle button;
