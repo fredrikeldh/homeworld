@@ -283,7 +283,7 @@ void syncDebugDump(const char *filename1,sdword counter,bool save)
             us->ship[j].salvageInfo=0;
             if(us->ship[j].dockingship != NULL)
             {
-                us->ship[j].dockingship=(Ship *)us->ship[j].dockingship->shipID.shipNumber;
+                us->ship[j].dockingship=(Ship *)(size_t)us->ship[j].dockingship->shipID.shipNumber;
             }
             else
             {
@@ -298,7 +298,7 @@ void syncDebugDump(const char *filename1,sdword counter,bool save)
 
             if(us->ship[j].rowGetOutOfWay != NULL)
             {
-                us->ship[j].rowGetOutOfWay=(Ship *)us->ship[j].rowGetOutOfWay->shipID.shipNumber;
+                us->ship[j].rowGetOutOfWay=(Ship *)(size_t)us->ship[j].rowGetOutOfWay->shipID.shipNumber;
             }
             else
             {
@@ -307,7 +307,7 @@ void syncDebugDump(const char *filename1,sdword counter,bool save)
 
             if(us->ship[j].playerowner != NULL)
             {
-                us->ship[j].playerowner = (Player *)us->ship[j].playerowner->playerIndex;
+                us->ship[j].playerowner = (Player *)(size_t)us->ship[j].playerowner->playerIndex;
             }
             else
             {
@@ -316,7 +316,7 @@ void syncDebugDump(const char *filename1,sdword counter,bool save)
 
             if(us->ship[j].gettingrocked != NULL)
             {
-                us->ship[j].gettingrocked=(Ship *)us->ship[j].gettingrocked->shipID.shipNumber;     // ship which is rocking you (shooting you)
+                us->ship[j].gettingrocked=(Ship *)(size_t)us->ship[j].gettingrocked->shipID.shipNumber;     // ship which is rocking you (shooting you)
             }
             else
             {
@@ -324,7 +324,7 @@ void syncDebugDump(const char *filename1,sdword counter,bool save)
             }
             if(us->ship[j].recentAttacker != NULL)
             {
-                us->ship[j].recentAttacker=(Ship *)us->ship[j].recentAttacker->shipID.shipNumber;    // ship which has attacked you recently (ie, not just this AI tick) -- see recentlyAttacked
+                us->ship[j].recentAttacker=(Ship *)(size_t)us->ship[j].recentAttacker->shipID.shipNumber;    // ship which has attacked you recently (ie, not just this AI tick) -- see recentlyAttacked
             }
             else
             {
@@ -332,7 +332,7 @@ void syncDebugDump(const char *filename1,sdword counter,bool save)
             }
             if(us->ship[j].firingAtUs != NULL)
             {
-                us->ship[j].firingAtUs=(Ship *)us->ship[j].firingAtUs->shipID.shipNumber;        // ship which has recently fired upon us (but needn't have hit) see recentlyFiredUpon
+                us->ship[j].firingAtUs=(Ship *)(size_t)us->ship[j].firingAtUs->shipID.shipNumber;        // ship which has recently fired upon us (but needn't have hit) see recentlyFiredUpon
             }
             else
             {
@@ -343,7 +343,7 @@ void syncDebugDump(const char *filename1,sdword counter,bool save)
             us->ship[j].formationcommand = 0;
             if(us->ship[j].command != NULL)
             {
-                us->ship[j].command = (CommandToDo *)us->ship[j].command->ordertype.order;
+                us->ship[j].command = (CommandToDo *)(size_t)us->ship[j].command->ordertype.order;
             }
             else
             {
@@ -363,7 +363,7 @@ void syncDebugDump(const char *filename1,sdword counter,bool save)
 
             if(us->ship[j].dockvars.dockship!=NULL)
             {
-                us->ship[j].dockvars.dockship = (void*)us->ship[j].dockvars.dockship->shipID.shipNumber;
+                us->ship[j].dockvars.dockship = (void*)(size_t)us->ship[j].dockvars.dockship->shipID.shipNumber;
             }
             else
             {

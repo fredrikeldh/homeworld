@@ -16,7 +16,7 @@ class BaseUniform : public GLPart, public IUniform<T, NUMBER>
 protected:
 	std::vector<T> _array;
 
-	BaseUniform(const std::string&& name):
+	BaseUniform(const std::string& name):
 		GLPart(),
 		IUniform<T, NUMBER>(std::move(name)),
 		_array(NUMBER)
@@ -24,7 +24,7 @@ protected:
 	};
 
 public:
-	BaseUniform(const T values[NUMBER], const std::string&& name):
+	BaseUniform(const T values[NUMBER], const std::string& name):
 		BaseUniform(std::move(name))
 	{
 		for( GLubyte i = 0; i != NUMBER; i++ )
@@ -32,11 +32,11 @@ public:
 			_array[i] = values[i];
 		}
 	};
-	
+
 	ONLY_MOVE(BaseUniform)
-	
+
 #if HAS_MOVE_ASSIGN_BUG
-	BaseUniform& operator=(BaseUniform&& other)
+	BaseUniform& operator=(BaseUniform& other)
 	{
 		GLPart::operator=(std::move(other));
 		IUniform<T, NUMBER>::operator=(std::move(other));
@@ -44,7 +44,7 @@ public:
 		return *this;
 	}
 #endif
-	
+
 	bool operator==(const T* other) const
 	{
 		GLubyte index = 0;
@@ -53,24 +53,24 @@ public:
 			if( *it != other[index] )
 				return false;
 		}
-		
+
 		return true;
 	}
-	
+
 	bool operator!=(const T* other) const
 	{
 		return !(*this == other);
 	};
-	
+
 	virtual void Set(const T* values)
 	{
 		Copy(values, _array, NUMBER);
 	}
-	
+
 	virtual void ApplyTo(IRenderState* pRenderer)
 	{
 		IUniform<T, NUMBER>::ApplyTo(pRenderer);
-		IUniformValue<T, NUMBER>& value = pRenderer->GetValue(*this); 
+		IUniformValue<T, NUMBER>& value = pRenderer->GetValue(*this);
 		value.Set(_array);
 	}
 };
@@ -81,7 +81,7 @@ class Uniform : public BaseUniform<T, NUMBER>
 public:
 	ONLY_MOVE(Uniform)
 #if HAS_MOVE_ASSIGN_BUG
-	Uniform& operator=(Uniform&& other)
+	Uniform& operator=(Uniform& other)
 	{
 		BaseUniform<T, NUMBER>::operator=(std::move(other));
 		return *this;
@@ -95,7 +95,7 @@ class Uniform<T, 3> : public BaseUniform<T, 3>
 public:
 	ONLY_MOVE(Uniform)
 #if HAS_MOVE_ASSIGN_BUG
-	Uniform& operator=(Uniform&& other)
+	Uniform& operator=(Uniform& other)
 	{
 		BaseUniform<T, 3>::operator=(std::move(other));
 		return *this;
@@ -110,8 +110,8 @@ public:
 		BaseUniform<T, 3>::_array[1] = y;
 		BaseUniform<T, 3>::_array[2] = z;
 	}
-	
-	Uniform(T x, T y, T z, std::string&& name):
+
+	Uniform(T x, T y, T z, std::string& name):
 		BaseUniform<T, 3>(std::move(name))
 	{
 		Set(x, y, z);
@@ -124,13 +124,13 @@ class Uniform<T, 4> : public BaseUniform<T, 4>
 public:
 	ONLY_MOVE(Uniform)
 #if HAS_MOVE_ASSIGN_BUG
-	Uniform& operator=(Uniform&& other)
+	Uniform& operator=(Uniform& other)
 	{
 		BaseUniform<T, 4>::operator=(std::move(other));
 		return *this;
 	}
 #endif
-	
+
 	using BaseUniform<T, 4>::Set;
 	using BaseUniform<T, 4>::ApplyTo;
 	void Set(T x, T y, T z, T w)
@@ -140,8 +140,8 @@ public:
 		BaseUniform<T, 4>::_array[2] = z;
 		BaseUniform<T, 4>::_array[3] = w;
 	}
-	
-	Uniform(T x, T y, T z, T w, std::string&& name):
+
+	Uniform(T x, T y, T z, T w, std::string& name):
 		BaseUniform<T, 4>(std::move(name))
 	{
 		Set(x, y, z, w);
@@ -154,7 +154,7 @@ class Uniform<T, 1> : public BaseUniform<T, 1>
 public:
 	ONLY_MOVE(Uniform)
 #if HAS_MOVE_ASSIGN_BUG
-	Uniform& operator=(Uniform&& other)
+	Uniform& operator=(Uniform& other)
 	{
 		BaseUniform<T, 1>::operator=(std::move(other));
 		return *this;
@@ -167,8 +167,8 @@ public:
 	{
 		BaseUniform<T, 1>::_array[0] = value;
 	};
-	
-	Uniform(T value, std::string&& name):
+
+	Uniform(T value, std::string& name):
 		BaseUniform<T, 1>(std::move(name))
 	{
 		Set(value);

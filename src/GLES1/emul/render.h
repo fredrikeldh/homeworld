@@ -14,12 +14,12 @@ namespace gles1
 		void Render(GLenum  mode, GLint  first, GLsizei  count);
 		void Start(GLenum enume);
 		void End();
-		
+
 		class IRequirement
 		{
 		public:
-			void* operator new (size_t size) = delete;
-		    	void operator delete (void* mem) = delete;
+			//void* operator new (size_t size) = delete;
+		    	//void operator delete (void* mem) = delete;
 		};
 
 		class BeginRequirement : public IRequirement
@@ -28,7 +28,7 @@ namespace gles1
 			BeginRequirement();
 			~BeginRequirement();
 		};
-		
+
 		bool is_texture_enabled(const VertexSetup& vertexData) const;
 		bool is_color_enabled(const VertexSetup& vertexData) const;
 		bool is_normal_enabled(const VertexSetup& vertexData) const;

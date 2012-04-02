@@ -1,6 +1,10 @@
 #ifndef ___GLINC_H
 #define ___GLINC_H
 
+#ifdef MAPIP
+#include "mosync_gl1.h"
+#else
+
 #ifdef HW_USE_GLES
 #include "../GLES/glinclude.h"
 #elif defined HW_USE_GL
@@ -12,7 +16,9 @@ extern PFNGLGENBUFFERSPROC glGenBuffers;
 extern PFNGLBUFFERDATAPROC glBufferData;
 extern PFNGLBUFFERSUBDATAPROC glBufferSubData;
 
-#endif
+#endif	//HW_USE_GL
+
+#endif	//MAPIP
 
 //
 // Make sure defines are present

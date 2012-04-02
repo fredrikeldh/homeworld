@@ -244,6 +244,7 @@ static void lodMeshFileLoad(const char *directory,char *field,void *dataToFillIn
     }
 }
 //load in a tiny sprite file
+static void lodSpriteFileRead(const char *directory,char *field,void *dataToFillIn) __attribute((noreturn));
 static void lodSpriteFileRead(const char *directory,char *field,void *dataToFillIn)
 {
 #if LOD_VERBOSE_LEVEL >= 1
@@ -302,7 +303,7 @@ lod *lodLevelGet(void *spaceObj, vector *camera, vector *ship)
             obj->currentLOD--;                              //go to higher level
         }
     }
-    dbgAssertOrIgnore(obj->currentLOD >= 0);
+    //dbgAssertOrIgnore(obj->currentLOD >= 0);
     dbgAssertOrIgnore(obj->currentLOD < info->nLevels);             //verify we are within the available levels of detail
 #if LOD_PRINT_DISTANCE
     if (keyIsStuck(WKEY))

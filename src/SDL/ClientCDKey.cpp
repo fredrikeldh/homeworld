@@ -71,7 +71,7 @@ ClientCDKey::ClientCDKey(const ClientCDKey& theKeyR) :
 	mBinKey(theKeyR.mBinKey)
 {}
 
-	
+
 // Destructor
 ClientCDKey::~ClientCDKey()
 {}

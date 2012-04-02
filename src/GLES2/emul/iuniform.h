@@ -7,6 +7,19 @@
 #include <memory>
 #include <string>
 
+#if defined(MAPIP) && !defined(__arm__)
+namespace std {
+	template<class T>
+	class unique_ptr {
+	};
+
+	template<class T>
+	T move(const T& t) {
+		return t;
+	}
+}
+#endif
+
 template<typename T, GLubyte NUMBER>
 class IUniform : public IRenderComponent
 {
@@ -23,7 +36,7 @@ private:
 	std::unique_ptr<ICustomData> _pointer;
 	std::string _name;
 protected:
-	IUniform(const std::string&& name):
+	IUniform(const std::string& name):
 		IRenderComponent(),
 		_pointer(),
 		_name(std::move(name))
@@ -32,9 +45,9 @@ protected:
 public:
 
 	ONLY_MOVE(IUniform)
-	
+
 #if HAS_MOVE_ASSIGN_BUG
-	IUniform& operator=(IUniform&& other)
+	IUniform& operator=(IUniform& other)
 	{
 		IRenderComponent::operator=(std::move(other));
 		_pointer = std::move(other._pointer);
@@ -42,22 +55,22 @@ public:
 		return *this;
 	}
 #endif
-	
+
 	const std::string& GetName() const
 	{
 		return _name;
 	}
-	
+
 	ICustomData* GetCustomData() const
 	{
 		return _pointer.get();
 	}
-	
-	void SetCustomData(std::unique_ptr<ICustomData>&& data)
+
+	void SetCustomData(std::unique_ptr<ICustomData>& data)
 	{
 		_pointer = std::move(data);
 	};
-	
+
 	void ClearCustomData()
 	{
 		_pointer = nullptr;

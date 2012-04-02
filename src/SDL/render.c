@@ -91,7 +91,8 @@
 #elif defined(MAPIP)
 #undef HW_USE_GLES
 #define HW_USE_GL 1
-#include <GLES2/gl2.h>
+//#include <GLES2/gl2.h>
+#include <GLES/gl.h>
 
 const char* glGetString();
 

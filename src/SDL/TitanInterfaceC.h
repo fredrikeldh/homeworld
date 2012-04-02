@@ -322,7 +322,7 @@ void titanLeaveGame(int shutdown);
 #define REQUEST_RECV_CB_JUSTDENY        0
 #define REQUEST_RECV_CB_ACCEPT          1
 
-enum { GAME_NOT_STARTED, GAME_STARTING, GAME_STARTED } mGameCreationState;
+enum GameCreationState { GAME_NOT_STARTED, GAME_STARTING, GAME_STARTED };
 
 signed long titanRequestReceivedCB(Address *address,const void *blob,unsigned short bloblen);
 

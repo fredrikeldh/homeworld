@@ -376,7 +376,7 @@ extern bool nisPrintInfo;
 extern bool nisNoLockout;
 #endif
 #ifdef NIS_TEST
-nisplaying *testPlaying;
+extern nisplaying *testPlaying;
 #endif
 
 extern nisplaying *thisNisPlaying;

@@ -2,7 +2,20 @@
 #define _HW_GLES1_ARRAY_H_
 
 #include "include.h"
+#if defined(MAPIP) && !defined(__arm__)
+#include <vector>
+namespace std {
+	template<class T, unsigned int SIZE>
+	class array : public vector<T> {
+	public:
+		array() {
+			this->resize(SIZE);
+		}
+	};
+}
+#else
 #include <array>
+#endif
 
 template<typename T, unsigned int SIZE>
 class Array
@@ -26,6 +39,7 @@ public:
 		_count++;
 	}
 
+#if 0
 	Array(std::initializer_list<T> list):
 		_array(),
 		_count(0)
@@ -35,6 +49,7 @@ public:
 			push_back(*it);
 		}
 	}
+#endif
 
 	~Array()
 	{

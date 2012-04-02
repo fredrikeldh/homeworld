@@ -17,7 +17,6 @@
 #include "emul/texture.h"
 #include "emul/vertex.h"
 
-template<typename... TYPES>
 class Setup
 {
 private:
@@ -86,4 +85,3 @@ T& Get()
 }
 
 #endif //_HW_GLES2_H_
-

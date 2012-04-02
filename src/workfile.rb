@@ -4,7 +4,7 @@ USE_NEWLIB = true
 
 require File.expand_path(ENV['MOSYNCDIR']+'/rules/mosync_exe.rb')
 
-sh 'cd c:/code/mosync-arm/libs/SDL/ && ruby workfile.rb USE_NEWLIB='
+#sh 'cd c:/code/mosync-arm/libs/SDL/ && ruby workfile.rb USE_NEWLIB='
 
 class KasTask < FileTask
 	def initialize(work, srcTask)
@@ -53,9 +53,9 @@ work.instance_eval do
 		'ThirdParty/LZSS',
 	]
 	@SOURCES = incSrc + [
-		'GLES2/emul',
-		'GLES2',
-		'GLES1/emul',
+		#'GLES2/emul',
+		#'GLES2',
+		#'GLES1/emul',
 		'mosync',
 	]
 
@@ -82,16 +82,7 @@ work.instance_eval do
 		' -include mosync/config.h'+
 		''
 	@SPECIFIC_CFLAGS = {
-		'NetCheck.c' => ' -Wno-int-to-pointer-cast',
 	}
-	if(@GCC_IS_V4)
-		@EXTRA_CFLAGS << ' -Wno-type-limits'
-		@SPECIFIC_CFLAGS['SoundEvent.c'] = ' -Wno-logical-op'
-		@SPECIFIC_CFLAGS['sstream.c'] = ' -Wno-pointer-sign'
-	else
-		@EXTRA_CFLAGS << ' -Wno-unreachable-code'
-		@EXTRA_INCLUDES << ENV['MOSYNCDIR']+'/include/newlib/stlport'
-	end
 	@IGNORED_FILES = [
 		'wave.c',
 		'debugwnd.c',
@@ -105,9 +96,24 @@ work.instance_eval do
 		' -Wno-unused-variable'+
 		' -Wno-float-equal'+
 		''
+	if(@GCC_IS_V4)
+		@EXTRA_CFLAGS << ' -Wno-type-limits'
+		@SPECIFIC_CFLAGS['SoundEvent.c'] = ' -Wno-logical-op'
+		@SPECIFIC_CFLAGS['sstream.c'] = ' -Wno-pointer-sign'
+		@SPECIFIC_CFLAGS['NetCheck.c'] = ' -Wno-int-to-pointer-cast'
+	else
+		@EXTRA_CFLAGS << ' -Wno-unreachable-code -Wno-extra'
+		@EXTRA_CPPFLAGS << ' -Wno-non-virtual-dtor'
+		@EXTRA_INCLUDES << ENV['MOSYNCDIR']+'/include/newlib/stlport'
+		@IGNORED_FILES << 'SDL_mutex.c'
+	end
 
 	@LIBRARIES = ['sdl']
-	#@EXTRA_LINKFLAGS = " #{ARM_BASEDIR}/arm-elf/lib/libstdc++.a"
+	if(USE_ARM)
+		#@EXTRA_LINKFLAGS = " #{ARM_BASEDIR}/arm-elf/lib/libstdc++.a"
+	else
+		@EXTRA_LINKFLAGS = standardMemorySettings(16)
+	end
 
 	@NAME = 'homeworld'
 

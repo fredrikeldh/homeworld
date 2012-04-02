@@ -676,7 +676,7 @@ signed long titanRequestReceivedCB(Address *address,const void *blob,unsigned sh
         {
             // let's bump computers out for humans to join
             tpGameCreated.numComputers = spScenarios[spCurrentSelected].maxplayers - tpGameCreated.numPlayers - 1;
-            dbgAssertOrIgnore(tpGameCreated.numComputers >= 0);
+            //dbgAssertOrIgnore(tpGameCreated.numComputers >= 0);
             dbgAssertOrIgnore(tpGameCreated.numPlayers + tpGameCreated.numComputers < spScenarios[spCurrentSelected].maxplayers);
         }
     }

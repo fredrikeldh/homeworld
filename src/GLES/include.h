@@ -27,8 +27,7 @@ namespace gles2
 
 #if __GNUC__ <= 4 && __GNUC_MINOR__ < 6
 	#define HAS_MOVE_ASSIGN_BUG 1
-	#define ENABLE_MOVE(CLAZZ) \
-		CLAZZ(CLAZZ&&) = default;
+	#define ENABLE_MOVE(CLAZZ)
 // Introduce nullptr
 const                        // this is a const object...
 class {
@@ -45,18 +44,12 @@ private:
 
 #else
 	#define HAS_MOVE_ASSIGN_BUG 0
-	#define ENABLE_MOVE(CLAZZ) \
-		CLAZZ(CLAZZ&&) = default; \
-		CLAZZ& operator=(CLAZZ&&) = default;
+	#define ENABLE_MOVE(CLAZZ)
 #endif //__GNUC__ <= 4 && __GNUC_MINOR__ < 6
 
 #define ENABLE_COPY(CLAZZ) \
-	CLAZZ(CLAZZ const &) = default; \
-	CLAZZ& operator=(CLAZZ const &) = default;
 
 #define DISABLE_COPY(CLAZZ) \
-	CLAZZ(CLAZZ const &) = delete; \
-	CLAZZ& operator=(CLAZZ const &) = delete;
 
 
 #define ENABLE_MOVE_AND_COPY(CLAZZ) \
