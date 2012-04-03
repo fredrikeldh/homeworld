@@ -901,13 +901,17 @@ bool setupPixelFormat()
 	flags = SDL_WasInit(SDL_INIT_EVERYTHING);
 	if (!flags)
 	{
-		if (SDL_Init(SDL_INIT_VIDEO) == -1)
+		if (SDL_Init(SDL_INIT_VIDEO) == -1) {
+			fprintf(stderr, "SDL_Init(SDL_INIT_VIDEO) failed. %s\n", SDL_GetError());
 			return FALSE;
+		}
 	}
 	else if (!(flags & SDL_INIT_VIDEO))
 	{
-		if (SDL_InitSubSystem(SDL_INIT_VIDEO) == -1)
+		if (SDL_InitSubSystem(SDL_INIT_VIDEO) == -1) {
+			fprintf(stderr, "SDL_InitSubSystem(SDL_INIT_VIDEO) failed. %s\n", SDL_GetError());
 			return FALSE;
+		}
 	}
 
     /* Create OpenGL window. */
@@ -926,7 +930,11 @@ bool setupPixelFormat()
     if (/* main */ fullScreen) flags |= SDL_FULLSCREEN;
 	if (!SDL_SetVideoMode(MAIN_WindowWidth, MAIN_WindowHeight,
 		MAIN_WindowDepth, flags))
+	{
+		fprintf(stderr, "SDL_SetVideoMode(%i, %i, %i, 0x%x) failed. %s\n",
+			MAIN_WindowWidth, MAIN_WindowHeight, MAIN_WindowDepth, flags, SDL_GetError());
 		return FALSE;
+	}
 
 #ifdef HW_USE_GLES
     SDL_VERSION(&info.version);

@@ -2085,6 +2085,7 @@ void mainCleanupAfterVideo(void)
 int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance,
                         LPSTR commandLine, int nCmdShow)
 */
+void mosync_preinit(void);
 int main (int argc, char* argv[])
 {
     static const char *errorString = NULL;
@@ -2094,6 +2095,8 @@ int main (int argc, char* argv[])
     static bool preInit;
     SDL_Event e;
     int event_res = 0;
+
+	mosync_preinit();
 
 #ifdef _WIN32
     //check to see if a copy of the program already running and just exit if so.
@@ -2215,6 +2218,10 @@ int main (int argc, char* argv[])
             errorString = utyGameSystemsInit();
         }
     }
+
+#ifdef MAPIP
+		printf("Starting main loop...\n");
+#endif
 
     if (errorString == NULL)
     {

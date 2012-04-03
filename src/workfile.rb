@@ -1,6 +1,7 @@
 #!/usr/bin/ruby
 
 USE_NEWLIB = true
+USE_ARM = true
 
 require File.expand_path(ENV['MOSYNCDIR']+'/rules/mosync_exe.rb')
 
@@ -43,8 +44,9 @@ class MoSyncArmExeWork
 	end
 end
 
-work = PipeExeWork.new
+work = MoSyncArmExeWork.new
 work.instance_eval do
+	set_defaults
 	incSrc = [
 		'Ships',
 		'Game',
@@ -114,6 +116,8 @@ work.instance_eval do
 	else
 		@EXTRA_LINKFLAGS = standardMemorySettings(16)
 	end
+
+	@EXTRA_EMUFLAGS = ' -allowdivzero -resolution 800 600'
 
 	@NAME = 'homeworld'
 

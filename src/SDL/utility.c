@@ -3923,6 +3923,7 @@ const char *utyGameSystemsInit(void)
     // startup any SDL systems we want that haven't already been kicked off
     sdlSubsystemFlags = SDL_WasInit(SDL_INIT_EVERYTHING);
 
+#ifndef MAPIP	//temp
     if (!(sdlSubsystemFlags & SDL_INIT_TIMER))
     {
         if (SDL_InitSubSystem(SDL_INIT_TIMER) == -1)
@@ -3930,6 +3931,7 @@ const char *utyGameSystemsInit(void)
             return "Unable to initialize SDL Timer.";
         }
     }
+#endif
 
 #ifndef MAPIP
     // Joystick used for controlling the 3D camera view. It can be any old

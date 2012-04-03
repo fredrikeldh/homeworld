@@ -30,3 +30,7 @@ build
 
 /src/log.txt
 /src/panic.report
+/src/filesystem/
+/src/profile.txt
+/src/gdb.txt
+/src/fp.xml
