@@ -1151,6 +1151,8 @@ filehandle fileOpen(const char *_fileName, udword flags)
     int expandedSize, storedSize;
     BitFile *bitFile;
 
+	printf("fileOpen(%s)\n", _fileName);
+
     //  find next available filehandle
     fh = 1;
     while (fh <= MAX_FILES_OPEN)

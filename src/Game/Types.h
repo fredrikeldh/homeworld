@@ -128,15 +128,11 @@ float  SwapFloat32( float val );
 
 udword Real32ToUdword(real32 a);
 
-udword Real32ToSdword(real32 a);
+sdword Real32ToSdword(real32 a);
 
 real32 UdwordToReal32(udword a);
 
 real32 SdwordToReal32(sdword a);
-
-#define TreatAsUdword(x) (*((udword *)(&(x))))
-
-#define TreatAsReal32(x) (*((real32 *)(&(x))))
 
 #ifdef _X86_64
 #define SCALECAST(x)  ((memsize)(udword)(x))
@@ -275,10 +271,14 @@ real32 SdwordToReal32(sdword a);
         (b) ^= (a);     \
         (a) ^= (b);
 //floating-point swap
+#if 0
 #define swapReal32(a, b)                              \
         *((udword *)(&(a))) ^= *((udword *)(&(b)));   \
         *((udword *)(&(b))) ^= *((udword *)(&(a)));   \
         *((udword *)(&(a))) ^= *((udword *)(&(b)));
+#else
+#define swapReal32(a, b) { float _temp = a; a = b; b = a; }
+#endif
 
 #define strdollar(x) #x
 

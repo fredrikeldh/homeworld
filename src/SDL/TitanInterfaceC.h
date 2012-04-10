@@ -66,7 +66,7 @@ typedef struct Address
 
 #define InternetAddressesAreEqual(addr1,addr2) ((addr1).AddrPart.IP == (addr2).AddrPart.IP)
 #define InternetAddressesAndPortsAreEqual(addr1,addr2) (((addr1).AddrPart.IP == (addr2).AddrPart.IP) && ((addr1).Port == (addr2).Port))
-#define EthernetAddressesAreEqual(addr1,addr2) ( (*((unsigned long *)&((addr1).AddrPart.etherAddr[0])) == *((unsigned long *)&((addr2).AddrPart.etherAddr[0]))) && ((addr1).AddrPart.etherAddr[4] == (addr2).AddrPart.etherAddr[4]) && ((addr1).AddrPart.etherAddr[5] == (addr2).AddrPart.etherAddr[5]) )
+#define EthernetAddressesAreEqual(addr1,addr2) (memcmp((addr1).AddrPart.etherAddr, (addr2).AddrPart.etherAddr, 6) == 0)
 #define EthernetAddressesAndPortsAreEqual(addr1,addr2) (EthernetAddressesAreEqual(addr1,addr2) && ((addr1).Port == (addr2).Port))
 
 #define AddressesAreEqual(addr1,addr2) ((!IPGame) ? (EthernetAddressesAreEqual((addr1),(addr2))) : (InternetAddressesAreEqual((addr1),(addr2))))

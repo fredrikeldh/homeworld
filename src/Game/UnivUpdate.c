@@ -4174,7 +4174,7 @@ void CheckPlayerWin(void)
             // This statement does nothing but presumably was meant to do something. I'm leaving it
             // here in case someone debugging this code realises it forms part of the solution...
             //universe.players[sigsPlayerIndex].Allies;
-            
+
             for (i=0; ((i<universe.numPlayers) && alliedvictory); i++)
             {
                 if (universe.players[i].playerState == PLAYER_ALIVE)
@@ -5121,7 +5121,6 @@ real32 univGetChecksum(sdword *numShipsInChecksum)
                     bnm.info[5] = ship->cuedAnimationIndex;
                     bnm.info[6] = ship->cuedAnimationType;
                     bnm.info[7] = 0;
-                    bnm.info[8] = 0;
                     netlogwrite(&bnm, sizeof(bnm), 1);
 #else
                     //                  flags,guns,wings,dock,special,index,type

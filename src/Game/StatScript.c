@@ -12,6 +12,7 @@
 #include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <mavsprintf.h>
 
 #include "Color.h"
 #include "Crates.h"
@@ -715,6 +716,7 @@ bool parseLine(char *line,char **returnName,char **returnValue)
             break;
     }
     while (length > 0);
+		//printf("s: %s\n", line);
 
     if (strchr(line, ';') != NULL)
     {                                                   //scan for comments
@@ -858,6 +860,7 @@ void scriptSet(const char *directory,const char *filename,scriptEntry info[])
         strcpy(fullfilename,filename);
     }
 
+#define REPORT_LINE printf("%s:%i\n", __FILE__, __LINE__)
     fh = fileOpen(fullfilename,FF_TextMode|FF_IgnorePrepend);
 
     for (;;)
@@ -866,14 +869,18 @@ void scriptSet(const char *directory,const char *filename,scriptEntry info[])
 
         if (status == FR_EndOfFile)
         {
-            break;
+           break;
         }
 
+				//lprintfln("line: %s", line);
         if (parseLine(line,&name,&value))
         {
+					//lprintfln("entry: %s", name);
+					//lprintfln("value: %s", value);
             foundentry = findEntry(info,name);
             if (foundentry != NULL)
             {
+							//lprintfln("found: %p", foundentry->setVarCB);
                 strcpy(globalScriptFileName,filename);
                 foundentry->setVarCB(directory,value,foundentry->dataPtr);
             }

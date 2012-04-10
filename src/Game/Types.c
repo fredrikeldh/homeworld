@@ -4,36 +4,45 @@
 
 #include "Types.h"
 
+typedef union Swap
+{
+	float  f;
+	Uint32 i;
+} Swap;
+
 float SwapFloat32( float val )
 {
-	union
-	{
-		float  f;
-		Uint32 i;
-	} swap;
-
+	Swap swap;
 	swap.f = val;
 	swap.i = SDL_Swap32( swap.i );
-    
+
 	return swap.f;
 }
 
 udword Real32ToUdword(real32 a)
 {
- return (*(udword*)(&a));
+	Swap swap;
+	swap.f = a;
+	return swap.i;
 }
 
-udword Real32ToSdword(real32 a)
+sdword Real32ToSdword(real32 a)
 {
- return (*(sdword*)(&a));
+	Swap swap;
+	swap.f = a;
+	return swap.i;
 }
 
 real32 UdwordToReal32(udword a)
 {
- return (*(real32*)(&a));
+	Swap swap;
+	swap.i = a;
+	return swap.f;
 }
 
 real32 SdwordToReal32(sdword a)
 {
- return (*(real32*)(&a));
+	Swap swap;
+	swap.i = a;
+	return swap.f;
 }

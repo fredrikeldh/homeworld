@@ -2863,7 +2863,11 @@ void universeSaveEverythingNeeded(void)
     ShipType lastshiptype;
     ShipStaticInfo *shipstatic;
 
-    ubyte data[4];
+    union {
+			ubyte data[4];
+			udword u;
+		} d;
+		ubyte* data = d.data;
 
     SaveInfoNumber(INFO_NEEDED_FLAGS_DELIMITER);
 
@@ -2878,7 +2882,7 @@ void universeSaveEverythingNeeded(void)
             data[1] = bitpackTeamColor(shipstatic->teamColor);
             data[2] = 0;
             data[3] = 0;
-            SaveInfoNumber(TreatAsUdword(data[0]));
+            SaveInfoNumber(d.u);
         }
     }
 
@@ -2905,7 +2909,7 @@ void universeSaveEverythingNeeded(void)
         data[1] = bitpackTeamColor(dstaticinfo->teamColor);
         data[2] = 0;
         data[3] = 0;
-        SaveInfoNumber(TreatAsUdword(data[0]));
+        SaveInfoNumber(d.u);
     }
     for (shiprace=0;shiprace<NUM_RACES;shiprace++)
     {
@@ -2914,7 +2918,7 @@ void universeSaveEverythingNeeded(void)
         data[1] = bitpackTeamColor(misstaticinfo->teamColor);
         data[2] = 0;
         data[3] = 0;
-        SaveInfoNumber(TreatAsUdword(data[0]));
+        SaveInfoNumber(d.u);
     }
     for (shiprace=0;shiprace<2;shiprace++)
     {
@@ -2923,7 +2927,7 @@ void universeSaveEverythingNeeded(void)
         data[1] = bitpackTeamColor(misstaticinfo->teamColor);
         data[2] = 0;
         data[3] = 0;
-        SaveInfoNumber(TreatAsUdword(data[0]));
+        SaveInfoNumber(d.u);
     }
 
     SaveInfoNumber(INFO_NEEDED_FLAGS_DELIMITER);

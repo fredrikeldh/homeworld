@@ -3980,7 +3980,7 @@ sdword etgNewInteger(struct etgeffectstatic *stat, ubyte *dest, char *opcode, ch
 //create a new RGB variable
 sdword etgNewRGB(struct etgeffectstatic *stat, ubyte *dest, char *opcode, char *params, char *ret)
 {
-    udword initial;
+    udword initial = 0;
     bool bSetInitial;
     char *start;
 
@@ -4003,7 +4003,7 @@ sdword etgNewRGB(struct etgeffectstatic *stat, ubyte *dest, char *opcode, char *
 //create a new RGBA variable
 sdword etgNewRGBA(struct etgeffectstatic *stat, ubyte *dest, char *opcode, char *params, char *ret)
 {
-    udword initial;
+    udword initial = 0;
     bool bSetInitial;
     char *start;
 
@@ -4431,7 +4431,7 @@ void etgConditionalComplete(sdword codeBlock, sdword offset, sdword newOffset, u
 sdword etgConditional(struct etgeffectstatic *stat, ubyte *dest, char *opcodeString, char *params, char *ret)
 {
     char *param0, *param1, *tempparam;
-    etgvarentry *var0, *var1, *tempvar;
+    etgvarentry *var0=NULL, *var1=NULL, *tempvar;
     sdword isVar0, isVar1, bTranspose;
     const char *parser, *oper;
     udword constant;
@@ -4636,7 +4636,10 @@ void etgElseComplete(sdword codeBlock, sdword offset, sdword newOffset, ubyte *u
     else if (codeBlock == EPM_TimeIndex)
     {
         opcode = (etgbranch *)(etgExecStack.etgCodeBlock[EPM_TimeIndex].code + offset);
-    }
+    } else {
+			etgLoadErrorf(ETG, "invalid codeBlock type (%d)", codeBlock);
+			return;
+		}
     ifOpcode = (etgconditional *)userData;
     //make sure we've found a good opcode
     if (ifOpcode->opcode < EOP_EqualVCI || ifOpcode->opcode > EOP_NotZeroVF)
@@ -8415,7 +8418,7 @@ udword etgFloat2Int(real32 f)
 udword etgInt2Float(sdword f)
 {
     real32 retVal = (real32)f;
-    return(TreatAsUdword(retVal));
+    return(Real32ToUdword(retVal));
 }
 
 udword etgInts2Color(sdword red, sdword green, sdword blue)

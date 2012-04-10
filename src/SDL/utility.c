@@ -4123,46 +4123,60 @@ DONE_INTROS:
     //startup transformer module
     transStartup();
 
+#define REPORT_LINE printf("%s:%i\n", __FILE__, __LINE__)
+		REPORT_LINE;
     if (feStartup() != OKAY)
     {                                                       //start the front end
         return("Unable to start front end.");
     }
+		REPORT_LINE;
     utySet(SSA_FEFlow);
 #if MAIN_MOUSE_FREE
     utyClipMouse(startupClipMouse);                         //clip mouse to window if needed
 #endif
     utySet(SSA_MouseClipped);
+		REPORT_LINE;
 
     utyFrontEndDataLoad();
     utySet(SSA_FrontEndData);
 
+		REPORT_LINE;
     tacticsStartUp();
 
+		REPORT_LINE;
     lmStartup();
     utySet2(SS2_LaunchMgr);
 
+		REPORT_LINE;
     tmStartup();
 
+		REPORT_LINE;
     rmAPIStartup();
     utySet2(SS2_ResearchMgr);
 
 #if defined(HW_GAME_DEMO) || defined(HW_GAME_RAIDER_RETREAT)
+		REPORT_LINE;
     psStartup();
     utySet2(SS2_PlugScreen);
 #endif
 
+		REPORT_LINE;
     smStartup();                                            //start the sensors manager
     utySet(SSA_SensorsManager);
 
+		REPORT_LINE;
     svStartup();
     utySet2(SS2_ShipView);
 
+		REPORT_LINE;
     pingStartup();
     utySet2(SS2_Ping);
 
+		REPORT_LINE;
     battleChatterStartup();
     utySet2(SS2_BattleChatter);
 
+		REPORT_LINE;
     teStartup();                                            //start the team-specific stuff
     if (!cpColorsPicked)
     {
@@ -4171,86 +4185,116 @@ DONE_INTROS:
     }
     utySet(SSA_Teams);
 
+		REPORT_LINE;
     cpStartup(&utyBaseColor, &utyStripeColor);                //start the color picker
     utySet(SSA_ColorPicker);
 
+		REPORT_LINE;
     subStartup();
     utySet2(SS2_SubTitle);
 
+		REPORT_LINE;
     tutStartup();
     utySet2(SS2_Tutorial);
 
+		REPORT_LINE;
     animStartup();      //start the animatics module
 
+		REPORT_LINE;
     spStartup();                                            //start the scenario picker
     utySet(SSA_ScenarioPicker);
 
+		REPORT_LINE;
     gpStartup();
     utySet2(SS2_GamePicker);
 
+		REPORT_LINE;
     mgStartup();
+		REPORT_LINE;
     lgStartup();
+		REPORT_LINE;
     mgGameTypeScriptInit();
     utySet2(SS2_MultiplayerGame);
 
+		REPORT_LINE;
     cmStartup();                                            //start the construction manager
     utySet(SSA_ConstructionManager);
 
+		REPORT_LINE;
     ranStartup();                                           //start the random-number generator
     utySet(SSA_RandomNumbers);
 
+		REPORT_LINE;
     bsStartup();
     utySet2(SS2_BSpline);
 
+		REPORT_LINE;
     nisStartup();
     utySet2(SS2_NIS);
 
+		REPORT_LINE;
     udStartup();                                            //start the undo module
     utySet(SSA_Undo);
 
+		REPORT_LINE;
     toStartup();                                            //start the TO module
     utySet(SSA_TacticalOverlay);
 
+		REPORT_LINE;
     dmgStartup();
 
+		REPORT_LINE;
     cloudStartup();
 
+		REPORT_LINE;
     shStartup();
 
+		REPORT_LINE;
     nebStartup();
 
+		REPORT_LINE;
     btgStartup();
 
+		REPORT_LINE;
     alodStartup();
 
+		REPORT_LINE;
     partStartup();
 
+		REPORT_LINE;
     pieStartup();
 
+		REPORT_LINE;
     trailStartup();                                         //start the trails module
     utySet(SSA_ShipTrails);
 
     //clear out the task timer.  Make sure this is the last call in this function.
+		REPORT_LINE;
     utyTaskTimerClear();
 
 #if FEF_TEXTURES_DISABLABLE
     if (fetEnableTextures)
 #endif
     {
+		REPORT_LINE;
         ferStartup();                                       //start front end texture registry
     }
 
+		REPORT_LINE;
     prim3dStartup();                                        //start the prim 3d stuff
     utySet2(SS2_Prim3D);
 
     utySystemStarted = TRUE;
 
+		REPORT_LINE;
     opUpdateSettings();
 
+		REPORT_LINE;
     soundEventPlayMusic(SOUND_FRONTEND_TRACK);
 
 //    if (!nisEnabled)
 //    {
+		REPORT_LINE;
         feScreenStart(ghMainRegion, "Main_game_screen");
         mouseCursorShow();
 //    }
@@ -4258,6 +4302,7 @@ DONE_INTROS:
 #ifdef HW_GAME_DEMO
     if (enableAVI)
     {
+		REPORT_LINE;
         primModeSetFunction2();
         psModeBegin("Plugscreens\\", PMF_CanSkip);
         psScreenStart("SierraIntro.plug");
@@ -4265,6 +4310,7 @@ DONE_INTROS:
 #endif
     if (demDemoRecording)
     {                                                       //if recording a demo
+		REPORT_LINE;
         sprintf(demDemoFilename + strlen(demDemoFilename), "%ux%u.dem", MAIN_WindowWidth, MAIN_WindowHeight);
 #if DEM_VERBOSE_LEVEL >= 1
         dbgMessagef("Recording demo '%s'.", demDemoFilename);
@@ -4274,9 +4320,11 @@ DONE_INTROS:
     }
     else if (demDemoPlaying)
     {                                                       //if playing a demo
+		REPORT_LINE;
         sprintf(demDemoFilename + strlen(demDemoFilename), "%ux%u.dem", MAIN_WindowWidth, MAIN_WindowHeight);
         if (fileExists(demDemoFilename, 0))
         {
+		REPORT_LINE;
             demPlayStart(demDemoFilename, utyPreDemoStateLoadCB, utyDemoFinishedCB);
         }
         else
@@ -4296,6 +4344,7 @@ DONE_INTROS:
     }
 */
 
+		dbgMessagef("utyGameSystemsInit complete.\n");
     utySet(SS2_SystemStarted);                              //!!! leave this at the end of this function
     return(NULL);                                           //success, return no error
 }

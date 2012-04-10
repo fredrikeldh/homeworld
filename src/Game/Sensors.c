@@ -3929,10 +3929,14 @@ fecallback smCallbacks[] =
 
 void smStartup(void)
 {
+#define REPORT_LINE printf("%s:%i\n", __FILE__, __LINE__)
+		REPORT_LINE;
     scriptSet(NULL, "sensors.script", smTweaks);
+		REPORT_LINE;
     feDrawCallbackAdd(SM_ViewportName, smViewportRender);   //add render callback
     feCallbackAddMultiple(smCallbacks);
 
+		REPORT_LINE;
     cameraInit(&smCamera, SM_InitialCameraDist);
     smUpdateParameters();
 
