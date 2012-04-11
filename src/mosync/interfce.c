@@ -22,7 +22,7 @@
 
 void JpegInfo( JPEGDATA *data ) __attribute((noreturn));
 void JpegInfo( JPEGDATA *data ) {
-	maPanic(0, "JpegInfo");
+	abort();
 }
 
 //-----------------------------------------------------------------------------
@@ -31,7 +31,7 @@ void JpegInfo( JPEGDATA *data ) {
 
 void JpegWrite( JPEGDATA *data ) __attribute((noreturn));
 void JpegWrite( JPEGDATA *data ) {
-	maPanic(0, "JpegWrite");
+	abort();
 }
 
 //-----------------------------------------------------------------------------
@@ -40,7 +40,7 @@ void JpegWrite( JPEGDATA *data ) {
 
 void JpegRead( JPEGDATA *data ) __attribute((noreturn));
 void JpegRead( JPEGDATA *data ) {
-	maPanic(0, "JpegRead");
+	abort();
 }
 
 //-- interfce.c ---------------------------------------------------------------

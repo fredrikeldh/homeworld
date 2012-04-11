@@ -5,7 +5,7 @@ USE_ARM = true
 
 require File.expand_path(ENV['MOSYNCDIR']+'/rules/mosync_exe.rb')
 
-#sh 'cd c:/code/mosync-arm/libs/SDL/ && ruby workfile.rb USE_NEWLIB= arm CONFIG='
+sh 'cd c:/code/mosync-arm/libs/SDL/ && ruby workfile.rb USE_NEWLIB= arm CONFIG='
 
 class KasTask < FileTask
 	def initialize(work, srcTask)

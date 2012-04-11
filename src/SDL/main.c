@@ -2234,6 +2234,9 @@ int main (int argc, char* argv[])
                 event_res = HandleEvent(&e);
 
                 if (e.type == SDL_QUIT) {
+#ifdef MAPIP
+		printf("SDL_QUIT\n");
+#endif
                     break;
                 }
             }
@@ -2246,6 +2249,9 @@ int main (int argc, char* argv[])
             {
                 if (taskTimeElapsed > (opTimerStart + opTimerLength))
                 {
+#ifdef MAPIP
+		printf("opTimerExpired\n");
+#endif
                     opTimerExpired();
                 }
             }
@@ -2253,6 +2259,9 @@ int main (int argc, char* argv[])
     }
     else
     {                                                       //some error on startup, either from preInit or Init()
+#ifdef MAPIP
+		printf("Error at main loop, shutting down...\n");
+#endif
         if (preInit)
         {
             (void)utyGameSystemsPreShutdown();
@@ -2260,6 +2269,9 @@ int main (int argc, char* argv[])
         fprintf(stderr, "%s\n", errorString);
         return ERR_ErrorStart;
     }
+#ifdef MAPIP
+		printf("Calling SDL_Quit...\n");
+#endif
 
     /* Stay clean and fresh... */
     if (SDL_WasInit(SDL_INIT_EVERYTHING))
@@ -2267,5 +2279,8 @@ int main (int argc, char* argv[])
         SDL_Quit();
     }
 
-    return event_res;
+ #ifdef MAPIP
+		printf("returning from main: %i\n", event_res);
+#endif
+   return event_res;
 } /* WinMain */

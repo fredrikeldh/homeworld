@@ -16,8 +16,8 @@
 #include "TitanInterfaceC.h"
 #include "Task.h"
 
-#undef TASK_VERBOSE_LEVEL
-#define TASK_VERBOSE_LEVEL 3
+//#undef TASK_VERBOSE_LEVEL
+//#define TASK_VERBOSE_LEVEL 3
 
 /*=============================================================================
     Data:

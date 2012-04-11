@@ -17,8 +17,8 @@
     #define DBG_FILE_LINE              1   // print file and line
     #define DBG_STACK_CONTEXT          1   // dump stack context at fatal error time
 #else
-    #define DBG_ASSERT                 0
-    #define DBG_FILE_LINE              0
+    #define DBG_ASSERT                 1
+    #define DBG_FILE_LINE              1
     #define DBG_STACK_CONTEXT          0
 #endif
 

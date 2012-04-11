@@ -1702,7 +1702,7 @@ void mrKeyPress(sdword ID)
 #endif
             if (keyIsHit(CONTROLKEY))
             {                                               //control-# assign a hot key group
-#ifdef SP_NISLET_TEST
+#if SP_NISLET_TEST
                 if (keyIsHit(ALTKEY) && singlePlayerGame)
                 {                                           //control-alt-#: attempt to test a NISlet
                     spNISletTestAttempt(ID - ZEROKEY - 1);

@@ -28,9 +28,9 @@
 
 #else
 
-#define SE_ERROR_CHECKING          0           //general error checking
+#define SE_ERROR_CHECKING          1           //general error checking
 #define SE_VERBOSE_LEVEL           0           //control specific output code
-#define SE_DEBUG                   0           //switch for command line options
+#define SE_DEBUG                   1           //switch for command line options
 
 #endif
 

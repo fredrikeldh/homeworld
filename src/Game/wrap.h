@@ -9,11 +9,11 @@
 #define get_EVT_RGB(n)		do_get_arg(effect, stat, opcode, n)
 #define get_EVT_RGBA(n)		do_get_arg(effect, stat, opcode, n)
 
-static inline udword do_get_arg(Effect *effect, struct etgeffectstatic *stat, etgfunctioncall *opcode, udword index)
+static udword do_get_arg(Effect *effect, struct etgeffectstatic *stat, etgfunctioncall *opcode, udword index)
 {
 	udword param = opcode->parameter[index].param;
 
-        switch (opcode->parameter[index].type)	
+        switch (opcode->parameter[index].type)
         {
             case EVT_Constant:
                 break;

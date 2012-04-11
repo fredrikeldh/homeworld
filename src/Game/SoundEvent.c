@@ -28,6 +28,9 @@
 #include "Switches.h"
 #include "VolTweakDefs.h"
 
+#undef SOUND
+#define SOUND 0
+
 #define DIRECTSOUND     1
 #define SE_MAX_STRIKECRAFT  10
 #define SE_MAX_CAPITALSHIPS 6
@@ -2867,18 +2870,21 @@ void soundEventStopCD(void)
 
 void soundEventPlayMusic(sdword tracknum)
 {
+#if SOUND
 #ifndef _MACOSX_FIX_SOUND
     musicEventPlay(tracknum);
 #endif
-
+#endif
     return;
 }
 
 
 void soundEventStopMusic(real32 fadetime)
 {
+#if SOUND
 #ifndef _MACOSX_FIX_SOUND
     musicEventStop(-1, fadetime);
+#endif
 #endif
     return;
 }
@@ -2886,8 +2892,10 @@ void soundEventStopMusic(real32 fadetime)
 
 void soundEventStopTrack(sdword tracknum, real32 fadetime)
 {
+#if SOUND
 #ifndef _MACOSX_FIX_SOUND
     musicEventStop(tracknum, fadetime);
+#endif
 #endif
     return;
 }

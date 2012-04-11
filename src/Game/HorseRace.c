@@ -742,7 +742,6 @@ void hrInitBackground(void)
     char CurDir[PATH_MAX], NewDir[PATH_MAX];
     char hrImageName[PATH_MAX];
     filehandle handle;
-    JPEGDATA    jp;
     unsigned char *pTempImage;
     udword i;
 
@@ -766,6 +765,25 @@ void hrInitBackground(void)
     handle = fileOpen(hrImageName, FF_ReturnNULLOnFail|FF_IgnorePrepend);
     if (handle)
     {
+			JPEGDATA    jp;
+#ifdef MAPIP
+			sdword size = fileSeek(handle, 0, SEEK_END);
+			MAHandle hData = maCreatePlaceholder();
+			int res = maCreateData(hData, size);
+			dbgAssertOrIgnore(res == RES_OK);
+			fileSeek(handle, 0, SEEK_SET);
+			pTempImage = (unsigned char *)memAllocAttempt(size, "BackgroundJpeg", NonVolatile);
+			fileBlockRead(handle, pTempImage, size);
+			maWriteData(hData, pTempImage, 0, size);
+			MAHandle hImg = maCreatePlaceholder();
+			res = maCreateImageFromData(hImg, hData, 0, size);
+			dbgAssertOrIgnore(res == RES_OK);
+			maDestroyPlaceholder(hData);
+			memFree(pTempImage);
+			MAExtent iSize = maGetImageSize(hImg);
+			jp.width = EXTENT_X(iSize);
+			jp.height = EXTENT_Y(iSize);
+#else
         memset(&jp, 0, sizeof(jp));
         jp.input_file = handle;
         JpegInfo(&jp);
@@ -783,14 +801,17 @@ void hrInitBackground(void)
 
         JpegRead(&jp);
         fileClose(handle);
+#endif
 
         hrBackXSize = 1; hrBackYSize = 1;
         while (hrBackXSize < jp.width) hrBackXSize <<= 1;
         while (hrBackYSize < jp.height) hrBackYSize <<= 1;
+#ifndef MAPIP
         pTempImage = (unsigned char *)memAllocAttempt(hrBackXSize * hrBackYSize * 3, "BackgroundTemp", NonVolatile);
         memset(pTempImage, 0, hrBackXSize * hrBackYSize * 3);
         for (i = 0; i < jp.height; i++)
             memcpy(pTempImage + (hrBackXSize * 3 * i), jp.ptr + (jp.width * 3 * i), jp.width * 3);
+#endif
 
         glGenTextures(1, &hrBackgroundTexture);
         trClearCurrent();
@@ -799,11 +820,16 @@ void hrInitBackground(void)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+#ifdef MAPIP
+				res = maOpenGLTexImage2D(hImg);
+				dbgAssertOrIgnore(res == MA_GL_TEX_IMAGE_2D_OK);
+#else
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, hrBackXSize, hrBackYSize,
                     0, GL_RGB, GL_UNSIGNED_BYTE, pTempImage);
 
         memFree(jp.ptr);
         memFree(pTempImage);
+#endif
 
         hrBackXFrac = (GLfloat)jp.width / (GLfloat)hrBackXSize;
         hrBackYFrac = (GLfloat)jp.height / (GLfloat)hrBackYSize;

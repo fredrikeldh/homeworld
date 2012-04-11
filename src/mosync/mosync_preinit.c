@@ -8,7 +8,7 @@ static char sHeap[1024*1024*32];
 
 extern int resource_selector();
 
-extern int main (int argc, char* argv[]);
+extern int main (int argc, const char* argv[]);
 
 #define WRITE_LOG(str) maWriteLog(str, sizeof(str)-1)
 
@@ -26,5 +26,6 @@ int MAMain()
 	//setenv("HOME", "/", 1);
 	//setenv("HW_CDROM", "/cdrom", 1);
 	chdir("/home");
-	return main(0, NULL);
+	static const char* argv[] = { "homeworld", "/noSound", NULL };
+	return main(2, argv);
 }
