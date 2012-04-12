@@ -12,6 +12,8 @@
 #include <fnmatch.h>
 #endif
 
+#include <sys/stat.h>
+
 #include "BigFile.h"
 
 #include "BitIO.h"
@@ -98,7 +100,9 @@ bigFileConfiguration bigFilePrecedence[] = {
 
 #define NUMBER_CONFIGURED_BIG_FILES  (sizeof(bigFilePrecedence) / sizeof(bigFileConfiguration))
 
+#ifdef BF_HOMEWORLD
 static udword numOpenedBigFiles = 0;
+#endif
 
 //
 //  1. convert all slashes to either forward slashes or backslashes based on
@@ -2122,7 +2126,7 @@ int bigView(char *bigFilename, int consoleOutput)
     bigTOC toc;
     int f;
     unsigned long totalCompressed = 0, totalExpanded = 0;
-    int displayCompressed = 0;
+    //int displayCompressed = 0;
     char pRealSize[32], pStoredSize[32], pTimestamp[32], pRatio[16];
     struct stat findData;
     char filename[BF_MAX_FILENAME_LENGTH+1];
@@ -2178,8 +2182,8 @@ int bigView(char *bigFilename, int consoleOutput)
                 filename);
             totalCompressed += (toc.fileEntries + f)->storedLength;
             totalExpanded += (toc.fileEntries + f)->realLength;
-            if ((toc.fileEntries + f)->storedLength != (toc.fileEntries + f)->realLength)
-                displayCompressed = 1;
+            //if ((toc.fileEntries + f)->storedLength != (toc.fileEntries + f)->realLength)
+                //displayCompressed = 1;
         }
         // totals
         if (toc.numFiles)
@@ -2231,7 +2235,13 @@ abort:
 int bigExtract(char *bigFilename, int numFiles, char *filenames[], int optFreshen, int optMove, int optPathnames, int optOverwrite, int consoleOutput)
 {
 #ifdef _WIN32
-    if (consoleOutput) {
+#undef _WIN32
+#define FNM_NOMATCH 1
+#define fnmatch(a,b,c) ((strcmp(a, b) == 0) ? 0 : FNM_NOMATCH)
+#endif
+
+#ifdef _WIN32
+	if (consoleOutput) {
         printf("ERROR: Extract operation not supported yet.\n");
     }
 #else
@@ -2412,7 +2422,7 @@ int bigExtract(char *bigFilename, int numFiles, char *filenames[], int optFreshe
             ptr = strrchr(outfilename, '/');
             if (ptr != NULL)
             {
-#ifdef MAPIP
+#if defined(MAPIP) || defined(WIN32)
 							printf("!mkdir_p!\n");
 #else
                 char mkdir[1024];

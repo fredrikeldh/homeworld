@@ -934,9 +934,10 @@ void btgSortByY(udword* listToSort, sdword n)
 ----------------------------------------------------------------------------*/
 void btgZip(void)
 {
+	static const int MAX_VERTS = 1024*8;
     udword i, iPoly;
     udword numLeft, numRight;
-    udword lefts[64], rights[64];
+    udword lefts[MAX_VERTS], rights[MAX_VERTS];
     btgVertex* vert;
     btgPolygon* poly;
 
@@ -945,6 +946,7 @@ void btgZip(void)
 #if BTG_VERBOSE_LEVEL >=3
  dbgMessagef("numVerts= %d", btgHead->numVerts);
 #endif
+    dbgAssertOrIgnore(btgHead->numVerts < MAX_VERTS);
 
     for (i = 0, vert = btgVerts; i < btgHead->numVerts; i++, vert++)
     {

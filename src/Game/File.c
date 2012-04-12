@@ -39,11 +39,11 @@
     #define FILE_TEST               0       // test the file module
     #define FILE_VERBOSE_LEVEL      1       // control level of verbose info
 #else
-    #define FILE_ERROR_CHECKING     0
+    #define FILE_ERROR_CHECKING     1
     #define FILE_OPEN_LOGGING       0
     #define FILE_SEEK_WARNING       0
     #define FILE_TEST               0
-    #define FILE_VERBOSE_LEVEL      0
+    #define FILE_VERBOSE_LEVEL      2
 #endif
 
 
@@ -1151,7 +1151,7 @@ filehandle fileOpen(const char *_fileName, udword flags)
     int expandedSize, storedSize;
     BitFile *bitFile;
 
-	printf("fileOpen(%s)\n", _fileName);
+	//printf("fileOpen(%s)\n", _fileName);
 
     //  find next available filehandle
     fh = 1;
@@ -1163,6 +1163,7 @@ filehandle fileOpen(const char *_fileName, udword flags)
     }
     if (fh > MAX_FILES_OPEN)
     {
+        dbgFatalf(DBG_Loc, "fileOpen: too many files open - cannot open file %s", _fileName);
         if (bitTest(flags, FF_ReturnNULLOnFail))
         {
             return 0;
@@ -1287,7 +1288,7 @@ filehandle fileOpen(const char *_fileName, udword flags)
                 }
             }
 #if FILE_VERBOSE_LEVEL >= 2
-            dbgMessagef("fileOpen: '%s' (from bigfile) handle 0x%x", _fileName, fh);
+            dbgMessagef("fileOpen: %s (big %x)", _fileName, fh);
 #endif
 
             filesOpen[fh].inUse = TRUE;
@@ -1346,6 +1347,7 @@ filehandle fileOpen(const char *_fileName, udword flags)
 
     if ((file = fopen(fileName, access)) == NULL)
     {
+        dbgFatalf(DBG_Loc, "fileOpen: cannot open file %s", fileName);
         if (bitTest(flags, FF_ReturnNULLOnFail))
         {
             return 0;
@@ -1354,7 +1356,7 @@ filehandle fileOpen(const char *_fileName, udword flags)
     }
 
 #if FILE_VERBOSE_LEVEL >= 2
-    dbgMessagef("fileOpen: '%s' (from filesystem) handle 0x%x, FILE *0x%x", fileName, fh, file);
+    dbgMessagef("fileOpen: %s (file %x), FILE *0x%x", fileName, fh, file);
 #endif
 
     filesOpen[fh].inUse = TRUE;
@@ -1392,7 +1394,7 @@ void fileClose(filehandle handle)
 
     filesOpen[handle].inUse = FALSE;
 
-#if FILE_VERBOSE_LEVEL >= 2
+#if FILE_VERBOSE_LEVEL >= 3
     dbgMessagef("fileClose: handle 0x%x", handle);
 #endif
 }

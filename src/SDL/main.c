@@ -939,6 +939,7 @@ sdword ProcessCommandLine (int argc, char* argv[])
     for (i = 1; i < argc; i++)  // Skip the executable name.
     {
         string = argv[i];
+			printf("cmd: %s\n", string);
         if (string[0] == '-')
         {
             string[0] = '/';
@@ -951,6 +952,7 @@ sdword ProcessCommandLine (int argc, char* argv[])
             }
             if (!strcasecmp(string, commandOptions[index].parameter))
             {                                               //if this is the correct option
+							printf("found option.\n");
                 dbgAssertOrIgnore(commandOptions[index].variableToModify || commandOptions[index].function);
                 if (commandOptions[index].variableToModify != NULL)
                 {                                           //set a variable if applicable
@@ -978,10 +980,16 @@ sdword ProcessCommandLine (int argc, char* argv[])
 
         if (!commandOptions[index].parameter)
         {
+					printf("option not found!\n");
             DebugHelpDefault(string);                       //no string found, print help
             return(-1);
         }
     }
+		#if !SE_DEBUG
+		#error yo
+		#endif
+    dbgAssertOrIgnore(!enableSpeech);
+		dbgAssertOrIgnore(!enableSFX);
     return(OKAY);
 }
 

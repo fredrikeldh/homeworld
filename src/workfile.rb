@@ -65,7 +65,7 @@ work.instance_eval do
 	[
 		'.',
 		'mosync',
-		'c:/code/mosync-master/libs/SDL/include/',
+		"#{mosync_include}/SDL",
 	]
 	@EXTRA_CFLAGS = ''+
 		' -Wno-shadow'+

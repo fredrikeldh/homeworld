@@ -4123,7 +4123,7 @@ DONE_INTROS:
     //startup transformer module
     transStartup();
 
-#define REPORT_LINE printf("%s:%i\n", __FILE__, __LINE__)
+#define REPORT_LINE //printf("%s:%i\n", __FILE__, __LINE__)
 		REPORT_LINE;
     if (feStartup() != OKAY)
     {                                                       //start the front end

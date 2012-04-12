@@ -32,7 +32,11 @@ cd $HOMEWORLDSDL_BIG_DIR
 # list to biggie with the [f]ast-create flag and create .big file in the working
 # copy's root directory "above" us.
 
-../$BIGGIE -f ../$HOMEWORLDSDL_BIG_FILE `find . -type f -not -path '*/.*' -not -name '.*' \
+ARGS=`find . -type f -not -path '*/.*' -not -name '.*' \
     | grep -v "./README.txt" \
     | grep -v "./convert_directory_to_big_file" \
     | cut -f2- -d'/'`
+
+# echo ../$BIGGIE -f ../$HOMEWORLDSDL_BIG_FILE $ARGS > big.bat
+
+../$BIGGIE -f ../$HOMEWORLDSDL_BIG_FILE @files.txt

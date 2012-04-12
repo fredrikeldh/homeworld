@@ -26,6 +26,6 @@ int MAMain()
 	//setenv("HOME", "/", 1);
 	//setenv("HW_CDROM", "/cdrom", 1);
 	chdir("/home");
-	static const char* argv[] = { "homeworld", "/noSound", NULL };
-	return main(2, argv);
+	static const char* argv[] = { "homeworld", "/noSound", "/noSpeech", NULL };
+	return main(3, argv);
 }
