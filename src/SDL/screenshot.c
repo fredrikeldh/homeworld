@@ -90,6 +90,10 @@ static void _ssSaveScreenshot(ubyte* buf)
     fname = filePathPrepend("ScreenShots/", FF_UserSettingsPath);
     if (!fileMakeDirectory(fname))
         return;
+#ifdef MAPIP
+		// function would crash; let's skip it.
+		return;
+#endif
 
     _ssAppendScreenshotFilename(fname);
 

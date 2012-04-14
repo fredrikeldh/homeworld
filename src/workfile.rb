@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 USE_NEWLIB = true
-USE_ARM = true
+USE_ARM = false
 
 require File.expand_path(ENV['MOSYNCDIR']+'/rules/mosync_exe.rb')
 
@@ -44,7 +44,11 @@ class MoSyncArmExeWork
 	end
 end
 
-work = MoSyncArmExeWork.new
+if(USE_ARM)
+	work = MoSyncArmExeWork.new
+else
+	work = OriginalPipeExeWork.new
+end
 work.instance_eval do
 	set_defaults
 	incSrc = [
@@ -104,7 +108,7 @@ work.instance_eval do
 		@SPECIFIC_CFLAGS['sstream.c'] = ' -Wno-pointer-sign'
 		@SPECIFIC_CFLAGS['NetCheck.c'] = ' -Wno-int-to-pointer-cast'
 	else
-		@EXTRA_CFLAGS << ' -Wno-unreachable-code -Wno-extra'
+		@EXTRA_CFLAGS << ' -Wno-unreachable-code -Wno-extra -Wno-strict-aliasing'
 		@EXTRA_CPPFLAGS << ' -Wno-non-virtual-dtor'
 		@EXTRA_INCLUDES << ENV['MOSYNCDIR']+'/include/newlib/stlport'
 		@IGNORED_FILES << 'SDL_mutex.c'
@@ -114,7 +118,9 @@ work.instance_eval do
 	if(USE_ARM)
 		#@EXTRA_LINKFLAGS = " #{ARM_BASEDIR}/arm-elf/lib/libstdc++.a"
 	else
-		@EXTRA_LINKFLAGS = standardMemorySettings(16)
+		#@EXTRA_LINKFLAGS = standardMemorySettings(16)
+		mb = 1024*1024
+		@EXTRA_LINKFLAGS = " -cs -datasize=#{64*mb} -heapsize=#{1*mb} -stacksize=#{4*mb}"
 	end
 
 	@EXTRA_EMUFLAGS = ' -allowdivzero -resolution 800 600'

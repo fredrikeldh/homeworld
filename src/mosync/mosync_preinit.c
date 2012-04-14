@@ -25,7 +25,16 @@ int MAMain()
 
 	//setenv("HOME", "/", 1);
 	//setenv("HW_CDROM", "/cdrom", 1);
+#ifdef __arm__
 	chdir("/home");
+#else
+	char buf[1024];
+	int res = maGetSystemProperty("mosync.path.local", buf, sizeof(buf));
+	if(res > 0) {
+		chdir(buf);
+	}
+#endif
+
 	static const char* argv[] = { "homeworld", "/noSound", "/noSpeech", NULL };
 	return main(3, argv);
 }

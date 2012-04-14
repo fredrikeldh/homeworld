@@ -1749,7 +1749,7 @@ sdword HandleEvent (const SDL_Event* pEvent)
                 break;
 
             return 0;                                       //per documentation
-
+#define RMOUSE_HACK_KEY NKEY
         case SDL_KEYUP:                                     //keys up/down
             switch (pEvent->key.keysym.sym)
             {
@@ -1764,6 +1764,11 @@ sdword HandleEvent (const SDL_Event* pEvent)
                     {
                         keyPressUp(pEvent->key.keysym.sym);
                     }
+								case RMOUSE_HACK_KEY:
+								{
+									keyPressUp(RMOUSE_BUTTON);
+									break;
+								}
 #if MAIN_MOUSE_FREE
                 case SDLK_F11:                              //toggle clipped cursor
                     if (keyIsHit(CONTROLKEY))
@@ -1793,6 +1798,11 @@ sdword HandleEvent (const SDL_Event* pEvent)
             return 0;
 
         case SDL_KEYDOWN:
+
+						if(pEvent->key.keysym.sym == RMOUSE_HACK_KEY)
+						{
+							keyPressDown(RMOUSE_BUTTON);
+						}
             /*
             if (lParam & BIT30)
             {                                               //if it's a repeating key
