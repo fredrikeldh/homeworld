@@ -1,7 +1,7 @@
 #!/usr/bin/ruby
 
 USE_NEWLIB = true
-USE_ARM = false
+#USE_ARM = true
 
 require File.expand_path(ENV['MOSYNCDIR']+'/rules/mosync_exe.rb')
 
@@ -119,8 +119,8 @@ work.instance_eval do
 		#@EXTRA_LINKFLAGS = " #{ARM_BASEDIR}/arm-elf/lib/libstdc++.a"
 	else
 		#@EXTRA_LINKFLAGS = standardMemorySettings(16)
-		mb = 1024*1024
-		@EXTRA_LINKFLAGS = " -cs -datasize=#{64*mb} -heapsize=#{1*mb} -stacksize=#{4*mb}"
+		mb = 1024
+		@EXTRA_LINKFLAGS = " -heapsize #{1*mb} -stacksize #{4*mb}"
 	end
 
 	@EXTRA_EMUFLAGS = ' -allowdivzero -resolution 800 600'

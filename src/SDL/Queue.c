@@ -33,8 +33,10 @@ void ResetQueue(Queue *queue)
 ----------------------------------------------------------------------------*/
 void InitQueue(Queue *queue,udword buffersize)
 {
+#ifndef MAPIP
     queue->mutex = SDL_CreateMutex();
     dbgAssertOrIgnore(queue->mutex != NULL);
+#endif
     queue->buffer = memAlloc(buffersize,"qbuffer",NonVolatile);
     queue->buffersize = buffersize;
     ResetQueue(queue);
@@ -49,8 +51,10 @@ void InitQueue(Queue *queue,udword buffersize)
 ----------------------------------------------------------------------------*/
 void CloseQueue(Queue *queue)
 {
+#ifndef MAPIP
     SDL_DestroyMutex(queue->mutex);
     queue->mutex = NULL;
+#endif
     memFree(queue->buffer);
     queue->buffer = NULL;
 }
@@ -64,7 +68,9 @@ void CloseQueue(Queue *queue)
 ----------------------------------------------------------------------------*/
 void LockQueue(Queue *queue)
 {
+#ifndef MAPIP
     dbgAssertAlwaysDo(SDL_mutexP(queue->mutex) != -1);
+#endif
 }
 
 /*-----------------------------------------------------------------------------
@@ -76,7 +82,9 @@ void LockQueue(Queue *queue)
 ----------------------------------------------------------------------------*/
 void UnLockQueue(Queue *queue)
 {
+#ifndef MAPIP
     dbgAssertAlwaysDo(SDL_mutexV(queue->mutex) != -1);
+#endif
 }
 
 /*-----------------------------------------------------------------------------
@@ -124,7 +132,7 @@ void HWEnqueue(Queue *queue,ubyte *packet,udword sizeofPacket)
     queue->totaltotalsize += sizeinQ;
 
     memcpy(writeto,packet,sizeofPacket);
-    
+
     queue->num++;
 }
 
