@@ -3,6 +3,8 @@
 USE_NEWLIB = true
 #USE_ARM = true
 
+EXTRA_RUNPARAMS = ' -size 800 600'
+
 require File.expand_path(ENV['MOSYNCDIR']+'/rules/mosync_exe.rb')
 
 #sh 'cd c:/code/mosync-arm/libs/SDL/ && ruby workfile.rb USE_NEWLIB= arm CONFIG='

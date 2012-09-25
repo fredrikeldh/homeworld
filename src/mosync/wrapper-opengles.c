@@ -51,9 +51,9 @@ static void ogles_reserve(unsigned int size)
 {
     // The maximum limit on the iPhone should be around 6000 vertices.
     if(size>6000)
-        printf("WARNING: OpenGL ES reserve size too high: %i",size);
+        printf("WARNING: OpenGL ES reserve size too high: %i\n",size);
     else
-        printf("OpenGL ES reserve size: %i",size);
+        printf("OpenGL ES reserve size: %i\n",size);
 
     ogles_texture_coord_array=(GLfloat*)realloc(ogles_texture_coord_array,2*size*OPENGLES_SIZE_OF_FLOAT);
     ogles_vertex_array=(GLfloat*)realloc(ogles_vertex_array,3*size*OPENGLES_SIZE_OF_FLOAT);

@@ -25,7 +25,7 @@ int MAMain()
 
 	//setenv("HOME", "/", 1);
 	//setenv("HW_CDROM", "/cdrom", 1);
-#ifdef __arm__
+#if 1//def __arm__
 	chdir("/home");
 #else
 	char buf[1024];
@@ -37,4 +37,8 @@ int MAMain()
 
 	static const char* argv[] = { "homeworld", "/noSound", "/noSpeech", NULL };
 	return main(3, argv);
+}
+
+void __main()
+{
 }
